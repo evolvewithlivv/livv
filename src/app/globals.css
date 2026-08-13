@@ -9,7 +9,12 @@
   }
 
   body {
-    @apply bg-white text-neutral-900 antialiased;
+    @apply bg-livv-black text-white antialiased;
     min-height: 100dvh;
+  }
+
+  /* Smooth scrolling and selection */
+  ::selection {
+    @apply bg-livv-accent/40 text-white;
   }
 }

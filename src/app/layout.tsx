@@ -3,14 +3,14 @@ import "./globals.css";
 
 export const metadata: Metadata = {
   title: "LIVV",
-  description: "LIVV",
+  description: "Evolve. Train. Connect. Progress.",
 };
 
 export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
-  themeColor: "#ffffff",
+  themeColor: "#050505",
 };
 
 export default function RootLayout({
@@ -20,7 +20,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body className="min-h-dvh antialiased">{children}</body>
+      <body className="min-h-dvh bg-livv-black text-white antialiased">
+        {children}
+      </body>
     </html>
   );
 }

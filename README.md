@@ -1,11 +1,21 @@
 # LIVV
 
-Clean Next.js foundation for the LIVV project.
+Personal evolution ecosystem.
 
 **Stack**
 - Next.js 15 (App Router)
 - TypeScript
 - Tailwind CSS
+
+## Current Status (V1 Visual Foundation)
+
+- Opening / loading experience
+- Multi-step onboarding
+- Conceptual home shell with primary areas
+- Mobile bottom navigation
+- Strong dark premium visual identity
+
+No authentication, database, payments, or real backend systems yet.
 
 ## Getting Started
 
@@ -16,25 +26,21 @@ npm run dev
 
 Open [http://localhost:3000](http://localhost:3000).
 
-## Scripts
-
-- `npm run dev` — local development server
-- `npm run build` — production build
-- `npm run start` — start production server
-- `npm run lint` — run ESLint
-
 ## Project Structure
 
 ```
 src/
-  app/           # App Router pages and layouts
+  app/
+    page.tsx              # Opening experience
+    onboarding/           # Onboarding flow
+    home/                 # Main app shell + sections
   components/
-    ui/          # Reusable UI primitives
-  lib/           # Shared utilities
+    ui/                   # Reusable primitives
+    layout/               # Navigation & shells
+  lib/
+    utils.ts
 ```
 
 ## Deploy
 
 Ready for Vercel. Connect the repository and deploy.
-
-Do not commit secrets. Use environment variables in Vercel for any sensitive values.

@@ -1,14 +1,10 @@
 import { cn } from "@/lib/utils";
 
 type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
-  variant?: "primary" | "secondary" | "ghost";
+  variant?: "primary" | "secondary" | "ghost" | "accent";
   size?: "sm" | "md" | "lg";
 };
 
-/**
- * Minimal reusable button.
- * No design system yet — just a clean starting point.
- */
 export function Button({
   className,
   variant = "primary",
@@ -18,16 +14,18 @@ export function Button({
   return (
     <button
       className={cn(
-        "inline-flex items-center justify-center rounded-lg font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-neutral-400 disabled:pointer-events-none disabled:opacity-50",
+        "inline-flex items-center justify-center rounded-xl font-medium transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-livv-accent/60 disabled:pointer-events-none disabled:opacity-50 active:scale-[0.98]",
         variant === "primary" &&
-          "bg-neutral-900 text-white hover:bg-neutral-800",
+          "bg-white text-livv-black hover:bg-neutral-100",
+        variant === "accent" &&
+          "bg-livv-accent text-white hover:bg-livv-accent-soft shadow-lg shadow-livv-accent/25",
         variant === "secondary" &&
-          "bg-neutral-100 text-neutral-900 hover:bg-neutral-200",
+          "bg-livv-surface text-white border border-livv-border hover:bg-livv-border",
         variant === "ghost" &&
-          "bg-transparent text-neutral-900 hover:bg-neutral-100",
-        size === "sm" && "h-8 px-3 text-sm",
-        size === "md" && "h-10 px-4 text-sm",
-        size === "lg" && "h-12 px-6 text-base",
+          "bg-transparent text-white/80 hover:bg-white/5 hover:text-white",
+        size === "sm" && "h-9 px-4 text-sm",
+        size === "md" && "h-11 px-5 text-sm",
+        size === "lg" && "h-13 px-8 text-base h-12",
         className
       )}
       {...props}

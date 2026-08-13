@@ -5,15 +5,11 @@ type ContainerProps = {
   className?: string;
 };
 
-/**
- * Basic responsive container.
- * Mobile-first with sensible max-width and padding.
- */
 export function Container({ children, className }: ContainerProps) {
   return (
     <div
       className={cn(
-        "mx-auto w-full max-w-5xl px-4 sm:px-6",
+        "mx-auto w-full max-w-lg px-5 sm:px-6",
         className
       )}
     >
