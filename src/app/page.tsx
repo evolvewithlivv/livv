@@ -1,6 +1,7 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { LIVV_LOGO_DISPLAY_BASE64 } from "@/lib/brand-logo";
 
 export default function OpeningPage() {
   const router = useRouter();
@@ -13,44 +14,15 @@ export default function OpeningPage() {
       <div className="relative z-10 flex min-h-dvh flex-col items-center justify-center px-6 pb-[max(2.5rem,env(safe-area-inset-bottom))] pt-[max(2.5rem,env(safe-area-inset-top))]">
         <div className="flex w-full max-w-md flex-col items-center text-center sm:max-w-lg">
           <div className="opening-wordmark select-none">
-            <div
-              className="flex h-[clamp(6rem,26vw,10rem)] w-[clamp(6rem,26vw,10rem)] items-center justify-center"
-              aria-label="LIVV"
-            >
-              <svg
-                viewBox="0 0 160 160"
-                fill="none"
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-full w-full"
-                aria-hidden
-              >
-                <defs>
-                  <linearGradient id="livvFlame" x1="100" y1="30" x2="115" y2="130" gradientUnits="userSpaceOnUse">
-                    <stop stopColor="#C4B5FD" />
-                    <stop offset="0.45" stopColor="#8B5CF6" />
-                    <stop offset="1" stopColor="#5B21B6" />
-                  </linearGradient>
-                  <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
-                    <feGaussianBlur stdDeviation="2.5" result="blur" />
-                    <feMerge>
-                      <feMergeNode in="blur" />
-                      <feMergeNode in="SourceGraphic" />
-                    </feMerge>
-                  </filter>
-                </defs>
-                {/* Bold L */}
-                <path
-                  d="M42 36h22v68h40v20H42V36z"
-                  fill="#FFFFFF"
-                />
-                {/* Flame */}
-                <path
-                  d="M108 38c1.5 14 4 24 4 36 0 18-12 32-26 32-8 0-14-4-18-10 6 2 12 2 16-2 6-6 8-16 6-26-8 8-20 10-28 4 10-2 18-10 22-22 2-6 4-12 4-12s10 6 20 0z"
-                  fill="url(#livvFlame)"
-                  filter="url(#glow)"
-                />
-              </svg>
-            </div>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={`data:image/png;base64,${LIVV_LOGO_DISPLAY_BASE64}`}
+              alt="LIVV"
+              width={180}
+              height={180}
+              className="h-[clamp(6rem,26vw,10rem)] w-[clamp(6rem,26vw,10rem)] object-contain"
+              draggable={false}
+            />
           </div>
 
           <p className="opening-line mt-10 text-[11px] font-medium uppercase tracking-[0.42em] text-white/55 sm:text-xs sm:tracking-[0.48em]">
