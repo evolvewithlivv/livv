@@ -1,41 +1,38 @@
 "use client";
 
 import { useRouter } from "next/navigation";
+import { LIVV_LOGO_DISPLAY_BASE64 } from "@/lib/brand-logo";
 
 export default function OpeningPage() {
   const router = useRouter();
 
   return (
     <main className="opening relative min-h-dvh overflow-hidden bg-[#050505] text-white">
-      {/* Atmosphere — restrained, near-black */}
-      <div
-        aria-hidden
-        className="opening-atmosphere pointer-events-none absolute inset-0"
-      />
-      <div
-        aria-hidden
-        className="opening-veil pointer-events-none absolute inset-0"
-      />
+      <div aria-hidden className="opening-atmosphere pointer-events-none absolute inset-0" />
+      <div aria-hidden className="opening-veil pointer-events-none absolute inset-0" />
 
-      {/* Content */}
       <div className="relative z-10 flex min-h-dvh flex-col items-center justify-center px-6 pb-[max(2.5rem,env(safe-area-inset-bottom))] pt-[max(2.5rem,env(safe-area-inset-top))]">
         <div className="flex w-full max-w-md flex-col items-center text-center sm:max-w-lg">
-          {/* Wordmark */}
-          <h1 className="opening-wordmark select-none text-[clamp(3.25rem,14vw,6.5rem)] font-semibold leading-none tracking-[0.28em] text-white">
-            LIVV
-          </h1>
+          <div className="opening-wordmark select-none">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={`data:image/png;base64,${LIVV_LOGO_DISPLAY_BASE64}`}
+              alt="LIVV"
+              width={160}
+              height={160}
+              className="h-[clamp(5.5rem,22vw,9rem)] w-[clamp(5.5rem,22vw,9rem)] object-contain"
+              draggable={false}
+            />
+          </div>
 
-          {/* Primary line */}
           <p className="opening-line mt-8 text-[11px] font-medium uppercase tracking-[0.42em] text-white/55 sm:text-xs sm:tracking-[0.48em]">
             Evolve with LIVV
           </p>
 
-          {/* Secondary */}
           <p className="opening-sub mt-4 max-w-[16rem] text-sm font-normal leading-relaxed tracking-wide text-white/35 sm:max-w-xs sm:text-[0.9375rem]">
             Your evolution starts here.
           </p>
 
-          {/* CTA */}
           <div className="opening-cta mt-14 w-full sm:mt-16 sm:w-auto">
             <button
               type="button"

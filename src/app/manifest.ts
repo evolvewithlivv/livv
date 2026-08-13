@@ -7,24 +7,24 @@ export default function manifest(): MetadataRoute.Manifest {
     description: "Personal evolution ecosystem",
     start_url: "/",
     display: "standalone",
-    background_color: "#ffffff",
+    background_color: "#050505",
     theme_color: "#050505",
     icons: [
       {
-        src: "/api/icon?s=192",
+        src: "/api/icon?s=180",
+        sizes: "180x180",
+        type: "image/png",
+        purpose: "any",
+      },
+      {
+        src: "/api/icon?s=180",
         sizes: "192x192",
         type: "image/png",
         purpose: "any",
       },
       {
-        src: "/api/icon?s=512",
+        src: "/api/icon?s=180",
         sizes: "512x512",
-        type: "image/png",
-        purpose: "any",
-      },
-      {
-        src: "/api/icon?s=192",
-        sizes: "192x192",
         type: "image/png",
         purpose: "maskable",
       },
