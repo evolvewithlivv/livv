@@ -9,11 +9,19 @@ import {
   ACHIEVEMENTS,
   EVOLUTION_STATS,
   type Objective,
+  type Achievement,
 } from "@/lib/evolve-data";
+import {
+  activityFromObjective,
+  activityFromAchievement,
+  activityFromLevelUp,
+} from "@/lib/activity";
 
 export default function EvolvePage() {
   const [objectives, setObjectives] = useState<Objective[]>(INITIAL_OBJECTIVES);
   const [stats, setStats] = useState(EVOLUTION_STATS);
+  const [achievements, setAchievements] =
+    useState<Achievement[]>(ACHIEVEMENTS);
 
   const completedCount = objectives.filter((o) => o.completed).length;
   const xpProgress = Math.round((stats.currentXp / stats.xpToNext) * 100);
@@ -23,14 +31,62 @@ export default function EvolvePage() {
       prev.map((obj) => {
         if (obj.id !== id) return obj;
         const next = !obj.completed;
-        // Adjust local XP when toggling
-        setStats((s) => ({
-          ...s,
-          currentXp: next ? s.currentXp + obj.xp : Math.max(0, s.currentXp - obj.xp),
-          goalsCompletedToday: next
-            ? s.goalsCompletedToday + 1
-            : Math.max(0, s.goalsCompletedToday - 1),
-        }));
+
+        if (next) {
+          // Completing → emit activity + XP
+          activityFromObjective({
+            objectiveTitle: obj.title,
+            pillar: obj.pillar,
+            xp: obj.xp,
+          });
+
+          setStats((s) => {
+            const newXp = s.currentXp + obj.xp;
+            let level = s.level;
+            let currentXp = newXp;
+            let xpToNext = s.xpToNext;
+
+            // Simple local level-up check
+            if (currentXp >= xpToNext) {
+              level += 1;
+              currentXp = currentXp - xpToNext;
+              xpToNext = Math.round(xpToNext * 1.25);
+              activityFromLevelUp({ level });
+            }
+
+            return {
+              ...s,
+              currentXp,
+              xpToNext,
+              level,
+              goalsCompletedToday: s.goalsCompletedToday + 1,
+            };
+          });
+
+          // First objective completion can unlock "First Spark" if still locked
+          setAchievements((achs) =>
+            achs.map((a) => {
+              if (a.id === "a1" && !a.unlocked) {
+                activityFromAchievement({
+                  title: a.title,
+                  description: a.description,
+                  icon: a.icon,
+                  xp: 50,
+                });
+                return { ...a, unlocked: true };
+              }
+              return a;
+            })
+          );
+        } else {
+          // Un-completing → only adjust local stats (no reverse activity)
+          setStats((s) => ({
+            ...s,
+            currentXp: Math.max(0, s.currentXp - obj.xp),
+            goalsCompletedToday: Math.max(0, s.goalsCompletedToday - 1),
+          }));
+        }
+
         return { ...obj, completed: next };
       })
     );
@@ -39,7 +95,6 @@ export default function EvolvePage() {
   return (
     <main className="pt-8 pb-6">
       <Container>
-        {/* Header */}
         <div className="mb-8">
           <h1 className="text-2xl font-bold tracking-tight">Evolve</h1>
           <p className="mt-1 text-sm text-livv-muted">
@@ -47,7 +102,6 @@ export default function EvolvePage() {
           </p>
         </div>
 
-        {/* Level + XP Card */}
         <section className="rounded-2xl border border-livv-border bg-livv-surface p-5 mb-6">
           <div className="flex items-end justify-between">
             <div>
@@ -83,7 +137,6 @@ export default function EvolvePage() {
           </div>
         </section>
 
-        {/* Today's Objectives */}
         <section className="mb-8">
           <div className="flex items-center justify-between mb-3">
             <p className="text-xs uppercase tracking-wider text-livv-muted">
@@ -134,7 +187,6 @@ export default function EvolvePage() {
           </div>
         </section>
 
-        {/* Pillars */}
         <section className="mb-8">
           <p className="text-xs uppercase tracking-wider text-livv-muted mb-3">
             Evolution Pillars
@@ -165,13 +217,12 @@ export default function EvolvePage() {
           </div>
         </section>
 
-        {/* Achievements */}
         <section>
           <p className="text-xs uppercase tracking-wider text-livv-muted mb-3">
             Achievements
           </p>
           <div className="space-y-2">
-            {ACHIEVEMENTS.map((ach) => (
+            {achievements.map((ach) => (
               <div
                 key={ach.id}
                 className={cn(
@@ -199,7 +250,7 @@ export default function EvolvePage() {
         </section>
 
         <p className="mt-8 text-center text-[11px] text-white/30">
-          All progress is local for now. Nothing is permanently saved.
+          Completing objectives logs activity to your profile. Local only for now.
         </p>
       </Container>
     </main>

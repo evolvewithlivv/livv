@@ -15,6 +15,7 @@ import {
   type Workout,
   type Exercise,
 } from "@/lib/train-data";
+import { activityFromWorkout } from "@/lib/activity";
 
 type Phase = "select" | "preview" | "session" | "complete";
 
@@ -26,6 +27,7 @@ export default function TrainPage() {
   const [workout, setWorkout] = useState<Workout | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [completedExercises, setCompletedExercises] = useState<string[]>([]);
+  const [activityLogged, setActivityLogged] = useState(false);
 
   const canGenerate = focus && location && duration;
 
@@ -39,6 +41,7 @@ export default function TrainPage() {
   const handleStart = () => {
     setCurrentIndex(0);
     setCompletedExercises([]);
+    setActivityLogged(false);
     setPhase("session");
   };
 
@@ -47,6 +50,18 @@ export default function TrainPage() {
     if (workout && currentIndex < workout.exercises.length - 1) {
       setCurrentIndex((i) => i + 1);
     } else {
+      // Log activity once when session finishes
+      if (workout && !activityLogged) {
+        activityFromWorkout({
+          workoutName: workout.name,
+          focus: workout.focus,
+          location: workout.location,
+          duration: workout.duration,
+          difficulty: workout.difficulty,
+          exerciseCount: workout.exercises.length,
+        });
+        setActivityLogged(true);
+      }
       setPhase("complete");
     }
   };
@@ -59,6 +74,7 @@ export default function TrainPage() {
     setWorkout(null);
     setCurrentIndex(0);
     setCompletedExercises([]);
+    setActivityLogged(false);
   };
 
   // ─── SELECT ───────────────────────────────────────────────
@@ -71,7 +87,6 @@ export default function TrainPage() {
             Build a session that fits your day.
           </p>
 
-          {/* Focus */}
           <section className="mt-8">
             <p className="text-xs uppercase tracking-wider text-livv-muted mb-3">
               Focus
@@ -94,7 +109,6 @@ export default function TrainPage() {
             </div>
           </section>
 
-          {/* Location */}
           <section className="mt-7">
             <p className="text-xs uppercase tracking-wider text-livv-muted mb-3">
               Location
@@ -117,7 +131,6 @@ export default function TrainPage() {
             </div>
           </section>
 
-          {/* Duration */}
           <section className="mt-7">
             <p className="text-xs uppercase tracking-wider text-livv-muted mb-3">
               Duration
@@ -226,12 +239,11 @@ export default function TrainPage() {
   // ─── SESSION ──────────────────────────────────────────────
   if (phase === "session" && workout) {
     const current = workout.exercises[currentIndex];
-    const progress = ((currentIndex) / workout.exercises.length) * 100;
+    const progress = (currentIndex / workout.exercises.length) * 100;
 
     return (
       <main className="pt-6 pb-4 min-h-[70dvh] flex flex-col">
         <Container className="flex-1 flex flex-col">
-          {/* Progress bar */}
           <div className="mb-6">
             <div className="flex justify-between text-xs text-livv-muted mb-2">
               <span>
@@ -296,7 +308,10 @@ export default function TrainPage() {
           <p className="mt-2 text-livv-muted text-sm">
             {workout?.name} · {completedExercises.length} exercises
           </p>
-          <p className="mt-6 text-xs text-white/40">
+          <p className="mt-3 text-xs text-livv-accent-soft">
+            Activity logged to your profile
+          </p>
+          <p className="mt-4 text-xs text-white/40">
             Progress is local only for now. Nothing is permanently saved yet.
           </p>
 
@@ -307,9 +322,9 @@ export default function TrainPage() {
             <Button
               variant="secondary"
               className="w-full"
-              onClick={() => (window.location.href = "/home")}
+              onClick={() => (window.location.href = "/home/profile")}
             >
-              Back to Home
+              View Activity
             </Button>
           </div>
         </div>

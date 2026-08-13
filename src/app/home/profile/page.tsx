@@ -1,8 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Container } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
+import { ActivityCard } from "@/components/activity/activity-card";
 import { cn } from "@/lib/utils";
 import {
   DEFAULT_PROFILE,
@@ -11,14 +12,20 @@ import {
   type ProfileData,
 } from "@/lib/profile-data";
 import { ACHIEVEMENTS, PILLARS } from "@/lib/evolve-data";
+import { loadActivities, type Activity } from "@/lib/activity";
 
-type Tab = "posts" | "progress" | "achievements";
+type Tab = "activity" | "progress" | "achievements";
 
 export default function ProfilePage() {
   const [profile, setProfile] = useState<ProfileData>(DEFAULT_PROFILE);
   const [editing, setEditing] = useState(false);
   const [draft, setDraft] = useState<ProfileData>(DEFAULT_PROFILE);
-  const [tab, setTab] = useState<Tab>("progress");
+  const [tab, setTab] = useState<Tab>("activity");
+  const [activities, setActivities] = useState<Activity[]>([]);
+
+  useEffect(() => {
+    setActivities(loadActivities());
+  }, [tab]);
 
   const xpPercent = Math.round(
     (PROFILE_STATS.currentXp / PROFILE_STATS.xpToNext) * 100
@@ -46,7 +53,6 @@ export default function ProfilePage() {
     setEditing(false);
   };
 
-  // ─── EDIT MODE ────────────────────────────────────────────
   if (editing) {
     return (
       <main className="pt-8 pb-6">
@@ -61,7 +67,6 @@ export default function ProfilePage() {
             </button>
           </div>
 
-          {/* Avatar preview + color picker */}
           <div className="flex flex-col items-center mb-8">
             <div
               className="flex h-24 w-24 items-center justify-center rounded-full text-3xl font-bold text-white border-2 border-white/10"
@@ -155,11 +160,9 @@ export default function ProfilePage() {
     );
   }
 
-  // ─── PROFILE VIEW ─────────────────────────────────────────
   return (
     <main className="pt-8 pb-6">
       <Container>
-        {/* Header */}
         <div className="flex flex-col items-center text-center mb-8">
           <div
             className="flex h-24 w-24 items-center justify-center rounded-full text-3xl font-bold text-white border-2 border-white/10 shadow-lg"
@@ -204,7 +207,6 @@ export default function ProfilePage() {
           </Button>
         </div>
 
-        {/* Stats row */}
         <div className="grid grid-cols-4 gap-2 mb-8">
           {[
             { label: "Workouts", value: PROFILE_STATS.workoutsCompleted },
@@ -224,7 +226,6 @@ export default function ProfilePage() {
           ))}
         </div>
 
-        {/* XP bar */}
         <div className="rounded-xl border border-livv-border bg-livv-surface p-4 mb-8">
           <div className="flex justify-between text-xs text-livv-muted mb-1.5">
             <span>Evolution XP</span>
@@ -248,9 +249,9 @@ export default function ProfilePage() {
         <div className="flex border-b border-livv-border mb-5">
           {(
             [
+              { id: "activity", label: "Activity" },
               { id: "progress", label: "Progress" },
               { id: "achievements", label: "Achievements" },
-              { id: "posts", label: "Posts" },
             ] as { id: Tab; label: string }[]
           ).map((t) => (
             <button
@@ -268,7 +269,23 @@ export default function ProfilePage() {
           ))}
         </div>
 
-        {/* Tab content */}
+        {tab === "activity" && (
+          <div className="space-y-3 animate-fade-in">
+            {activities.length === 0 ? (
+              <div className="rounded-2xl border border-livv-border bg-livv-surface p-10 text-center">
+                <p className="text-sm text-livv-muted">No activity yet</p>
+                <p className="mt-2 text-xs text-white/30">
+                  Complete a workout or objective to generate activity.
+                </p>
+              </div>
+            ) : (
+              activities.map((activity) => (
+                <ActivityCard key={activity.id} activity={activity} />
+              ))
+            )}
+          </div>
+        )}
+
         {tab === "progress" && (
           <div className="space-y-3 animate-fade-in">
             <p className="text-xs text-livv-muted uppercase tracking-wider mb-1">
@@ -329,17 +346,8 @@ export default function ProfilePage() {
           </div>
         )}
 
-        {tab === "posts" && (
-          <div className="animate-fade-in rounded-2xl border border-livv-border bg-livv-surface p-10 text-center">
-            <p className="text-sm text-livv-muted">No posts yet</p>
-            <p className="mt-2 text-xs text-white/30">
-              Sharing and identity posts will live here later.
-            </p>
-          </div>
-        )}
-
         <p className="mt-10 text-center text-[11px] text-white/25">
-          Identity is local for now. Nothing is permanently saved.
+          Activity is stored locally in this browser for now.
         </p>
       </Container>
     </main>
