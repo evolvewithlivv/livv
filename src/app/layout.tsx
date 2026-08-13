@@ -4,6 +4,20 @@ import "./globals.css";
 export const metadata: Metadata = {
   title: "LIVV",
   description: "Evolve. Train. Connect. Progress.",
+  applicationName: "LIVV",
+  appleWebApp: {
+    capable: true,
+    title: "LIVV",
+    statusBarStyle: "black-translucent",
+  },
+  icons: {
+    icon: [
+      { url: "/api/icon?s=32", sizes: "32x32", type: "image/png" },
+      { url: "/api/icon?s=192", sizes: "192x192", type: "image/png" },
+    ],
+    apple: [{ url: "/api/icon?s=180", sizes: "180x180", type: "image/png" }],
+    shortcut: ["/api/icon?s=32"],
+  },
 };
 
 export const viewport: Viewport = {
