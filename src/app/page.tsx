@@ -1,7 +1,6 @@
 "use client";
 
 import { useRouter } from "next/navigation";
-import { LIVV_LOGO_DISPLAY_BASE64 } from "@/lib/brand-logo";
 
 export default function OpeningPage() {
   const router = useRouter();
@@ -16,7 +15,7 @@ export default function OpeningPage() {
           <div className="opening-wordmark select-none">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src={`data:image/png;base64,${LIVV_LOGO_DISPLAY_BASE64}`}
+              src="/api/icon?s=180"
               alt="LIVV"
               width={180}
               height={180}
