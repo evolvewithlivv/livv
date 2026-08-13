@@ -2,5 +2,131 @@
 
 import { useRouter } from "next/navigation";
 
-const LIVV_LOGO_DATA_URL =
-  "data:image/png;base64,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
+export default function OpeningPage() {
+  const router = useRouter();
+
+  return (
+    <main className="opening relative min-h-dvh overflow-hidden bg-[#050505] text-white">
+      <div aria-hidden className="opening-atmosphere pointer-events-none absolute inset-0" />
+      <div aria-hidden className="opening-veil pointer-events-none absolute inset-0" />
+
+      <div className="relative z-10 flex min-h-dvh flex-col items-center justify-center px-6 pb-[max(2.5rem,env(safe-area-inset-bottom))] pt-[max(2.5rem,env(safe-area-inset-top))]">
+        <div className="flex w-full max-w-md flex-col items-center text-center sm:max-w-lg">
+          <div className="opening-wordmark select-none">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/api/icon?s=64"
+              alt="LIVV"
+              width={180}
+              height={180}
+              className="h-[clamp(6rem,26vw,10rem)] w-[clamp(6rem,26vw,10rem)] object-contain"
+              draggable={false}
+            />
+          </div>
+
+          <p className="opening-line mt-10 text-[11px] font-medium uppercase tracking-[0.42em] text-white/55 sm:text-xs sm:tracking-[0.48em]">
+            Evolve with LIVV
+          </p>
+
+          <p className="opening-sub mt-4 max-w-[16rem] text-sm font-normal leading-relaxed tracking-wide text-white/35 sm:max-w-xs sm:text-[0.9375rem]">
+            Your evolution starts here.
+          </p>
+
+          <div className="opening-cta mt-14 w-full sm:mt-16 sm:w-auto">
+            <button
+              type="button"
+              onClick={() => router.push("/onboarding")}
+              className="opening-enter group relative inline-flex h-14 w-full items-center justify-center gap-3 rounded-full border border-white/[0.12] bg-white/[0.04] px-10 text-[13px] font-medium uppercase tracking-[0.28em] text-white transition-all duration-300 ease-out hover:border-white/25 hover:bg-white/[0.08] active:scale-[0.985] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40 focus-visible:ring-offset-2 focus-visible:ring-offset-[#050505] sm:h-12 sm:w-auto sm:min-w-[14rem]"
+            >
+              <span>Enter LIVV</span>
+              <span
+                aria-hidden
+                className="inline-block translate-x-0 transition-transform duration-300 ease-out group-hover:translate-x-1"
+              >
+                →
+              </span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <style jsx>{`
+        .opening-atmosphere {
+          background:
+            radial-gradient(
+              ellipse 90% 55% at 50% -15%,
+              rgba(255, 255, 255, 0.045),
+              transparent 55%
+            ),
+            radial-gradient(
+              ellipse 50% 40% at 50% 110%,
+              rgba(124, 92, 255, 0.04),
+              transparent 50%
+            );
+          opacity: 0;
+          animation: openingAtmosphere 1.4s ease-out 0.05s forwards;
+        }
+
+        .opening-veil {
+          background: radial-gradient(
+            circle at 50% 42%,
+            rgba(255, 255, 255, 0.018),
+            transparent 42%
+          );
+          opacity: 0;
+          animation: openingAtmosphere 1.8s ease-out 0.15s forwards;
+        }
+
+        .opening-wordmark {
+          opacity: 0;
+          transform: translateY(18px);
+          animation: openingRise 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.2s forwards;
+        }
+
+        .opening-line {
+          opacity: 0;
+          transform: translateY(12px);
+          animation: openingRise 0.85s cubic-bezier(0.22, 1, 0.36, 1) 0.45s forwards;
+        }
+
+        .opening-sub {
+          opacity: 0;
+          transform: translateY(10px);
+          animation: openingRise 0.85s cubic-bezier(0.22, 1, 0.36, 1) 0.58s forwards;
+        }
+
+        .opening-cta {
+          opacity: 0;
+          transform: translateY(12px);
+          animation: openingRise 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.75s forwards;
+        }
+
+        @keyframes openingAtmosphere {
+          to {
+            opacity: 1;
+          }
+        }
+
+        @keyframes openingRise {
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+          .opening-atmosphere,
+          .opening-veil,
+          .opening-wordmark,
+          .opening-line,
+          .opening-sub,
+          .opening-cta {
+            animation: none !important;
+            opacity: 1 !important;
+            transform: none !important;
+          }
+        }
+      `}</style>
+    </main>
+  );
+}
