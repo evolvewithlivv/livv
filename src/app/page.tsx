@@ -15,7 +15,7 @@ export default function OpeningPage() {
           <div className="opening-wordmark select-none">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/api/icon?s=180"
+              src="/api/icon?s=32"
               alt="LIVV"
               width={180}
               height={180}
