@@ -1,443 +1,400 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Container } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
-import { ActivityCard } from "@/components/activity/activity-card";
+import { Avatar } from "@/components/identity/avatar";
 import { cn } from "@/lib/utils";
+import { loadIdentity, type Identity } from "@/lib/identity";
 import {
-  MOCK_FEED,
-  MOCK_USERS,
-  MOCK_CONVERSATIONS,
-  MOCK_CHALLENGES,
-  type FeedItem,
-  type ConnectUser,
-  type Conversation,
-  type Challenge,
-} from "@/lib/connect-data";
-import { loadActivities, formatRelativeTime, type Activity } from "@/lib/activity";
+  SOUND_LIBRARY,
+  createPost,
+  fileToPostPhoto,
+  formatSocialTime,
+  loadPosts,
+  savePosts,
+  type Post,
+  type Track,
+} from "@/lib/social";
 
-type ConnectTab = "activity" | "people" | "messages" | "challenges";
+type Sheet = "closed" | "compose" | "sound";
 
 export default function ConnectPage() {
-  const [tab, setTab] = useState<ConnectTab>("activity");
-  const [feed, setFeed] = useState<FeedItem[]>(MOCK_FEED);
-  const [users, setUsers] = useState<ConnectUser[]>(MOCK_USERS);
-  const [peopleQuery, setPeopleQuery] = useState("");
-  const [challenges, setChallenges] = useState<Challenge[]>(MOCK_CHALLENGES);
-  const [conversations] = useState<Conversation[]>(MOCK_CONVERSATIONS);
-  const [activeConversation, setActiveConversation] = useState<Conversation | null>(null);
-  const [messageQuery, setMessageQuery] = useState("");
-  const [myActivities, setMyActivities] = useState<Activity[]>([]);
+  const [me, setMe] = useState<Identity | null>(null);
+  const [posts, setPosts] = useState<Post[]>([]);
+  const [sheet, setSheet] = useState<Sheet>("closed");
+  const [text, setText] = useState("");
+  const [photo, setPhoto] = useState<string | null>(null);
+  const [track, setTrack] = useState<Track | null>(null);
+  const [allowReplies, setAllowReplies] = useState(true);
+  const [playingId, setPlayingId] = useState<string | null>(null);
+  const [openReplies, setOpenReplies] = useState<string | null>(null);
+  const [replyDraft, setReplyDraft] = useState("");
+  const audioRef = useRef<HTMLAudioElement | null>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    setMyActivities(loadActivities());
-  }, [tab]);
+    setMe(loadIdentity());
+    setPosts(loadPosts());
+  }, []);
 
-  // Merge current user local activities into feed (top)
-  const combinedFeed = useMemo(() => {
-    const mineAsFeed: FeedItem[] = myActivities.slice(0, 5).map((a) => ({
-      ...a,
-      likes: 0,
-      comments: 0,
-      likedByMe: false,
-    }));
-    // Dedupe by id
-    const ids = new Set(mineAsFeed.map((m) => m.id));
-    const rest = feed.filter((f) => !ids.has(f.id));
-    return [...mineAsFeed, ...rest].sort((a, b) => b.timestamp - a.timestamp);
-  }, [myActivities, feed]);
+  const canPost = text.trim().length > 0 || Boolean(photo);
 
-  const toggleLike = (id: string) => {
-    setFeed((prev) =>
-      prev.map((item) => {
-        if (item.id !== id) return item;
-        const liked = !item.likedByMe;
-        return {
-          ...item,
-          likedByMe: liked,
-          likes: liked ? item.likes + 1 : Math.max(0, item.likes - 1),
-        };
-      })
-    );
+  const stopAudio = () => {
+    audioRef.current?.pause();
+    if (audioRef.current) audioRef.current.currentTime = 0;
+    setPlayingId(null);
   };
 
-  const toggleFollow = (userId: string) => {
-    setUsers((prev) =>
-      prev.map((u) =>
-        u.id === userId ? { ...u, isFollowing: !u.isFollowing } : u
-      )
-    );
+  const togglePlay = (post: Post) => {
+    if (!post.track) return;
+    if (playingId === post.id) {
+      stopAudio();
+      return;
+    }
+    if (!audioRef.current) audioRef.current = new Audio();
+    audioRef.current.src = post.track.url;
+    audioRef.current.loop = true;
+    void audioRef.current.play();
+    setPlayingId(post.id);
   };
 
-  const toggleChallenge = (id: string) => {
-    setChallenges((prev) =>
-      prev.map((c) =>
-        c.id === id
-          ? {
-              ...c,
-              joined: !c.joined,
-              participants: c.joined
-                ? Math.max(0, c.participants - 1)
-                : c.participants + 1,
-              progress: c.joined ? 0 : c.progress || 5,
-            }
-          : c
-      )
-    );
+  const publish = () => {
+    if (!canPost) return;
+    const post = createPost({
+      text,
+      photo,
+      track,
+      allowReplies,
+    });
+    setPosts(loadPosts());
+    setText("");
+    setPhoto(null);
+    setTrack(null);
+    setAllowReplies(true);
+    setSheet("closed");
+    void post;
   };
 
-  const filteredPeople = users.filter((u) => {
-    const q = peopleQuery.toLowerCase();
-    if (!q) return true;
-    return (
-      u.displayName.toLowerCase().includes(q) ||
-      u.username.toLowerCase().includes(q)
-    );
-  });
+  const like = (id: string) => {
+    const next = posts.map((p) => {
+      if (p.id !== id) return p;
+      const liked = !p.likedByMe;
+      return {
+        ...p,
+        likedByMe: liked,
+        likes: liked ? p.likes + 1 : Math.max(0, p.likes - 1),
+      };
+    });
+    setPosts(next);
+    savePosts(next);
+  };
 
-  const suggested = filteredPeople.filter((u) => !u.isFollowing);
-  const following = filteredPeople.filter((u) => u.isFollowing);
+  const sendReply = (id: string) => {
+    if (!me || !replyDraft.trim()) return;
+    const next = posts.map((p) => {
+      if (p.id !== id || !p.allowReplies) return p;
+      return {
+        ...p,
+        replies: [
+          ...p.replies,
+          {
+            id: `r_${Date.now()}`,
+            createdAt: Date.now(),
+            author: {
+              displayName: me.displayName,
+              username: me.username,
+              photo: me.photo,
+              accent: me.accent,
+            },
+            text: replyDraft.trim(),
+          },
+        ],
+      };
+    });
+    setPosts(next);
+    savePosts(next);
+    setReplyDraft("");
+  };
 
-  const filteredConversations = conversations.filter((c) => {
-    const q = messageQuery.toLowerCase();
-    if (!q) return true;
-    return (
-      c.user.displayName.toLowerCase().includes(q) ||
-      c.user.username.toLowerCase().includes(q) ||
-      c.lastMessage.toLowerCase().includes(q)
-    );
-  });
+  const onPhoto = async (file?: File) => {
+    if (!file) return;
+    setPhoto(await fileToPostPhoto(file));
+    setSheet("compose");
+  };
 
-  // ─── Conversation detail ──────────────────────────────────
-  if (activeConversation) {
-    return (
-      <main className="pt-6 pb-4 min-h-[70dvh] flex flex-col">
-        <Container className="flex-1 flex flex-col">
-          <button
-            onClick={() => setActiveConversation(null)}
-            className="text-sm text-livv-muted hover:text-white mb-4 self-start"
-          >
-            ← Messages
-          </button>
-
-          <div className="flex items-center gap-3 mb-6">
-            <div
-              className="flex h-11 w-11 items-center justify-center rounded-full text-sm font-bold text-white"
-              style={{ backgroundColor: activeConversation.user.avatarColor }}
-            >
-              {activeConversation.user.avatarInitial}
-            </div>
-            <div>
-              <p className="font-semibold">{activeConversation.user.displayName}</p>
-              <p className="text-xs text-livv-muted">
-                @{activeConversation.user.username} · Lv{" "}
-                {activeConversation.user.level}
-              </p>
-            </div>
-          </div>
-
-          <div className="flex-1 space-y-3">
-            <div className="rounded-2xl border border-livv-border bg-livv-surface p-4 max-w-[85%]">
-              <p className="text-sm text-white/90">
-                {activeConversation.lastMessage}
-              </p>
-              <p className="mt-1.5 text-[10px] text-livv-muted">
-                {formatRelativeTime(activeConversation.timestamp)}
-              </p>
-            </div>
-            <div className="rounded-2xl border border-livv-border bg-livv-accent/10 p-4 max-w-[85%] ml-auto">
-              <p className="text-sm text-white/90">
-                Appreciate you. Keep building.
-              </p>
-              <p className="mt-1.5 text-[10px] text-livv-muted text-right">
-                Just now
-              </p>
-            </div>
-          </div>
-
-          <div className="mt-4 rounded-xl border border-livv-border bg-livv-surface px-4 py-3 text-sm text-livv-muted">
-            Messaging is a frontend shell — not connected yet.
-          </div>
-        </Container>
-      </main>
-    );
-  }
+  const feed = useMemo(
+    () => [...posts].sort((a, b) => b.createdAt - a.createdAt),
+    [posts]
+  );
 
   return (
-    <main className="pt-8 pb-4">
+    <main className="pt-7 pb-8">
       <Container>
-        <div className="mb-6">
-          <h1 className="text-2xl font-bold tracking-tight">Connect</h1>
-          <p className="mt-1 text-sm text-livv-muted">
-            What are the people around you doing to evolve?
-          </p>
-        </div>
+        <header className="mb-5 flex items-center justify-between">
+          <div>
+            <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-white/35">
+              The room
+            </p>
+            <h1 className="mt-1 text-[30px] font-semibold tracking-tight">Connect</h1>
+          </div>
+          {me && <Avatar identity={me} size={36} />}
+        </header>
 
-        {/* Segmented nav */}
-        <div className="flex gap-1 rounded-xl border border-livv-border bg-livv-surface p-1 mb-6">
-          {(
-            [
-              { id: "activity", label: "Activity" },
-              { id: "people", label: "People" },
-              { id: "messages", label: "Messages" },
-              { id: "challenges", label: "Challenges" },
-            ] as { id: ConnectTab; label: string }[]
-          ).map((t) => (
-            <button
-              key={t.id}
-              onClick={() => setTab(t.id)}
-              className={cn(
-                "flex-1 rounded-lg py-2 text-xs font-medium transition-all",
-                tab === t.id
-                  ? "bg-livv-accent text-white shadow-sm"
-                  : "text-livv-muted hover:text-white"
-              )}
+        <button
+          type="button"
+          onClick={() => setSheet("compose")}
+          className="mb-5 flex w-full items-center gap-3 rounded-[22px] border border-livv-border bg-livv-surface px-4 py-3 text-left"
+        >
+          {me && <Avatar identity={me} size={36} />}
+          <span className="text-sm text-white/35">Say it, or show it.</span>
+        </button>
+
+        <div className="space-y-4">
+          {feed.map((post) => (
+            <article
+              key={post.id}
+              className="overflow-hidden rounded-[24px] border border-livv-border bg-livv-surface"
             >
-              {t.label}
-            </button>
+              <div className="flex items-center gap-3 px-4 pt-4">
+                <Avatar identity={post.author} size={38} />
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-semibold">
+                    {post.author.displayName}
+                  </p>
+                  <p className="text-[12px] text-white/35">
+                    @{post.author.username} · {formatSocialTime(post.createdAt)}
+                  </p>
+                </div>
+              </div>
+
+              {post.text && (
+                <p className="whitespace-pre-wrap px-4 pt-3 text-[16px] leading-relaxed tracking-[-0.016em]">
+                  {post.text}
+                </p>
+              )}
+
+              {post.photo && (
+                <div className="relative mt-3 bg-black">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={post.photo} alt="" className="max-h-[420px] w-full object-cover" />
+                </div>
+              )}
+
+              {post.track && (
+                <button
+                  type="button"
+                  onClick={() => togglePlay(post)}
+                  className="mx-4 mt-3 flex w-[calc(100%-2rem)] items-center gap-3 rounded-full border border-white/10 bg-black/40 px-3 py-2 text-left"
+                >
+                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-livv-accent text-xs font-semibold">
+                    {playingId === post.id ? "||" : "▶"}
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate text-[13px] font-medium">
+                      {post.track.title}
+                    </span>
+                    <span className="block truncate text-[11px] text-white/40">
+                      {post.track.artist}
+                    </span>
+                  </span>
+                </button>
+              )}
+
+              <div className="flex items-center gap-5 px-4 py-3 text-[13px]">
+                <button
+                  type="button"
+                  onClick={() => like(post.id)}
+                  className={post.likedByMe ? "font-semibold text-livv-accent" : "text-white/50"}
+                >
+                  {post.likedByMe ? "Liked" : "Like"} {post.likes}
+                </button>
+                {post.allowReplies ? (
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setOpenReplies(openReplies === post.id ? null : post.id)
+                    }
+                    className="text-white/50"
+                  >
+                    Reply {post.replies.length}
+                  </button>
+                ) : (
+                  <span className="text-white/25">Replies off</span>
+                )}
+              </div>
+
+              {openReplies === post.id && post.allowReplies && (
+                <div className="border-t border-white/5 px-4 py-3">
+                  {post.replies.map((reply) => (
+                    <div key={reply.id} className="mb-3 flex gap-2.5">
+                      <Avatar identity={reply.author} size={28} />
+                      <div>
+                        <p className="text-[12px] text-white/40">
+                          {reply.author.displayName} · {formatSocialTime(reply.createdAt)}
+                        </p>
+                        <p className="text-sm leading-snug">{reply.text}</p>
+                      </div>
+                    </div>
+                  ))}
+                  <div className="mt-2 flex gap-2">
+                    <input
+                      value={replyDraft}
+                      onChange={(e) => setReplyDraft(e.target.value)}
+                      placeholder="Reply"
+                      className="h-10 flex-1 rounded-full border border-livv-border bg-black/30 px-4 text-sm outline-none"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => sendReply(post.id)}
+                      className="h-10 rounded-full bg-white px-4 text-sm font-medium text-black"
+                    >
+                      Send
+                    </button>
+                  </div>
+                </div>
+              )}
+            </article>
           ))}
         </div>
+      </Container>
 
-        {/* ─── ACTIVITY ───────────────────────────────────── */}
-        {tab === "activity" && (
-          <div className="space-y-3 animate-fade-in">
-            {combinedFeed.map((item) => (
-              <div key={item.id}>
-                <ActivityCard activity={item} />
-                <div className="flex items-center gap-4 px-1 pt-2 pb-1">
+      <input
+        ref={fileRef}
+        type="file"
+        accept="image/*"
+        className="hidden"
+        onChange={(e) => onPhoto(e.target.files?.[0])}
+      />
+
+      {sheet !== "closed" && (
+        <div className="fixed inset-0 z-[70] flex items-end bg-black/70">
+          <div className="max-h-[92dvh] w-full overflow-y-auto rounded-t-[28px] border border-livv-border bg-[#0c0c0e] p-5 pb-8">
+            {sheet === "compose" && (
+              <>
+                <div className="mb-4 flex items-center justify-between">
+                  <button className="text-sm text-white/45" onClick={() => setSheet("closed")}>
+                    Close
+                  </button>
+                  <p className="text-sm font-semibold">New post</p>
                   <button
-                    onClick={() => toggleLike(item.id)}
                     className={cn(
-                      "text-xs transition-colors",
-                      item.likedByMe
-                        ? "text-livv-accent-soft"
-                        : "text-livv-muted hover:text-white"
+                      "text-sm font-semibold",
+                      canPost ? "text-livv-accent" : "text-white/25"
+                    )}
+                    onClick={publish}
+                    disabled={!canPost}
+                  >
+                    Post
+                  </button>
+                </div>
+
+                <textarea
+                  value={text}
+                  onChange={(e) => setText(e.target.value)}
+                  placeholder="What’s in your head."
+                  rows={5}
+                  className="w-full resize-none bg-transparent text-[20px] leading-snug outline-none placeholder:text-white/25"
+                />
+
+                {photo && (
+                  <div className="relative mt-3 overflow-hidden rounded-2xl">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={photo} alt="" className="max-h-64 w-full object-cover" />
+                    <button
+                      type="button"
+                      onClick={() => setPhoto(null)}
+                      className="absolute right-2 top-2 rounded-full bg-black/70 px-2 py-1 text-[11px]"
+                    >
+                      Remove
+                    </button>
+                  </div>
+                )}
+
+                {track && (
+                  <div className="mt-3 flex items-center justify-between rounded-full border border-white/10 px-4 py-2">
+                    <p className="text-sm">
+                      {track.title} · {track.artist}
+                    </p>
+                    <button className="text-xs text-white/40" onClick={() => setTrack(null)}>
+                      Clear
+                    </button>
+                  </div>
+                )}
+
+                <div className="mt-5 flex flex-wrap gap-2">
+                  <button
+                    type="button"
+                    onClick={() => fileRef.current?.click()}
+                    className="rounded-full border border-livv-border px-4 py-2 text-sm"
+                  >
+                    Photo
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setSheet("sound")}
+                    className="rounded-full border border-livv-border px-4 py-2 text-sm"
+                  >
+                    Sound
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setAllowReplies((v) => !v)}
+                    className={cn(
+                      "rounded-full border px-4 py-2 text-sm",
+                      allowReplies
+                        ? "border-livv-accent/40 text-livv-accent-soft"
+                        : "border-livv-border text-white/40"
                     )}
                   >
-                    {item.likedByMe ? "Liked" : "Like"} · {item.likes}
+                    {allowReplies ? "Replies on" : "Replies off"}
                   </button>
-                  <span className="text-xs text-livv-muted">
-                    {item.comments} comments
-                  </span>
                 </div>
-              </div>
-            ))}
-          </div>
-        )}
-
-        {/* ─── PEOPLE ─────────────────────────────────────── */}
-        {tab === "people" && (
-          <div className="animate-fade-in space-y-6">
-            <input
-              type="search"
-              placeholder="Search people..."
-              value={peopleQuery}
-              onChange={(e) => setPeopleQuery(e.target.value)}
-              className="w-full rounded-xl border border-livv-border bg-livv-surface px-4 py-3 text-sm text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-livv-accent/40"
-            />
-
-            {following.length > 0 && (
-              <section>
-                <p className="text-xs uppercase tracking-wider text-livv-muted mb-3">
-                  Following
-                </p>
-                <div className="space-y-2">
-                  {following.map((user) => (
-                    <PersonRow
-                      key={user.id}
-                      user={user}
-                      onToggleFollow={() => toggleFollow(user.id)}
-                    />
-                  ))}
-                </div>
-              </section>
+              </>
             )}
 
-            <section>
-              <p className="text-xs uppercase tracking-wider text-livv-muted mb-3">
-                Suggested
-              </p>
-              <div className="space-y-2">
-                {suggested.length === 0 ? (
-                  <p className="text-sm text-livv-muted py-4 text-center">
-                    No matches
-                  </p>
-                ) : (
-                  suggested.map((user) => (
-                    <PersonRow
-                      key={user.id}
-                      user={user}
-                      onToggleFollow={() => toggleFollow(user.id)}
-                    />
-                  ))
-                )}
-              </div>
-            </section>
-
-            <section>
-              <p className="text-xs uppercase tracking-wider text-livv-muted mb-3">
-                Friends · Followers
-              </p>
-              <p className="text-sm text-livv-muted leading-relaxed">
-                Friend graphs and follower lists will connect here once accounts
-                are live. For now, use Following and Suggested to explore the
-                community model.
-              </p>
-            </section>
-          </div>
-        )}
-
-        {/* ─── MESSAGES ───────────────────────────────────── */}
-        {tab === "messages" && (
-          <div className="animate-fade-in space-y-4">
-            <input
-              type="search"
-              placeholder="Search conversations..."
-              value={messageQuery}
-              onChange={(e) => setMessageQuery(e.target.value)}
-              className="w-full rounded-xl border border-livv-border bg-livv-surface px-4 py-3 text-sm text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-livv-accent/40"
-            />
-
-            <div className="space-y-1">
-              {filteredConversations.map((convo) => (
-                <button
-                  key={convo.id}
-                  onClick={() => setActiveConversation(convo)}
-                  className="w-full flex items-center gap-3 rounded-xl border border-transparent hover:border-livv-border hover:bg-livv-surface p-3 text-left transition-all"
-                >
-                  <div className="relative">
-                    <div
-                      className="flex h-12 w-12 items-center justify-center rounded-full text-sm font-bold text-white"
-                      style={{ backgroundColor: convo.user.avatarColor }}
-                    >
-                      {convo.user.avatarInitial}
-                    </div>
-                    {convo.unread > 0 && (
-                      <span className="absolute -top-0.5 -right-0.5 flex h-4 w-4 items-center justify-center rounded-full bg-livv-accent text-[9px] font-bold">
-                        {convo.unread}
-                      </span>
-                    )}
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center justify-between gap-2">
-                      <p className="text-sm font-semibold truncate">
-                        {convo.user.displayName}
-                      </p>
-                      <span className="text-[10px] text-livv-muted shrink-0">
-                        {formatRelativeTime(convo.timestamp)}
-                      </span>
-                    </div>
-                    <p
+            {sheet === "sound" && (
+              <>
+                <div className="mb-4 flex items-center justify-between">
+                  <button className="text-sm text-white/45" onClick={() => setSheet("compose")}>
+                    Back
+                  </button>
+                  <p className="text-sm font-semibold">LIVV Sound</p>
+                  <span className="w-10" />
+                </div>
+                <div className="space-y-2">
+                  {SOUND_LIBRARY.map((item) => (
+                    <button
+                      key={item.id}
+                      type="button"
+                      onClick={() => {
+                        setTrack(item);
+                        setSheet("compose");
+                      }}
                       className={cn(
-                        "text-xs truncate mt-0.5",
-                        convo.unread > 0 ? "text-white/80" : "text-livv-muted"
+                        "flex w-full items-center justify-between rounded-2xl border px-4 py-3 text-left",
+                        track?.id === item.id
+                          ? "border-livv-accent bg-livv-accent/10"
+                          : "border-livv-border bg-livv-surface"
                       )}
                     >
-                      {convo.lastMessage}
-                    </p>
-                  </div>
-                </button>
-              ))}
-            </div>
-
-            <p className="text-center text-[11px] text-white/25 pt-2">
-              Messages are a UX shell only — no real-time backend yet.
-            </p>
+                      <span>
+                        <span className="block text-sm font-medium">{item.title}</span>
+                        <span className="block text-xs text-white/40">{item.artist}</span>
+                      </span>
+                      <span className="text-xs text-white/35">Use</span>
+                    </button>
+                  ))}
+                </div>
+                <p className="mt-4 text-[11px] leading-relaxed text-white/30">
+                  This is LIVV’s own library, stored on the post the same way a track chip is stored
+                  on IG. Licensed catalogs come later.
+                </p>
+              </>
+            )}
           </div>
-        )}
-
-        {/* ─── CHALLENGES ─────────────────────────────────── */}
-        {tab === "challenges" && (
-          <div className="animate-fade-in space-y-3">
-            {challenges.map((ch) => (
-              <div
-                key={ch.id}
-                className="rounded-2xl border border-livv-border bg-livv-surface p-5"
-              >
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <p className="font-semibold">{ch.name}</p>
-                    <p className="mt-1 text-sm text-livv-muted leading-relaxed">
-                      {ch.description}
-                    </p>
-                  </div>
-                </div>
-
-                <div className="mt-3 flex flex-wrap gap-2 text-[11px]">
-                  <span className="rounded-full bg-livv-black/60 px-2.5 py-1 text-livv-muted">
-                    {ch.pillar}
-                  </span>
-                  <span className="rounded-full bg-livv-black/60 px-2.5 py-1 text-livv-muted">
-                    {ch.duration}
-                  </span>
-                  <span className="rounded-full bg-livv-black/60 px-2.5 py-1 text-livv-muted">
-                    {ch.participants.toLocaleString()} joined
-                  </span>
-                </div>
-
-                {ch.joined && (
-                  <div className="mt-4">
-                    <div className="flex justify-between text-[11px] text-livv-muted mb-1">
-                      <span>Your progress</span>
-                      <span>{ch.progress}%</span>
-                    </div>
-                    <div className="h-1.5 rounded-full bg-livv-black overflow-hidden">
-                      <div
-                        className="h-full bg-livv-accent"
-                        style={{ width: `${ch.progress}%` }}
-                      />
-                    </div>
-                  </div>
-                )}
-
-                <div className="mt-4">
-                  <Button
-                    variant={ch.joined ? "secondary" : "accent"}
-                    size="sm"
-                    className="w-full"
-                    onClick={() => toggleChallenge(ch.id)}
-                  >
-                    {ch.joined ? "Leave Challenge" : "Join Challenge"}
-                  </Button>
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
-      </Container>
+        </div>
+      )}
     </main>
-  );
-}
-
-function PersonRow({
-  user,
-  onToggleFollow,
-}: {
-  user: ConnectUser;
-  onToggleFollow: () => void;
-}) {
-  return (
-    <div className="flex items-center gap-3 rounded-xl border border-livv-border bg-livv-surface p-3">
-      <div
-        className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-sm font-bold text-white"
-        style={{ backgroundColor: user.avatarColor }}
-      >
-        {user.avatarInitial}
-      </div>
-      <div className="min-w-0 flex-1">
-        <p className="text-sm font-semibold truncate">{user.displayName}</p>
-        <p className="text-xs text-livv-muted truncate">
-          @{user.username} · Lv {user.level} · {user.streak}d streak
-        </p>
-      </div>
-      <Button
-        variant={user.isFollowing ? "secondary" : "accent"}
-        size="sm"
-        onClick={onToggleFollow}
-      >
-        {user.isFollowing ? "Following" : "Follow"}
-      </Button>
-    </div>
   );
 }
