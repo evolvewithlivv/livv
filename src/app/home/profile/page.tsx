@@ -1,13 +1,13 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import Link from "next/link";
 import { Container } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
 import { Avatar } from "@/components/identity/avatar";
 import { ActivityCard } from "@/components/activity/activity-card";
 import { cn } from "@/lib/utils";
 import {
-  ACCENTS,
   fileToPhoto,
   loadIdentity,
   patchIdentity,
@@ -56,7 +56,6 @@ export default function ProfilePage() {
       displayName: draft.displayName.trim() || me.displayName,
       username: draft.username.trim().replace(/^@/, "") || me.username,
       bio: draft.bio.trim(),
-      accent: draft.accent,
       photo: draft.photo,
     });
     setMe(next);
@@ -102,11 +101,11 @@ export default function ProfilePage() {
                 value={draft.displayName}
                 onChange={(e) => setDraft({ ...draft, displayName: e.target.value })}
                 maxLength={32}
-                className="field"
+                className="mt-2 w-full rounded-2xl border border-livv-border bg-livv-surface px-4 py-3.5 text-white outline-none"
               />
             </Field>
             <Field label="Username">
-              <div className="flex items-center overflow-hidden rounded-2xl border border-livv-border bg-livv-surface">
+              <div className="mt-2 flex items-center overflow-hidden rounded-2xl border border-livv-border bg-livv-surface">
                 <span className="pl-4 text-white/35">@</span>
                 <input
                   value={draft.username}
@@ -127,42 +126,14 @@ export default function ProfilePage() {
                 onChange={(e) => setDraft({ ...draft, bio: e.target.value })}
                 maxLength={160}
                 rows={3}
-                className="field resize-none"
+                className="mt-2 w-full resize-none rounded-2xl border border-livv-border bg-livv-surface px-4 py-3.5 text-white outline-none"
               />
             </Field>
-            <div>
-              <p className="mb-2 text-[11px] uppercase tracking-[0.2em] text-white/35">Accent</p>
-              <div className="flex gap-2">
-                {ACCENTS.map((color) => (
-                  <button
-                    key={color}
-                    onClick={() => setDraft({ ...draft, accent: color })}
-                    className={cn(
-                      "h-8 w-8 rounded-full",
-                      draft.accent === color && "ring-2 ring-white ring-offset-2 ring-offset-black"
-                    )}
-                    style={{ backgroundColor: color }}
-                  />
-                ))}
-              </div>
-            </div>
           </div>
 
           <Button variant="accent" size="lg" className="mt-10 w-full" onClick={saveEdit}>
             Save identity
           </Button>
-          <style jsx>{`
-            .field {
-              margin-top: 8px;
-              width: 100%;
-              border-radius: 16px;
-              border: 1px solid #222226;
-              background: #121214;
-              padding: 14px 16px;
-              color: white;
-              outline: none;
-            }
-          `}</style>
         </Container>
       </main>
     );
@@ -171,6 +142,12 @@ export default function ProfilePage() {
   return (
     <main className="pt-8 pb-10">
       <Container>
+        <div className="mb-2 flex justify-end">
+          <Link href="/home/settings" className="text-sm text-white/45">
+            Settings
+          </Link>
+        </div>
+
         <div className="mb-8 flex flex-col items-center text-center">
           <button type="button" onClick={() => fileRef.current?.click()} className="relative">
             <Avatar identity={me} size={108} />
@@ -211,14 +188,10 @@ export default function ProfilePage() {
         </div>
 
         <section id="membership" className="mb-8 scroll-mt-6">
-          <div className="mb-3 flex items-end justify-between">
-            <div>
-              <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-white/35">
-                Membership
-              </p>
-              <p className="mt-1 text-[20px] font-semibold tracking-tight">Pick the altitude</p>
-            </div>
-          </div>
+          <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-white/35">
+            Membership
+          </p>
+          <p className="mt-1 mb-3 text-[20px] font-semibold tracking-tight">Pick the altitude</p>
 
           <div className="space-y-3">
             {TIERS.map((t) => {
@@ -368,26 +341,10 @@ export default function ProfilePage() {
 
         {tab === "vault" && (
           <div className="space-y-3">
-            <VaultRow
-              title="This week’s training planner"
-              meta="PDF · Rise"
-              locked={!hasTier(me.tier, "rise")}
-            />
-            <VaultRow
-              title="Meal architecture"
-              meta="Personalized · Apex"
-              locked={!hasTier(me.tier, "apex")}
-            />
-            <VaultRow
-              title="Monthly review pack"
-              meta="Printable · Apex"
-              locked={!hasTier(me.tier, "apex")}
-            />
-            <VaultRow
-              title="Gear allotment"
-              meta={`${me.embers} Embers banked · Inner Circle`}
-              locked={!hasTier(me.tier, "circle")}
-            />
+            <VaultRow title="This week’s training planner" meta="PDF · Rise" locked={!hasTier(me.tier, "rise")} />
+            <VaultRow title="Meal architecture" meta="Personalized · Apex" locked={!hasTier(me.tier, "apex")} />
+            <VaultRow title="Monthly review pack" meta="Printable · Apex" locked={!hasTier(me.tier, "apex")} />
+            <VaultRow title="Gear allotment" meta={`${me.embers} Embers banked · Inner Circle`} locked={!hasTier(me.tier, "circle")} />
           </div>
         )}
       </Container>
@@ -428,7 +385,7 @@ function Field({
   return (
     <label className="block">
       <span className="text-[11px] uppercase tracking-[0.2em] text-white/35">{label}</span>
-      <div className="mt-2">{children}</div>
+      <div>{children}</div>
     </label>
   );
 }
