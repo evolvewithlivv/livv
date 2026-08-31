@@ -55,9 +55,8 @@ export default function OnboardingPage() {
   };
 
   return (
-    <main className="min-h-dvh bg-livv-black flex flex-col">
-      {/* Progress */}
-      <div className="px-5 pt-6 pb-2">
+    <main className="flex min-h-dvh flex-col bg-livv-black">
+      <div className="px-5 pb-2 pt-6">
         <div className="flex gap-1.5">
           {(["why", "goals", "interests", "profile"] as Step[]).map((s, i) => (
             <div
@@ -73,31 +72,31 @@ export default function OnboardingPage() {
         </div>
       </div>
 
-      <div className="flex-1 flex flex-col px-5 pt-8 pb-8 max-w-lg mx-auto w-full">
+      <div className="mx-auto flex w-full max-w-lg flex-1 flex-col px-5 pb-8 pt-8">
         {step === "why" && (
-          <div className="animate-fade-in flex-1 flex flex-col">
-            <h1 className="text-2xl font-bold tracking-tight">
+          <div className="flex flex-1 animate-fade-in flex-col">
+            <h1 className="font-display text-[2.15rem] leading-tight">
               Why are you here?
             </h1>
-            <p className="mt-2 text-livv-muted text-sm leading-relaxed">
+            <p className="mt-3 text-sm leading-relaxed text-white/45">
               One sentence is enough. This helps LIVV understand your direction.
             </p>
             <textarea
               value={why}
               onChange={(e) => setWhy(e.target.value)}
               placeholder="I want to become more disciplined and consistent..."
-              className="mt-8 w-full flex-1 min-h-[140px] rounded-2xl border border-livv-border bg-livv-surface px-4 py-3 text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-livv-accent/40 resize-none text-base"
+              className="mt-8 min-h-[140px] w-full flex-1 resize-none rounded-2xl border border-livv-border bg-livv-surface px-4 py-3 text-base text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-livv-accent/40"
               maxLength={200}
             />
           </div>
         )}
 
         {step === "goals" && (
-          <div className="animate-fade-in flex-1 flex flex-col">
-            <h1 className="text-2xl font-bold tracking-tight">
+          <div className="flex flex-1 animate-fade-in flex-col">
+            <h1 className="font-display text-[2.15rem] leading-tight">
               What do you want to accomplish?
             </h1>
-            <p className="mt-2 text-livv-muted text-sm">
+            <p className="mt-3 text-sm text-white/45">
               Select everything that resonates.
             </p>
             <div className="mt-8 space-y-3">
@@ -106,7 +105,7 @@ export default function OnboardingPage() {
                   key={goal.id}
                   onClick={() => toggleGoal(goal.id)}
                   className={cn(
-                    "w-full text-left rounded-2xl border px-4 py-4 transition-all duration-200",
+                    "w-full rounded-2xl border px-4 py-4 text-left transition-all duration-200",
                     selectedGoals.includes(goal.id)
                       ? "border-livv-accent bg-livv-accent/10 text-white"
                       : "border-livv-border bg-livv-surface text-white/80 hover:border-white/20"
@@ -120,11 +119,11 @@ export default function OnboardingPage() {
         )}
 
         {step === "interests" && (
-          <div className="animate-fade-in flex-1 flex flex-col">
-            <h1 className="text-2xl font-bold tracking-tight">
+          <div className="flex flex-1 animate-fade-in flex-col">
+            <h1 className="font-display text-[2.15rem] leading-tight">
               What are you into?
             </h1>
-            <p className="mt-2 text-livv-muted text-sm">
+            <p className="mt-3 text-sm text-white/45">
               Pick the areas that excite you.
             </p>
             <div className="mt-8 flex flex-wrap gap-2.5">
@@ -147,15 +146,15 @@ export default function OnboardingPage() {
         )}
 
         {step === "profile" && (
-          <div className="animate-fade-in flex-1 flex flex-col">
-            <h1 className="text-2xl font-bold tracking-tight">
+          <div className="flex flex-1 animate-fade-in flex-col">
+            <h1 className="font-display text-[2.15rem] leading-tight">
               Create your LIVV identity
             </h1>
-            <p className="mt-2 text-livv-muted text-sm">
+            <p className="mt-3 text-sm text-white/45">
               Just a display name for now. You can refine everything later.
             </p>
             <div className="mt-10">
-              <label className="text-xs text-livv-muted uppercase tracking-wider">
+              <label className="text-[11px] uppercase tracking-[0.22em] text-livv-muted">
                 Display name
               </label>
               <input
@@ -163,14 +162,13 @@ export default function OnboardingPage() {
                 value={displayName}
                 onChange={(e) => setDisplayName(e.target.value)}
                 placeholder="How should people know you?"
-                className="mt-2 w-full rounded-2xl border border-livv-border bg-livv-surface px-4 py-3.5 text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-livv-accent/40 text-base"
+                className="mt-2 w-full rounded-2xl border border-livv-border bg-livv-surface px-4 py-3.5 text-base text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-livv-accent/40"
                 maxLength={32}
               />
             </div>
           </div>
         )}
 
-        {/* Actions */}
         <div className="mt-10 flex gap-3">
           {step !== "why" && (
             <Button

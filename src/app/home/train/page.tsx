@@ -50,7 +50,6 @@ export default function TrainPage() {
     if (workout && currentIndex < workout.exercises.length - 1) {
       setCurrentIndex((i) => i + 1);
     } else {
-      // Log activity once when session finishes
       if (workout && !activityLogged) {
         activityFromWorkout({
           workoutName: workout.name,
@@ -77,18 +76,20 @@ export default function TrainPage() {
     setActivityLogged(false);
   };
 
-  // ─── SELECT ───────────────────────────────────────────────
   if (phase === "select") {
     return (
       <main className="pt-8 pb-4">
         <Container>
-          <h1 className="text-2xl font-bold tracking-tight">Train</h1>
-          <p className="mt-1 text-sm text-livv-muted">
+          <p className="text-[11px] font-medium uppercase tracking-[0.28em] text-livv-muted">
+            Body
+          </p>
+          <h1 className="mt-2 font-display text-[2.4rem] leading-none">Train</h1>
+          <p className="mt-3 text-sm leading-relaxed text-white/45">
             Build a session that fits your day.
           </p>
 
           <section className="mt-8">
-            <p className="text-xs uppercase tracking-wider text-livv-muted mb-3">
+            <p className="mb-3 text-[11px] uppercase tracking-[0.22em] text-livv-muted">
               Focus
             </p>
             <div className="grid grid-cols-2 gap-2">
@@ -97,7 +98,7 @@ export default function TrainPage() {
                   key={opt}
                   onClick={() => setFocus(opt)}
                   className={cn(
-                    "rounded-xl border px-3 py-3 text-sm text-left transition-all",
+                    "rounded-2xl border px-3 py-3 text-left text-sm transition-all",
                     focus === opt
                       ? "border-livv-accent bg-livv-accent/15 text-white"
                       : "border-livv-border bg-livv-surface text-white/70 hover:border-white/20"
@@ -110,7 +111,7 @@ export default function TrainPage() {
           </section>
 
           <section className="mt-7">
-            <p className="text-xs uppercase tracking-wider text-livv-muted mb-3">
+            <p className="mb-3 text-[11px] uppercase tracking-[0.22em] text-livv-muted">
               Location
             </p>
             <div className="flex gap-2">
@@ -119,7 +120,7 @@ export default function TrainPage() {
                   key={opt}
                   onClick={() => setLocation(opt)}
                   className={cn(
-                    "flex-1 rounded-xl border py-3 text-sm transition-all",
+                    "flex-1 rounded-2xl border py-3 text-sm transition-all",
                     location === opt
                       ? "border-livv-accent bg-livv-accent/15 text-white"
                       : "border-livv-border bg-livv-surface text-white/70 hover:border-white/20"
@@ -132,7 +133,7 @@ export default function TrainPage() {
           </section>
 
           <section className="mt-7">
-            <p className="text-xs uppercase tracking-wider text-livv-muted mb-3">
+            <p className="mb-3 text-[11px] uppercase tracking-[0.22em] text-livv-muted">
               Duration
             </p>
             <div className="flex flex-wrap gap-2">
@@ -169,59 +170,52 @@ export default function TrainPage() {
     );
   }
 
-  // ─── PREVIEW ──────────────────────────────────────────────
   if (phase === "preview" && workout) {
     return (
       <main className="pt-8 pb-4">
         <Container>
           <button
             onClick={() => setPhase("select")}
-            className="text-sm text-livv-muted hover:text-white mb-6"
+            className="mb-6 text-sm text-livv-muted hover:text-white"
           >
             ← Change selections
           </button>
 
-          <div className="rounded-2xl border border-livv-border bg-livv-surface p-5">
-            <h1 className="text-xl font-bold tracking-tight">{workout.name}</h1>
+          <div className="rounded-3xl border border-livv-border bg-livv-surface p-5">
+            <h1 className="font-display text-3xl leading-tight tracking-tight">{workout.name}</h1>
             <div className="mt-3 flex flex-wrap gap-2 text-xs">
-              <span className="rounded-full bg-livv-black/60 px-2.5 py-1 text-livv-muted">
+              <span className="rounded-full bg-black/50 px-2.5 py-1 text-livv-muted">
                 {workout.duration}
               </span>
-              <span className="rounded-full bg-livv-black/60 px-2.5 py-1 text-livv-muted">
+              <span className="rounded-full bg-black/50 px-2.5 py-1 text-livv-muted">
                 {workout.difficulty}
               </span>
-              <span className="rounded-full bg-livv-black/60 px-2.5 py-1 text-livv-muted">
+              <span className="rounded-full bg-black/50 px-2.5 py-1 text-livv-muted">
                 {workout.location}
               </span>
-              <span className="rounded-full bg-livv-black/60 px-2.5 py-1 text-livv-muted">
+              <span className="rounded-full bg-black/50 px-2.5 py-1 text-livv-muted">
                 {workout.focus}
               </span>
             </div>
           </div>
 
           <div className="mt-6 space-y-3">
-            <p className="text-xs uppercase tracking-wider text-livv-muted">
+            <p className="text-[11px] uppercase tracking-[0.22em] text-livv-muted">
               Exercises
             </p>
             {workout.exercises.map((ex, i) => (
               <div
                 key={ex.id}
-                className="rounded-xl border border-livv-border bg-livv-surface p-4"
+                className="rounded-2xl border border-livv-border bg-livv-surface p-4"
               >
-                <div className="flex items-start justify-between gap-3">
-                  <div>
-                    <p className="text-xs text-livv-muted mb-0.5">
-                      {i + 1}. Exercise
-                    </p>
-                    <p className="font-medium">{ex.name}</p>
-                    <p className="mt-1 text-sm text-livv-muted">
-                      {ex.sets && `${ex.sets} sets`}
-                      {ex.reps && ` · ${ex.reps} reps`}
-                      {ex.duration && ` · ${ex.duration}`}
-                      {` · Rest ${ex.rest}`}
-                    </p>
-                  </div>
-                </div>
+                <p className="mb-0.5 text-xs text-livv-muted">{i + 1}. Exercise</p>
+                <p className="font-medium">{ex.name}</p>
+                <p className="mt-1 text-sm text-livv-muted">
+                  {ex.sets && `${ex.sets} sets`}
+                  {ex.reps && ` · ${ex.reps} reps`}
+                  {ex.duration && ` · ${ex.duration}`}
+                  {` · Rest ${ex.rest}`}
+                </p>
               </div>
             ))}
           </div>
@@ -236,22 +230,21 @@ export default function TrainPage() {
     );
   }
 
-  // ─── SESSION ──────────────────────────────────────────────
   if (phase === "session" && workout) {
     const current = workout.exercises[currentIndex];
     const progress = (currentIndex / workout.exercises.length) * 100;
 
     return (
-      <main className="pt-6 pb-4 min-h-[70dvh] flex flex-col">
-        <Container className="flex-1 flex flex-col">
+      <main className="flex min-h-[70dvh] flex-col pt-6 pb-4">
+        <Container className="flex flex-1 flex-col">
           <div className="mb-6">
-            <div className="flex justify-between text-xs text-livv-muted mb-2">
+            <div className="mb-2 flex justify-between text-xs text-livv-muted">
               <span>
                 Exercise {currentIndex + 1} of {workout.exercises.length}
               </span>
               <span>{Math.round(progress)}%</span>
             </div>
-            <div className="h-1.5 rounded-full bg-livv-border overflow-hidden">
+            <div className="h-1.5 overflow-hidden rounded-full bg-livv-border">
               <div
                 className="h-full bg-livv-accent transition-all duration-300"
                 style={{ width: `${progress}%` }}
@@ -259,15 +252,15 @@ export default function TrainPage() {
             </div>
           </div>
 
-          <div className="flex-1 flex flex-col justify-center">
+          <div className="flex flex-1 flex-col justify-center">
             <div className="rounded-3xl border border-livv-border bg-livv-surface p-6 text-center">
-              <p className="text-xs uppercase tracking-wider text-livv-muted">
+              <p className="text-[11px] uppercase tracking-[0.22em] text-livv-muted">
                 Current
               </p>
-              <h2 className="mt-3 text-2xl font-bold tracking-tight">
+              <h2 className="mt-3 font-display text-3xl leading-tight">
                 {current.name}
               </h2>
-              <p className="mt-4 text-livv-accent-soft text-lg">
+              <p className="mt-4 text-lg text-livv-accent-soft">
                 {current.sets && `${current.sets} sets`}
                 {current.reps && ` · ${current.reps}`}
                 {current.duration && ` · ${current.duration}`}
@@ -296,23 +289,19 @@ export default function TrainPage() {
     );
   }
 
-  // ─── COMPLETE ─────────────────────────────────────────────
   return (
     <main className="pt-8 pb-4">
       <Container>
-        <div className="text-center pt-10">
+        <div className="pt-10 text-center">
           <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full border border-livv-accent/40 bg-livv-accent/10">
             <span className="text-2xl">✓</span>
           </div>
-          <h1 className="text-2xl font-bold tracking-tight">Session Complete</h1>
-          <p className="mt-2 text-livv-muted text-sm">
+          <h1 className="font-display text-4xl leading-none">Session Complete</h1>
+          <p className="mt-3 text-sm text-livv-muted">
             {workout?.name} · {completedExercises.length} exercises
           </p>
           <p className="mt-3 text-xs text-livv-accent-soft">
             Activity logged to your profile
-          </p>
-          <p className="mt-4 text-xs text-white/40">
-            Progress is local only for now. Nothing is permanently saved yet.
           </p>
 
           <div className="mt-10 space-y-3">

@@ -9,11 +9,19 @@
   }
 
   body {
-    @apply bg-livv-black text-white antialiased;
+    @apply bg-livv-black text-white antialiased font-sans;
     min-height: 100dvh;
+    letter-spacing: -0.011em;
   }
 
-  /* Smooth scrolling and selection */
+  h1,
+  h2,
+  .font-display {
+    font-family: var(--font-display), Georgia, serif;
+    letter-spacing: -0.02em;
+    font-weight: 400;
+  }
+
   ::selection {
     @apply bg-livv-accent/40 text-white;
   }

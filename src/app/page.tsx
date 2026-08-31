@@ -2,6 +2,9 @@
 
 import { useRouter } from "next/navigation";
 
+const LOGO =
+  "https://raw.githubusercontent.com/evolvewithlivv/livv/main/Photoroom_20260831_123254.png";
+
 export default function OpeningPage() {
   const router = useRouter();
 
@@ -10,25 +13,25 @@ export default function OpeningPage() {
       <div aria-hidden className="opening-atmosphere pointer-events-none absolute inset-0" />
       <div aria-hidden className="opening-veil pointer-events-none absolute inset-0" />
 
-      <div className="relative z-10 flex min-h-dvh flex-col items-center justify-center px-6 pb-[max(2.5rem,env(safe-area-inset-top))]">
+      <div className="relative z-10 flex min-h-dvh flex-col items-center justify-center px-6 pb-[max(2.5rem,env(safe-area-inset-bottom))] pt-[max(2.5rem,env(safe-area-inset-top))]">
         <div className="flex w-full max-w-md flex-col items-center text-center sm:max-w-lg">
           <div className="opening-wordmark select-none">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="https://raw.githubusercontent.com/evolvewithlivv/livv/main/Photoroom_20260831_123254.png"
+              src={LOGO}
               alt="LIVV"
-              width={180}
-              height={180}
-              className="h-[clamp(6rem,26vw,10rem)] w-[clamp(6rem,26vw,10rem)] object-contain"
+              width={360}
+              height={360}
+              className="h-[clamp(12rem,52vw,20rem)] w-[clamp(12rem,52vw,20rem)] object-contain"
               draggable={false}
             />
           </div>
 
-          <p className="opening-line mt-10 text-[11px] font-medium uppercase tracking-[0.42em] text-white/55 sm:text-xs sm:tracking-[0.48em]">
+          <p className="opening-line mt-8 font-sans text-[11px] font-medium uppercase tracking-[0.42em] text-white/55 sm:text-xs sm:tracking-[0.48em]">
             Evolve with LIVV
           </p>
 
-          <p className="opening-sub mt-4 max-w-[16rem] text-sm font-normal leading-relaxed tracking-wide text-white/35 sm:max-w-xs sm:text-[0.9375rem]">
+          <p className="opening-sub mt-4 max-w-[17rem] font-display text-[1.35rem] leading-snug text-white/70 sm:max-w-xs sm:text-[1.5rem]">
             Your evolution starts here.
           </p>
 
@@ -36,7 +39,7 @@ export default function OpeningPage() {
             <button
               type="button"
               onClick={() => router.push("/onboarding")}
-              className="opening-enter group relative inline-flex h-14 w-full items-center justify-center gap-3 rounded-full border border-white/[0.12] bg-white/[0.04] px-10 text-[13px] font-medium uppercase tracking-[0.28em] text-white transition-all duration-300 ease-out hover:border-white/25 hover:bg-white/[0.08] active:scale-[0.985] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white/40 focus-visible:ring-offset-2 focus-visible:ring-offset-[#050505] sm:h-12 sm:w-auto sm:min-w-[14rem]"
+              className="opening-enter group relative inline-flex h-14 w-full items-center justify-center gap-3 rounded-full border border-white/[0.12] bg-white/[0.04] px-10 font-sans text-[13px] font-medium uppercase tracking-[0.28em] text-white transition-all duration-300 ease-out hover:border-livv-accent/50 hover:bg-livv-accent/10 active:scale-[0.985] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-livv-accent/40 focus-visible:ring-offset-2 focus-visible:ring-offset-[#050505] sm:h-12 sm:w-auto sm:min-w-[14rem]"
             >
               <span>Enter LIVV</span>
               <span
@@ -55,12 +58,12 @@ export default function OpeningPage() {
           background:
             radial-gradient(
               ellipse 90% 55% at 50% -15%,
-              rgba(255, 255, 255, 0.045),
+              rgba(255, 106, 26, 0.12),
               transparent 55%
             ),
             radial-gradient(
               ellipse 50% 40% at 50% 110%,
-              rgba(124, 92, 255, 0.04),
+              rgba(255, 106, 26, 0.06),
               transparent 50%
             );
           opacity: 0;

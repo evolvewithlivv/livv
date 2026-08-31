@@ -1,110 +1,138 @@
 import Link from "next/link";
 import { Container } from "@/components/ui/container";
 
+const LOGO =
+  "https://raw.githubusercontent.com/evolvewithlivv/livv/main/Photoroom_20260831_123254.png";
+
 const AREAS = [
   {
     href: "/home/train",
+    kicker: "Body",
     title: "Train",
-    description: "Workouts, programs, and physical performance",
-    accent: "from-cyan-500/20 to-transparent",
+    description: "Build the session. Do the work.",
   },
   {
     href: "/home/evolve",
+    kicker: "Mind",
     title: "Evolve",
-    description: "Mindset, habits, and identity work",
-    accent: "from-violet-500/20 to-transparent",
+    description: "Habits, identity, daily objectives.",
   },
   {
     href: "/home/connect",
+    kicker: "People",
     title: "Connect",
-    description: "Community and real relationships",
-    accent: "from-fuchsia-500/15 to-transparent",
+    description: "See who else is putting in reps.",
   },
   {
     href: "/home/progress",
+    kicker: "Proof",
     title: "Progress",
-    description: "Track growth across every dimension",
-    accent: "from-emerald-500/15 to-transparent",
+    description: "The scoreboard for all of it.",
   },
 ];
 
+function greeting() {
+  const hour = new Date().getHours();
+  if (hour < 12) return "Good morning";
+  if (hour < 18) return "Good afternoon";
+  return "Good evening";
+}
+
 export default function HomePage() {
+  const today = new Date().toLocaleDateString("en-US", {
+    weekday: "long",
+    month: "long",
+    day: "numeric",
+  });
+
   return (
-    <main className="pt-8 pb-4">
-      <Container>
-        {/* Header */}
-        <div className="flex items-center justify-between mb-10">
-          <div>
-            <p className="text-xs text-livv-muted tracking-wider uppercase">
-              Welcome to
-            </p>
-            <h1 className="text-2xl font-bold tracking-tight mt-0.5">LIVV</h1>
+    <main className="relative overflow-hidden pt-6 pb-6">
+      <div
+        aria-hidden
+        className="pointer-events-none absolute inset-x-0 top-0 h-64 bg-livv-gradient"
+      />
+      <Container className="relative">
+        <div className="mb-8 flex items-center justify-between">
+          <div className="flex items-center gap-2.5">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={LOGO}
+              alt=""
+              width={36}
+              height={36}
+              className="h-9 w-9 object-contain"
+            />
+            <span className="font-display text-xl leading-none tracking-tight">
+              LIVV
+            </span>
           </div>
           <Link
             href="/home/profile"
             className="flex h-10 w-10 items-center justify-center rounded-full border border-livv-border bg-livv-surface text-sm font-medium text-white/80"
           >
-            P
+            Y
           </Link>
         </div>
 
-        {/* Hero statement */}
-        <div className="relative overflow-hidden rounded-3xl border border-livv-border bg-livv-surface p-6 mb-8">
-          <div className="absolute inset-0 bg-gradient-to-br from-livv-accent/10 to-transparent" />
-          <div className="relative">
-            <p className="text-lg font-medium leading-snug text-white">
-              Your evolution starts here.
-            </p>
-            <p className="mt-2 text-sm text-livv-muted leading-relaxed">
-              Train your body. Evolve your mind. Connect with purpose. Track everything that matters.
-            </p>
+        <p className="text-[11px] font-medium uppercase tracking-[0.28em] text-livv-muted">
+          {today}
+        </p>
+        <h1 className="mt-2 max-w-[14ch] font-display text-[2.35rem] leading-[1.05] text-white">
+          {greeting()}.
+          <br />
+          Keep going.
+        </h1>
+        <p className="mt-3 max-w-xs text-sm leading-relaxed text-white/45">
+          Four rooms. One direction. Show up in at least one of them today.
+        </p>
+
+        <div className="mt-8 overflow-hidden rounded-3xl border border-livv-border bg-livv-surface p-5">
+          <p className="text-[11px] font-medium uppercase tracking-[0.28em] text-livv-accent-soft">
+            Today
+          </p>
+          <p className="mt-2 font-display text-2xl leading-tight">
+            Train once. Check one objective.
+          </p>
+          <p className="mt-2 text-sm leading-relaxed text-white/45">
+            That is a complete day. Everything else is extra.
+          </p>
+          <div className="mt-5 flex gap-2">
+            <Link
+              href="/home/train"
+              className="inline-flex h-10 items-center rounded-full bg-livv-accent px-4 text-xs font-medium uppercase tracking-[0.18em] text-white"
+            >
+              Start training
+            </Link>
+            <Link
+              href="/home/evolve"
+              className="inline-flex h-10 items-center rounded-full border border-livv-border px-4 text-xs font-medium uppercase tracking-[0.18em] text-white/70"
+            >
+              Objectives
+            </Link>
           </div>
         </div>
 
-        {/* Primary areas */}
-        <div className="space-y-3">
-          <p className="text-xs text-livv-muted tracking-wider uppercase mb-3">
-            Explore
-          </p>
+        <div className="mt-8 space-y-2.5">
           {AREAS.map((area) => (
             <Link
               key={area.href}
               href={area.href}
-              className="group relative block overflow-hidden rounded-2xl border border-livv-border bg-livv-surface p-5 transition-all duration-200 hover:border-white/15 active:scale-[0.99]"
+              className="group flex items-center justify-between rounded-2xl border border-livv-border bg-livv-surface/80 px-5 py-4 transition-all duration-200 hover:border-white/16 active:scale-[0.99]"
             >
-              <div
-                className={`absolute inset-0 bg-gradient-to-r ${area.accent} opacity-0 group-hover:opacity-100 transition-opacity`}
-              />
-              <div className="relative flex items-center justify-between">
-                <div>
-                  <h2 className="font-semibold text-white">{area.title}</h2>
-                  <p className="mt-1 text-sm text-livv-muted">
-                    {area.description}
-                  </p>
-                </div>
-                <span className="text-white/30 group-hover:text-white/60 transition-colors">
-                  →
-                </span>
+              <div>
+                <p className="text-[10px] font-medium uppercase tracking-[0.26em] text-livv-muted">
+                  {area.kicker}
+                </p>
+                <h2 className="mt-1 font-display text-[1.65rem] leading-none text-white">
+                  {area.title}
+                </h2>
+                <p className="mt-1.5 text-sm text-white/40">{area.description}</p>
               </div>
+              <span className="text-white/25 transition-colors group-hover:text-livv-accent">
+                →
+              </span>
             </Link>
           ))}
-        </div>
-
-        {/* LIVV+ teaser */}
-        <div className="mt-8 rounded-2xl border border-livv-accent/30 bg-livv-accent/5 p-5">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-semibold text-livv-accent-soft">
-                LIVV+
-              </p>
-              <p className="mt-1 text-xs text-livv-muted">
-                Premium tools, products & experiences
-              </p>
-            </div>
-            <span className="text-xs text-livv-muted border border-livv-border rounded-full px-2.5 py-1">
-              Soon
-            </span>
-          </div>
         </div>
       </Container>
     </main>

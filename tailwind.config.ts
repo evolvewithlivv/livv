@@ -12,28 +12,29 @@ const config: Config = {
         livv: {
           black: "#050505",
           dark: "#0a0a0b",
-          surface: "#111113",
-          border: "#1c1c1f",
-          muted: "#8b8b93",
-          accent: "#7c5cff",
-          "accent-soft": "#a78bfa",
-          glow: "#6366f1",
-          energy: "#22d3ee",
+          surface: "#121214",
+          border: "#222226",
+          muted: "#8a8a92",
+          accent: "#FF6A1A",
+          "accent-soft": "#FFB088",
+          glow: "#FF8A3D",
+          energy: "#FFC46B",
         },
       },
       fontFamily: {
         sans: [
-          "var(--font-geist-sans)",
+          "var(--font-outfit)",
           "system-ui",
           "-apple-system",
           "sans-serif",
         ],
+        display: ["var(--font-display)", "Georgia", "serif"],
       },
       backgroundImage: {
         "livv-gradient":
-          "radial-gradient(ellipse 80% 50% at 50% -20%, rgba(124, 92, 255, 0.25), transparent)",
+          "radial-gradient(ellipse 80% 50% at 50% -20%, rgba(255, 106, 26, 0.22), transparent)",
         "livv-glow":
-          "radial-gradient(circle at 50% 0%, rgba(99, 102, 241, 0.15), transparent 60%)",
+          "radial-gradient(circle at 50% 0%, rgba(255, 106, 26, 0.16), transparent 60%)",
       },
       animation: {
         "fade-in": "fadeIn 0.8s ease-out forwards",
