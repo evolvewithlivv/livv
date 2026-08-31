@@ -2,27 +2,32 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Container } from "@/components/ui/container";
-import { Button } from "@/components/ui/button";
 import { Avatar } from "@/components/identity/avatar";
 import { cn } from "@/lib/utils";
 import { loadIdentity, type Identity } from "@/lib/identity";
 import {
   SOUND_LIBRARY,
+  canEditPost,
   createPost,
+  deletePost,
+  editSecondsLeft,
   fileToPostPhoto,
   formatSocialTime,
   loadPosts,
   savePosts,
+  updatePost,
   type Post,
   type Track,
 } from "@/lib/social";
 
-type Sheet = "closed" | "compose" | "sound";
+type Sheet = "closed" | "compose" | "sound" | "edit";
 
 export default function ConnectPage() {
   const [me, setMe] = useState<Identity | null>(null);
   const [posts, setPosts] = useState<Post[]>([]);
   const [sheet, setSheet] = useState<Sheet>("closed");
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [menuId, setMenuId] = useState<string | null>(null);
   const [text, setText] = useState("");
   const [photo, setPhoto] = useState<string | null>(null);
   const [track, setTrack] = useState<Track | null>(null);
@@ -30,15 +35,18 @@ export default function ConnectPage() {
   const [playingId, setPlayingId] = useState<string | null>(null);
   const [openReplies, setOpenReplies] = useState<string | null>(null);
   const [replyDraft, setReplyDraft] = useState("");
+  const [now, setNow] = useState(() => Date.now());
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     setMe(loadIdentity());
     setPosts(loadPosts());
+    const id = window.setInterval(() => setNow(Date.now()), 1000);
+    return () => window.clearInterval(id);
   }, []);
 
-  const canPost = text.trim().length > 0 || Boolean(photo);
+  const canSubmit = text.trim().length > 0 || Boolean(photo);
 
   const stopAudio = () => {
     audioRef.current?.pause();
@@ -59,21 +67,47 @@ export default function ConnectPage() {
     setPlayingId(post.id);
   };
 
-  const publish = () => {
-    if (!canPost) return;
-    const post = createPost({
-      text,
-      photo,
-      track,
-      allowReplies,
-    });
-    setPosts(loadPosts());
+  const resetComposer = () => {
     setText("");
     setPhoto(null);
     setTrack(null);
     setAllowReplies(true);
+    setEditingId(null);
     setSheet("closed");
-    void post;
+  };
+
+  const publish = () => {
+    if (!canSubmit) return;
+    if (editingId) {
+      const current = posts.find((p) => p.id === editingId);
+      if (!current || !canEditPost(current, now)) {
+        resetComposer();
+        return;
+      }
+      setPosts(updatePost(editingId, { text, photo, track, allowReplies }));
+      resetComposer();
+      return;
+    }
+    createPost({ text, photo, track, allowReplies });
+    setPosts(loadPosts());
+    resetComposer();
+  };
+
+  const openEdit = (post: Post) => {
+    if (!canEditPost(post, now)) return;
+    setEditingId(post.id);
+    setText(post.text);
+    setPhoto(post.photo);
+    setTrack(post.track);
+    setAllowReplies(post.allowReplies);
+    setMenuId(null);
+    setSheet("edit");
+  };
+
+  const remove = (id: string) => {
+    setPosts(deletePost(id));
+    setMenuId(null);
+    if (playingId === id) stopAudio();
   };
 
   const like = (id: string) => {
@@ -120,13 +154,15 @@ export default function ConnectPage() {
   const onPhoto = async (file?: File) => {
     if (!file) return;
     setPhoto(await fileToPostPhoto(file));
-    setSheet("compose");
+    setSheet(editingId ? "edit" : "compose");
   };
 
   const feed = useMemo(
     () => [...posts].sort((a, b) => b.createdAt - a.createdAt),
     [posts]
   );
+
+  const isMine = (post: Post) => me && post.author.username === me.username;
 
   return (
     <main className="pt-7 pb-8">
@@ -143,7 +179,10 @@ export default function ConnectPage() {
 
         <button
           type="button"
-          onClick={() => setSheet("compose")}
+          onClick={() => {
+            setEditingId(null);
+            setSheet("compose");
+          }}
           className="mb-5 flex w-full items-center gap-3 rounded-[22px] border border-livv-border bg-livv-surface px-4 py-3 text-left"
         >
           {me && <Avatar identity={me} size={36} />}
@@ -151,111 +190,159 @@ export default function ConnectPage() {
         </button>
 
         <div className="space-y-4">
-          {feed.map((post) => (
-            <article
-              key={post.id}
-              className="overflow-hidden rounded-[24px] border border-livv-border bg-livv-surface"
-            >
-              <div className="flex items-center gap-3 px-4 pt-4">
-                <Avatar identity={post.author} size={38} />
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-semibold">
-                    {post.author.displayName}
-                  </p>
-                  <p className="text-[12px] text-white/35">
-                    @{post.author.username} · {formatSocialTime(post.createdAt)}
-                  </p>
+          {feed.map((post) => {
+            const mine = Boolean(isMine(post));
+            const editable = mine && canEditPost(post, now);
+            const seconds = editSecondsLeft(post, now);
+
+            return (
+              <article
+                key={post.id}
+                className="overflow-hidden rounded-[24px] border border-livv-border bg-livv-surface"
+              >
+                <div className="flex items-center gap-3 px-4 pt-4">
+                  <Avatar identity={post.author} size={38} />
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-semibold">
+                      {post.author.displayName}
+                    </p>
+                    <p className="text-[12px] text-white/35">
+                      @{post.author.username} · {formatSocialTime(post.createdAt, now)}
+                      {post.editedAt ? " · edited" : ""}
+                    </p>
+                  </div>
+                  {mine && (
+                    <div className="relative">
+                      <button
+                        type="button"
+                        onClick={() => setMenuId(menuId === post.id ? null : post.id)}
+                        className="px-2 text-lg leading-none text-white/40"
+                        aria-label="Post actions"
+                      >
+                        ⋯
+                      </button>
+                      {menuId === post.id && (
+                        <div className="absolute right-0 top-7 z-10 min-w-[148px] overflow-hidden rounded-2xl border border-livv-border bg-[#111113] py-1 shadow-xl">
+                          {editable && (
+                            <button
+                              type="button"
+                              onClick={() => openEdit(post)}
+                              className="block w-full px-4 py-2.5 text-left text-sm"
+                            >
+                              Edit · {seconds}s
+                            </button>
+                          )}
+                          <button
+                            type="button"
+                            onClick={() => remove(post.id)}
+                            className="block w-full px-4 py-2.5 text-left text-sm text-red-400"
+                          >
+                            Delete
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                  )}
                 </div>
-              </div>
 
-              {post.text && (
-                <p className="whitespace-pre-wrap px-4 pt-3 text-[16px] leading-relaxed tracking-[-0.016em]">
-                  {post.text}
-                </p>
-              )}
+                {post.text && (
+                  <p className="whitespace-pre-wrap px-4 pt-3 text-[16px] leading-relaxed tracking-[-0.016em]">
+                    {post.text}
+                  </p>
+                )}
 
-              {post.photo && (
-                <div className="relative mt-3 bg-black">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={post.photo} alt="" className="max-h-[420px] w-full object-cover" />
-                </div>
-              )}
+                {post.photo && (
+                  <div className="relative mt-3 bg-black">
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={post.photo} alt="" className="max-h-[420px] w-full object-cover" />
+                  </div>
+                )}
 
-              {post.track && (
-                <button
-                  type="button"
-                  onClick={() => togglePlay(post)}
-                  className="mx-4 mt-3 flex w-[calc(100%-2rem)] items-center gap-3 rounded-full border border-white/10 bg-black/40 px-3 py-2 text-left"
-                >
-                  <span className="flex h-8 w-8 items-center justify-center rounded-full bg-livv-accent text-xs font-semibold">
-                    {playingId === post.id ? "||" : "▶"}
-                  </span>
-                  <span className="min-w-0 flex-1">
-                    <span className="block truncate text-[13px] font-medium">
-                      {post.track.title}
-                    </span>
-                    <span className="block truncate text-[11px] text-white/40">
-                      {post.track.artist}
-                    </span>
-                  </span>
-                </button>
-              )}
-
-              <div className="flex items-center gap-5 px-4 py-3 text-[13px]">
-                <button
-                  type="button"
-                  onClick={() => like(post.id)}
-                  className={post.likedByMe ? "font-semibold text-livv-accent" : "text-white/50"}
-                >
-                  {post.likedByMe ? "Liked" : "Like"} {post.likes}
-                </button>
-                {post.allowReplies ? (
+                {post.track && (
                   <button
                     type="button"
-                    onClick={() =>
-                      setOpenReplies(openReplies === post.id ? null : post.id)
-                    }
-                    className="text-white/50"
+                    onClick={() => togglePlay(post)}
+                    className="mx-4 mt-3 flex w-[calc(100%-2rem)] items-center gap-3 rounded-full border border-white/10 bg-black/40 px-3 py-2 text-left"
                   >
-                    Reply {post.replies.length}
+                    <span className="flex h-8 w-8 items-center justify-center rounded-full bg-livv-accent text-xs font-semibold">
+                      {playingId === post.id ? "||" : "▶"}
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span className="block truncate text-[13px] font-medium">
+                        {post.track.title}
+                      </span>
+                      <span className="block truncate text-[11px] text-white/40">
+                        {post.track.artist}
+                      </span>
+                    </span>
                   </button>
-                ) : (
-                  <span className="text-white/25">Replies off</span>
                 )}
-              </div>
 
-              {openReplies === post.id && post.allowReplies && (
-                <div className="border-t border-white/5 px-4 py-3">
-                  {post.replies.map((reply) => (
-                    <div key={reply.id} className="mb-3 flex gap-2.5">
-                      <Avatar identity={reply.author} size={28} />
-                      <div>
-                        <p className="text-[12px] text-white/40">
-                          {reply.author.displayName} · {formatSocialTime(reply.createdAt)}
-                        </p>
-                        <p className="text-sm leading-snug">{reply.text}</p>
-                      </div>
-                    </div>
-                  ))}
-                  <div className="mt-2 flex gap-2">
-                    <input
-                      value={replyDraft}
-                      onChange={(e) => setReplyDraft(e.target.value)}
-                      placeholder="Reply"
-                      className="h-10 flex-1 rounded-full border border-livv-border bg-black/30 px-4 text-sm outline-none"
-                    />
+                <div className="flex items-center gap-5 px-4 py-3">
+                  <button
+                    type="button"
+                    onClick={() => like(post.id)}
+                    className={cn(
+                      "inline-flex items-center gap-1.5 text-[13px]",
+                      post.likedByMe ? "text-livv-accent" : "text-white/50"
+                    )}
+                    aria-label="Like"
+                  >
+                    <HeartIcon filled={post.likedByMe} />
+                    {post.likes}
+                  </button>
+                  {post.allowReplies ? (
                     <button
                       type="button"
-                      onClick={() => sendReply(post.id)}
-                      className="h-10 rounded-full bg-white px-4 text-sm font-medium text-black"
+                      onClick={() =>
+                        setOpenReplies(openReplies === post.id ? null : post.id)
+                      }
+                      className="inline-flex items-center gap-1.5 text-[13px] text-white/50"
+                      aria-label="Reply"
                     >
-                      Send
+                      <ReplyIcon />
+                      {post.replies.length}
                     </button>
-                  </div>
+                  ) : (
+                    <span className="inline-flex items-center gap-1.5 text-[13px] text-white/25">
+                      <ReplyIcon />
+                    </span>
+                  )}
                 </div>
-              )}
-            </article>
-          ))}
+
+                {openReplies === post.id && post.allowReplies && (
+                  <div className="border-t border-white/5 px-4 py-3">
+                    {post.replies.map((reply) => (
+                      <div key={reply.id} className="mb-3 flex gap-2.5">
+                        <Avatar identity={reply.author} size={28} />
+                        <div>
+                          <p className="text-[12px] text-white/40">
+                            {reply.author.displayName} · {formatSocialTime(reply.createdAt, now)}
+                          </p>
+                          <p className="text-sm leading-snug">{reply.text}</p>
+                        </div>
+                      </div>
+                    ))}
+                    <div className="mt-2 flex gap-2">
+                      <input
+                        value={replyDraft}
+                        onChange={(e) => setReplyDraft(e.target.value)}
+                        placeholder="Reply"
+                        className="h-10 flex-1 rounded-full border border-livv-border bg-black/30 px-4 text-sm outline-none"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => sendReply(post.id)}
+                        className="h-10 rounded-full bg-white px-4 text-sm font-medium text-black"
+                      >
+                        Send
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </article>
+            );
+          })}
         </div>
       </Container>
 
@@ -267,27 +354,39 @@ export default function ConnectPage() {
         onChange={(e) => onPhoto(e.target.files?.[0])}
       />
 
-      {sheet !== "closed" && (
+      {(sheet === "compose" || sheet === "edit" || sheet === "sound") && (
         <div className="fixed inset-0 z-[70] flex items-end bg-black/70">
           <div className="max-h-[92dvh] w-full overflow-y-auto rounded-t-[28px] border border-livv-border bg-[#0c0c0e] p-5 pb-8">
-            {sheet === "compose" && (
+            {sheet !== "sound" && (
               <>
                 <div className="mb-4 flex items-center justify-between">
-                  <button className="text-sm text-white/45" onClick={() => setSheet("closed")}>
+                  <button className="text-sm text-white/45" onClick={resetComposer}>
                     Close
                   </button>
-                  <p className="text-sm font-semibold">New post</p>
+                  <p className="text-sm font-semibold">
+                    {sheet === "edit" ? "Edit post" : "New post"}
+                  </p>
                   <button
                     className={cn(
                       "text-sm font-semibold",
-                      canPost ? "text-livv-accent" : "text-white/25"
+                      canSubmit ? "text-livv-accent" : "text-white/25"
                     )}
                     onClick={publish}
-                    disabled={!canPost}
+                    disabled={!canSubmit}
                   >
-                    Post
+                    {sheet === "edit" ? "Save" : "Post"}
                   </button>
                 </div>
+
+                {sheet === "edit" && editingId && (
+                  <p className="mb-3 text-[12px] text-white/35">
+                    {editSecondsLeft(
+                      posts.find((p) => p.id === editingId) || posts[0],
+                      now
+                    )}
+                    s left to edit
+                  </p>
+                )}
 
                 <textarea
                   value={text}
@@ -356,7 +455,10 @@ export default function ConnectPage() {
             {sheet === "sound" && (
               <>
                 <div className="mb-4 flex items-center justify-between">
-                  <button className="text-sm text-white/45" onClick={() => setSheet("compose")}>
+                  <button
+                    className="text-sm text-white/45"
+                    onClick={() => setSheet(editingId ? "edit" : "compose")}
+                  >
                     Back
                   </button>
                   <p className="text-sm font-semibold">LIVV Sound</p>
@@ -369,7 +471,7 @@ export default function ConnectPage() {
                       type="button"
                       onClick={() => {
                         setTrack(item);
-                        setSheet("compose");
+                        setSheet(editingId ? "edit" : "compose");
                       }}
                       className={cn(
                         "flex w-full items-center justify-between rounded-2xl border px-4 py-3 text-left",
@@ -386,15 +488,27 @@ export default function ConnectPage() {
                     </button>
                   ))}
                 </div>
-                <p className="mt-4 text-[11px] leading-relaxed text-white/30">
-                  This is LIVV’s own library, stored on the post the same way a track chip is stored
-                  on IG. Licensed catalogs come later.
-                </p>
               </>
             )}
           </div>
         </div>
       )}
     </main>
+  );
+}
+
+function HeartIcon({ filled }: { filled: boolean }) {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill={filled ? "currentColor" : "none"} stroke="currentColor" strokeWidth="1.8">
+      <path d="M12 20s-7-4.4-9.2-8.2C1.2 9.2 2.4 6 5.6 5.4c1.8-.3 3.4.5 4.4 1.8C11 5.9 12.6 5.1 14.4 5.4c3.2.6 4.4 3.8 2.8 6.4C19 15.6 12 20 12 20z" strokeLinejoin="round" />
+    </svg>
+  );
+}
+
+function ReplyIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8">
+      <path d="M20 12a7 7 0 01-7 7H8l-4 3v-5.2A7 7 0 0111 5h2a7 7 0 017 7z" strokeLinejoin="round" />
+    </svg>
   );
 }

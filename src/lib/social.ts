@@ -24,6 +24,7 @@ export type Reply = {
 export type Post = {
   id: string;
   createdAt: number;
+  editedAt?: number;
   author: SocialAuthor;
   text: string;
   photo: string | null;
@@ -35,6 +36,7 @@ export type Post = {
 };
 
 const POSTS_KEY = "livv-social-posts-v1";
+export const EDIT_WINDOW_MS = 60_000;
 
 export const SOUND_LIBRARY: Track[] = [
   {
@@ -82,6 +84,14 @@ export function authorFromIdentity(me: Identity): SocialAuthor {
     photo: me.photo,
     accent: me.accent,
   };
+}
+
+export function canEditPost(post: Post, now = Date.now()) {
+  return now - post.createdAt < EDIT_WINDOW_MS;
+}
+
+export function editSecondsLeft(post: Post, now = Date.now()) {
+  return Math.max(0, Math.ceil((EDIT_WINDOW_MS - (now - post.createdAt)) / 1000));
 }
 
 export function formatSocialTime(timestamp: number, now = Date.now()) {
@@ -263,4 +273,24 @@ export function createPost(input: {
   };
   savePosts([post, ...loadPosts()]);
   return post;
+}
+
+export function updatePost(
+  id: string,
+  patch: Partial<Pick<Post, "text" | "photo" | "track" | "allowReplies">>
+) {
+  const posts = loadPosts();
+  const next = posts.map((p) => {
+    if (p.id !== id) return p;
+    if (!canEditPost(p)) return p;
+    return { ...p, ...patch, editedAt: Date.now() };
+  });
+  savePosts(next);
+  return next;
+}
+
+export function deletePost(id: string) {
+  const next = loadPosts().filter((p) => p.id !== id);
+  savePosts(next);
+  return next;
 }
