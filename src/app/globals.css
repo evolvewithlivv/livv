@@ -9,17 +9,20 @@
   }
 
   body {
-    @apply bg-livv-black text-white antialiased font-sans;
+    @apply bg-livv-black text-white antialiased;
     min-height: 100dvh;
-    letter-spacing: -0.011em;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display",
+      "Segoe UI", system-ui, sans-serif;
+    letter-spacing: -0.016em;
   }
 
   h1,
   h2,
-  .font-display {
-    font-family: var(--font-display), Georgia, serif;
-    letter-spacing: -0.02em;
-    font-weight: 400;
+  h3 {
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text",
+      "Segoe UI", system-ui, sans-serif;
+    letter-spacing: -0.03em;
+    font-weight: 590;
   }
 
   ::selection {

@@ -23,12 +23,14 @@ const config: Config = {
       },
       fontFamily: {
         sans: [
-          "var(--font-outfit)",
-          "system-ui",
           "-apple-system",
+          "BlinkMacSystemFont",
+          "SF Pro Text",
+          "SF Pro Display",
+          "Segoe UI",
+          "system-ui",
           "sans-serif",
         ],
-        display: ["var(--font-display)", "Georgia", "serif"],
       },
       backgroundImage: {
         "livv-gradient":

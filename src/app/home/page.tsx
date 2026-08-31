@@ -1,139 +1,156 @@
+"use client";
+
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { Container } from "@/components/ui/container";
+import { checkInToday, getDailyCard, readStreak } from "@/lib/daily";
 
 const LOGO =
   "https://raw.githubusercontent.com/evolvewithlivv/livv/main/Photoroom_20260831_123254.png";
 
-const AREAS = [
-  {
-    href: "/home/train",
-    kicker: "Body",
-    title: "Train",
-    description: "Build the session. Do the work.",
-  },
-  {
-    href: "/home/evolve",
-    kicker: "Mind",
-    title: "Evolve",
-    description: "Habits, identity, daily objectives.",
-  },
-  {
-    href: "/home/connect",
-    kicker: "People",
-    title: "Connect",
-    description: "See who else is putting in reps.",
-  },
-  {
-    href: "/home/progress",
-    kicker: "Proof",
-    title: "Progress",
-    description: "The scoreboard for all of it.",
-  },
-];
-
-function greeting() {
-  const hour = new Date().getHours();
+function greeting(hour: number) {
+  if (hour < 5) return "Still up";
   if (hour < 12) return "Good morning";
-  if (hour < 18) return "Good afternoon";
-  return "Good evening";
+  if (hour < 17) return "Good afternoon";
+  if (hour < 21) return "Good evening";
+  return "Wind down";
 }
 
 export default function HomePage() {
-  const today = new Date().toLocaleDateString("en-US", {
+  const [now, setNow] = useState(() => new Date());
+  const [streak, setStreak] = useState(0);
+  const [checkedIn, setCheckedIn] = useState(false);
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    const tick = () => setNow(new Date());
+    tick();
+    const id = window.setInterval(tick, 30_000);
+    const saved = readStreak();
+    setStreak(saved.streak);
+    setCheckedIn(saved.checkedInToday);
+    setReady(true);
+    return () => window.clearInterval(id);
+  }, []);
+
+  const card = useMemo(() => getDailyCard(now), [now]);
+
+  const dateLabel = now.toLocaleDateString("en-US", {
     weekday: "long",
     month: "long",
     day: "numeric",
   });
 
+  const timeLabel = now.toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+  });
+
+  const onCheckIn = () => {
+    const next = checkInToday();
+    setStreak(next.streak);
+    setCheckedIn(true);
+  };
+
   return (
-    <main className="relative overflow-hidden pt-6 pb-6">
+    <main className="relative overflow-hidden pt-6 pb-8">
       <div
         aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-0 h-64 bg-livv-gradient"
+        className="pointer-events-none absolute inset-x-0 top-0 h-72 bg-livv-gradient"
       />
+
       <Container className="relative">
-        <div className="mb-8 flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
+        <header className="mb-10 flex items-center justify-between">
+          <div className="flex items-center gap-2">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={LOGO}
-              alt=""
-              width={36}
-              height={36}
-              className="h-9 w-9 object-contain"
-            />
-            <span className="font-display text-xl leading-none tracking-tight">
-              LIVV
-            </span>
+            <img src={LOGO} alt="" width={32} height={32} className="h-8 w-8 object-contain" />
+            <span className="text-[15px] font-semibold tracking-tight">LIVV</span>
           </div>
           <Link
             href="/home/profile"
-            className="flex h-10 w-10 items-center justify-center rounded-full border border-livv-border bg-livv-surface text-sm font-medium text-white/80"
+            className="flex h-9 w-9 items-center justify-center rounded-full border border-livv-border bg-livv-surface text-xs font-medium text-white/75"
           >
-            Y
+            You
           </Link>
-        </div>
+        </header>
 
-        <p className="text-[11px] font-medium uppercase tracking-[0.28em] text-livv-muted">
-          {today}
+        <p className="text-[12px] font-medium text-white/40">
+          {dateLabel} · {timeLabel}
         </p>
-        <h1 className="mt-2 max-w-[14ch] font-display text-[2.35rem] leading-[1.05] text-white">
-          {greeting()}.
-          <br />
-          Keep going.
+        <h1 className="mt-2 text-[34px] font-semibold leading-[1.08] tracking-tight">
+          {greeting(now.getHours())}.
         </h1>
-        <p className="mt-3 max-w-xs text-sm leading-relaxed text-white/45">
-          Four rooms. One direction. Show up in at least one of them today.
+        <p className="mt-3 max-w-[20ch] text-[22px] font-medium leading-snug tracking-tight text-white/88">
+          {card.line}
         </p>
 
-        <div className="mt-8 overflow-hidden rounded-3xl border border-livv-border bg-livv-surface p-5">
-          <p className="text-[11px] font-medium uppercase tracking-[0.28em] text-livv-accent-soft">
-            Today
-          </p>
-          <p className="mt-2 font-display text-2xl leading-tight">
-            Train once. Check one objective.
-          </p>
-          <p className="mt-2 text-sm leading-relaxed text-white/45">
-            That is a complete day. Everything else is extra.
-          </p>
-          <div className="mt-5 flex gap-2">
-            <Link
-              href="/home/train"
-              className="inline-flex h-10 items-center rounded-full bg-livv-accent px-4 text-xs font-medium uppercase tracking-[0.18em] text-white"
-            >
-              Start training
-            </Link>
-            <Link
-              href="/home/evolve"
-              className="inline-flex h-10 items-center rounded-full border border-livv-border px-4 text-xs font-medium uppercase tracking-[0.18em] text-white/70"
-            >
-              Objectives
-            </Link>
+        <section className="mt-8 grid grid-cols-[1fr_auto] gap-3">
+          <div className="rounded-[22px] border border-livv-border bg-livv-surface px-5 py-4">
+            <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-white/35">
+              Today
+            </p>
+            <p className="mt-2 text-[28px] font-semibold leading-none tracking-tight">
+              {card.theme}
+            </p>
+            <p className="mt-2 text-sm leading-relaxed text-white/45">{card.note}</p>
           </div>
-        </div>
 
-        <div className="mt-8 space-y-2.5">
-          {AREAS.map((area) => (
-            <Link
-              key={area.href}
-              href={area.href}
-              className="group flex items-center justify-between rounded-2xl border border-livv-border bg-livv-surface/80 px-5 py-4 transition-all duration-200 hover:border-white/16 active:scale-[0.99]"
-            >
-              <div>
-                <p className="text-[10px] font-medium uppercase tracking-[0.26em] text-livv-muted">
-                  {area.kicker}
-                </p>
-                <h2 className="mt-1 font-display text-[1.65rem] leading-none text-white">
-                  {area.title}
-                </h2>
-                <p className="mt-1.5 text-sm text-white/40">{area.description}</p>
-              </div>
-              <span className="text-white/25 transition-colors group-hover:text-livv-accent">
-                →
-              </span>
-            </Link>
-          ))}
-        </div>
+          <div className="flex min-w-[104px] flex-col items-center justify-center rounded-[22px] border border-livv-border bg-livv-surface px-4 py-4">
+            <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-white/35">
+              Streak
+            </p>
+            <p className="mt-2 text-[40px] font-semibold leading-none tracking-tight text-livv-accent">
+              {ready ? streak : "—"}
+            </p>
+            <p className="mt-1 text-[11px] text-white/40">days</p>
+          </div>
+        </section>
+
+        <section className="mt-3 rounded-[22px] border border-livv-accent/25 bg-livv-accent/[0.07] px-5 py-5">
+          <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-livv-accent-soft">
+            Your move
+          </p>
+          <p className="mt-2 text-[17px] font-medium leading-snug tracking-tight">
+            {card.mission}
+          </p>
+          <Link
+            href={card.missionHref}
+            className="mt-5 inline-flex h-12 items-center justify-center rounded-full bg-livv-accent px-5 text-[14px] font-semibold text-white"
+          >
+            {card.missionCta}
+          </Link>
+        </section>
+
+        <button
+          type="button"
+          onClick={onCheckIn}
+          disabled={checkedIn}
+          className="mt-3 flex h-[72px] w-full items-center justify-between rounded-[22px] border border-livv-border bg-livv-surface px-5 text-left disabled:opacity-100"
+        >
+          <span>
+            <span className="block text-[15px] font-semibold tracking-tight">
+              {checkedIn ? "You showed up today" : "I showed up today"}
+            </span>
+            <span className="mt-0.5 block text-[13px] text-white/40">
+              {checkedIn
+                ? "Come back tomorrow. The page will be different."
+                : "Tap this so the streak counts."}
+            </span>
+          </span>
+          <span
+            className={`flex h-9 w-9 items-center justify-center rounded-full text-sm ${
+              checkedIn
+                ? "bg-livv-accent text-white"
+                : "border border-livv-border text-white/40"
+            }`}
+          >
+            {checkedIn ? "✓" : ""}
+          </span>
+        </button>
+
+        <p className="mt-8 text-center text-[12px] leading-relaxed text-white/28">
+          This screen changes every day. The rooms stay in the bar below.
+        </p>
       </Container>
     </main>
   );
