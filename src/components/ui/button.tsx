@@ -18,7 +18,7 @@ export function Button({
         variant === "primary" &&
           "bg-white text-livv-black hover:bg-neutral-100",
         variant === "accent" &&
-          "bg-livv-accent text-white hover:bg-[#ff7a33] shadow-lg shadow-livv-accent/20",
+          "bg-livv-accent text-white hover:opacity-90 shadow-lg shadow-livv-accent/20",
         variant === "secondary" &&
           "bg-livv-surface text-white border border-livv-border hover:bg-livv-border",
         variant === "ghost" &&

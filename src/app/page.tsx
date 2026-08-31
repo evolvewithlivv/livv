@@ -31,7 +31,7 @@ export default function OpeningPage() {
             Evolve with LIVV
           </p>
 
-          <p className="opening-sub mt-4 max-w-[17rem] font-display text-[1.35rem] leading-snug text-white/70 sm:max-w-xs sm:text-[1.5rem]">
+          <p className="opening-sub mt-4 max-w-[17rem] text-[1.35rem] leading-snug text-white/70 sm:max-w-xs sm:text-[1.5rem]">
             Your evolution starts here.
           </p>
 
@@ -58,12 +58,12 @@ export default function OpeningPage() {
           background:
             radial-gradient(
               ellipse 90% 55% at 50% -15%,
-              rgba(255, 106, 26, 0.12),
+              rgb(var(--livv-accent) / 0.16),
               transparent 55%
             ),
             radial-gradient(
               ellipse 50% 40% at 50% 110%,
-              rgba(255, 106, 26, 0.06),
+              rgb(var(--livv-accent) / 0.08),
               transparent 50%
             );
           opacity: 0;
@@ -80,43 +80,25 @@ export default function OpeningPage() {
           animation: openingAtmosphere 1.8s ease-out 0.15s forwards;
         }
 
-        .opening-wordmark {
-          opacity: 0;
-          transform: translateY(18px);
-          animation: openingRise 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.2s forwards;
-        }
-
-        .opening-line {
-          opacity: 0;
-          transform: translateY(12px);
-          animation: openingRise 0.85s cubic-bezier(0.22, 1, 0.36, 1) 0.45s forwards;
-        }
-
-        .opening-sub {
-          opacity: 0;
-          transform: translateY(10px);
-          animation: openingRise 0.85s cubic-bezier(0.22, 1, 0.36, 1) 0.58s forwards;
-        }
-
+        .opening-wordmark,
+        .opening-line,
+        .opening-sub,
         .opening-cta {
           opacity: 0;
-          transform: translateY(12px);
-          animation: openingRise 0.9s cubic-bezier(0.22, 1, 0.36, 1) 0.75s forwards;
+          transform: translateY(16px);
+          animation: openingRise 0.9s cubic-bezier(0.22, 1, 0.36, 1) forwards;
         }
+        .opening-wordmark { animation-delay: 0.2s; }
+        .opening-line { animation-delay: 0.45s; }
+        .opening-sub { animation-delay: 0.58s; }
+        .opening-cta { animation-delay: 0.75s; }
 
         @keyframes openingAtmosphere {
-          to {
-            opacity: 1;
-          }
+          to { opacity: 1; }
         }
-
         @keyframes openingRise {
-          to {
-            opacity: 1;
-            transform: translateY(0);
-          }
+          to { opacity: 1; transform: translateY(0); }
         }
-
         @media (prefers-reduced-motion: reduce) {
           .opening-atmosphere,
           .opening-veil,

@@ -15,10 +15,10 @@ const config: Config = {
           surface: "#121214",
           border: "#222226",
           muted: "#8a8a92",
-          accent: "#FF6A1A",
-          "accent-soft": "#FFB088",
-          glow: "#FF8A3D",
-          energy: "#FFC46B",
+          accent: "rgb(var(--livv-accent) / <alpha-value>)",
+          "accent-soft": "rgb(var(--livv-accent-soft) / <alpha-value>)",
+          glow: "rgb(var(--livv-accent) / <alpha-value>)",
+          energy: "rgb(var(--livv-accent-soft) / <alpha-value>)",
         },
       },
       fontFamily: {
@@ -34,9 +34,9 @@ const config: Config = {
       },
       backgroundImage: {
         "livv-gradient":
-          "radial-gradient(ellipse 80% 50% at 50% -20%, rgba(255, 106, 26, 0.22), transparent)",
+          "radial-gradient(ellipse 80% 50% at 50% -20%, rgb(var(--livv-accent) / 0.22), transparent)",
         "livv-glow":
-          "radial-gradient(circle at 50% 0%, rgba(255, 106, 26, 0.16), transparent 60%)",
+          "radial-gradient(circle at 50% 0%, rgb(var(--livv-accent) / 0.16), transparent 60%)",
       },
       animation: {
         "fade-in": "fadeIn 0.8s ease-out forwards",

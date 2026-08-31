@@ -2,6 +2,13 @@
 @tailwind components;
 @tailwind utilities;
 
+:root {
+  --livv-accent: 76 141 255;
+  --livv-accent-soft: 163 196 255;
+  --livv-accent-hex: #4c8dff;
+  --livv-bg: #050505;
+}
+
 @layer base {
   html {
     -webkit-text-size-adjust: 100%;
@@ -9,7 +16,8 @@
   }
 
   body {
-    @apply bg-livv-black text-white antialiased;
+    @apply text-white antialiased;
+    background: var(--livv-bg);
     min-height: 100dvh;
     font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display",
       "Segoe UI", system-ui, sans-serif;
@@ -26,6 +34,7 @@
   }
 
   ::selection {
-    @apply bg-livv-accent/40 text-white;
+    background: rgb(var(--livv-accent) / 0.4);
+    color: white;
   }
 }

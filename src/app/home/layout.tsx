@@ -1,5 +1,4 @@
 import { BottomNav } from "@/components/layout/bottom-nav";
-import { ThemeShell } from "@/components/layout/theme-shell";
 
 export default function HomeLayout({
   children,
@@ -7,9 +6,9 @@ export default function HomeLayout({
   children: React.ReactNode;
 }) {
   return (
-    <ThemeShell>
+    <div className="min-h-dvh pb-24">
       {children}
       <BottomNav />
-    </ThemeShell>
+    </div>
   );
 }

@@ -1,19 +1,14 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { loadIdentity, type LivvTheme } from "@/lib/identity";
-
-const THEMES: Record<LivvTheme, string> = {
-  ember: "#050505",
-  midnight: "#07080f",
-  bone: "#12100e",
-};
+import { useEffect } from "react";
+import { applyAppColor, loadIdentity } from "@/lib/identity";
 
 export function ThemeShell({ children }: { children: React.ReactNode }) {
-  const [theme, setTheme] = useState<LivvTheme>("ember");
-
   useEffect(() => {
-    const apply = () => setTheme(loadIdentity().theme);
+    const apply = () => {
+      const me = loadIdentity();
+      applyAppColor(me.accent, me.theme);
+    };
     apply();
     window.addEventListener("livv-identity", apply);
     window.addEventListener("storage", apply);
@@ -23,9 +18,5 @@ export function ThemeShell({ children }: { children: React.ReactNode }) {
     };
   }, []);
 
-  return (
-    <div className="min-h-dvh pb-24" style={{ background: THEMES[theme] }}>
-      {children}
-    </div>
-  );
+  return <>{children}</>;
 }

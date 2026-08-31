@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "./globals.css";
+import { ThemeShell } from "@/components/layout/theme-shell";
 
 export const metadata: Metadata = {
   title: "LIVV",
@@ -41,8 +42,8 @@ export default function RootLayout({
         <link rel="apple-touch-icon" href="/api/icon?s=180" />
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
       </head>
-      <body className="min-h-dvh bg-livv-black text-white antialiased">
-        {children}
+      <body className="min-h-dvh text-white antialiased">
+        <ThemeShell>{children}</ThemeShell>
       </body>
     </html>
   );
