@@ -1,283 +1,328 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Container } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
+import { Avatar } from "@/components/identity/avatar";
 import { ActivityCard } from "@/components/activity/activity-card";
 import { cn } from "@/lib/utils";
 import {
-  DEFAULT_PROFILE,
-  PROFILE_STATS,
-  AVATAR_COLORS,
-  type ProfileData,
-} from "@/lib/profile-data";
+  ACCENTS,
+  fileToPhoto,
+  loadIdentity,
+  patchIdentity,
+  type Identity,
+  type LivvTheme,
+  type LivvTier,
+} from "@/lib/identity";
+import { TIERS, getTier, hasTier } from "@/lib/membership";
 import { ACHIEVEMENTS, PILLARS } from "@/lib/evolve-data";
 import { loadActivities, type Activity } from "@/lib/activity";
 
-type Tab = "activity" | "progress" | "achievements";
+type Tab = "activity" | "progress" | "vault";
 
 export default function ProfilePage() {
-  const [profile, setProfile] = useState<ProfileData>(DEFAULT_PROFILE);
+  const [me, setMe] = useState<Identity | null>(null);
   const [editing, setEditing] = useState(false);
-  const [draft, setDraft] = useState<ProfileData>(DEFAULT_PROFILE);
+  const [draft, setDraft] = useState<Identity | null>(null);
   const [tab, setTab] = useState<Tab>("activity");
   const [activities, setActivities] = useState<Activity[]>([]);
+  const [picked, setPicked] = useState<LivvTier | null>(null);
+  const fileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
+    const sync = () => setMe(loadIdentity());
+    sync();
     setActivities(loadActivities());
+    window.addEventListener("livv-identity", sync);
+    return () => window.removeEventListener("livv-identity", sync);
   }, [tab]);
 
-  const xpPercent = Math.round(
-    (PROFILE_STATS.currentXp / PROFILE_STATS.xpToNext) * 100
-  );
+  if (!me) return null;
 
-  const openEdit = () => {
-    setDraft({ ...profile });
-    setEditing(true);
+  const tier = getTier(me.tier);
+
+  const onPickPhoto = async (file?: File) => {
+    if (!file) return;
+    const photo = await fileToPhoto(file);
+    const next = patchIdentity({ photo });
+    setMe(next);
+    if (draft) setDraft({ ...draft, photo });
   };
 
   const saveEdit = () => {
-    const cleaned: ProfileData = {
-      ...draft,
-      displayName: draft.displayName.trim() || profile.displayName,
-      username: draft.username.trim().replace(/^@/, "") || profile.username,
+    if (!draft) return;
+    const next = patchIdentity({
+      displayName: draft.displayName.trim() || me.displayName,
+      username: draft.username.trim().replace(/^@/, "") || me.username,
       bio: draft.bio.trim(),
-      avatarInitial: (draft.displayName.trim()[0] || "L").toUpperCase(),
-    };
-    setProfile(cleaned);
+      accent: draft.accent,
+      photo: draft.photo,
+    });
+    setMe(next);
     setEditing(false);
   };
 
-  const cancelEdit = () => {
-    setDraft({ ...profile });
-    setEditing(false);
+  const claimTier = (id: LivvTier) => {
+    const next = patchIdentity({ tier: id });
+    setMe(next);
+    setPicked(null);
   };
 
-  if (editing) {
+  if (editing && draft) {
     return (
-      <main className="pt-8 pb-6">
+      <main className="pt-8 pb-8">
         <Container>
-          <div className="flex items-center justify-between mb-8">
-            <h1 className="text-xl font-bold tracking-tight">Edit Identity</h1>
-            <button
-              onClick={cancelEdit}
-              className="text-sm text-livv-muted hover:text-white"
-            >
+          <div className="mb-8 flex items-center justify-between">
+            <h1 className="text-[22px] font-semibold tracking-tight">Edit identity</h1>
+            <button onClick={() => setEditing(false)} className="text-sm text-white/45">
               Cancel
             </button>
           </div>
 
-          <div className="flex flex-col items-center mb-8">
-            <div
-              className="flex h-24 w-24 items-center justify-center rounded-full text-3xl font-bold text-white border-2 border-white/10"
-              style={{ backgroundColor: draft.avatarColor }}
-            >
-              {(draft.displayName.trim()[0] || "L").toUpperCase()}
-            </div>
-            <p className="mt-4 text-xs text-livv-muted uppercase tracking-wider">
-              Accent color
-            </p>
-            <div className="mt-2 flex gap-2">
-              {AVATAR_COLORS.map((color) => (
-                <button
-                  key={color}
-                  onClick={() => setDraft((d) => ({ ...d, avatarColor: color }))}
-                  className={cn(
-                    "h-8 w-8 rounded-full transition-all",
-                    draft.avatarColor === color
-                      ? "ring-2 ring-white ring-offset-2 ring-offset-livv-black scale-110"
-                      : "opacity-70 hover:opacity-100"
-                  )}
-                  style={{ backgroundColor: color }}
-                />
-              ))}
-            </div>
+          <div className="mb-8 flex flex-col items-center">
+            <button type="button" onClick={() => fileRef.current?.click()} className="relative">
+              <Avatar identity={draft} size={112} />
+              <span className="absolute inset-x-0 -bottom-3 mx-auto w-max rounded-full bg-white px-3 py-1 text-[11px] font-medium text-black">
+                Camera roll
+              </span>
+            </button>
+            <input
+              ref={fileRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={(e) => onPickPhoto(e.target.files?.[0])}
+            />
           </div>
 
           <div className="space-y-5">
-            <div>
-              <label className="text-xs text-livv-muted uppercase tracking-wider">
-                Display name
-              </label>
+            <Field label="Display name">
               <input
-                type="text"
                 value={draft.displayName}
-                onChange={(e) =>
-                  setDraft((d) => ({ ...d, displayName: e.target.value }))
-                }
+                onChange={(e) => setDraft({ ...draft, displayName: e.target.value })}
                 maxLength={32}
-                className="mt-2 w-full rounded-xl border border-livv-border bg-livv-surface px-4 py-3 text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-livv-accent/40"
+                className="field"
               />
-            </div>
-
-            <div>
-              <label className="text-xs text-livv-muted uppercase tracking-wider">
-                Username
-              </label>
-              <div className="mt-2 flex items-center rounded-xl border border-livv-border bg-livv-surface overflow-hidden focus-within:ring-2 focus-within:ring-livv-accent/40">
-                <span className="pl-4 text-livv-muted">@</span>
+            </Field>
+            <Field label="Username">
+              <div className="flex items-center overflow-hidden rounded-2xl border border-livv-border bg-livv-surface">
+                <span className="pl-4 text-white/35">@</span>
                 <input
-                  type="text"
                   value={draft.username}
                   onChange={(e) =>
-                    setDraft((d) => ({
-                      ...d,
+                    setDraft({
+                      ...draft,
                       username: e.target.value.replace(/[^a-zA-Z0-9_]/g, ""),
-                    }))
+                    })
                   }
                   maxLength={24}
-                  className="w-full bg-transparent px-2 py-3 text-white placeholder:text-white/30 focus:outline-none"
+                  className="w-full bg-transparent px-2 py-3.5 text-white outline-none"
                 />
               </div>
-            </div>
-
-            <div>
-              <label className="text-xs text-livv-muted uppercase tracking-wider">
-                Bio
-              </label>
+            </Field>
+            <Field label="Bio">
               <textarea
                 value={draft.bio}
-                onChange={(e) =>
-                  setDraft((d) => ({ ...d, bio: e.target.value }))
-                }
+                onChange={(e) => setDraft({ ...draft, bio: e.target.value })}
                 maxLength={160}
                 rows={3}
-                className="mt-2 w-full rounded-xl border border-livv-border bg-livv-surface px-4 py-3 text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-livv-accent/40 resize-none"
+                className="field resize-none"
               />
-              <p className="mt-1 text-right text-[11px] text-livv-muted">
-                {draft.bio.length}/160
-              </p>
+            </Field>
+            <div>
+              <p className="mb-2 text-[11px] uppercase tracking-[0.2em] text-white/35">Accent</p>
+              <div className="flex gap-2">
+                {ACCENTS.map((color) => (
+                  <button
+                    key={color}
+                    onClick={() => setDraft({ ...draft, accent: color })}
+                    className={cn(
+                      "h-8 w-8 rounded-full",
+                      draft.accent === color && "ring-2 ring-white ring-offset-2 ring-offset-black"
+                    )}
+                    style={{ backgroundColor: color }}
+                  />
+                ))}
+              </div>
             </div>
           </div>
 
-          <div className="mt-10">
-            <Button variant="accent" size="lg" className="w-full" onClick={saveEdit}>
-              Save Identity
-            </Button>
-          </div>
+          <Button variant="accent" size="lg" className="mt-10 w-full" onClick={saveEdit}>
+            Save identity
+          </Button>
+          <style jsx>{`
+            .field {
+              margin-top: 8px;
+              width: 100%;
+              border-radius: 16px;
+              border: 1px solid #222226;
+              background: #121214;
+              padding: 14px 16px;
+              color: white;
+              outline: none;
+            }
+          `}</style>
         </Container>
       </main>
     );
   }
 
   return (
-    <main className="pt-8 pb-6">
+    <main className="pt-8 pb-10">
       <Container>
-        <div className="flex flex-col items-center text-center mb-8">
-          <div
-            className="flex h-24 w-24 items-center justify-center rounded-full text-3xl font-bold text-white border-2 border-white/10 shadow-lg"
-            style={{
-              backgroundColor: profile.avatarColor,
-              boxShadow: `0 0 40px ${profile.avatarColor}33`,
-            }}
-          >
-            {profile.avatarInitial}
-          </div>
-
-          <h1 className="mt-4 text-2xl font-bold tracking-tight">
-            {profile.displayName}
-          </h1>
-          <p className="text-sm text-livv-muted">@{profile.username}</p>
-
-          {profile.bio && (
-            <p className="mt-3 max-w-xs text-sm text-white/70 leading-relaxed">
-              {profile.bio}
-            </p>
-          )}
-
-          <div className="mt-4 flex items-center gap-3 text-xs">
-            <span className="rounded-full bg-livv-accent/15 text-livv-accent-soft px-3 py-1 font-medium">
-              Level {PROFILE_STATS.level}
+        <div className="mb-8 flex flex-col items-center text-center">
+          <button type="button" onClick={() => fileRef.current?.click()} className="relative">
+            <Avatar identity={me} size={108} />
+            <span className="absolute -bottom-1 right-0 flex h-7 w-7 items-center justify-center rounded-full bg-white text-[11px] text-black">
+              +
             </span>
-            <span className="text-livv-muted">
-              {PROFILE_STATS.currentXp} XP
+          </button>
+          <input
+            ref={fileRef}
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={(e) => onPickPhoto(e.target.files?.[0])}
+          />
+
+          <h1 className="mt-5 text-[28px] font-semibold tracking-tight">{me.displayName}</h1>
+          <p className="text-sm text-white/40">@{me.username}</p>
+          {me.bio && <p className="mt-3 max-w-xs text-sm leading-relaxed text-white/60">{me.bio}</p>}
+
+          <div className="mt-4 flex items-center gap-2 text-xs">
+            <span className="rounded-full bg-livv-accent/15 px-3 py-1 font-medium text-livv-accent-soft">
+              {tier.name}
             </span>
-            <span className="text-livv-muted">
-              {PROFILE_STATS.streak} day streak
-            </span>
+            <span className="text-white/40">{me.embers} Embers</span>
           </div>
 
           <Button
             variant="secondary"
             size="sm"
             className="mt-5"
-            onClick={openEdit}
+            onClick={() => {
+              setDraft(me);
+              setEditing(true);
+            }}
           >
-            Edit Profile
+            Edit identity
           </Button>
         </div>
 
-        <div className="grid grid-cols-4 gap-2 mb-8">
-          {[
-            { label: "Workouts", value: PROFILE_STATS.workoutsCompleted },
-            { label: "Goals", value: PROFILE_STATS.goalsCompleted },
-            { label: "Streak", value: PROFILE_STATS.streak },
-            { label: "Level", value: PROFILE_STATS.level },
-          ].map((stat) => (
-            <div
-              key={stat.label}
-              className="rounded-xl border border-livv-border bg-livv-surface py-3 text-center"
-            >
-              <p className="text-lg font-bold">{stat.value}</p>
-              <p className="text-[10px] text-livv-muted mt-0.5 uppercase tracking-wide">
-                {stat.label}
+        <section id="membership" className="mb-8 scroll-mt-6">
+          <div className="mb-3 flex items-end justify-between">
+            <div>
+              <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-white/35">
+                Membership
               </p>
+              <p className="mt-1 text-[20px] font-semibold tracking-tight">Pick the altitude</p>
             </div>
-          ))}
-        </div>
-
-        <div className="rounded-xl border border-livv-border bg-livv-surface p-4 mb-8">
-          <div className="flex justify-between text-xs text-livv-muted mb-1.5">
-            <span>Evolution XP</span>
-            <span>
-              {PROFILE_STATS.currentXp} / {PROFILE_STATS.xpToNext}
-            </span>
           </div>
-          <div className="h-2 rounded-full bg-livv-black overflow-hidden">
-            <div
-              className="h-full rounded-full bg-gradient-to-r from-livv-accent to-livv-energy transition-all"
-              style={{ width: `${Math.min(xpPercent, 100)}%` }}
-            />
-          </div>
-          <p className="mt-1.5 text-[11px] text-livv-muted">
-            {PROFILE_STATS.xpToNext - PROFILE_STATS.currentXp} XP to Level{" "}
-            {PROFILE_STATS.level + 1}
-          </p>
-        </div>
 
-        {/* Tabs */}
-        <div className="flex border-b border-livv-border mb-5">
+          <div className="space-y-3">
+            {TIERS.map((t) => {
+              const active = me.tier === t.id;
+              return (
+                <button
+                  key={t.id}
+                  onClick={() => setPicked(t.id)}
+                  className={cn(
+                    "w-full rounded-[22px] border p-5 text-left",
+                    t.featured && !active
+                      ? "border-livv-accent/40 bg-livv-accent/[0.07]"
+                      : "border-livv-border bg-livv-surface",
+                    active && "border-livv-accent bg-livv-accent/10"
+                  )}
+                >
+                  <div className="flex items-baseline justify-between gap-3">
+                    <p className="text-[18px] font-semibold tracking-tight">{t.name}</p>
+                    <p className="text-sm text-white/55">
+                      {t.price}
+                      <span className="text-white/30">{t.cadence}</span>
+                    </p>
+                  </div>
+                  <p className="mt-1 text-sm text-white/45">{t.blurb}</p>
+                  <ul className="mt-3 space-y-1.5">
+                    {t.perks.map((perk) => (
+                      <li key={perk} className="text-[13px] leading-snug text-white/70">
+                        {perk}
+                      </li>
+                    ))}
+                  </ul>
+                  {t.featured && !active && (
+                    <p className="mt-3 text-[11px] uppercase tracking-[0.16em] text-livv-accent-soft">
+                      Most people who stay pick this
+                    </p>
+                  )}
+                  {active && (
+                    <p className="mt-3 text-[11px] uppercase tracking-[0.16em] text-livv-accent-soft">
+                      Current
+                    </p>
+                  )}
+                </button>
+              );
+            })}
+          </div>
+        </section>
+
+        {hasTier(me.tier, "apex") && (
+          <section className="mb-8">
+            <p className="mb-3 text-[11px] font-medium uppercase tracking-[0.2em] text-white/35">
+              App skin
+            </p>
+            <div className="grid grid-cols-3 gap-2">
+              {(
+                [
+                  ["ember", "Ember"],
+                  ["midnight", "Midnight"],
+                  ["bone", "Bone"],
+                ] as [LivvTheme, string][]
+              ).map(([id, label]) => (
+                <button
+                  key={id}
+                  onClick={() => setMe(patchIdentity({ theme: id }))}
+                  className={cn(
+                    "rounded-2xl border py-3 text-sm",
+                    me.theme === id
+                      ? "border-livv-accent bg-livv-accent/10"
+                      : "border-livv-border bg-livv-surface"
+                  )}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+          </section>
+        )}
+
+        <div className="mb-5 flex border-b border-livv-border">
           {(
             [
-              { id: "activity", label: "Activity" },
-              { id: "progress", label: "Progress" },
-              { id: "achievements", label: "Achievements" },
-            ] as { id: Tab; label: string }[]
-          ).map((t) => (
+              ["activity", "Activity"],
+              ["progress", "Progress"],
+              ["vault", "Vault"],
+            ] as [Tab, string][]
+          ).map(([id, label]) => (
             <button
-              key={t.id}
-              onClick={() => setTab(t.id)}
+              key={id}
+              onClick={() => setTab(id)}
               className={cn(
-                "flex-1 pb-3 text-sm font-medium transition-colors",
-                tab === t.id
-                  ? "text-white border-b-2 border-livv-accent"
-                  : "text-livv-muted hover:text-white/80"
+                "flex-1 pb-3 text-sm font-medium",
+                tab === id ? "border-b-2 border-livv-accent text-white" : "text-white/40"
               )}
             >
-              {t.label}
+              {label}
             </button>
           ))}
         </div>
 
         {tab === "activity" && (
-          <div className="space-y-3 animate-fade-in">
+          <div className="space-y-3">
             {activities.length === 0 ? (
-              <div className="rounded-2xl border border-livv-border bg-livv-surface p-10 text-center">
-                <p className="text-sm text-livv-muted">No activity yet</p>
-                <p className="mt-2 text-xs text-white/30">
-                  Complete a workout or objective to generate activity.
-                </p>
-              </div>
+              <p className="rounded-[22px] border border-livv-border bg-livv-surface px-5 py-10 text-center text-sm text-white/40">
+                Train or finish an objective. It shows here.
+              </p>
             ) : (
               activities.map((activity) => (
                 <ActivityCard key={activity.id} activity={activity} />
@@ -287,69 +332,125 @@ export default function ProfilePage() {
         )}
 
         {tab === "progress" && (
-          <div className="space-y-3 animate-fade-in">
-            <p className="text-xs text-livv-muted uppercase tracking-wider mb-1">
-              Evolution Pillars
-            </p>
+          <div className="space-y-3">
             {PILLARS.map((pillar) => (
-              <div
-                key={pillar.id}
-                className="rounded-xl border border-livv-border bg-livv-surface p-4"
-              >
+              <div key={pillar.id} className="rounded-2xl border border-livv-border bg-livv-surface p-4">
                 <div className="flex items-center justify-between">
                   <p className="text-sm font-medium">{pillar.name}</p>
-                  <span className="text-xs text-livv-accent-soft">
-                    Lv {pillar.level}
-                  </span>
+                  <span className="text-xs text-livv-accent-soft">Lv {pillar.level}</span>
                 </div>
-                <div className="mt-2.5 h-1.5 rounded-full bg-livv-black overflow-hidden">
-                  <div
-                    className="h-full bg-livv-accent/80"
-                    style={{ width: `${pillar.progress}%` }}
-                  />
+                <div className="mt-2.5 h-1.5 overflow-hidden rounded-full bg-black/50">
+                  <div className="h-full bg-livv-accent" style={{ width: `${pillar.progress}%` }} />
                 </div>
               </div>
             ))}
+            <div className="space-y-2 pt-2">
+              {ACHIEVEMENTS.map((ach) => (
+                <div
+                  key={ach.id}
+                  className={cn(
+                    "flex items-center gap-3 rounded-2xl border p-3.5",
+                    ach.unlocked ? "border-livv-border bg-livv-surface" : "opacity-50 border-livv-border"
+                  )}
+                >
+                  <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-black/40 text-lg">
+                    {ach.icon}
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium">{ach.title}</p>
+                    <p className="text-xs text-white/40">{ach.description}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
           </div>
         )}
 
-        {tab === "achievements" && (
-          <div className="space-y-2 animate-fade-in">
-            {ACHIEVEMENTS.map((ach) => (
-              <div
-                key={ach.id}
-                className={cn(
-                  "flex items-center gap-3 rounded-xl border p-3.5",
-                  ach.unlocked
-                    ? "border-livv-border bg-livv-surface"
-                    : "border-livv-border/40 bg-livv-black/50 opacity-55"
-                )}
-              >
-                <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-livv-black text-lg">
-                  {ach.icon}
-                </div>
-                <div className="min-w-0 flex-1">
-                  <p className="text-sm font-medium">{ach.title}</p>
-                  <p className="text-xs text-livv-muted">{ach.description}</p>
-                </div>
-                {ach.unlocked ? (
-                  <span className="text-[10px] text-livv-accent-soft shrink-0">
-                    Unlocked
-                  </span>
-                ) : (
-                  <span className="text-[10px] text-white/25 shrink-0">
-                    Locked
-                  </span>
-                )}
-              </div>
-            ))}
+        {tab === "vault" && (
+          <div className="space-y-3">
+            <VaultRow
+              title="This week’s training planner"
+              meta="PDF · Rise"
+              locked={!hasTier(me.tier, "rise")}
+            />
+            <VaultRow
+              title="Meal architecture"
+              meta="Personalized · Apex"
+              locked={!hasTier(me.tier, "apex")}
+            />
+            <VaultRow
+              title="Monthly review pack"
+              meta="Printable · Apex"
+              locked={!hasTier(me.tier, "apex")}
+            />
+            <VaultRow
+              title="Gear allotment"
+              meta={`${me.embers} Embers banked · Inner Circle`}
+              locked={!hasTier(me.tier, "circle")}
+            />
           </div>
         )}
-
-        <p className="mt-10 text-center text-[11px] text-white/25">
-          Activity is stored locally in this browser for now.
-        </p>
       </Container>
+
+      {picked && (
+        <div className="fixed inset-0 z-[60] flex items-end bg-black/70 p-4 pb-8">
+          <div className="w-full rounded-[28px] border border-livv-border bg-[#0c0c0e] p-6">
+            <p className="text-[13px] uppercase tracking-[0.2em] text-white/35">Hold this rate</p>
+            <h2 className="mt-2 text-[26px] font-semibold tracking-tight">
+              {getTier(picked).name}
+            </h2>
+            <p className="mt-2 text-sm leading-relaxed text-white/50">
+              Billing is not live yet. Claiming it now locks the preview inside the app so you can
+              feel the altitude before money moves.
+            </p>
+            <div className="mt-6 flex gap-2">
+              <Button variant="ghost" className="flex-1" onClick={() => setPicked(null)}>
+                Not now
+              </Button>
+              <Button variant="accent" className="flex-1" onClick={() => claimTier(picked)}>
+                Claim {getTier(picked).name}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </main>
+  );
+}
+
+function Field({
+  label,
+  children,
+}: {
+  label: string;
+  children: React.ReactNode;
+}) {
+  return (
+    <label className="block">
+      <span className="text-[11px] uppercase tracking-[0.2em] text-white/35">{label}</span>
+      <div className="mt-2">{children}</div>
+    </label>
+  );
+}
+
+function VaultRow({
+  title,
+  meta,
+  locked,
+}: {
+  title: string;
+  meta: string;
+  locked: boolean;
+}) {
+  return (
+    <div className="flex items-center justify-between rounded-2xl border border-livv-border bg-livv-surface px-4 py-4">
+      <div>
+        <p className="text-sm font-medium">{title}</p>
+        <p className="mt-0.5 text-xs text-white/35">{meta}</p>
+      </div>
+      <span className="text-[11px] uppercase tracking-wider text-white/35">
+        {locked ? "Locked" : "Ready"}
+      </span>
+    </div>
   );
 }

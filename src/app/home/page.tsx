@@ -3,17 +3,21 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { Container } from "@/components/ui/container";
+import { Avatar } from "@/components/identity/avatar";
+import { addEmbers, loadIdentity, type Identity } from "@/lib/identity";
+import { getTier } from "@/lib/membership";
 import { checkInToday, getDailyCard, readStreak } from "@/lib/daily";
 
 const LOGO =
   "https://raw.githubusercontent.com/evolvewithlivv/livv/main/Photoroom_20260831_123254.png";
 
-function greeting(hour: number) {
-  if (hour < 5) return "Still up";
-  if (hour < 12) return "Good morning";
-  if (hour < 17) return "Good afternoon";
-  if (hour < 21) return "Good evening";
-  return "Wind down";
+function greeting(hour: number, name: string) {
+  const first = name.split(" ")[0] || "there";
+  if (hour < 5) return `Still up, ${first}`;
+  if (hour < 12) return `Morning, ${first}`;
+  if (hour < 17) return `Hey, ${first}`;
+  if (hour < 21) return `Evening, ${first}`;
+  return `Wind down, ${first}`;
 }
 
 export default function HomePage() {
@@ -21,6 +25,7 @@ export default function HomePage() {
   const [streak, setStreak] = useState(0);
   const [checkedIn, setCheckedIn] = useState(false);
   const [ready, setReady] = useState(false);
+  const [me, setMe] = useState<Identity | null>(null);
 
   useEffect(() => {
     const tick = () => setNow(new Date());
@@ -29,11 +34,18 @@ export default function HomePage() {
     const saved = readStreak();
     setStreak(saved.streak);
     setCheckedIn(saved.checkedInToday);
+    const sync = () => setMe(loadIdentity());
+    sync();
+    window.addEventListener("livv-identity", sync);
     setReady(true);
-    return () => window.clearInterval(id);
+    return () => {
+      window.clearInterval(id);
+      window.removeEventListener("livv-identity", sync);
+    };
   }, []);
 
   const card = useMemo(() => getDailyCard(now), [now]);
+  const tier = me ? getTier(me.tier) : getTier("spark");
 
   const dateLabel = now.toLocaleDateString("en-US", {
     weekday: "long",
@@ -49,6 +61,10 @@ export default function HomePage() {
   const onCheckIn = () => {
     const next = checkInToday();
     setStreak(next.streak);
+    if (!checkedIn) {
+      addEmbers(10 * tier.multiplier);
+      setMe(loadIdentity());
+    }
     setCheckedIn(true);
   };
 
@@ -66,11 +82,8 @@ export default function HomePage() {
             <img src={LOGO} alt="" width={32} height={32} className="h-8 w-8 object-contain" />
             <span className="text-[15px] font-semibold tracking-tight">LIVV</span>
           </div>
-          <Link
-            href="/home/profile"
-            className="flex h-9 w-9 items-center justify-center rounded-full border border-livv-border bg-livv-surface text-xs font-medium text-white/75"
-          >
-            You
+          <Link href="/home/profile" className="flex items-center gap-2">
+            {me && <Avatar identity={me} size={36} />}
           </Link>
         </header>
 
@@ -78,9 +91,9 @@ export default function HomePage() {
           {dateLabel} · {timeLabel}
         </p>
         <h1 className="mt-2 text-[34px] font-semibold leading-[1.08] tracking-tight">
-          {greeting(now.getHours())}.
+          {greeting(now.getHours(), me?.displayName || "there")}.
         </h1>
-        <p className="mt-3 max-w-[20ch] text-[22px] font-medium leading-snug tracking-tight text-white/88">
+        <p className="mt-3 max-w-[22ch] text-[22px] font-medium leading-snug tracking-tight text-white/88">
           {card.line}
         </p>
 
@@ -125,7 +138,7 @@ export default function HomePage() {
           type="button"
           onClick={onCheckIn}
           disabled={checkedIn}
-          className="mt-3 flex h-[72px] w-full items-center justify-between rounded-[22px] border border-livv-border bg-livv-surface px-5 text-left disabled:opacity-100"
+          className="mt-3 flex h-[72px] w-full items-center justify-between rounded-[22px] border border-livv-border bg-livv-surface px-5 text-left"
         >
           <span>
             <span className="block text-[15px] font-semibold tracking-tight">
@@ -133,8 +146,8 @@ export default function HomePage() {
             </span>
             <span className="mt-0.5 block text-[13px] text-white/40">
               {checkedIn
-                ? "Come back tomorrow. The page will be different."
-                : "Tap this so the streak counts."}
+                ? `+${10 * tier.multiplier} Embers banked.`
+                : `Check in. ${tier.multiplier}x Embers on ${tier.name}.`}
             </span>
           </span>
           <span
@@ -148,9 +161,16 @@ export default function HomePage() {
           </span>
         </button>
 
-        <p className="mt-8 text-center text-[12px] leading-relaxed text-white/28">
-          This screen changes every day. The rooms stay in the bar below.
-        </p>
+        {me && me.tier === "spark" && (
+          <Link
+            href="/home/profile#membership"
+            className="mt-3 block rounded-[22px] border border-white/[0.06] bg-white/[0.03] px-5 py-4"
+          >
+            <p className="text-[13px] text-white/55">
+              Rise banks Embers at 2x. Same check-in. Twice the later gear.
+            </p>
+          </Link>
+        )}
       </Container>
     </main>
   );
