@@ -10,12 +10,12 @@ export default function OpeningPage() {
       <div aria-hidden className="opening-atmosphere pointer-events-none absolute inset-0" />
       <div aria-hidden className="opening-veil pointer-events-none absolute inset-0" />
 
-      <div className="relative z-10 flex min-h-dvh flex-col items-center justify-center px-6 pb-[max(2.5rem,env(safe-area-inset-bottom))] pt-[max(2.5rem,env(safe-area-inset-top))]">
+      <div className="relative z-10 flex min-h-dvh flex-col items-center justify-center px-6 pb-[max(2.5rem,env(safe-area-inset-top))]">
         <div className="flex w-full max-w-md flex-col items-center text-center sm:max-w-lg">
           <div className="opening-wordmark select-none">
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
-              src="/Photoroom_20260831_123254.png"
+              src="https://raw.githubusercontent.com/evolvewithlivv/livv/main/Photoroom_20260831_123254.png"
               alt="LIVV"
               width={180}
               height={180}
