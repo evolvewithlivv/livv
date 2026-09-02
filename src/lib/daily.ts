@@ -1,3 +1,7 @@
+import { dayKey as dateKey } from "./dates";
+
+export { dayKey } from "./dates";
+
 export type DailyCard = {
   theme: string;
   line: string;
@@ -122,13 +126,6 @@ const DAYS: DailyCard[] = [
   },
 ];
 
-export function dayKey(date = new Date()) {
-  const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, "0");
-  const d = String(date.getDate()).padStart(2, "0");
-  return `${y}-${m}-${d}`;
-}
-
 export function dayNumber(date = new Date()) {
   const start = Date.UTC(date.getFullYear(), 0, 0);
   const now = Date.UTC(date.getFullYear(), date.getMonth(), date.getDate());
@@ -139,48 +136,4 @@ export function getDailyCard(date = new Date()): DailyCard {
   return DAYS[dayNumber(date) % DAYS.length];
 }
 
-const STREAK_KEY = "livv-home-streak";
-const LAST_KEY = "livv-home-last-checkin";
-
-function yesterdayKey() {
-  const d = new Date();
-  d.setDate(d.getDate() - 1);
-  return dayKey(d);
-}
-
-export function readStreak() {
-  if (typeof window === "undefined") {
-    return { streak: 0, checkedInToday: false };
-  }
-  const last = window.localStorage.getItem(LAST_KEY);
-  const raw = Number(window.localStorage.getItem(STREAK_KEY) || "0");
-  const today = dayKey();
-
-  if (last !== today && last !== yesterdayKey()) {
-    return { streak: last ? 0 : raw, checkedInToday: false };
-  }
-
-  return {
-    streak: Number.isFinite(raw) ? raw : 0,
-    checkedInToday: last === today,
-  };
-}
-
-export function checkInToday() {
-  if (typeof window === "undefined") {
-    return { streak: 1, checkedInToday: true };
-  }
-
-  const today = dayKey();
-  const last = window.localStorage.getItem(LAST_KEY);
-  const current = Number(window.localStorage.getItem(STREAK_KEY) || "0");
-
-  if (last === today) {
-    return { streak: current || 1, checkedInToday: true };
-  }
-
-  const next = last === yesterdayKey() ? current + 1 : 1;
-  window.localStorage.setItem(STREAK_KEY, String(next));
-  window.localStorage.setItem(LAST_KEY, today);
-  return { streak: next, checkedInToday: true };
-}
+void dateKey;

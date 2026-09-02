@@ -1,4 +1,4 @@
-import { dayKey } from "./daily";
+import { dayKey } from "./dates";
 import { ACHIEVEMENT_DEFS, OBJECTIVE_DEFS, PILLAR_DEFS } from "./evolve-data";
 import { activityFromAchievement, activityFromLevelUp } from "./activity";
 
@@ -188,6 +188,10 @@ export function completeWorkout(input: {
     rec.pillarXp[pid] = (rec.pillarXp[pid] || 0) + xp;
     if (!rec.pillarsTouched.includes(pid)) rec.pillarsTouched.push(pid);
     applyStreak(rec, today);
+    if (!day.objectives.includes("obj1")) {
+      day.objectives.push("obj1");
+      rec.goalsCompleted += 1;
+    }
   }
   rec.lastWorkout = {
     name: input.name,
