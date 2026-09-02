@@ -6,7 +6,8 @@ import { Container } from "@/components/ui/container";
 import { Avatar } from "@/components/identity/avatar";
 import { addEmbers, loadIdentity, type Identity } from "@/lib/identity";
 import { getTier } from "@/lib/membership";
-import { checkInToday, getDailyCard, readStreak } from "@/lib/daily";
+import { getDailyCard } from "@/lib/daily";
+import { checkInRecord, isCheckedInToday, loadRecord } from "@/lib/record";
 
 const LOGO =
   "https://raw.githubusercontent.com/evolvewithlivv/livv/main/Photoroom_20260831_123254.png";
@@ -31,16 +32,20 @@ export default function HomePage() {
     const tick = () => setNow(new Date());
     tick();
     const id = window.setInterval(tick, 30_000);
-    const saved = readStreak();
-    setStreak(saved.streak);
-    setCheckedIn(saved.checkedInToday);
-    const sync = () => setMe(loadIdentity());
-    sync();
-    window.addEventListener("livv-identity", sync);
+    const pull = () => {
+      const rec = loadRecord();
+      setStreak(rec.streak);
+      setCheckedIn(isCheckedInToday(rec));
+      setMe(loadIdentity());
+    };
+    pull();
+    window.addEventListener("livv-identity", pull);
+    window.addEventListener("livv-record", pull);
     setReady(true);
     return () => {
       window.clearInterval(id);
-      window.removeEventListener("livv-identity", sync);
+      window.removeEventListener("livv-identity", pull);
+      window.removeEventListener("livv-record", pull);
     };
   }, []);
 
@@ -59,13 +64,13 @@ export default function HomePage() {
   });
 
   const onCheckIn = () => {
-    const next = checkInToday();
-    setStreak(next.streak);
-    if (!checkedIn) {
+    const { record, already } = checkInRecord();
+    setStreak(record.streak);
+    setCheckedIn(true);
+    if (!already) {
       addEmbers(10 * tier.multiplier);
       setMe(loadIdentity());
     }
-    setCheckedIn(true);
   };
 
   return (
@@ -99,19 +104,13 @@ export default function HomePage() {
 
         <section className="mt-8 grid grid-cols-[1fr_auto] gap-3">
           <div className="rounded-[22px] border border-livv-border bg-livv-surface px-5 py-4">
-            <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-white/35">
-              Today
-            </p>
-            <p className="mt-2 text-[28px] font-semibold leading-none tracking-tight">
-              {card.theme}
-            </p>
+            <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-white/35">Today</p>
+            <p className="mt-2 text-[28px] font-semibold leading-none tracking-tight">{card.theme}</p>
             <p className="mt-2 text-sm leading-relaxed text-white/45">{card.note}</p>
           </div>
 
           <div className="flex min-w-[104px] flex-col items-center justify-center rounded-[22px] border border-livv-border bg-livv-surface px-4 py-4">
-            <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-white/35">
-              Streak
-            </p>
+            <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-white/35">Streak</p>
             <p className="mt-2 text-[40px] font-semibold leading-none tracking-tight text-livv-accent">
               {ready ? streak : "—"}
             </p>
@@ -123,9 +122,7 @@ export default function HomePage() {
           <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-livv-accent-soft">
             Your move
           </p>
-          <p className="mt-2 text-[17px] font-medium leading-snug tracking-tight">
-            {card.mission}
-          </p>
+          <p className="mt-2 text-[17px] font-medium leading-snug tracking-tight">{card.mission}</p>
           <Link
             href={card.missionHref}
             className="mt-5 inline-flex h-12 items-center justify-center rounded-full bg-livv-accent px-5 text-[14px] font-semibold text-white"
@@ -152,25 +149,12 @@ export default function HomePage() {
           </span>
           <span
             className={`flex h-9 w-9 items-center justify-center rounded-full text-sm ${
-              checkedIn
-                ? "bg-livv-accent text-white"
-                : "border border-livv-border text-white/40"
+              checkedIn ? "bg-livv-accent text-white" : "border border-livv-border text-white/40"
             }`}
           >
             {checkedIn ? "✓" : ""}
           </span>
         </button>
-
-        {me && me.tier === "spark" && (
-          <Link
-            href="/home/profile#membership"
-            className="mt-3 block rounded-[22px] border border-white/[0.06] bg-white/[0.03] px-5 py-4"
-          >
-            <p className="text-[13px] text-white/55">
-              Rise banks Embers at 2x. Same check-in. Twice the later gear.
-            </p>
-          </Link>
-        )}
       </Container>
     </main>
   );
