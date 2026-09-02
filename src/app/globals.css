@@ -2,11 +2,26 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
+:root,
+html[data-theme="dark"] {
   --livv-accent: 76 141 255;
   --livv-accent-soft: 163 196 255;
   --livv-accent-hex: #4c8dff;
   --livv-bg: #050505;
+  --livv-nav: rgba(8, 8, 10, 0.94);
+  --livv-surface: 18 18 20;
+  --livv-border: 34 34 38;
+  --livv-muted: 138 138 146;
+  --livv-fg: 255 255 255;
+}
+
+html[data-theme="light"] {
+  --livv-bg: #f3f3f5;
+  --livv-nav: rgba(247, 247, 249, 0.94);
+  --livv-surface: 255 255 255;
+  --livv-border: 226 226 232;
+  --livv-muted: 110 110 118;
+  --livv-fg: 17 17 20;
 }
 
 @layer base {
@@ -16,8 +31,9 @@
   }
 
   body {
-    @apply text-white antialiased;
+    @apply antialiased;
     background: var(--livv-bg);
+    color: rgb(var(--livv-fg));
     min-height: 100dvh;
     font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display",
       "Segoe UI", system-ui, sans-serif;
@@ -35,6 +51,37 @@
 
   ::selection {
     background: rgb(var(--livv-accent) / 0.4);
-    color: white;
   }
+}
+
+html[data-theme="light"] .text-white {
+  color: rgb(17 17 20) !important;
+}
+html[data-theme="light"] .text-white\/28,
+html[data-theme="light"] .text-white\/30,
+html[data-theme="light"] .text-white\/35,
+html[data-theme="light"] .text-white\/40,
+html[data-theme="light"] .text-white\/45,
+html[data-theme="light"] .text-white\/50,
+html[data-theme="light"] .text-white\/55,
+html[data-theme="light"] .text-white\/60,
+html[data-theme="light"] .text-white\/70,
+html[data-theme="light"] .text-white\/80,
+html[data-theme="light"] .text-white\/88 {
+  color: rgb(17 17 20 / 0.55) !important;
+}
+html[data-theme="light"] .bg-black,
+html[data-theme="light"] .bg-black\/30,
+html[data-theme="light"] .bg-black\/40,
+html[data-theme="light"] .bg-black\/50 {
+  background-color: rgb(17 17 20 / 0.06) !important;
+}
+html[data-theme="light"] .bg-\[\#050505\],
+html[data-theme="light"] .bg-\[\#0c0c0e\],
+html[data-theme="light"] .bg-\[\#111113\] {
+  background-color: #f3f3f5 !important;
+}
+html[data-theme="light"] .border-white\/5,
+html[data-theme="light"] .border-white\/\[0\.06\] {
+  border-color: rgb(17 17 20 / 0.08) !important;
 }

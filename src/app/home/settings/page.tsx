@@ -8,9 +8,16 @@ import {
   APP_COLORS,
   loadIdentity,
   patchIdentity,
+  type Appearance,
   type Identity,
 } from "@/lib/identity";
 import { getTier } from "@/lib/membership";
+
+const APPEARANCES: { id: Appearance; label: string; hint: string }[] = [
+  { id: "dark", label: "Dark", hint: "Always dark" },
+  { id: "light", label: "Light", hint: "Always light" },
+  { id: "system", label: "Device", hint: "Match iPhone setting" },
+];
 
 export default function SettingsPage() {
   const [me, setMe] = useState<Identity | null>(null);
@@ -29,17 +36,36 @@ export default function SettingsPage() {
   return (
     <main className="pt-8 pb-10">
       <Container>
-        <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-white/35">
-          Account
-        </p>
+        <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-white/35">Account</p>
         <h1 className="mt-1 text-[30px] font-semibold tracking-tight">Settings</h1>
 
         <section className="mt-8">
           <p className="mb-3 text-[11px] font-medium uppercase tracking-[0.2em] text-white/35">
-            App color
+            Appearance
           </p>
-          <p className="mb-4 text-sm leading-relaxed text-white/45">
-            This is the color of buttons, streaks, likes, and active tabs. It follows you everywhere.
+          <div className="grid grid-cols-3 gap-2">
+            {APPEARANCES.map((opt) => (
+              <button
+                key={opt.id}
+                type="button"
+                onClick={() => setMe(patchIdentity({ appearance: opt.id }))}
+                className={cn(
+                  "rounded-2xl border px-3 py-3 text-left",
+                  me.appearance === opt.id
+                    ? "border-livv-accent bg-livv-accent/10"
+                    : "border-livv-border bg-livv-surface"
+                )}
+              >
+                <span className="block text-sm font-medium">{opt.label}</span>
+                <span className="mt-1 block text-[11px] text-white/40">{opt.hint}</span>
+              </button>
+            ))}
+          </div>
+        </section>
+
+        <section className="mt-8">
+          <p className="mb-3 text-[11px] font-medium uppercase tracking-[0.2em] text-white/35">
+            App color
           </p>
           <div className="grid grid-cols-4 gap-3">
             {APP_COLORS.map((color) => {
@@ -54,7 +80,7 @@ export default function SettingsPage() {
                   <span
                     className={cn(
                       "h-12 w-12 rounded-full",
-                      active && "ring-2 ring-white ring-offset-2 ring-offset-black"
+                      active && "ring-2 ring-white ring-offset-2 ring-offset-[var(--livv-bg)]"
                     )}
                     style={{ backgroundColor: color.value }}
                   />
@@ -69,12 +95,6 @@ export default function SettingsPage() {
           <Row href="/home/profile" label="Identity" value={me.displayName} />
           <Row href="/home/profile#membership" label="Membership" value={tier.name} />
           <Row href="/home/profile" label="Vault" value={`${me.embers} Embers`} />
-        </section>
-
-        <section className="mt-4 overflow-hidden rounded-[22px] border border-livv-border bg-livv-surface">
-          <DummyRow label="Notifications" value="On" />
-          <DummyRow label="Private account" value="Off" />
-          <DummyRow label="Downloads over Wi-Fi" value="On" />
         </section>
 
         <p className="mt-8 text-center text-[12px] text-white/28">LIVV · 0.1</p>
@@ -100,14 +120,5 @@ function Row({
       <span className="text-sm">{label}</span>
       <span className="text-sm text-white/35">{value} ›</span>
     </Link>
-  );
-}
-
-function DummyRow({ label, value }: { label: string; value: string }) {
-  return (
-    <div className="flex items-center justify-between border-b border-white/5 px-4 py-4 last:border-b-0">
-      <span className="text-sm">{label}</span>
-      <span className="text-sm text-white/35">{value}</span>
-    </div>
   );
 }

@@ -10,11 +10,11 @@ const config: Config = {
     extend: {
       colors: {
         livv: {
-          black: "#050505",
-          dark: "#0a0a0b",
-          surface: "#121214",
-          border: "#222226",
-          muted: "#8a8a92",
+          black: "var(--livv-bg)",
+          dark: "var(--livv-bg)",
+          surface: "rgb(var(--livv-surface) / <alpha-value>)",
+          border: "rgb(var(--livv-border) / <alpha-value>)",
+          muted: "rgb(var(--livv-muted) / <alpha-value>)",
           accent: "rgb(var(--livv-accent) / <alpha-value>)",
           "accent-soft": "rgb(var(--livv-accent-soft) / <alpha-value>)",
           glow: "rgb(var(--livv-accent) / <alpha-value>)",

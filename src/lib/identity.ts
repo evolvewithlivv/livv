@@ -1,5 +1,6 @@
 export type LivvTier = "spark" | "rise" | "apex" | "circle";
 export type LivvTheme = "ember" | "midnight" | "bone";
+export type Appearance = "dark" | "light" | "system";
 
 export type Identity = {
   displayName: string;
@@ -9,6 +10,7 @@ export type Identity = {
   accent: string;
   tier: LivvTier;
   theme: LivvTheme;
+  appearance: Appearance;
   embers: number;
 };
 
@@ -37,6 +39,7 @@ export const DEFAULT_IDENTITY: Identity = {
   accent: DEFAULT_ACCENT,
   tier: "spark",
   theme: "ember",
+  appearance: "dark",
   embers: 40,
 };
 
@@ -56,16 +59,29 @@ function soften(hex: string) {
   return `${mix(r)} ${mix(g)} ${mix(b)}`;
 }
 
-export function applyAppColor(hex: string, theme: LivvTheme = "ember") {
+export function resolvedAppearance(appearance: Appearance): "dark" | "light" {
+  if (appearance === "light") return "light";
+  if (appearance === "dark") return "dark";
+  if (typeof window === "undefined") return "dark";
+  return window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark";
+}
+
+export function applyAppearance(appearance: Appearance, accent: string) {
   if (typeof document === "undefined") return;
-  const { r, g, b } = hexToRgb(hex);
+  const mode = resolvedAppearance(appearance);
   const root = document.documentElement;
+  root.dataset.theme = mode;
+  root.style.colorScheme = mode;
+
+  const { r, g, b } = hexToRgb(accent);
   root.style.setProperty("--livv-accent", `${r} ${g} ${b}`);
-  root.style.setProperty("--livv-accent-soft", soften(hex));
-  root.style.setProperty("--livv-accent-hex", hex);
-  const bg =
-    theme === "midnight" ? "#07080f" : theme === "bone" ? "#12100e" : "#050505";
-  root.style.setProperty("--livv-bg", bg);
+  root.style.setProperty("--livv-accent-soft", soften(accent));
+  root.style.setProperty("--livv-accent-hex", accent);
+}
+
+export function applyAppColor(hex: string, theme: LivvTheme = "ember") {
+  applyAppearance(loadIdentity().appearance, hex);
+  void theme;
 }
 
 export function loadIdentity(): Identity {
@@ -75,6 +91,7 @@ export function loadIdentity(): Identity {
     if (!raw) return DEFAULT_IDENTITY;
     const parsed = { ...DEFAULT_IDENTITY, ...JSON.parse(raw) } as Identity;
     if (parsed.accent === "#FF6A1A") parsed.accent = DEFAULT_ACCENT;
+    if (!parsed.appearance) parsed.appearance = "dark";
     return parsed;
   } catch {
     return DEFAULT_IDENTITY;
@@ -84,7 +101,7 @@ export function loadIdentity(): Identity {
 export function saveIdentity(next: Identity) {
   if (typeof window === "undefined") return;
   window.localStorage.setItem(KEY, JSON.stringify(next));
-  applyAppColor(next.accent, next.theme);
+  applyAppearance(next.appearance, next.accent);
   window.dispatchEvent(new Event("livv-identity"));
 }
 
