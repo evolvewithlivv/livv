@@ -1,3 +1,5 @@
+import { getCurrentAccount, syncAccountFromIdentity } from "./auth";
+
 export type LivvTier = "spark" | "rise" | "apex" | "circle";
 export type LivvTheme = "ember" | "midnight" | "bone";
 export type Appearance = "dark" | "light" | "system";
@@ -32,15 +34,15 @@ export const APP_COLORS = [
 export const ACCENTS = APP_COLORS.map((c) => c.value);
 
 export const DEFAULT_IDENTITY: Identity = {
-  displayName: "Kanye",
-  username: "evolvewithlivv",
-  bio: "Building the version that does not fold.",
+  displayName: "",
+  username: "",
+  bio: "",
   photo: null,
   accent: DEFAULT_ACCENT,
   tier: "spark",
   theme: "ember",
   appearance: "dark",
-  embers: 40,
+  embers: 0,
 };
 
 function hexToRgb(hex: string) {
@@ -87,6 +89,20 @@ export function applyAppColor(hex: string, theme: LivvTheme = "ember") {
 export function loadIdentity(): Identity {
   if (typeof window === "undefined") return DEFAULT_IDENTITY;
   try {
+    const account = getCurrentAccount();
+    if (account) {
+      return {
+        displayName: account.displayName,
+        username: account.username,
+        bio: account.bio,
+        photo: account.photo,
+        accent: account.accent,
+        tier: account.tier,
+        theme: account.theme,
+        appearance: account.appearance,
+        embers: account.embers,
+      };
+    }
     const raw = window.localStorage.getItem(KEY);
     if (!raw) return DEFAULT_IDENTITY;
     const parsed = { ...DEFAULT_IDENTITY, ...JSON.parse(raw) } as Identity;
@@ -100,8 +116,13 @@ export function loadIdentity(): Identity {
 
 export function saveIdentity(next: Identity) {
   if (typeof window === "undefined") return;
+  const account = getCurrentAccount();
+  if (account?.usernameLocked) {
+    next = { ...next, username: account.username };
+  }
   window.localStorage.setItem(KEY, JSON.stringify(next));
   applyAppearance(next.appearance, next.accent);
+  syncAccountFromIdentity(next);
   window.dispatchEvent(new Event("livv-identity"));
 }
 

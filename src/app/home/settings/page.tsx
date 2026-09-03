@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Container } from "@/components/ui/container";
 import { cn } from "@/lib/utils";
 import {
@@ -11,6 +12,7 @@ import {
   type Appearance,
   type Identity,
 } from "@/lib/identity";
+import { getCurrentAccount, signOut } from "@/lib/auth";
 import { getTier } from "@/lib/membership";
 
 const APPEARANCES: { id: Appearance; label: string; hint: string }[] = [
@@ -20,13 +22,23 @@ const APPEARANCES: { id: Appearance; label: string; hint: string }[] = [
 ];
 
 export default function SettingsPage() {
+  const router = useRouter();
   const [me, setMe] = useState<Identity | null>(null);
+  const [provider, setProvider] = useState("");
 
   useEffect(() => {
-    const sync = () => setMe(loadIdentity());
+    const sync = () => {
+      setMe(loadIdentity());
+      const acc = getCurrentAccount();
+      setProvider(acc?.provider || "");
+    };
     sync();
     window.addEventListener("livv-identity", sync);
-    return () => window.removeEventListener("livv-identity", sync);
+    window.addEventListener("livv-auth", sync);
+    return () => {
+      window.removeEventListener("livv-identity", sync);
+      window.removeEventListener("livv-auth", sync);
+    };
   }, []);
 
   if (!me) return null;
@@ -38,6 +50,17 @@ export default function SettingsPage() {
       <Container>
         <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-white/35">Account</p>
         <h1 className="mt-1 text-[30px] font-semibold tracking-tight">Settings</h1>
+
+        <section className="mt-6 overflow-hidden rounded-[22px] border border-livv-border bg-livv-surface">
+          <div className="border-b border-white/5 px-4 py-4">
+            <p className="text-[11px] uppercase tracking-[0.16em] text-white/35">Signed in</p>
+            <p className="mt-1 text-sm font-medium">@{me.username}</p>
+            <p className="mt-0.5 text-xs capitalize text-white/40">{provider || "account"}</p>
+          </div>
+          <div className="px-4 py-4">
+            <p className="text-[12px] text-white/40">Username is locked. Same as Instagram / X.</p>
+          </div>
+        </section>
 
         <section className="mt-8">
           <p className="mb-3 text-[11px] font-medium uppercase tracking-[0.2em] text-white/35">
@@ -94,8 +117,18 @@ export default function SettingsPage() {
         <section className="mt-10 overflow-hidden rounded-[22px] border border-livv-border bg-livv-surface">
           <Row href="/home/profile" label="Identity" value={me.displayName} />
           <Row href="/home/profile#membership" label="Membership" value={tier.name} />
-          <Row href="/home/profile" label="Vault" value={`${me.embers} Embers`} />
         </section>
+
+        <button
+          type="button"
+          onClick={() => {
+            signOut();
+            router.replace("/auth");
+          }}
+          className="mt-8 w-full rounded-full border border-red-500/30 py-3.5 text-sm text-red-400"
+        >
+          Sign out
+        </button>
 
         <p className="mt-8 text-center text-[12px] text-white/28">LIVV · 0.1</p>
       </Container>
