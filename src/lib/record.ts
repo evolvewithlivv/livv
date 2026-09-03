@@ -32,6 +32,9 @@ export type LivvRecord = {
   achievements: string[];
   days: Record<string, DayLog>;
   lastWorkout: LastWorkout | null;
+  streakFreezes: number;
+  freezeWeekKey: string | null;
+  frozenDays: string[];
 };
 
 const KEY = "livv-record-v1";
@@ -57,12 +60,34 @@ export const EMPTY_RECORD: LivvRecord = {
   achievements: [],
   days: {},
   lastWorkout: null,
+  streakFreezes: 1,
+  freezeWeekKey: null,
+  frozenDays: [],
 };
+
+function weekKey(date = new Date()) {
+  const d = new Date(date);
+  const day = d.getDay();
+  const mondayOffset = day === 0 ? -6 : 1 - day;
+  d.setDate(d.getDate() + mondayOffset);
+  return dayKey(d);
+}
 
 function yesterdayKey() {
   const d = new Date();
   d.setDate(d.getDate() - 1);
   return dayKey(d);
+}
+
+function ensureFreezeQuota(rec: LivvRecord) {
+  const wk = weekKey();
+  if (rec.freezeWeekKey !== wk) {
+    rec.freezeWeekKey = wk;
+    rec.streakFreezes = 1;
+  }
+  if (typeof rec.streakFreezes !== "number") rec.streakFreezes = 1;
+  if (!rec.frozenDays) rec.frozenDays = [];
+  return rec;
 }
 
 export function loadRecord(): LivvRecord {
@@ -74,7 +99,7 @@ export function loadRecord(): LivvRecord {
     parsed.pillarXp = { ...EMPTY_RECORD.pillarXp, ...parsed.pillarXp };
     parsed.days = parsed.days || {};
     parsed.achievements = parsed.achievements || [];
-    return parsed;
+    return ensureFreezeQuota(parsed);
   } catch {
     return { ...EMPTY_RECORD, pillarXp: { ...EMPTY_RECORD.pillarXp } };
   }
@@ -100,8 +125,11 @@ function dayOf(rec: LivvRecord, key: string): DayLog {
 
 function applyStreak(rec: LivvRecord, today: string) {
   if (rec.lastActiveDay === today) return rec;
-  if (rec.lastActiveDay === yesterdayKey()) rec.streak += 1;
-  else rec.streak = 1;
+  if (rec.lastActiveDay === yesterdayKey() || rec.frozenDays?.includes(yesterdayKey())) {
+    rec.streak += 1;
+  } else {
+    rec.streak = 1;
+  }
   rec.lastActiveDay = today;
   return rec;
 }
@@ -153,19 +181,41 @@ function evaluateAchievements(rec: LivvRecord) {
   return rec;
 }
 
+/** Ethical streak freeze: bridges a missed day without shame messaging. */
+export function useStreakFreeze() {
+  const rec = ensureFreezeQuota(loadRecord());
+  if (rec.streakFreezes <= 0) return null;
+  if (rec.streak <= 0) return null;
+
+  const miss = yesterdayKey();
+  if (rec.lastActiveDay === dayKey() || rec.lastActiveDay === miss) {
+    // nothing to freeze if already active yesterday/today
+  }
+  rec.streakFreezes -= 1;
+  if (!rec.frozenDays.includes(miss)) rec.frozenDays.push(miss);
+  // treat freeze as keeping chain ready for today's action
+  if (rec.lastActiveDay !== dayKey()) {
+    rec.lastActiveDay = miss;
+  }
+  saveRecord(rec);
+  return rec;
+}
+
 export function checkInRecord() {
-  const rec = loadRecord();
+  const rec = ensureFreezeQuota(loadRecord());
   const today = dayKey();
   const day = dayOf(rec, today);
   if (day.checkIn) {
-    return { record: rec, already: true };
+    return { record: rec, already: true as const, emberBonus: 0 };
   }
   day.checkIn = true;
   rec.days[today] = day;
   applyStreak(rec, today);
   evaluateAchievements(rec);
+  // Variable reward aligned with showing up — not a slot machine, occasional extra.
+  const emberBonus = Math.random() < 0.28 ? [5, 8, 12, 15][Math.floor(Math.random() * 4)] : 0;
   saveRecord(rec);
-  return { record: rec, already: false };
+  return { record: rec, already: false as const, emberBonus };
 }
 
 export function completeWorkout(input: {
