@@ -7,7 +7,8 @@ import { Avatar } from "@/components/identity/avatar";
 import { addEmbers, loadIdentity, type Identity } from "@/lib/identity";
 import { getTier } from "@/lib/membership";
 import { getDailyCard } from "@/lib/daily";
-import { checkInRecord, isCheckedInToday, loadRecord } from "@/lib/record";
+import { checkInRecord, isCheckedInToday, loadRecord, weekHitCount } from "@/lib/record";
+import { feedback } from "@/lib/sensory";
 
 const LOGO =
   "https://raw.githubusercontent.com/evolvewithlivv/livv/main/Photoroom_20260831_123254.png";
@@ -24,9 +25,12 @@ function greeting(hour: number, name: string) {
 export default function HomePage() {
   const [now, setNow] = useState(() => new Date());
   const [streak, setStreak] = useState(0);
+  const [displayStreak, setDisplayStreak] = useState(0);
   const [checkedIn, setCheckedIn] = useState(false);
   const [ready, setReady] = useState(false);
   const [me, setMe] = useState<Identity | null>(null);
+  const [pop, setPop] = useState(false);
+  const [weekHits, setWeekHits] = useState(0);
 
   useEffect(() => {
     const tick = () => setNow(new Date());
@@ -35,7 +39,9 @@ export default function HomePage() {
     const pull = () => {
       const rec = loadRecord();
       setStreak(rec.streak);
+      setDisplayStreak(rec.streak);
       setCheckedIn(isCheckedInToday(rec));
+      setWeekHits(weekHitCount(rec));
       setMe(loadIdentity());
     };
     pull();
@@ -66,8 +72,16 @@ export default function HomePage() {
   const onCheckIn = () => {
     const { record, already } = checkInRecord();
     setStreak(record.streak);
+    setWeekHits(weekHitCount(record));
     setCheckedIn(true);
     if (!already) {
+      feedback("checkin");
+      setPop(true);
+      window.setTimeout(() => setPop(false), 700);
+      // count-up feel
+      const from = Math.max(0, record.streak - 1);
+      setDisplayStreak(from);
+      window.setTimeout(() => setDisplayStreak(record.streak), 80);
       addEmbers(10 * tier.multiplier);
       setMe(loadIdentity());
     }
@@ -75,10 +89,10 @@ export default function HomePage() {
 
   return (
     <main className="relative overflow-hidden pt-6 pb-8">
-      <div
-        aria-hidden
-        className="pointer-events-none absolute inset-x-0 top-0 h-72 bg-livv-gradient"
-      />
+      <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-80">
+        <div className="livv-atmosphere absolute inset-0 bg-livv-gradient" />
+        <div className="livv-grain" />
+      </div>
 
       <Container className="relative">
         <header className="mb-10 flex items-center justify-between">
@@ -103,16 +117,23 @@ export default function HomePage() {
         </p>
 
         <section className="mt-8 grid grid-cols-[1fr_auto] gap-3">
-          <div className="rounded-[22px] border border-livv-border bg-livv-surface px-5 py-4">
+          <div className="rounded-[22px] border border-livv-border bg-livv-surface/90 px-5 py-4 backdrop-blur-sm">
             <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-white/35">Today</p>
             <p className="mt-2 text-[28px] font-semibold leading-none tracking-tight">{card.theme}</p>
             <p className="mt-2 text-sm leading-relaxed text-white/45">{card.note}</p>
           </div>
 
-          <div className="flex min-w-[104px] flex-col items-center justify-center rounded-[22px] border border-livv-border bg-livv-surface px-4 py-4">
+          <div className="relative flex min-w-[104px] flex-col items-center justify-center overflow-hidden rounded-[22px] border border-livv-border bg-livv-surface/90 px-4 py-4 backdrop-blur-sm">
+            {pop && (
+              <span className="livv-pulse-ring absolute inset-0 rounded-[22px] border border-livv-accent/50" />
+            )}
             <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-white/35">Streak</p>
-            <p className="mt-2 text-[40px] font-semibold leading-none tracking-tight text-livv-accent">
-              {ready ? streak : "—"}
+            <p
+              className={`mt-2 text-[40px] font-semibold leading-none tracking-tight text-livv-accent ${
+                pop ? "livv-check-pop" : ""
+              }`}
+            >
+              {ready ? displayStreak : "—"}
             </p>
             <p className="mt-1 text-[11px] text-white/40">days</p>
           </div>
@@ -125,7 +146,8 @@ export default function HomePage() {
           <p className="mt-2 text-[17px] font-medium leading-snug tracking-tight">{card.mission}</p>
           <Link
             href={card.missionHref}
-            className="mt-5 inline-flex h-12 items-center justify-center rounded-full bg-livv-accent px-5 text-[14px] font-semibold text-white"
+            onClick={() => feedback("tick")}
+            className="mt-5 inline-flex h-12 items-center justify-center rounded-full bg-livv-accent px-5 text-[14px] font-semibold text-white active:scale-[0.98]"
           >
             {card.missionCta}
           </Link>
@@ -135,7 +157,7 @@ export default function HomePage() {
           type="button"
           onClick={onCheckIn}
           disabled={checkedIn}
-          className="mt-3 flex h-[72px] w-full items-center justify-between rounded-[22px] border border-livv-border bg-livv-surface px-5 text-left"
+          className="mt-3 flex h-[72px] w-full items-center justify-between rounded-[22px] border border-livv-border bg-livv-surface/90 px-5 text-left backdrop-blur-sm transition active:scale-[0.99]"
         >
           <span>
             <span className="block text-[15px] font-semibold tracking-tight">
@@ -148,13 +170,24 @@ export default function HomePage() {
             </span>
           </span>
           <span
-            className={`flex h-9 w-9 items-center justify-center rounded-full text-sm ${
+            className={`relative flex h-9 w-9 items-center justify-center rounded-full text-sm ${
               checkedIn ? "bg-livv-accent text-white" : "border border-livv-border text-white/40"
             }`}
           >
             {checkedIn ? "✓" : ""}
           </span>
         </button>
+
+        <Link
+          href="/home/progress"
+          className="mt-3 block rounded-[22px] border border-livv-border bg-livv-surface/70 px-5 py-4"
+        >
+          <p className="text-[11px] uppercase tracking-[0.18em] text-white/35">This week</p>
+          <p className="mt-1 text-[15px] font-medium">
+            {weekHits}/7 days with signal
+            <span className="text-white/40"> · open recap</span>
+          </p>
+        </Link>
       </Container>
     </main>
   );
