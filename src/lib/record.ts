@@ -1,6 +1,8 @@
 import { dayKey } from "./dates";
 import { ACHIEVEMENT_DEFS, OBJECTIVE_DEFS, PILLAR_DEFS } from "./evolve-data";
 import { activityFromAchievement, activityFromLevelUp } from "./activity";
+import { addEmbers } from "./identity";
+import { embersFromAction } from "./embers";
 
 export type DayLog = {
   key: string;
@@ -8,6 +10,7 @@ export type DayLog = {
   workout: boolean;
   objectives: string[];
   xp: number;
+  custom: { id: string; title: string; pillar: string; xp: number }[];
 };
 
 export type LastWorkout = {
@@ -112,13 +115,15 @@ export function saveRecord(next: LivvRecord) {
 }
 
 function dayOf(rec: LivvRecord, key: string): DayLog {
+  const existing = rec.days[key];
   return (
-    rec.days[key] || {
+    existing || {
       key,
       checkIn: false,
       workout: false,
       objectives: [],
       xp: 0,
+      custom: [],
     }
   );
 }
@@ -181,22 +186,14 @@ function evaluateAchievements(rec: LivvRecord) {
   return rec;
 }
 
-/** Ethical streak freeze: bridges a missed day without shame messaging. */
 export function useStreakFreeze() {
   const rec = ensureFreezeQuota(loadRecord());
   if (rec.streakFreezes <= 0) return null;
   if (rec.streak <= 0) return null;
-
   const miss = yesterdayKey();
-  if (rec.lastActiveDay === dayKey() || rec.lastActiveDay === miss) {
-    // nothing to freeze if already active yesterday/today
-  }
   rec.streakFreezes -= 1;
   if (!rec.frozenDays.includes(miss)) rec.frozenDays.push(miss);
-  // treat freeze as keeping chain ready for today's action
-  if (rec.lastActiveDay !== dayKey()) {
-    rec.lastActiveDay = miss;
-  }
+  if (rec.lastActiveDay !== dayKey()) rec.lastActiveDay = miss;
   saveRecord(rec);
   return rec;
 }
@@ -212,7 +209,6 @@ export function checkInRecord() {
   rec.days[today] = day;
   applyStreak(rec, today);
   evaluateAchievements(rec);
-  // Variable reward aligned with showing up — not a slot machine, occasional extra.
   const emberBonus = Math.random() < 0.28 ? [5, 8, 12, 15][Math.floor(Math.random() * 4)] : 0;
   saveRecord(rec);
   return { record: rec, already: false as const, emberBonus };
@@ -242,6 +238,7 @@ export function completeWorkout(input: {
       day.objectives.push("obj1");
       rec.goalsCompleted += 1;
     }
+    addEmbers(embersFromAction("workout"));
   }
   rec.lastWorkout = {
     name: input.name,
@@ -275,6 +272,7 @@ export function setObjective(id: string, done: boolean) {
     if (!rec.pillarsTouched.includes(pid)) rec.pillarsTouched.push(pid);
     addXp(rec, def.xp);
     applyStreak(rec, today);
+    addEmbers(embersFromAction("objective"));
   }
 
   if (!done && has) {
@@ -292,12 +290,45 @@ export function setObjective(id: string, done: boolean) {
   return rec;
 }
 
+const SIZE_XP = { small: 15, standard: 30, major: 55 } as const;
+
+export function logCustomAction(input: {
+  title: string;
+  pillar: string;
+  size: "small" | "standard" | "major";
+}) {
+  const rec = loadRecord();
+  const today = dayKey();
+  const day = dayOf(rec, today);
+  if (!day.custom) day.custom = [];
+  const xp = SIZE_XP[input.size];
+  const id = `c_${Date.now()}`;
+  day.custom.push({ id, title: input.title.trim(), pillar: input.pillar, xp });
+  day.xp += xp;
+  const pid = pillarIdFromName(input.pillar);
+  rec.pillarXp[pid] = (rec.pillarXp[pid] || 0) + xp;
+  if (!rec.pillarsTouched.includes(pid)) rec.pillarsTouched.push(pid);
+  if (pid === "mind") rec.mindObjectives += 1;
+  rec.goalsCompleted += 1;
+  addXp(rec, xp);
+  applyStreak(rec, today);
+  rec.days[today] = day;
+  evaluateAchievements(rec);
+  saveRecord(rec);
+  addEmbers(embersFromAction("custom", input.size));
+  return rec;
+}
+
 export function todaysObjectives(rec = loadRecord()) {
   const today = dayOf(rec, dayKey());
   return OBJECTIVE_DEFS.map((o) => ({
     ...o,
     completed: today.objectives.includes(o.id),
   }));
+}
+
+export function todaysCustom(rec = loadRecord()) {
+  return dayOf(rec, dayKey()).custom || [];
 }
 
 export function livePillars(rec = loadRecord()) {
@@ -323,9 +354,17 @@ export function weekBars(rec = loadRecord()) {
     const d = new Date(now);
     d.setDate(now.getDate() + mondayOffset + i);
     const log = rec.days[dayKey(d)];
-    const active = Boolean(log && (log.checkIn || log.workout || log.objectives.length));
+    const active = Boolean(
+      log && (log.checkIn || log.workout || log.objectives.length || (log.custom && log.custom.length))
+    );
     const score = log
-      ? Math.min(100, (log.checkIn ? 25 : 0) + (log.workout ? 45 : 0) + log.objectives.length * 8)
+      ? Math.min(
+          100,
+          (log.checkIn ? 25 : 0) +
+            (log.workout ? 45 : 0) +
+            log.objectives.length * 8 +
+            (log.custom?.length || 0) * 8
+        )
       : 0;
     return { d: label, v: score, active, key: dayKey(d) };
   });
@@ -337,4 +376,15 @@ export function weekHitCount(rec = loadRecord()) {
 
 export function isCheckedInToday(rec = loadRecord()) {
   return Boolean(rec.days[dayKey()]?.checkIn);
+}
+
+export function missedYesterday(rec = loadRecord()) {
+  const y = yesterdayKey();
+  if (rec.lastActiveDay === y || rec.frozenDays?.includes(y)) return false;
+  if (!rec.lastActiveDay) return false;
+  if (rec.lastActiveDay === dayKey()) return false;
+  const log = rec.days[y];
+  if (log && (log.checkIn || log.workout || log.objectives.length)) return false;
+  // only show if user has some history
+  return rec.workoutsCompleted + rec.goalsCompleted > 0;
 }

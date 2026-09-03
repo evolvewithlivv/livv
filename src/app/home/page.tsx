@@ -1,74 +1,51 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Container } from "@/components/ui/container";
 import { Avatar } from "@/components/identity/avatar";
 import { AmbientField } from "@/components/layout/ambient-field";
 import { addEmbers, loadIdentity, type Identity } from "@/lib/identity";
 import { getTier } from "@/lib/membership";
-import { getDailyCard } from "@/lib/daily";
 import {
   checkInRecord,
   isCheckedInToday,
   loadRecord,
+  missedYesterday,
   useStreakFreeze,
   weekHitCount,
+  type LivvRecord,
 } from "@/lib/record";
+import {
+  actionsCompletedCount,
+  contextGreeting,
+  focusCard,
+  nextMove,
+} from "@/lib/command";
+import { evolutionTitle } from "@/lib/levels";
+import { EMBERS_BLURB } from "@/lib/embers";
 import { feedback } from "@/lib/sensory";
-import { dayNumber } from "@/lib/daily";
 
 const LOGO =
   "https://raw.githubusercontent.com/evolvewithlivv/livv/main/Photoroom_20260831_123254.png";
 
-const SPARKS = [
-  "Small reps compound into a different person.",
-  "Nobody is grading today except you.",
-  "Consistency is quieter than motivation.",
-  "Show up ugly. Still counts.",
-  "The version you want is built on boring days.",
-  "Protect the chain. One action is enough.",
-  "You already know what to do.",
-];
-
-function greeting(hour: number, name: string) {
-  const first = name.split(" ")[0] || "there";
-  if (hour < 5) return `Still up, ${first}`;
-  if (hour < 12) return `Morning, ${first}`;
-  if (hour < 17) return `Hey, ${first}`;
-  if (hour < 21) return `Evening, ${first}`;
-  return `Wind down, ${first}`;
-}
-
 export default function HomePage() {
   const [now, setNow] = useState(() => new Date());
-  const [streak, setStreak] = useState(0);
-  const [displayStreak, setDisplayStreak] = useState(0);
-  const [checkedIn, setCheckedIn] = useState(false);
-  const [ready, setReady] = useState(false);
+  const [rec, setRec] = useState<LivvRecord | null>(null);
   const [me, setMe] = useState<Identity | null>(null);
   const [pop, setPop] = useState(false);
-  const [weekHits, setWeekHits] = useState(0);
-  const [freezes, setFreezes] = useState(0);
   const [bonusLine, setBonusLine] = useState<string | null>(null);
 
+  const pull = () => {
+    setRec(loadRecord());
+    setMe(loadIdentity());
+  };
+
   useEffect(() => {
-    const tick = () => setNow(new Date());
-    tick();
-    const id = window.setInterval(tick, 30_000);
-    const pull = () => {
-      const rec = loadRecord();
-      setStreak(rec.streak);
-      setDisplayStreak(rec.streak);
-      setCheckedIn(isCheckedInToday(rec));
-      setWeekHits(weekHitCount(rec));
-      setFreezes(rec.streakFreezes ?? 1);
-      setMe(loadIdentity());
-    };
     pull();
+    const id = window.setInterval(() => setNow(new Date()), 30_000);
     window.addEventListener("livv-identity", pull);
     window.addEventListener("livv-record", pull);
-    setReady(true);
     return () => {
       window.clearInterval(id);
       window.removeEventListener("livv-identity", pull);
@@ -76,9 +53,19 @@ export default function HomePage() {
     };
   }, []);
 
-  const card = useMemo(() => getDailyCard(now), [now]);
-  const spark = useMemo(() => SPARKS[dayNumber(now) % SPARKS.length], [now]);
-  const tier = me ? getTier(me.tier) : getTier("spark");
+  if (!rec || !me) {
+    return <main className="min-h-[50dvh] bg-livv-black" />;
+  }
+
+  const tier = getTier(me.tier);
+  const greet = contextGreeting(now, rec);
+  const focus = focusCard(now);
+  const move = nextMove(rec);
+  const { done, total, pillars } = actionsCompletedCount(rec);
+  const checkedIn = isCheckedInToday(rec);
+  const evo = evolutionTitle(rec.level);
+  const quiet = missedYesterday(rec);
+  const weekHits = weekHitCount(rec);
 
   const dateLabel = now.toLocaleDateString("en-US", {
     weekday: "long",
@@ -86,39 +73,19 @@ export default function HomePage() {
     day: "numeric",
   });
 
-  const timeLabel = now.toLocaleTimeString("en-US", {
-    hour: "numeric",
-    minute: "2-digit",
-  });
-
   const onCheckIn = () => {
     const { record, already, emberBonus } = checkInRecord();
-    setStreak(record.streak);
-    setWeekHits(weekHitCount(record));
-    setFreezes(record.streakFreezes ?? 1);
-    setCheckedIn(true);
+    setRec(record);
     if (!already) {
       feedback("checkin");
       setPop(true);
       window.setTimeout(() => setPop(false), 700);
-      const from = Math.max(0, record.streak - 1);
-      setDisplayStreak(from);
-      window.setTimeout(() => setDisplayStreak(record.streak), 80);
       const base = 10 * tier.multiplier;
       addEmbers(base + (emberBonus || 0));
       setMe(loadIdentity());
-      if (emberBonus) setBonusLine(`+${emberBonus} surprise Embers for showing up`);
-      else setBonusLine(null);
+      if (emberBonus) setBonusLine(`+${emberBonus} extra Embers. Momentum noticed.`);
+      else setBonusLine(`+${base} Embers. You showed up.`);
     }
-  };
-
-  const onFreeze = () => {
-    const next = useStreakFreeze();
-    if (!next) return;
-    feedback("unlock");
-    setStreak(next.streak);
-    setDisplayStreak(next.streak);
-    setFreezes(next.streakFreezes);
   };
 
   return (
@@ -130,48 +97,63 @@ export default function HomePage() {
       </div>
 
       <Container className="relative">
-        <header className="mb-10 flex items-center justify-between">
+        <header className="mb-8 flex items-center justify-between">
           <div className="flex items-center gap-2">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={LOGO} alt="" width={32} height={32} className="h-8 w-8 object-contain drop-shadow-[0_0_12px_rgb(var(--livv-accent)/0.35)]" />
+            <img
+              src={LOGO}
+              alt=""
+              width={32}
+              height={32}
+              className="h-8 w-8 object-contain drop-shadow-[0_0_12px_rgb(var(--livv-accent)/0.35)]"
+            />
             <span className="font-display text-[15px] font-semibold tracking-tight">LIVV</span>
           </div>
           <Link href="/home/profile" className="flex items-center gap-2">
-            {me && <Avatar identity={me} size={36} />}
+            <Avatar identity={me} size={36} />
           </Link>
         </header>
 
-        <p className="text-[12px] font-medium text-white/40">
-          {dateLabel} · {timeLabel}
-        </p>
-        <h1 className="font-display mt-2 text-[36px] font-semibold leading-[1.05] tracking-tight">
-          {greeting(now.getHours(), me?.displayName || "there")}.
+        <p className="text-[12px] font-medium text-white/40">{dateLabel}</p>
+        <h1 className="font-display mt-2 text-[34px] font-semibold leading-[1.05] tracking-tight">
+          {greet.salutation}.
         </h1>
-        <p className="mt-3 max-w-[22ch] text-[21px] font-medium leading-snug tracking-tight text-white/88">
-          {card.line}
+        <p className="mt-3 max-w-[28ch] text-[17px] font-medium leading-snug text-white/75">
+          {greet.line}
         </p>
-        <p className="mt-3 max-w-sm text-[13px] leading-relaxed text-white/40">{spark}</p>
 
-        <section className="mt-8 grid grid-cols-[1fr_auto] gap-3">
-          <div className="livv-card-glow rounded-[22px] border border-livv-border bg-livv-surface/85 px-5 py-4 backdrop-blur-md">
-            <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-white/35">Today</p>
-            <p className="font-display mt-2 text-[28px] font-semibold leading-none tracking-tight">
-              {card.theme}
+        {quiet && (
+          <div className="mt-5 rounded-[18px] border border-white/10 bg-white/[0.03] px-4 py-3">
+            <p className="text-[13px] text-white/55">
+              Yesterday was quiet. That is data, not failure.
             </p>
-            <p className="mt-2 text-sm leading-relaxed text-white/45">{card.note}</p>
+            <p className="mt-1 text-[12px] text-white/35">Start again today.</p>
+          </div>
+        )}
+
+        <section className="mt-7 grid grid-cols-[1fr_auto] gap-3">
+          <div className="livv-card-glow rounded-[22px] border border-livv-border bg-livv-surface/85 px-5 py-4 backdrop-blur-md">
+            <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-white/35">
+              Today&apos;s focus
+            </p>
+            <p className="font-display mt-2 text-[26px] font-semibold leading-none tracking-tight">
+              {focus.theme}
+            </p>
+            <p className="mt-2 text-sm leading-relaxed text-white/55">{focus.principle}</p>
+            <p className="mt-2 text-[12px] leading-relaxed text-white/35">{focus.detail}</p>
           </div>
 
-          <div className="livv-card-glow-strong relative flex min-w-[112px] flex-col items-center justify-center overflow-hidden rounded-[22px] border border-livv-accent/25 bg-livv-surface/90 px-4 py-4 backdrop-blur-md">
+          <div className="livv-card-glow-strong relative flex min-w-[104px] flex-col items-center justify-center overflow-hidden rounded-[22px] border border-livv-accent/25 bg-livv-surface/90 px-4 py-4">
             {pop && (
               <span className="livv-pulse-ring absolute inset-0 rounded-[22px] border border-livv-accent/50" />
             )}
             <p className="text-[11px] font-medium uppercase tracking-[0.18em] text-white/35">Streak</p>
             <p
-              className={`font-display mt-2 text-[44px] font-semibold leading-none tracking-tight text-livv-accent ${
+              className={`font-display mt-2 text-[40px] font-semibold leading-none tracking-tight text-livv-accent ${
                 pop ? "livv-check-pop" : ""
               }`}
             >
-              {ready ? displayStreak : "—"}
+              {rec.streak}
             </p>
             <p className="mt-1 text-[11px] text-white/40">days</p>
           </div>
@@ -181,64 +163,131 @@ export default function HomePage() {
           <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-livv-accent-soft">
             Your move
           </p>
-          <p className="mt-2 text-[17px] font-medium leading-snug tracking-tight">{card.mission}</p>
-          <Link
-            href={card.missionHref}
-            onClick={() => feedback("tick")}
-            className="mt-5 inline-flex h-12 items-center justify-center rounded-full bg-livv-accent px-5 text-[14px] font-semibold text-white shadow-[0_0_28px_rgb(var(--livv-accent)/0.35)] active:scale-[0.98]"
-          >
-            {card.missionCta}
-          </Link>
+          <p className="mt-2 text-[18px] font-semibold tracking-tight">{move.title}</p>
+          <p className="mt-1 text-sm text-white/45">{move.reason}</p>
+          {move.href === "/home" ? (
+            <button
+              type="button"
+              onClick={onCheckIn}
+              disabled={checkedIn}
+              className="mt-5 inline-flex h-12 items-center justify-center rounded-full bg-livv-accent px-5 text-[14px] font-semibold text-white shadow-[0_0_28px_rgb(var(--livv-accent)/0.35)]"
+            >
+              {checkedIn ? "Already logged" : move.cta}
+            </button>
+          ) : (
+            <Link
+              href={move.href}
+              onClick={() => feedback("tick")}
+              className="mt-5 inline-flex h-12 items-center justify-center rounded-full bg-livv-accent px-5 text-[14px] font-semibold text-white shadow-[0_0_28px_rgb(var(--livv-accent)/0.35)]"
+            >
+              {move.cta}
+            </Link>
+          )}
         </section>
 
-        <button
-          type="button"
-          onClick={onCheckIn}
-          disabled={checkedIn}
-          className="livv-card-glow mt-3 flex h-[76px] w-full items-center justify-between rounded-[22px] border border-livv-border bg-livv-surface/90 px-5 text-left backdrop-blur-md transition active:scale-[0.99]"
-        >
-          <span>
-            <span className="block text-[15px] font-semibold tracking-tight">
-              {checkedIn ? "You showed up today" : "I showed up today"}
+        <section className="livv-card-glow mt-3 rounded-[22px] border border-livv-border bg-livv-surface/90 px-5 py-5">
+          <div className="flex items-end justify-between">
+            <div>
+              <p className="text-[11px] font-medium uppercase tracking-[0.2em] text-white/35">Today</p>
+              <p className="mt-1 text-[22px] font-semibold tracking-tight">
+                {done} / {total}
+              </p>
+            </div>
+            <p className="text-[12px] text-white/35">actions with signal</p>
+          </div>
+          <div className="mt-3 h-2 overflow-hidden rounded-full bg-black/40">
+            <div
+              className="h-full rounded-full bg-livv-accent transition-all duration-700"
+              style={{ width: `${(done / total) * 100}%` }}
+            />
+          </div>
+          <div className="mt-4 flex flex-wrap gap-2">
+            {pillars.map((p) => (
+              <span
+                key={p.id}
+                className={`rounded-full border px-2.5 py-1 text-[11px] ${
+                  p.done
+                    ? "border-livv-accent/40 bg-livv-accent/15 text-livv-accent-soft"
+                    : "border-livv-border text-white/35"
+                }`}
+              >
+                {p.name} {p.done ? "✓" : "○"}
+              </span>
+            ))}
+            <span
+              className={`rounded-full border px-2.5 py-1 text-[11px] ${
+                checkedIn
+                  ? "border-livv-accent/40 bg-livv-accent/15 text-livv-accent-soft"
+                  : "border-livv-border text-white/35"
+              }`}
+            >
+              Check-in {checkedIn ? "✓" : "○"}
             </span>
-            <span className="mt-0.5 block text-[13px] text-white/40">
-              {checkedIn
-                ? bonusLine || `+${10 * tier.multiplier} Embers banked.`
-                : `Check in. ${tier.multiplier}x Embers on ${tier.name}.`}
-            </span>
-          </span>
-          <span
-            className={`relative flex h-9 w-9 items-center justify-center rounded-full text-sm ${
-              checkedIn
-                ? "bg-livv-accent text-white shadow-[0_0_16px_rgb(var(--livv-accent)/0.5)]"
-                : "border border-livv-border text-white/40"
-            }`}
-          >
-            {checkedIn ? "✓" : ""}
-          </span>
-        </button>
+          </div>
+          <p className="mt-3 text-[11px] text-white/30">
+            Not every pillar every day. Consistency across the week is the point.
+          </p>
+        </section>
 
-        {streak === 0 && freezes > 0 && (
+        {!checkedIn && (
           <button
             type="button"
-            onClick={onFreeze}
-            className="mt-3 w-full rounded-[18px] border border-white/10 bg-white/[0.03] px-4 py-3 text-left text-[13px] text-white/50"
+            onClick={onCheckIn}
+            className="livv-card-glow mt-3 flex h-[72px] w-full items-center justify-between rounded-[22px] border border-livv-border bg-livv-surface/90 px-5 text-left"
           >
-            Life happens. Use a streak freeze ({freezes} left this week) — no shame, just keep the
-            chain.
+            <span>
+              <span className="block text-[15px] font-semibold">I showed up today</span>
+              <span className="mt-0.5 block text-[13px] text-white/40">
+                Check in. Embers track momentum, not points for games.
+              </span>
+            </span>
+            <span className="flex h-9 w-9 items-center justify-center rounded-full border border-livv-border text-white/40" />
           </button>
         )}
 
-        <Link
-          href="/home/progress"
-          className="livv-card-glow mt-3 block rounded-[22px] border border-livv-border bg-livv-surface/70 px-5 py-4"
-        >
-          <p className="text-[11px] uppercase tracking-[0.18em] text-white/35">This week</p>
-          <p className="mt-1 text-[15px] font-medium">
-            {weekHits}/7 days with signal
-            <span className="text-white/40"> · open recap</span>
-          </p>
-        </Link>
+        {checkedIn && (
+          <div className="mt-3 rounded-[22px] border border-livv-border bg-livv-surface/80 px-5 py-4">
+            <p className="text-[15px] font-semibold">You showed up today</p>
+            <p className="mt-1 text-[13px] text-white/40">{bonusLine || "On the record."}</p>
+          </div>
+        )}
+
+        <section className="mt-3 grid grid-cols-2 gap-3">
+          <Link
+            href="/home/evolve"
+            className="livv-card-glow rounded-[20px] border border-livv-border bg-livv-surface/80 px-4 py-4"
+          >
+            <p className="text-[11px] uppercase tracking-[0.16em] text-white/35">Evolution</p>
+            <p className="font-display mt-1 text-[22px] font-semibold">Lv {rec.level}</p>
+            <p className="mt-0.5 text-[12px] text-livv-accent-soft">{evo.name}</p>
+          </Link>
+          <Link
+            href="/home/progress"
+            className="livv-card-glow rounded-[20px] border border-livv-border bg-livv-surface/80 px-4 py-4"
+          >
+            <p className="text-[11px] uppercase tracking-[0.16em] text-white/35">This week</p>
+            <p className="font-display mt-1 text-[22px] font-semibold">{weekHits}/7</p>
+            <p className="mt-0.5 text-[12px] text-white/40">days with signal</p>
+          </Link>
+        </section>
+
+        <p className="mt-6 text-[11px] leading-relaxed text-white/28">{EMBERS_BLURB}</p>
+
+        {rec.streak === 0 && (rec.streakFreezes ?? 0) > 0 && (
+          <button
+            type="button"
+            onClick={() => {
+              const next = useStreakFreeze();
+              if (next) {
+                feedback("unlock");
+                setRec(next);
+              }
+            }}
+            className="mt-3 w-full rounded-[18px] border border-white/10 bg-white/[0.03] px-4 py-3 text-left text-[13px] text-white/45"
+          >
+            Life happens. Use a streak freeze ({rec.streakFreezes} left this week).
+          </button>
+        )}
       </Container>
     </main>
   );
