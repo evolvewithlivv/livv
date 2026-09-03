@@ -35,18 +35,19 @@ html[data-theme="light"] {
     background: var(--livv-bg);
     color: rgb(var(--livv-fg));
     min-height: 100dvh;
-    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "SF Pro Display",
+    font-family: var(--font-body), -apple-system, BlinkMacSystemFont, "SF Pro Text",
       "Segoe UI", system-ui, sans-serif;
     letter-spacing: -0.016em;
   }
 
   h1,
   h2,
-  h3 {
-    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text",
-      "Segoe UI", system-ui, sans-serif;
-    letter-spacing: -0.03em;
-    font-weight: 590;
+  h3,
+  .font-display {
+    font-family: var(--font-display), var(--font-body), -apple-system, BlinkMacSystemFont,
+      "SF Pro Display", system-ui, sans-serif;
+    letter-spacing: -0.04em;
+    font-weight: 600;
   }
 
   ::selection {
@@ -60,8 +61,8 @@ html[data-theme="light"] {
     opacity: 0.55;
   }
   50% {
-    transform: translate3d(0, -12px, 0) scale(1.04);
-    opacity: 0.85;
+    transform: translate3d(0, -14px, 0) scale(1.05);
+    opacity: 0.9;
   }
   100% {
     transform: translate3d(0, 0, 0) scale(1);
@@ -106,6 +107,33 @@ html[data-theme="light"] {
   }
 }
 
+@keyframes ambientFloat {
+  0% {
+    transform: translate3d(0, 0, 0);
+    opacity: 0.15;
+  }
+  50% {
+    transform: translate3d(6px, -18px, 0);
+    opacity: 0.55;
+  }
+  100% {
+    transform: translate3d(0, 0, 0);
+    opacity: 0.2;
+  }
+}
+
+@keyframes orbPulse {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(1.08);
+  }
+}
+
 .livv-atmosphere {
   animation: livvDrift 14s ease-in-out infinite;
 }
@@ -114,8 +142,8 @@ html[data-theme="light"] {
   pointer-events: none;
   position: absolute;
   inset: -20%;
-  opacity: 0.04;
-  background-image: radial-gradient(rgba(255, 255, 255, 0.35) 0.5px, transparent 0.5px);
+  opacity: 0.045;
+  background-image: radial-gradient(rgba(255, 255, 255, 0.4) 0.6px, transparent 0.6px);
   background-size: 3px 3px;
   animation: livvGrain 8s steps(2) infinite;
 }
@@ -126,6 +154,69 @@ html[data-theme="light"] {
 
 .livv-pulse-ring {
   animation: livvPulseRing 0.9s ease-out both;
+}
+
+.ambient-dot {
+  position: absolute;
+  border-radius: 999px;
+  background: rgb(var(--livv-accent));
+  box-shadow: 0 0 10px rgb(var(--livv-accent) / 0.8), 0 0 20px rgb(var(--livv-accent) / 0.35);
+  animation-name: ambientFloat;
+  animation-timing-function: ease-in-out;
+  animation-iteration-count: infinite;
+}
+
+.ambient-orb {
+  position: absolute;
+  border-radius: 999px;
+  filter: blur(48px);
+  animation: orbPulse 10s ease-in-out infinite;
+}
+
+.ambient-orb-a {
+  top: -8%;
+  left: 20%;
+  width: 55vw;
+  height: 55vw;
+  max-width: 320px;
+  max-height: 320px;
+  background: rgb(var(--livv-accent) / 0.22);
+}
+
+.ambient-orb-b {
+  top: 35%;
+  right: -10%;
+  width: 40vw;
+  height: 40vw;
+  max-width: 220px;
+  max-height: 220px;
+  background: rgb(var(--livv-accent-soft) / 0.12);
+  animation-delay: 2s;
+}
+
+.ambient-orb-c {
+  bottom: 5%;
+  left: -5%;
+  width: 45vw;
+  height: 45vw;
+  max-width: 260px;
+  max-height: 260px;
+  background: rgb(var(--livv-accent) / 0.1);
+  animation-delay: 4s;
+}
+
+.livv-card-glow {
+  box-shadow:
+    0 0 0 1px rgb(var(--livv-accent) / 0.08),
+    0 12px 40px rgb(0 0 0 / 0.35),
+    0 0 48px rgb(var(--livv-accent) / 0.06);
+}
+
+.livv-card-glow-strong {
+  box-shadow:
+    0 0 0 1px rgb(var(--livv-accent) / 0.22),
+    0 16px 48px rgb(0 0 0 / 0.4),
+    0 0 64px rgb(var(--livv-accent) / 0.14);
 }
 
 html[data-theme="light"] .text-white {
@@ -153,4 +244,7 @@ html[data-theme="light"] .bg-black\/50 {
 html[data-theme="light"] .livv-grain {
   opacity: 0.03;
   background-image: radial-gradient(rgba(0, 0, 0, 0.35) 0.5px, transparent 0.5px);
+}
+html[data-theme="light"] .ambient-dot {
+  box-shadow: 0 0 8px rgb(var(--livv-accent) / 0.5);
 }
