@@ -12,6 +12,7 @@ import {
   todaysObjectives,
   type LivvRecord,
 } from "@/lib/record";
+import { feedback } from "@/lib/sensory";
 
 export default function EvolvePage() {
   const [rec, setRec] = useState<LivvRecord | null>(null);
@@ -36,36 +37,34 @@ export default function EvolvePage() {
     const updated = setObjective(id, next);
     if (next) {
       activityFromObjective({ objectiveTitle: title, pillar, xp });
+      feedback("checkin");
+    } else {
+      feedback("tick");
     }
     setRec(updated);
   };
 
   return (
-    <main className="pt-8 pb-6">
-      <Container>
+    <main className="relative overflow-hidden pt-8 pb-6">
+      <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-48 bg-livv-gradient opacity-50" />
+      <Container className="relative">
         <div className="mb-8">
-          <p className="text-[11px] font-medium uppercase tracking-[0.28em] text-livv-muted">
-            Identity
-          </p>
+          <p className="text-[11px] font-medium uppercase tracking-[0.28em] text-livv-muted">Identity</p>
           <h1 className="mt-2 text-[2.4rem] font-semibold leading-none tracking-tight">Evolve</h1>
           <p className="mt-3 max-w-xs text-sm leading-relaxed text-white/45">
             Growth across every dimension. Check the boxes that matter today.
           </p>
         </div>
 
-        <section className="mb-6 rounded-3xl border border-livv-border bg-livv-surface p-5">
+        <section className="mb-6 rounded-3xl border border-livv-border bg-livv-surface/95 p-5">
           <div className="flex items-end justify-between">
             <div>
-              <p className="text-[11px] uppercase tracking-[0.22em] text-livv-muted">
-                Evolution Level
-              </p>
+              <p className="text-[11px] uppercase tracking-[0.22em] text-livv-muted">Evolution Level</p>
               <p className="mt-1 text-5xl font-semibold leading-none tracking-tight">{rec.level}</p>
             </div>
             <div className="text-right">
               <p className="text-[11px] uppercase tracking-[0.18em] text-livv-muted">Streak</p>
-              <p className="mt-1 text-lg font-medium text-livv-accent-soft">
-                {rec.streak} days
-              </p>
+              <p className="mt-1 text-lg font-medium text-livv-accent-soft">{rec.streak} days</p>
             </div>
           </div>
 
@@ -78,7 +77,7 @@ export default function EvolvePage() {
             </div>
             <div className="h-2 overflow-hidden rounded-full bg-black/50">
               <div
-                className="h-full rounded-full bg-gradient-to-r from-livv-accent to-livv-energy transition-all duration-500"
+                className="h-full rounded-full bg-gradient-to-r from-livv-accent to-livv-energy transition-all duration-700"
                 style={{ width: `${Math.min(xpProgress, 100)}%` }}
               />
             </div>
@@ -90,9 +89,7 @@ export default function EvolvePage() {
 
         <section className="mb-8">
           <div className="mb-3 flex items-center justify-between">
-            <p className="text-[11px] uppercase tracking-[0.22em] text-livv-muted">
-              Today&apos;s Objectives
-            </p>
+            <p className="text-[11px] uppercase tracking-[0.22em] text-livv-muted">Today&apos;s Objectives</p>
             <p className="text-xs text-livv-muted">
               {completedCount}/{objectives.length}
             </p>
@@ -102,14 +99,12 @@ export default function EvolvePage() {
             {objectives.map((obj) => (
               <button
                 key={obj.id}
-                onClick={() =>
-                  toggleObjective(obj.id, obj.title, obj.pillar, obj.xp, !obj.completed)
-                }
+                onClick={() => toggleObjective(obj.id, obj.title, obj.pillar, obj.xp, !obj.completed)}
                 className={cn(
-                  "flex w-full items-center gap-3 rounded-2xl border p-4 text-left transition-all",
+                  "flex w-full items-center gap-3 rounded-2xl border p-4 text-left transition-all active:scale-[0.99]",
                   obj.completed
                     ? "border-livv-accent/40 bg-livv-accent/10"
-                    : "border-livv-border bg-livv-surface hover:border-white/15"
+                    : "border-livv-border bg-livv-surface"
                 )}
               >
                 <div
@@ -136,22 +131,20 @@ export default function EvolvePage() {
         </section>
 
         <section className="mb-8">
-          <p className="mb-3 text-[11px] uppercase tracking-[0.22em] text-livv-muted">
-            Evolution Pillars
-          </p>
+          <p className="mb-3 text-[11px] uppercase tracking-[0.22em] text-livv-muted">Evolution Pillars</p>
           <div className="grid grid-cols-2 gap-2.5">
             {pillars.map((pillar) => (
-              <div
-                key={pillar.id}
-                className="rounded-2xl border border-livv-border bg-livv-surface p-4"
-              >
+              <div key={pillar.id} className="rounded-2xl border border-livv-border bg-livv-surface p-4">
                 <div className="flex items-center justify-between">
                   <p className="text-lg font-semibold leading-none tracking-tight">{pillar.name}</p>
                   <span className="text-xs text-livv-accent-soft">Lv {pillar.level}</span>
                 </div>
                 <p className="mt-2 text-[11px] leading-snug text-livv-muted">{pillar.description}</p>
                 <div className="mt-3 h-1 overflow-hidden rounded-full bg-black/50">
-                  <div className="h-full bg-livv-accent/80" style={{ width: `${pillar.progress}%` }} />
+                  <div
+                    className="h-full bg-livv-accent/80 transition-all duration-700"
+                    style={{ width: `${pillar.progress}%` }}
+                  />
                 </div>
               </div>
             ))}
