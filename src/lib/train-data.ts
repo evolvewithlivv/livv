@@ -1,3 +1,10 @@
+export type Goal =
+  | "Build muscle"
+  | "Lose fat"
+  | "Get stronger"
+  | "Endurance"
+  | "General fitness";
+
 export type Focus =
   | "Full Body"
   | "Upper Body"
@@ -9,6 +16,7 @@ export type Focus =
   | "Cardio";
 
 export type Location = "Home" | "Gym" | "Anywhere";
+export type Equipment = "None" | "Dumbbells" | "Bands" | "Full gym";
 export type Duration = "10" | "20" | "30" | "45" | "60+";
 
 export type Exercise = {
@@ -29,13 +37,15 @@ export type Workout = {
   duration: string;
   difficulty: "Beginner" | "Intermediate" | "Advanced";
   exercises: Exercise[];
+  goal?: Goal;
+  equipment?: Equipment;
 };
 
 const EXERCISE_POOL: Record<Focus, Exercise[]> = {
   "Full Body": [
     { id: "fb1", name: "Bodyweight Squats", sets: 3, reps: "12-15", rest: "45s" },
     { id: "fb2", name: "Push-ups", sets: 3, reps: "8-12", rest: "45s" },
-    { id: "fb3", name: "Bent-over Rows (dumbbell or band)", sets: 3, reps: "10-12", rest: "45s" },
+    { id: "fb3", name: "Bent-over Rows", sets: 3, reps: "10-12", rest: "45s" },
     { id: "fb4", name: "Glute Bridges", sets: 3, reps: "12-15", rest: "40s" },
     { id: "fb5", name: "Plank", sets: 3, duration: "30-45s", rest: "30s" },
     { id: "fb6", name: "Jumping Jacks", sets: 2, duration: "40s", rest: "20s" },
@@ -115,7 +125,9 @@ function getExerciseCount(duration: Duration): number {
 export function generateWorkout(
   focus: Focus,
   location: Location,
-  duration: Duration
+  duration: Duration,
+  goal?: Goal,
+  equipment?: Equipment
 ): Workout {
   const pool = EXERCISE_POOL[focus];
   const count = Math.min(getExerciseCount(duration), pool.length);
@@ -140,8 +152,18 @@ export function generateWorkout(
     duration: duration === "60+" ? "60+ min" : `${duration} min`,
     difficulty: getDifficulty(duration),
     exercises,
+    goal,
+    equipment,
   };
 }
+
+export const GOAL_OPTIONS: Goal[] = [
+  "Build muscle",
+  "Lose fat",
+  "Get stronger",
+  "Endurance",
+  "General fitness",
+];
 
 export const FOCUS_OPTIONS: Focus[] = [
   "Full Body",
@@ -155,6 +177,7 @@ export const FOCUS_OPTIONS: Focus[] = [
 ];
 
 export const LOCATION_OPTIONS: Location[] = ["Home", "Gym", "Anywhere"];
+export const EQUIPMENT_OPTIONS: Equipment[] = ["None", "Dumbbells", "Bands", "Full gym"];
 
 export const DURATION_OPTIONS: { value: Duration; label: string }[] = [
   { value: "10", label: "10 min" },
