@@ -1,12 +1,27 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { isSignedIn } from "@/lib/auth";
 
 const LOGO =
   "https://raw.githubusercontent.com/evolvewithlivv/livv/main/Photoroom_20260831_123254.png";
 
 export default function OpeningPage() {
   const router = useRouter();
+  const [ready, setReady] = useState(false);
+
+  useEffect(() => {
+    if (isSignedIn()) {
+      router.replace("/home");
+      return;
+    }
+    setReady(true);
+  }, [router]);
+
+  if (!ready) {
+    return <main className="min-h-dvh bg-[#050505]" />;
+  }
 
   return (
     <main className="opening relative min-h-dvh overflow-hidden bg-[#050505] text-white">
@@ -35,19 +50,23 @@ export default function OpeningPage() {
             Your evolution starts here.
           </p>
 
-          <div className="opening-cta mt-14 w-full sm:mt-16 sm:w-auto">
+          <div className="opening-cta mt-14 w-full space-y-3 sm:mt-16 sm:w-auto">
             <button
               type="button"
-              onClick={() => router.push("/onboarding")}
-              className="opening-enter group relative inline-flex h-14 w-full items-center justify-center gap-3 rounded-full border border-white/[0.12] bg-white/[0.04] px-10 font-sans text-[13px] font-medium uppercase tracking-[0.28em] text-white transition-all duration-300 ease-out hover:border-livv-accent/50 hover:bg-livv-accent/10 active:scale-[0.985] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-livv-accent/40 focus-visible:ring-offset-2 focus-visible:ring-offset-[#050505] sm:h-12 sm:w-auto sm:min-w-[14rem]"
+              onClick={() => router.push("/auth")}
+              className="opening-enter group relative inline-flex h-14 w-full items-center justify-center gap-3 rounded-full border border-white/[0.12] bg-white/[0.04] px-10 font-sans text-[13px] font-medium uppercase tracking-[0.28em] text-white transition-all duration-300 ease-out hover:border-livv-accent/50 hover:bg-livv-accent/10 active:scale-[0.985] sm:h-12 sm:w-auto sm:min-w-[14rem]"
             >
               <span>Enter LIVV</span>
-              <span
-                aria-hidden
-                className="inline-block translate-x-0 transition-transform duration-300 ease-out group-hover:translate-x-1"
-              >
+              <span aria-hidden className="inline-block transition-transform duration-300 group-hover:translate-x-1">
                 →
               </span>
+            </button>
+            <button
+              type="button"
+              onClick={() => router.push("/auth")}
+              className="text-[12px] text-white/40"
+            >
+              Sign in
             </button>
           </div>
         </div>
@@ -56,30 +75,16 @@ export default function OpeningPage() {
       <style jsx>{`
         .opening-atmosphere {
           background:
-            radial-gradient(
-              ellipse 90% 55% at 50% -15%,
-              rgb(var(--livv-accent) / 0.16),
-              transparent 55%
-            ),
-            radial-gradient(
-              ellipse 50% 40% at 50% 110%,
-              rgb(var(--livv-accent) / 0.08),
-              transparent 50%
-            );
+            radial-gradient(ellipse 90% 55% at 50% -15%, rgb(var(--livv-accent) / 0.16), transparent 55%),
+            radial-gradient(ellipse 50% 40% at 50% 110%, rgb(var(--livv-accent) / 0.08), transparent 50%);
           opacity: 0;
           animation: openingAtmosphere 1.4s ease-out 0.05s forwards;
         }
-
         .opening-veil {
-          background: radial-gradient(
-            circle at 50% 42%,
-            rgba(255, 255, 255, 0.018),
-            transparent 42%
-          );
+          background: radial-gradient(circle at 50% 42%, rgba(255, 255, 255, 0.018), transparent 42%);
           opacity: 0;
           animation: openingAtmosphere 1.8s ease-out 0.15s forwards;
         }
-
         .opening-wordmark,
         .opening-line,
         .opening-sub,
@@ -92,25 +97,8 @@ export default function OpeningPage() {
         .opening-line { animation-delay: 0.45s; }
         .opening-sub { animation-delay: 0.58s; }
         .opening-cta { animation-delay: 0.75s; }
-
-        @keyframes openingAtmosphere {
-          to { opacity: 1; }
-        }
-        @keyframes openingRise {
-          to { opacity: 1; transform: translateY(0); }
-        }
-        @media (prefers-reduced-motion: reduce) {
-          .opening-atmosphere,
-          .opening-veil,
-          .opening-wordmark,
-          .opening-line,
-          .opening-sub,
-          .opening-cta {
-            animation: none !important;
-            opacity: 1 !important;
-            transform: none !important;
-          }
-        }
+        @keyframes openingAtmosphere { to { opacity: 1; } }
+        @keyframes openingRise { to { opacity: 1; transform: translateY(0); } }
       `}</style>
     </main>
   );
