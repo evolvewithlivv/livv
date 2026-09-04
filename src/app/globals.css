@@ -7,17 +7,17 @@ html[data-theme="dark"] {
   --livv-accent: 76 141 255;
   --livv-accent-soft: 163 196 255;
   --livv-accent-hex: #4c8dff;
-  --livv-bg: #050505;
-  --livv-nav: rgba(8, 8, 10, 0.94);
-  --livv-surface: 18 18 20;
-  --livv-border: 34 34 38;
-  --livv-muted: 138 138 146;
+  --livv-bg: #030405;
+  --livv-nav: rgba(7, 9, 13, 0.72);
+  --livv-surface: 15 17 22;
+  --livv-border: 38 41 48;
+  --livv-muted: 138 141 151;
   --livv-fg: 255 255 255;
 }
 
 html[data-theme="light"] {
   --livv-bg: #f3f3f5;
-  --livv-nav: rgba(247, 247, 249, 0.94);
+  --livv-nav: rgba(247, 247, 249, 0.76);
   --livv-surface: 255 255 255;
   --livv-border: 226 226 232;
   --livv-muted: 110 110 118;
@@ -34,7 +34,10 @@ html[data-theme="light"] {
 
   body {
     @apply antialiased;
-    background: var(--livv-bg);
+    background:
+      radial-gradient(circle at 50% -15%, rgb(var(--livv-accent) / 0.075), transparent 34rem),
+      radial-gradient(circle at 100% 60%, rgb(var(--livv-accent) / 0.025), transparent 28rem),
+      var(--livv-bg);
     color: rgb(var(--livv-fg));
     min-height: 100dvh;
     font-family: var(--font-body), -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", system-ui, sans-serif;
@@ -42,25 +45,52 @@ html[data-theme="light"] {
     overflow-x: hidden;
   }
 
+  body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 100;
+    opacity: 0.025;
+    background-image: radial-gradient(rgba(255,255,255,0.55) 0.45px, transparent 0.45px);
+    background-size: 4px 4px;
+    mix-blend-mode: overlay;
+  }
+
   h1, h2, h3, .font-display {
     font-family: var(--font-display), var(--font-body), -apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif;
-    letter-spacing: -0.04em;
+    letter-spacing: -0.045em;
     font-weight: 600;
   }
 
   ::selection { background: rgb(var(--livv-accent) / 0.4); }
-
   * { -webkit-tap-highlight-color: transparent; }
-
   button, a, input, textarea, select { -webkit-tap-highlight-color: transparent; }
 
-  button, a { transition: transform 180ms cubic-bezier(0.22, 1, 0.36, 1), opacity 180ms ease, background-color 180ms ease, border-color 180ms ease, box-shadow 220ms ease; }
+  button, a {
+    transition:
+      transform 180ms cubic-bezier(0.22, 1, 0.36, 1),
+      opacity 180ms ease,
+      background-color 180ms ease,
+      border-color 180ms ease,
+      box-shadow 260ms ease,
+      filter 260ms ease;
+  }
 
   button:active, a:active { transform: scale(0.975); }
-
   :focus-visible { outline: 2px solid rgb(var(--livv-accent) / 0.8); outline-offset: 3px; }
+
+  input, textarea, select {
+    transition: border-color 220ms ease, box-shadow 220ms ease, background 220ms ease;
+  }
+
+  input:focus, textarea:focus, select:focus {
+    border-color: rgb(var(--livv-accent) / 0.45) !important;
+    box-shadow: 0 0 0 4px rgb(var(--livv-accent) / 0.07), 0 0 30px rgb(var(--livv-accent) / 0.05);
+  }
 }
 
+/* ---------- LIVV MOTION SYSTEM ---------- */
 @keyframes livvDrift {
   0% { transform: translate3d(0, 0, 0) scale(1); opacity: 0.55; }
   50% { transform: translate3d(0, -14px, 0) scale(1.05); opacity: 0.9; }
@@ -96,8 +126,13 @@ html[data-theme="light"] {
 }
 
 @keyframes livvReveal {
-  from { opacity: 0; transform: translateY(12px) scale(0.985); filter: blur(4px); }
+  from { opacity: 0; transform: translateY(14px) scale(0.985); filter: blur(4px); }
   to { opacity: 1; transform: translateY(0) scale(1); filter: blur(0); }
+}
+
+@keyframes livvRise {
+  from { opacity: 0; transform: translateY(22px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes livvShimmer {
@@ -122,16 +157,62 @@ html[data-theme="light"] {
   100% { transform: translateX(130%); opacity: 0; }
 }
 
+@keyframes livvBorderPulse {
+  0%, 100% { box-shadow: 0 0 0 1px rgb(var(--livv-accent) / 0.08), 0 16px 50px rgb(0 0 0 / 0.24); }
+  50% { box-shadow: 0 0 0 1px rgb(var(--livv-accent) / 0.2), 0 18px 55px rgb(0 0 0 / 0.28), 0 0 35px rgb(var(--livv-accent) / 0.055); }
+}
+
+@keyframes livvPageIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
 .livv-atmosphere { animation: livvDrift 14s ease-in-out infinite; }
 .livv-grain { pointer-events: none; position: absolute; inset: -20%; opacity: 0.045; background-image: radial-gradient(rgba(255,255,255,0.4) 0.6px, transparent 0.6px); background-size: 3px 3px; animation: livvGrain 8s steps(2) infinite; }
 .livv-check-pop { animation: countPop 0.45s cubic-bezier(0.22, 1, 0.36, 1) both; }
 .livv-pulse-ring { animation: livvPulseRing 0.9s ease-out both; }
 .livv-reveal { animation: livvReveal 650ms cubic-bezier(0.22, 1, 0.36, 1) both; }
+.livv-rise { animation: livvRise 700ms cubic-bezier(0.22, 1, 0.36, 1) both; }
 .livv-breathe { animation: livvBreath 5s ease-in-out infinite; }
 .livv-shimmer { background: linear-gradient(90deg, transparent, rgb(var(--livv-accent) / 0.22), transparent); background-size: 200% 100%; animation: livvShimmer 3.5s ease-in-out infinite; }
 .livv-glow-sweep { position: relative; overflow: hidden; }
 .livv-glow-sweep::after { content: ""; pointer-events: none; position: absolute; inset: 0; background: linear-gradient(105deg, transparent 30%, rgba(255,255,255,0.12) 48%, transparent 62%); transform: translateX(-130%); animation: livvGlowSweep 7s ease-in-out infinite; }
 .livv-orbit { animation: livvOrbit 12s linear infinite; }
+.livv-page-in { animation: livvPageIn 420ms ease both; }
+
+/* Make ordinary surfaces feel intentional without requiring every page to be rewritten. */
+[class*="rounded-2xl"][class*="border"],
+[class*="rounded-3xl"][class*="border"],
+[class*="rounded-[2"] {
+  position: relative;
+  isolation: isolate;
+}
+
+[class*="rounded-2xl"][class*="border"]::before,
+[class*="rounded-3xl"][class*="border"]::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  z-index: -1;
+  background: linear-gradient(135deg, rgb(255 255 255 / 0.035), transparent 38%, rgb(var(--livv-accent) / 0.018));
+}
+
+/* Give clickable cards a subtle physical response. */
+a[class*="rounded-2xl"],
+a[class*="rounded-3xl"],
+button[class*="rounded-2xl"],
+button[class*="rounded-3xl"] {
+  will-change: transform;
+}
+
+a[class*="rounded-2xl"]:hover,
+a[class*="rounded-3xl"]:hover,
+button[class*="rounded-2xl"]:hover,
+button[class*="rounded-3xl"]:hover {
+  filter: brightness(1.045);
+}
 
 .ambient-dot { position: absolute; border-radius: 999px; background: rgb(var(--livv-accent)); box-shadow: 0 0 10px rgb(var(--livv-accent) / 0.8), 0 0 20px rgb(var(--livv-accent) / 0.35); animation-name: ambientFloat; animation-timing-function: ease-in-out; animation-iteration-count: infinite; }
 .ambient-orb { position: absolute; border-radius: 999px; filter: blur(48px); animation: orbPulse 10s ease-in-out infinite; }
@@ -140,7 +221,16 @@ html[data-theme="light"] {
 .ambient-orb-c { bottom: 5%; left: -5%; width: 45vw; height: 45vw; max-width: 260px; max-height: 260px; background: rgb(var(--livv-accent) / 0.1); animation-delay: 4s; }
 
 .livv-card-glow { box-shadow: 0 0 0 1px rgb(var(--livv-accent) / 0.08), 0 12px 40px rgb(0 0 0 / 0.35), 0 0 48px rgb(var(--livv-accent) / 0.06); }
-.livv-card-glow-strong { box-shadow: 0 0 0 1px rgb(var(--livv-accent) / 0.22), 0 16px 48px rgb(0 0 0 / 0.4), 0 0 64px rgb(var(--livv-accent) / 0.14); }
+.livv-card-glow-strong { box-shadow: 0 0 0 1px rgb(var(--livv-accent) / 0.22), 0 16px 48px rgb(0 0 0 / 0.4), 0 0 64px rgb(var(--livv-accent) / 0.14); animation: livvBorderPulse 6s ease-in-out infinite; }
+
+/* ---------- MOBILE APP FEEL ---------- */
+@media (max-width: 640px) {
+  main {
+    animation: livvPageIn 320ms ease both;
+  }
+
+  ::-webkit-scrollbar { width: 0; height: 0; }
+}
 
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
