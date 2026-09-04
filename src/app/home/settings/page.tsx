@@ -11,9 +11,10 @@ import {
   patchIdentity,
   type Appearance,
   type Identity,
+  type LivvTier,
 } from "@/lib/identity";
 import { getCurrentAccount, signOut } from "@/lib/auth";
-import { getTier } from "@/lib/membership";
+import { getTier, hasTier } from "@/lib/membership";
 import { loadPrefs, patchPrefs, type LivvPrefs } from "@/lib/prefs";
 import { feedback } from "@/lib/sensory";
 
@@ -22,6 +23,11 @@ const APPEARANCES: { id: Appearance; label: string; hint: string }[] = [
   { id: "light", label: "Light", hint: "Always light" },
   { id: "system", label: "Device", hint: "Match iPhone setting" },
 ];
+
+/** App color picker requires Rise+ */
+function canPickColor(tier: LivvTier) {
+  return hasTier(tier, "rise");
+}
 
 export default function SettingsPage() {
   const router = useRouter();
@@ -50,6 +56,7 @@ export default function SettingsPage() {
   if (!me) return null;
 
   const tier = getTier(me.tier);
+  const colorUnlocked = canPickColor(me.tier);
 
   return (
     <main className="pt-8 pb-10">
@@ -91,7 +98,10 @@ export default function SettingsPage() {
         </section>
 
         <section className="mt-8">
-          <p className="mb-3 text-[11px] font-medium uppercase tracking-[0.2em] text-white/35">Appearance</p>
+          <p className="mb-3 text-[11px] font-medium uppercase tracking-[0.2em] text-white/35">
+            Appearance
+          </p>
+          <p className="mb-3 text-[12px] text-white/35">Dark / Light / Device — free for everyone.</p>
           <div className="grid grid-cols-3 gap-2">
             {APPEARANCES.map((opt) => (
               <button
@@ -113,21 +123,33 @@ export default function SettingsPage() {
         </section>
 
         <section className="mt-8">
-          <p className="mb-3 text-[11px] font-medium uppercase tracking-[0.2em] text-white/35">App color</p>
-          <div className="grid grid-cols-4 gap-3">
+          <p className="mb-1 text-[11px] font-medium uppercase tracking-[0.2em] text-white/35">
+            App color
+          </p>
+          <p className="mb-3 text-[12px] text-white/35">
+            {colorUnlocked
+              ? "Accent color across the app."
+              : "Locked to Rise and above. Upgrade to unlock."}
+          </p>
+          <div className={cn("grid grid-cols-4 gap-3", !colorUnlocked && "opacity-40")}>
             {APP_COLORS.map((color) => {
               const active = me.accent === color.value;
               return (
                 <button
                   key={color.value}
                   type="button"
-                  onClick={() => setMe(patchIdentity({ accent: color.value }))}
+                  disabled={!colorUnlocked}
+                  onClick={() => {
+                    if (!colorUnlocked) return;
+                    setMe(patchIdentity({ accent: color.value }));
+                    feedback("tick");
+                  }}
                   className="flex flex-col items-center gap-2"
                 >
                   <span
                     className={cn(
                       "h-12 w-12 rounded-full",
-                      active && "ring-2 ring-white ring-offset-2 ring-offset-[var(--livv-bg)]"
+                      active && colorUnlocked && "ring-2 ring-white ring-offset-2 ring-offset-[var(--livv-bg)]"
                     )}
                     style={{ backgroundColor: color.value }}
                   />
@@ -136,11 +158,21 @@ export default function SettingsPage() {
               );
             })}
           </div>
+          {!colorUnlocked && (
+            <Link
+              href="/home/profile"
+              className="mt-4 inline-block text-[13px] text-livv-accent-soft"
+            >
+              View membership →
+            </Link>
+          )}
         </section>
 
         <section className="mt-10 overflow-hidden rounded-[22px] border border-livv-border bg-livv-surface">
           <Row href="/home/profile" label="Identity" value={me.displayName} />
-          <Row href="/home/profile#membership" label="Membership" value={tier.name} />
+          <Row href="/home/profile" label="Membership" value={tier.name} />
+          <Row href="/home/messages" label="Messages" value="Inbox" />
+          <Row href="/home/packs" label="Packs" value="Open" />
         </section>
 
         <button
@@ -193,15 +225,7 @@ function ToggleRow({
   );
 }
 
-function Row({
-  href,
-  label,
-  value,
-}: {
-  href: string;
-  label: string;
-  value: string;
-}) {
+function Row({ href, label, value }: { href: string; label: string; value: string }) {
   return (
     <Link
       href={href}

@@ -5,8 +5,6 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Avatar } from "@/components/identity/avatar";
 import { AmbientField } from "@/components/layout/ambient-field";
-import { PackFoil } from "@/components/packs/pack-foil";
-import { PackOpenModal } from "@/components/packs/pack-open";
 import { addEmbers, loadIdentity, type Identity } from "@/lib/identity";
 import { getTier } from "@/lib/membership";
 import {
@@ -25,7 +23,8 @@ import {
 } from "@/lib/command";
 import { evolutionTitle } from "@/lib/levels";
 import { feedback } from "@/lib/sensory";
-import { loadPacks, tryGrantDailyPack, type PendingPack } from "@/lib/packs";
+import { claimPacksIfDue, canClaimPacks } from "@/lib/packs";
+import { quoteForSession, type Quote } from "@/lib/quotes";
 
 const LOGO =
   "https://raw.githubusercontent.com/evolvewithlivv/livv/main/Photoroom_20260831_123254.png";
@@ -39,60 +38,28 @@ const PILLAR_HREF: Record<string, string> = {
   self: "/home",
 };
 
-function evalaInsight(rec: LivvRecord, done: number, total: number) {
-  if (rec.streak >= 3 && rec.workoutsCompleted >= 2) {
-    return {
-      title: "Evala noticed",
-      body: `Body signal is stable for ${rec.streak} days. Consistency usually breaks after long idle evenings — protect the window before 9.`,
-    };
-  }
-  if (done === total && total > 0) {
-    return {
-      title: "Evala noticed",
-      body: "Every pillar has signal today. Do not invent more work. Protect recovery.",
-    };
-  }
-  if (rec.streak === 0 && rec.goalsCompleted > 0) {
-    return {
-      title: "Evala noticed",
-      body: "History exists. The chain does not. One action restarts it without drama.",
-    };
-  }
-  if (done === 0 && rec.workoutsCompleted + rec.goalsCompleted > 0) {
-    return {
-      title: "Evala noticed",
-      body: "The board is empty today. Your average week is better than this moment. Close the gap once.",
-    };
-  }
-  return null;
-}
-
 export default function HomePage() {
   const router = useRouter();
   const [now, setNow] = useState(() => new Date());
   const [rec, setRec] = useState<LivvRecord | null>(null);
   const [me, setMe] = useState<Identity | null>(null);
-  const [pulse, setPulse] = useState(false);
-  const [pending, setPending] = useState<PendingPack[]>([]);
-  const [opening, setOpening] = useState<PendingPack | null>(null);
+  const [quote, setQuote] = useState<Quote | null>(null);
 
   const pull = () => {
     setRec(loadRecord());
     setMe(loadIdentity());
-    setPending(loadPacks().pending);
   };
 
   useEffect(() => {
     pull();
+    setQuote(quoteForSession());
     const id = window.setInterval(() => setNow(new Date()), 30_000);
     window.addEventListener("livv-identity", pull);
     window.addEventListener("livv-record", pull);
-    window.addEventListener("livv-packs", pull);
     return () => {
       window.clearInterval(id);
       window.removeEventListener("livv-identity", pull);
       window.removeEventListener("livv-record", pull);
-      window.removeEventListener("livv-packs", pull);
     };
   }, []);
 
@@ -123,11 +90,8 @@ export default function HomePage() {
   ];
   const evo = evolutionTitle(rec.level);
   const xpPct = Math.min(100, Math.round((rec.currentXp / rec.xpToNext) * 100));
-  const alive = Math.min(1, (done / total) * 0.55 + (rec.streak > 0 ? 0.2 : 0) + 0.15);
-  const insight = evalaInsight(rec, done, total);
   const quiet = missedYesterday(rec);
   const checkedIn = isCheckedInToday(rec);
-  const readyPack = pending[0] || null;
 
   const dateLabel = now
     .toLocaleDateString("en-US", {
@@ -142,10 +106,8 @@ export default function HomePage() {
       const { already, emberBonus } = checkInRecord();
       if (!already) {
         feedback("checkin");
-        setPulse(true);
-        window.setTimeout(() => setPulse(false), 900);
         addEmbers(10 * tier.multiplier + (emberBonus || 0));
-        tryGrantDailyPack();
+        if (canClaimPacks(me.tier)) claimPacksIfDue();
         pull();
       }
       return;
@@ -159,10 +121,9 @@ export default function HomePage() {
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute inset-0 bg-[#050505]" />
         <div
-          className="absolute -top-24 left-1/2 h-[420px] w-[420px] -translate-x-1/2 rounded-full opacity-90"
+          className="absolute -top-32 left-1/2 h-[480px] w-[480px] -translate-x-1/2 rounded-full"
           style={{
-            background: `radial-gradient(circle, rgb(var(--livv-accent) / ${0.18 + alive * 0.12}) 0%, transparent 68%)`,
-            filter: "blur(8px)",
+            background: `radial-gradient(circle, rgb(var(--livv-accent) / 0.14) 0%, transparent 65%)`,
           }}
         />
         <AmbientField intensity="strong" />
@@ -173,84 +134,77 @@ export default function HomePage() {
         <header className="flex items-center justify-between">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={LOGO} alt="LIVV" className="h-8 w-8 object-contain opacity-95" />
-          <Link href="/home/profile" className="rounded-full ring-1 ring-white/10">
-            <Avatar identity={me} size={34} />
-          </Link>
+          <div className="flex items-center gap-3">
+            <Link href="/home/messages" className="text-[12px] text-white/40">
+              DM
+            </Link>
+            <Link href="/home/profile">
+              <Avatar identity={me} size={34} showTierRing />
+            </Link>
+          </div>
         </header>
 
         <div className="mt-10 text-center">
           <p className="text-[10px] font-medium uppercase tracking-[0.32em] text-white/35">
             {dateLabel}
           </p>
-          <p className="font-display mt-4 text-[28px] font-semibold leading-tight tracking-tight text-white/95">
-            {greet.line}
-          </p>
+          {quote && (
+            <blockquote className="mt-6">
+              <p className="font-display text-[22px] font-semibold leading-snug tracking-tight text-white/95">
+                “{quote.text}”
+              </p>
+              <footer className="mt-4 text-[12px] tracking-wide text-white/35">
+                — {quote.author}
+              </footer>
+            </blockquote>
+          )}
           {quiet && (
-            <p className="mt-3 text-[13px] text-white/40">
+            <p className="mt-4 text-[13px] text-white/40">
               Yesterday was quiet. Data, not failure.
             </p>
           )}
         </div>
 
-        <div className="relative mx-auto mt-10 flex h-[240px] w-[240px] items-center justify-center">
-          <div
-            className={`evo-ring absolute inset-0 rounded-full ${pulse ? "evo-pulse" : ""}`}
-            style={{
-              background: `conic-gradient(from 210deg, rgb(var(--livv-accent) / ${0.55 + alive * 0.35}) ${xpPct}%, rgba(255,255,255,0.06) ${xpPct}% 100%)`,
-              mask: "radial-gradient(farthest-side, transparent calc(100% - 10px), #000 calc(100% - 9px))",
-              WebkitMask:
-                "radial-gradient(farthest-side, transparent calc(100% - 10px), #000 calc(100% - 9px))",
-            }}
-          />
-          <div
-            className="evo-core absolute inset-6 rounded-full"
-            style={{
-              background: `radial-gradient(circle at 40% 35%, rgb(var(--livv-accent) / ${0.22 + alive * 0.25}), rgba(8,10,16,0.92) 62%)`,
-              boxShadow: `0 0 ${40 + alive * 50}px rgb(var(--livv-accent) / ${0.15 + alive * 0.2}), inset 0 0 40px rgba(0,0,0,0.45)`,
-            }}
-          />
-          <div className="relative z-10 text-center">
-            <p className="text-[10px] font-medium uppercase tracking-[0.28em] text-white/40">Evolution</p>
-            <p className="font-display mt-1 text-[52px] font-semibold leading-none tracking-tight">
-              {rec.level}
-            </p>
-            <p className="mt-2 text-[12px] font-medium uppercase tracking-[0.2em] text-livv-accent-soft">
-              {evo.name}
-            </p>
-            <p className="mt-2 text-[11px] text-white/35">
-              {rec.streak > 0 ? `Day ${rec.streak} of the chain` : "Chain not started"}
-            </p>
-          </div>
-        </div>
-
-        {/* Pack ready */}
-        {readyPack && (
-          <button
-            type="button"
-            onClick={() => {
-              feedback("tick");
-              setOpening(readyPack);
-            }}
-            className="mx-auto mt-8 flex items-center gap-4 rounded-[22px] px-4 py-3 text-left"
-            style={{
-              background: "linear-gradient(135deg, rgb(var(--livv-accent) / 0.15), rgba(255,255,255,0.03))",
-              boxShadow: "0 0 0 1px rgb(var(--livv-accent) / 0.25), 0 0 28px rgb(var(--livv-accent) / 0.12)",
-            }}
-          >
-            <PackFoil kind={readyPack.kind} size="sm" pulse />
+        {/* Evolution mark — horizontal signal, not a big ring */}
+        <section className="mt-12">
+          <div className="flex items-end justify-between px-1">
             <div>
-              <p className="text-[10px] uppercase tracking-[0.2em] text-livv-accent-soft">Pack ready</p>
-              <p className="mt-0.5 text-[15px] font-semibold">Open Daily Spark</p>
-              <p className="text-[12px] text-white/40">Earned by showing up</p>
+              <p className="text-[10px] uppercase tracking-[0.28em] text-white/30">Evolution</p>
+              <p className="font-display mt-1 text-[42px] font-semibold leading-none tracking-tight">
+                {rec.level}
+              </p>
+              <p className="mt-1 text-[13px] uppercase tracking-[0.18em] text-livv-accent-soft">
+                {evo.name}
+              </p>
             </div>
-          </button>
-        )}
+            <div className="text-right">
+              <p className="text-[11px] text-white/30">
+                {rec.streak > 0 ? `Day ${rec.streak}` : "No chain"}
+              </p>
+              <p className="mt-1 text-[11px] text-white/25">
+                {rec.currentXp}/{rec.xpToNext} XP
+              </p>
+            </div>
+          </div>
+          {/* Thin signal bar */}
+          <div className="relative mt-5 h-[3px] overflow-hidden rounded-full bg-white/[0.06]">
+            <div
+              className="absolute inset-y-0 left-0 rounded-full"
+              style={{
+                width: `${xpPct}%`,
+                background: "linear-gradient(90deg, rgb(var(--livv-accent) / 0.4), rgb(var(--livv-accent)))",
+                boxShadow: "0 0 12px rgb(var(--livv-accent) / 0.6)",
+              }}
+            />
+          </div>
+          <p className="mt-3 text-[12px] text-white/35">{evo.line}</p>
+        </section>
 
         <button
           type="button"
           onClick={onPrimary}
           disabled={move.href === "/home" && checkedIn}
-          className="group relative mt-8 w-full overflow-hidden rounded-[28px] text-left"
+          className="group relative mt-10 w-full overflow-hidden rounded-[28px] text-left"
         >
           <div
             className="absolute inset-0"
@@ -329,18 +283,6 @@ export default function HomePage() {
           </div>
         </section>
 
-        {insight && (
-          <section className="mt-12">
-            <p className="text-[10px] font-medium uppercase tracking-[0.28em] text-white/30">
-              {insight.title}
-            </p>
-            <p className="mt-3 text-[15px] leading-relaxed text-white/65">{insight.body}</p>
-            <Link href="/home/evala" className="mt-3 inline-block text-[13px] text-livv-accent-soft">
-              Open Evala →
-            </Link>
-          </section>
-        )}
-
         {recent.length > 0 && (
           <section className="mt-12 border-t border-white/[0.06] pt-8">
             <p className="text-[10px] font-medium uppercase tracking-[0.28em] text-white/30">
@@ -357,50 +299,20 @@ export default function HomePage() {
           </section>
         )}
 
-        <p className="mt-14 text-center text-[11px] text-white/20">{greet.salutation}</p>
+        <div className="mt-10 flex justify-center gap-6 text-[13px]">
+          <Link href="/home/packs" className="text-livv-accent-soft">
+            Packs
+          </Link>
+          <Link href="/home/evala" className="text-white/35">
+            Evala
+          </Link>
+          <Link href="/home/messages" className="text-white/35">
+            Messages
+          </Link>
+        </div>
+
+        <p className="mt-10 text-center text-[11px] text-white/20">{greet.salutation}</p>
       </div>
-
-      {opening && (
-        <PackOpenModal
-          packId={opening.id}
-          kind={opening.kind}
-          onClose={() => {
-            setOpening(null);
-            pull();
-          }}
-        />
-      )}
-
-      <style jsx>{`
-        .evo-core {
-          animation: evoBreathe 7s ease-in-out infinite;
-        }
-        .evo-pulse {
-          animation: evoFlash 0.85s ease-out;
-        }
-        @keyframes evoBreathe {
-          0%,
-          100% {
-            transform: scale(1);
-            filter: brightness(1);
-          }
-          50% {
-            transform: scale(1.03);
-            filter: brightness(1.08);
-          }
-        }
-        @keyframes evoFlash {
-          0% {
-            filter: brightness(1);
-          }
-          40% {
-            filter: brightness(1.35);
-          }
-          100% {
-            filter: brightness(1);
-          }
-        }
-      `}</style>
     </main>
   );
 }
