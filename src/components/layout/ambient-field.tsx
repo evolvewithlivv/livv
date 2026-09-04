@@ -1,48 +1,27 @@
 "use client";
 
-/** Soft floating particles + accent glow. Decorative only. */
-export function AmbientField({
-  intensity = "normal",
-}: {
-  intensity?: "normal" | "strong";
-}) {
+/** Soft floating particles + layered accent atmosphere. Decorative only. */
+export function AmbientField({ intensity = "normal" }: { intensity?: "normal" | "strong" }) {
   const dots = [
-    { t: "8%", l: "12%", s: 3, d: "0s", a: 18 },
-    { t: "18%", l: "78%", s: 2, d: "1.2s", a: 22 },
-    { t: "32%", l: "22%", s: 4, d: "2.4s", a: 16 },
-    { t: "44%", l: "88%", s: 2, d: "0.6s", a: 20 },
-    { t: "58%", l: "8%", s: 3, d: "3.1s", a: 24 },
-    { t: "66%", l: "62%", s: 2, d: "1.8s", a: 17 },
-    { t: "78%", l: "34%", s: 3, d: "2.9s", a: 21 },
-    { t: "14%", l: "48%", s: 2, d: "4s", a: 19 },
-    { t: "50%", l: "50%", s: 5, d: "0.3s", a: 26 },
-    { t: "86%", l: "72%", s: 2, d: "3.6s", a: 15 },
-    { t: "24%", l: "6%", s: 2, d: "5s", a: 23 },
-    { t: "70%", l: "90%", s: 3, d: "2s", a: 18 },
-  ];
+    ["8%", "12%", 3, "0s", 18], ["18%", "78%", 2, "1.2s", 22], ["32%", "22%", 4, "2.4s", 16],
+    ["44%", "88%", 2, "0.6s", 20], ["58%", "8%", 3, "3.1s", 24], ["66%", "62%", 2, "1.8s", 17],
+    ["78%", "34%", 3, "2.9s", 21], ["14%", "48%", 2, "4s", 19], ["50%", "50%", 5, "0.3s", 26],
+    ["86%", "72%", 2, "3.6s", 15], ["24%", "6%", 2, "5s", 23], ["70%", "90%", 3, "2s", 18],
+    ["92%", "18%", 2, "1s", 20], ["39%", "68%", 2, "4.4s", 18], ["61%", "40%", 3, "3.4s", 22],
+    ["11%", "91%", 2, "5.5s", 16], ["82%", "54%", 2, "2.7s", 20], ["47%", "31%", 2, "1.7s", 19],
+  ] as const;
 
   return (
-    <div
-      aria-hidden
-      className={`pointer-events-none absolute inset-0 overflow-hidden ${intensity === "strong" ? "opacity-100" : "opacity-80"}`}
-    >
+    <div aria-hidden className={`pointer-events-none absolute inset-0 overflow-hidden ${intensity === "strong" ? "opacity-100" : "opacity-80"}`}>
       <div className="ambient-orb ambient-orb-a" />
       <div className="ambient-orb ambient-orb-b" />
       <div className="ambient-orb ambient-orb-c" />
-      {dots.map((d, i) => (
-        <span
-          key={i}
-          className="ambient-dot"
-          style={{
-            top: d.t,
-            left: d.l,
-            width: d.s,
-            height: d.s,
-            animationDuration: `${d.a}s`,
-            animationDelay: d.d,
-          }}
-        />
+      <div className="absolute left-1/2 top-1/3 h-[320px] w-[320px] -translate-x-1/2 rounded-full border border-livv-accent/[0.04] opacity-70" />
+      <div className="absolute left-1/2 top-1/3 h-[220px] w-[220px] -translate-x-1/2 rounded-full border border-white/[0.025] opacity-70 livv-breathe" />
+      {dots.map(([t, l, s, d, a], i) => (
+        <span key={i} className="ambient-dot" style={{ top: t, left: l, width: s, height: s, animationDuration: `${a}s`, animationDelay: d }} />
       ))}
+      <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-livv-accent/20 to-transparent" />
     </div>
   );
 }
