@@ -3,15 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { AmbientField } from "@/components/layout/ambient-field";
-import {
-  livePillars,
-  loadRecord,
-  logCustomAction,
-  setObjective,
-  todaysCustom,
-  todaysObjectives,
-  type LivvRecord,
-} from "@/lib/record";
+import { livePillars, loadRecord, logCustomAction, setObjective, todaysCustom, todaysObjectives, type LivvRecord } from "@/lib/record";
 import { evolutionTitle } from "@/lib/levels";
 import { strongestPillar, needsAttention } from "@/lib/command";
 import { feedback } from "@/lib/sensory";
@@ -46,23 +38,18 @@ export default function EvalaPage() {
     const strong = strongestPillar(rec);
     const weak = needsAttention(rec);
     const evo = evolutionTitle(rec.level);
-    const objs = todaysObjectives(rec);
-    const open = objs.filter((o) => !o.completed);
+    const open = todaysObjectives(rec).filter((o) => !o.completed);
     return {
-      evo,
-      strong,
-      weak,
-      open,
-      line:
-        open[0]
-          ? `Open loop: ${open[0].title}. That is the highest leverage move still sitting on today.`
-          : rec.streak > 0
-            ? `Chain is alive at ${rec.streak} days. ${strong.name} leads. ${weak.name} is quiet.`
-            : `No active chain. One logged action is enough to re-enter.`,
+      evo, strong, weak, open,
+      line: open[0]
+        ? `Open loop: ${open[0].title}. That is the highest leverage move still sitting on today.`
+        : rec.streak > 0
+          ? `Chain is alive at ${rec.streak} days. ${strong.name} leads. ${weak.name} is quiet.`
+          : `No active chain. One logged action is enough to re-enter.`,
     };
   }, [rec]);
 
-  if (!rec || !briefing) return <main className="min-h-dvh bg-[#050505]" />;
+  if (!rec || !briefing) return <main className="min-h-dvh bg-[#030405]" />;
 
   const ask = (question: string) => {
     const q = question.trim();
@@ -71,257 +58,97 @@ export default function EvalaPage() {
     const strong = strongestPillar(rec);
     const weak = needsAttention(rec);
     const objs = todaysObjectives(rec).filter((o) => !o.completed);
-    let answer =
-      `From your record: Evolution ${briefing.evo.name} (Lv ${rec.level}). ${strong.name} is ahead. ${weak.name} needs weight. `;
+    let answer = `From your record: ${briefing.evo.name} (Lv ${rec.level}). ${strong.name} is ahead. ${weak.name} needs weight. `;
     if (objs[0]) answer += `Still open today — ${objs[0].title}. Do that before inventing new work.`;
     else answer += `Today’s loops are clear. Protect recovery or deepen ${weak.name}.`;
-    if (/money|spend|finance/i.test(q))
-      answer =
-        "Finance only moves when it is logged. Track one spend or transfer today. Silence here is usually avoidance, not strategy.";
-    if (/train|body|workout/i.test(q))
-      answer =
-        rec.lastWorkout
-          ? `Last session: ${rec.lastWorkout.name}. Repeat it or open Train and start without redesigning the plan.`
-          : "No session on record. Open Train. Ten minutes counts.";
+    if (/money|spend|finance/i.test(q)) answer = "Finance only moves when it is logged. Track one spend or transfer today. Silence here is usually avoidance, not strategy.";
+    if (/train|body|workout/i.test(q)) answer = rec.lastWorkout ? `Last session: ${rec.lastWorkout.name}. Repeat it or open Train and start without redesigning the plan.` : "No session on record. Open Train. Ten minutes counts.";
     setThread((t) => [...t, { role: "you", text: q }, { role: "evala", text: answer }]);
     setDraft("");
   };
 
   const pillars = livePillars(rec);
   const custom = todaysCustom(rec);
+  const completed = todaysObjectives(rec).filter((o) => o.completed).length;
+  const total = todaysObjectives(rec).length;
 
   return (
-    <main className="relative min-h-full overflow-hidden pb-10">
+    <main className="relative min-h-full overflow-hidden pb-12">
       <div className="pointer-events-none absolute inset-0">
-        <div className="absolute inset-0 bg-[#050505]" />
-        <div
-          className="absolute left-1/2 top-0 h-[380px] w-[380px] -translate-x-1/2 rounded-full"
-          style={{
-            background: "radial-gradient(circle, rgb(var(--livv-accent) / 0.16), transparent 70%)",
-          }}
-        />
-        <AmbientField />
+        <div className="absolute inset-0 bg-[#030405]" />
+        <div className="absolute left-1/2 top-[-80px] h-[520px] w-[520px] -translate-x-1/2 rounded-full" style={{ background: "radial-gradient(circle, rgb(var(--livv-accent) / 0.16), transparent 68%)" }} />
+        <AmbientField intensity="strong" />
       </div>
 
       <div className="relative z-10 mx-auto max-w-lg px-5 pt-6">
-        <p className="text-[10px] font-medium uppercase tracking-[0.32em] text-white/30">Intelligence</p>
-        <h1 className="font-display mt-2 text-[34px] font-semibold tracking-tight">Evala</h1>
-        <p className="mt-2 max-w-[28ch] text-[14px] leading-relaxed text-white/45">
-          Not a chatbot. A read on your evolution from what you actually logged.
-        </p>
+        <div className="flex items-start justify-between">
+          <div>
+            <p className="text-[10px] font-medium uppercase tracking-[0.34em] text-white/30">Intelligence layer</p>
+            <h1 className="font-display mt-2 text-[36px] font-semibold tracking-tight">Evala</h1>
+            <p className="mt-2 max-w-[29ch] text-[14px] leading-relaxed text-white/40">Your life, interpreted. Your next move, made obvious.</p>
+          </div>
+          <div className="livv-breathe relative mt-1 flex h-12 w-12 items-center justify-center rounded-full ring-1 ring-livv-accent/30" style={{ background: "radial-gradient(circle, rgb(var(--livv-accent) / .2), transparent 68%)", boxShadow: "0 0 36px rgb(var(--livv-accent) / .15)" }}>
+            <span className="h-2.5 w-2.5 rounded-full bg-livv-accent shadow-[0_0_18px_rgb(var(--livv-accent)/.9)]" />
+            <span className="livv-orbit absolute h-16 w-16 rounded-full border border-livv-accent/10" />
+          </div>
+        </div>
 
-        <section className="mt-8">
-          <p className="text-[10px] uppercase tracking-[0.28em] text-livv-accent-soft">Briefing</p>
-          <p className="font-display mt-3 text-[22px] leading-snug tracking-tight text-white/90">
-            {briefing.line}
-          </p>
-          <div className="mt-5 flex flex-wrap gap-x-5 gap-y-2 text-[12px] text-white/40">
-            <span>{briefing.evo.name} · Lv {rec.level}</span>
-            <span>Strong · {briefing.strong.name}</span>
-            <span>Quiet · {briefing.weak.name}</span>
+        <section className="livv-card-glow-strong livv-glow-sweep mt-8 overflow-hidden rounded-[28px] border border-livv-accent/20 bg-white/[0.035] p-5">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-[10px] uppercase tracking-[0.28em] text-livv-accent-soft">Live read</p>
+              <p className="mt-1 text-[11px] text-white/25">Based on your current record</p>
+            </div>
+            <span className="rounded-full bg-livv-accent/10 px-2.5 py-1 text-[9px] uppercase tracking-[0.2em] text-livv-accent-soft">Active</span>
+          </div>
+          <p className="font-display mt-7 text-[24px] leading-[1.12] tracking-tight text-white/95">{briefing.line}</p>
+          <div className="mt-7 grid grid-cols-3 gap-2">
+            <Metric label="EVOLUTION" value={`Lv ${rec.level}`} />
+            <Metric label="CHAIN" value={`${rec.streak}d`} />
+            <Metric label="TODAY" value={`${completed}/${total}`} />
           </div>
         </section>
 
         <section className="mt-10">
-          <p className="text-[10px] uppercase tracking-[0.28em] text-white/30">Today’s loops</p>
-          <div className="mt-4 space-y-3">
-            {todaysObjectives(rec).map((obj) => (
-              <button
-                key={obj.id}
-                type="button"
-                onClick={() => {
-                  setObjective(obj.id, !obj.completed);
-                  feedback(obj.completed ? "tick" : "checkin");
-                  setRec(loadRecord());
-                }}
-                className="flex w-full items-center gap-3 text-left"
-              >
-                <span
-                  className={cn(
-                    "flex h-8 w-8 items-center justify-center rounded-full text-xs",
-                    obj.completed
-                      ? "bg-livv-accent text-white shadow-[0_0_16px_rgb(var(--livv-accent)/0.4)]"
-                      : "ring-1 ring-white/15 text-white/30"
-                  )}
-                >
-                  {obj.completed ? "✓" : ""}
-                </span>
-                <span className="min-w-0 flex-1">
-                  <span className={cn("block text-[15px]", obj.completed && "text-white/35 line-through")}>
-                    {obj.title}
-                  </span>
-                  <span className="text-[12px] text-white/30">
-                    {obj.pillar} · +{obj.xp} XP
-                  </span>
-                </span>
+          <div className="flex items-end justify-between">
+            <div><p className="text-[10px] uppercase tracking-[0.28em] text-white/30">Today’s loops</p><p className="mt-1 text-[12px] text-white/25">Small actions compound.</p></div>
+            <span className="text-[12px] tabular-nums text-livv-accent-soft">{completed}/{total}</span>
+          </div>
+          <div className="mt-4 space-y-2">
+            {todaysObjectives(rec).map((obj, i) => (
+              <button key={obj.id} type="button" onClick={() => { setObjective(obj.id, !obj.completed); feedback(obj.completed ? "tick" : "checkin"); setRec(loadRecord()); }} className={cn("group flex w-full items-center gap-3 rounded-2xl border p-3.5 text-left", obj.completed ? "border-livv-accent/20 bg-livv-accent/[0.06]" : "border-white/[0.07] bg-white/[0.025]")}>
+                <span className={cn("flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-xs", obj.completed ? "bg-livv-accent text-white shadow-[0_0_18px_rgb(var(--livv-accent)/.35)]" : "bg-white/[0.04] text-white/25 ring-1 ring-white/10")}>{obj.completed ? "✓" : String(i + 1).padStart(2, "0")}</span>
+                <span className="min-w-0 flex-1"><span className={cn("block text-[14px]", obj.completed && "text-white/35 line-through")}>{obj.title}</span><span className="mt-0.5 block text-[11px] text-white/25">{obj.pillar} · +{obj.xp} XP</span></span>
+                <span className="text-white/15 transition group-hover:text-white/40">›</span>
               </button>
             ))}
-            {custom.map((c) => (
-              <div key={c.id} className="flex items-center gap-3 pl-1">
-                <span className="h-2 w-2 rounded-full bg-livv-accent" />
-                <span className="text-[14px] text-white/60">
-                  {c.title}{" "}
-                  <span className="text-white/30">
-                    · {c.pillar} · +{c.xp}
-                  </span>
-                </span>
-              </div>
-            ))}
+            {custom.map((c) => <div key={c.id} className="flex items-center gap-3 px-2 py-2 text-[13px] text-white/45"><span className="h-1.5 w-1.5 rounded-full bg-livv-accent" />{c.title}<span className="text-white/20">+{c.xp}</span></div>)}
           </div>
-          <button
-            type="button"
-            onClick={() => setLogOpen(true)}
-            className="mt-5 text-[13px] text-livv-accent-soft"
-          >
-            + Log real action
-          </button>
+          <button type="button" onClick={() => setLogOpen(true)} className="mt-4 rounded-full border border-white/10 px-3.5 py-2 text-[12px] text-livv-accent-soft">+ Log real action</button>
         </section>
 
-        <section className="mt-12">
-          <p className="text-[10px] uppercase tracking-[0.28em] text-white/30">Pillar shape</p>
-          <div className="mt-5 grid grid-cols-3 gap-4">
-            {pillars
-              .filter((p) => p.id !== "life")
-              .map((p) => (
-                <div key={p.id} className="text-center">
-                  <div
-                    className="mx-auto flex h-12 w-12 items-center justify-center rounded-full text-[11px] font-semibold"
-                    style={{
-                      background: `radial-gradient(circle at 35% 30%, rgb(var(--livv-accent) / ${0.15 + p.progress / 200}), rgba(255,255,255,0.03))`,
-                      boxShadow:
-                        p.level > 1
-                          ? "0 0 18px rgb(var(--livv-accent) / 0.25)"
-                          : "inset 0 0 0 1px rgba(255,255,255,0.08)",
-                    }}
-                  >
-                    {p.level}
-                  </div>
-                  <p className="mt-2 text-[10px] tracking-[0.14em] text-white/45">{p.name.toUpperCase()}</p>
-                </div>
-              ))}
+        <section className="mt-11 rounded-[26px] border border-white/[0.07] bg-white/[0.02] p-5">
+          <div className="flex items-center justify-between"><div><p className="text-[10px] uppercase tracking-[0.28em] text-white/30">System shape</p><p className="mt-1 text-[12px] text-white/25">Where your energy is landing</p></div><span className="text-[10px] uppercase tracking-[0.18em] text-white/20">6 pillars</span></div>
+          <div className="mt-6 grid grid-cols-3 gap-y-6">
+            {pillars.filter((p) => p.id !== "life").map((p) => <div key={p.id} className="text-center"><div className="livv-breathe mx-auto flex h-14 w-14 items-center justify-center rounded-full border border-white/[0.08]" style={{ background: `radial-gradient(circle, rgb(var(--livv-accent) / ${0.09 + p.progress / 220}), transparent 70%)`, boxShadow: p.level > 1 ? "0 0 25px rgb(var(--livv-accent)/.14)" : undefined }}><span className="font-display text-[15px]">{p.level}</span></div><p className="mt-2 text-[9px] tracking-[0.16em] text-white/35">{p.name.toUpperCase()}</p></div>)}
           </div>
         </section>
 
-        <section className="mt-12">
-          <p className="text-[10px] uppercase tracking-[0.28em] text-white/30">Ask Evala</p>
-          <div className="mt-4 flex flex-wrap gap-2">
-            {PROMPTS.map((p) => (
-              <button
-                key={p}
-                type="button"
-                onClick={() => ask(p)}
-                className="rounded-full px-3 py-1.5 text-left text-[12px] text-white/50 ring-1 ring-white/10"
-              >
-                {p}
-              </button>
-            ))}
-          </div>
-
-          <div className="mt-6 space-y-4">
-            {thread.map((m, i) => (
-              <div key={i} className={m.role === "you" ? "text-right" : "text-left"}>
-                <p className="text-[10px] uppercase tracking-[0.18em] text-white/25">
-                  {m.role === "you" ? "You" : "Evala"}
-                </p>
-                <p
-                  className={cn(
-                    "mt-1 inline-block max-w-[92%] text-[14px] leading-relaxed",
-                    m.role === "you" ? "text-white/70" : "text-white/85"
-                  )}
-                >
-                  {m.text}
-                </p>
-              </div>
-            ))}
-          </div>
-
-          <div className="mt-6 flex gap-2">
-            <input
-              value={draft}
-              onChange={(e) => setDraft(e.target.value)}
-              onKeyDown={(e) => e.key === "Enter" && ask(draft)}
-              placeholder="Ask from your actual life…"
-              className="h-12 flex-1 rounded-full bg-white/[0.04] px-4 text-sm outline-none ring-1 ring-white/10 placeholder:text-white/25"
-            />
-            <button
-              type="button"
-              onClick={() => ask(draft)}
-              className="h-12 rounded-full bg-white px-5 text-sm font-semibold text-black"
-            >
-              Ask
-            </button>
-          </div>
+        <section className="mt-11">
+          <div className="flex items-end justify-between"><div><p className="text-[10px] uppercase tracking-[0.28em] text-white/30">Ask Evala</p><p className="mt-1 text-[12px] text-white/25">No generic answers. Use your record.</p></div></div>
+          <div className="mt-4 flex gap-2 overflow-x-auto pb-1">{PROMPTS.map((p) => <button key={p} type="button" onClick={() => ask(p)} className="shrink-0 rounded-full border border-white/10 bg-white/[0.025] px-3 py-2 text-[11px] text-white/45">{p}</button>)}</div>
+          <div className="mt-5 space-y-4">{thread.map((m, i) => <div key={i} className={m.role === "you" ? "text-right" : "text-left"}><p className="text-[9px] uppercase tracking-[0.2em] text-white/20">{m.role === "you" ? "You" : "Evala"}</p><p className={cn("mt-1 inline-block max-w-[92%] rounded-2xl px-3.5 py-3 text-[13px] leading-relaxed", m.role === "you" ? "bg-white/[0.04] text-white/55" : "bg-livv-accent/[0.07] text-white/80 ring-1 ring-livv-accent/10")}>{m.text}</p></div>)}</div>
+          <div className="mt-5 flex gap-2"><input value={draft} onChange={(e) => setDraft(e.target.value)} onKeyDown={(e) => e.key === "Enter" && ask(draft)} placeholder="Ask from your actual life…" className="h-12 min-w-0 flex-1 rounded-2xl bg-white/[0.035] px-4 text-sm outline-none ring-1 ring-white/10 placeholder:text-white/20" /><button type="button" onClick={() => ask(draft)} className="h-12 rounded-2xl bg-white px-5 text-sm font-semibold text-black">Ask</button></div>
         </section>
 
-        <Link href="/home/progress" className="mt-12 block text-[13px] text-white/35">
-          Full progress story →
-        </Link>
+        <Link href="/home/progress" className="mt-11 flex items-center justify-between border-t border-white/[0.06] pt-5 text-[13px] text-white/35"><span>See the full evolution story</span><span>→</span></Link>
       </div>
 
-      {logOpen && (
-        <div className="fixed inset-0 z-[70] flex items-end bg-black/70 backdrop-blur-sm">
-          <div className="w-full max-w-lg rounded-t-[28px] bg-[#0c0e12] p-5 pb-10 ring-1 ring-white/10">
-            <p className="text-[10px] uppercase tracking-[0.24em] text-white/35">Log action</p>
-            <input
-              value={title}
-              onChange={(e) => setTitle(e.target.value)}
-              placeholder="What did you actually do?"
-              className="mt-4 w-full bg-transparent text-[18px] outline-none placeholder:text-white/25"
-            />
-            <div className="mt-5 flex flex-wrap gap-2">
-              {PILLAR_DEFS.filter((p) => p.id !== "life").map((p) => (
-                <button
-                  key={p.id}
-                  type="button"
-                  onClick={() => setPillar(p.name)}
-                  className={cn(
-                    "rounded-full px-3 py-1.5 text-xs ring-1",
-                    pillar === p.name
-                      ? "bg-livv-accent/20 ring-livv-accent/40"
-                      : "ring-white/10 text-white/40"
-                  )}
-                >
-                  {p.name}
-                </button>
-              ))}
-            </div>
-            <div className="mt-4 flex gap-2">
-              {(["small", "standard", "major"] as const).map((s) => (
-                <button
-                  key={s}
-                  type="button"
-                  onClick={() => setSize(s)}
-                  className={cn(
-                    "flex-1 rounded-2xl py-3 text-xs capitalize ring-1",
-                    size === s ? "ring-livv-accent/50 bg-livv-accent/10" : "ring-white/10 text-white/40"
-                  )}
-                >
-                  {s}
-                </button>
-              ))}
-            </div>
-            <div className="mt-6 flex gap-2">
-              <button type="button" onClick={() => setLogOpen(false)} className="flex-1 py-3 text-sm text-white/40">
-                Cancel
-              </button>
-              <button
-                type="button"
-                onClick={() => {
-                  if (title.trim().length < 2) return;
-                  logCustomAction({ title, pillar, size });
-                  feedback("complete");
-                  setRec(loadRecord());
-                  setTitle("");
-                  setLogOpen(false);
-                }}
-                className="flex-1 rounded-full bg-white py-3 text-sm font-semibold text-black"
-              >
-                Log it
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      {logOpen && <div className="fixed inset-0 z-[70] flex items-end bg-black/75 backdrop-blur-md"><div className="w-full max-w-lg rounded-t-[30px] border-t border-white/10 bg-[#0a0c10] p-5 pb-10 shadow-[0_-30px_80px_rgba(0,0,0,.55)]"><div className="flex items-center justify-between"><div><p className="text-[10px] uppercase tracking-[0.24em] text-white/35">Log action</p><p className="mt-1 text-[12px] text-white/20">Give the system another signal.</p></div><button onClick={() => setLogOpen(false)} className="text-xl text-white/30">×</button></div><input autoFocus value={title} onChange={(e) => setTitle(e.target.value)} placeholder="What did you actually do?" className="mt-6 w-full border-b border-white/10 bg-transparent pb-3 text-[19px] outline-none placeholder:text-white/20" /><div className="mt-5 flex flex-wrap gap-2">{PILLAR_DEFS.filter((p) => p.id !== "life").map((p) => <button key={p.id} type="button" onClick={() => setPillar(p.name)} className={cn("rounded-full px-3 py-1.5 text-xs ring-1", pillar === p.name ? "bg-livv-accent/20 text-white ring-livv-accent/40" : "text-white/35 ring-white/10")}>{p.name}</button>)}</div><div className="mt-4 flex gap-2">{(["small", "standard", "major"] as const).map((s) => <button key={s} type="button" onClick={() => setSize(s)} className={cn("flex-1 rounded-xl py-3 text-xs capitalize ring-1", size === s ? "bg-livv-accent/10 ring-livv-accent/40" : "text-white/35 ring-white/10")}>{s}</button>)}</div><button type="button" onClick={() => { if (title.trim().length < 2) return; logCustomAction({ title, pillar, size }); feedback("complete"); setRec(loadRecord()); setTitle(""); setLogOpen(false); }} className="mt-6 w-full rounded-2xl bg-white py-3.5 text-sm font-semibold text-black">Add to record</button></div></div>}
     </main>
   );
+}
+
+function Metric({ label, value }: { label: string; value: string }) {
+  return <div className="rounded-2xl bg-black/20 px-3 py-3 ring-1 ring-white/[0.06]"><p className="text-[8px] tracking-[0.18em] text-white/25">{label}</p><p className="mt-1 text-[15px] font-medium text-white/75">{value}</p></div>;
 }
