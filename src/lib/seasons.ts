@@ -1,7 +1,7 @@
-/** Finite chapter arcs — not infinite treadmill. */
+/** Finite chapter arcs — metrics scoped to chapter window only. */
 
 import { dayKey } from "./dates";
-import { loadRecord } from "./record";
+import { loadRecord, type LivvRecord } from "./record";
 
 export type SeasonId = "foundation" | "pressure" | "quiet" | "edge";
 
@@ -10,7 +10,12 @@ export type SeasonDef = {
   name: string;
   line: string;
   days: number;
-  objectives: { id: string; title: string; target: number; metric: "active_days" | "workouts" | "actions" | "pillars" }[];
+  objectives: {
+    id: string;
+    title: string;
+    target: number;
+    metric: "active_days" | "workouts" | "actions" | "pillars";
+  }[];
 };
 
 export const SEASONS: SeasonDef[] = [
@@ -77,7 +82,12 @@ export function loadSeason(): SeasonState {
   try {
     const raw = window.localStorage.getItem(KEY);
     if (!raw) {
-      const s = { seasonId: "foundation" as SeasonId, startedOn: dayKey(), completedIds: [], claimed: false };
+      const s: SeasonState = {
+        seasonId: "foundation",
+        startedOn: dayKey(),
+        completedIds: [],
+        claimed: false,
+      };
       window.localStorage.setItem(KEY, JSON.stringify(s));
       return s;
     }
@@ -102,22 +112,56 @@ function daysSince(start: string) {
   return Math.max(0, Math.floor((b.getTime() - a.getTime()) / 86400000));
 }
 
+function inChapterWindow(dayKeyStr: string, startedOn: string, chapterDays: number) {
+  if (dayKeyStr < startedOn) return false;
+  const start = new Date(startedOn + "T12:00:00");
+  const end = new Date(start);
+  end.setDate(end.getDate() + chapterDays);
+  const endKey = dayKey(end);
+  return dayKeyStr <= endKey;
+}
+
+/** Metrics only from days inside the current chapter window. */
+export function chapterMetrics(rec: LivvRecord, startedOn: string, chapterDays: number) {
+  let activeDays = 0;
+  let workouts = 0;
+  let actions = 0;
+  const pillars = new Set<string>();
+
+  for (const [key, day] of Object.entries(rec.days || {})) {
+    if (!inChapterWindow(key, startedOn, chapterDays)) continue;
+    const hasCustom = Boolean(day.custom?.length);
+    const active =
+      day.checkIn || day.workout || day.objectives.length > 0 || hasCustom;
+    if (active) activeDays += 1;
+    if (day.workout) {
+      workouts += 1;
+      pillars.add("body");
+    }
+    actions += day.objectives.length + (day.custom?.length || 0);
+    for (const oid of day.objectives) {
+      // soft map from objective ids if present in defs — count via custom pillars too
+      void oid;
+    }
+    for (const c of day.custom || []) {
+      pillars.add(c.pillar.toLowerCase());
+    }
+  }
+
+  return {
+    active_days: activeDays,
+    workouts,
+    actions,
+    pillars: pillars.size,
+  };
+}
+
 export function seasonProgress(state = loadSeason()) {
   const def = currentSeasonDef(state);
   const rec = loadRecord();
   const elapsed = daysSince(state.startedOn);
   const remaining = Math.max(0, def.days - elapsed);
-
-  // Approximate metrics from record (lifetime within season window is soft)
-  const activeDays = Object.values(rec.days).filter(
-    (d) => d.checkIn || d.workout || d.objectives.length || (d.custom && d.custom.length)
-  ).length;
-  const metrics: Record<string, number> = {
-    active_days: Math.min(activeDays, def.days + 5),
-    workouts: rec.workoutsCompleted,
-    actions: rec.goalsCompleted,
-    pillars: rec.pillarsTouched.length,
-  };
+  const metrics = chapterMetrics(rec, state.startedOn, def.days);
 
   const objectives = def.objectives.map((o) => {
     const current = metrics[o.metric] || 0;
@@ -130,7 +174,7 @@ export function seasonProgress(state = loadSeason()) {
     (objectives.reduce((s, o) => s + o.current / o.target, 0) / objectives.length) * 100
   );
 
-  return { def, state, objectives, elapsed, remaining, allDone, pct };
+  return { def, state, objectives, elapsed, remaining, allDone, pct, metrics };
 }
 
 export function advanceSeason() {
@@ -150,6 +194,16 @@ export function advanceSeason() {
 export function claimSeasonComplete() {
   const state = loadSeason();
   state.claimed = true;
+  save(state);
+  return state;
+}
+
+/** Reset chapter clock (debug / new run). */
+export function restartCurrentSeason() {
+  const state = loadSeason();
+  state.startedOn = dayKey();
+  state.completedIds = [];
+  state.claimed = false;
   save(state);
   return state;
 }
