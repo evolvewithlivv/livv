@@ -7,17 +7,26 @@ import { cn } from "@/lib/utils";
 const NAV_ITEMS = [
   { href: "/home", label: "Home", icon: HomeIcon },
   { href: "/home/train", label: "Train", icon: TrainIcon },
-  { href: "/home/evolve", label: "Evolve", icon: EvolveIcon },
+  { href: "/home/evala", label: "Evala", icon: EvalaIcon },
   { href: "/home/connect", label: "Connect", icon: ConnectIcon },
-  { href: "/home/progress", label: "Progress", icon: ProgressIcon },
+  { href: "/home/profile", label: "Profile", icon: ProfileIcon },
 ];
 
 export function BottomNav() {
   const pathname = usePathname();
 
   return (
-    <nav className="relative z-50 shrink-0 border-t border-livv-border bg-[var(--livv-nav)] backdrop-blur-xl">
-      <div className="mx-auto flex max-w-lg items-center justify-around px-2 pb-[env(safe-area-inset-bottom)] pt-2">
+    <nav className="relative z-50 shrink-0 px-3 pb-[max(0.55rem,env(safe-area-inset-bottom))] pt-2">
+      <div
+        className="mx-auto flex max-w-lg items-center justify-around rounded-[22px] px-1 py-1.5"
+        style={{
+          background: "rgba(12, 14, 18, 0.62)",
+          backdropFilter: "blur(22px) saturate(1.4)",
+          WebkitBackdropFilter: "blur(22px) saturate(1.4)",
+          boxShadow:
+            "0 0 0 1px rgba(255,255,255,0.08), 0 12px 40px rgba(0,0,0,0.45), inset 0 1px 0 rgba(255,255,255,0.06)",
+        }}
+      >
         {NAV_ITEMS.map((item) => {
           const isActive =
             pathname === item.href ||
@@ -28,12 +37,28 @@ export function BottomNav() {
               key={item.href}
               href={item.href}
               className={cn(
-                "flex min-w-[64px] flex-col items-center gap-1 rounded-xl px-3 py-2",
-                isActive ? "text-livv-accent" : "text-livv-muted"
+                "relative flex min-w-[58px] flex-col items-center gap-0.5 rounded-2xl px-2.5 py-2 transition",
+                isActive ? "text-white" : "text-white/35"
               )}
             >
-              <item.icon active={isActive} />
-              <span className="text-[10px] font-medium uppercase tracking-[0.14em]">
+              {isActive && (
+                <span
+                  className="absolute inset-0 rounded-2xl"
+                  style={{
+                    background: "rgb(var(--livv-accent) / 0.14)",
+                    boxShadow: "0 0 20px rgb(var(--livv-accent) / 0.18)",
+                  }}
+                />
+              )}
+              <span className="relative">
+                <item.icon active={isActive} />
+              </span>
+              <span
+                className={cn(
+                  "relative text-[9px] font-medium tracking-[0.12em]",
+                  isActive ? "text-livv-accent-soft" : "text-white/30"
+                )}
+              >
                 {item.label}
               </span>
             </Link>
@@ -46,7 +71,7 @@ export function BottomNav() {
 
 function HomeIcon({ active }: { active: boolean }) {
   return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={active ? 2.2 : 1.8}>
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={active ? 2.2 : 1.7}>
       <path d="M3 10.5L12 3l9 7.5" strokeLinecap="round" strokeLinejoin="round" />
       <path d="M5 10v9a1 1 0 001 1h4v-5h4v5h4a1 1 0 001-1v-9" strokeLinecap="round" strokeLinejoin="round" />
     </svg>
@@ -55,7 +80,7 @@ function HomeIcon({ active }: { active: boolean }) {
 
 function TrainIcon({ active }: { active: boolean }) {
   return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={active ? 2.2 : 1.8}>
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={active ? 2.2 : 1.7}>
       <path d="M6.5 6.5h11v4h-11z" strokeLinecap="round" strokeLinejoin="round" />
       <path d="M4 10.5h16" strokeLinecap="round" />
       <path d="M8 6.5V4.5a1 1 0 011-1h6a1 1 0 011 1v2" strokeLinecap="round" />
@@ -65,18 +90,18 @@ function TrainIcon({ active }: { active: boolean }) {
   );
 }
 
-function EvolveIcon({ active }: { active: boolean }) {
+function EvalaIcon({ active }: { active: boolean }) {
   return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={active ? 2.2 : 1.8}>
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={active ? 2.2 : 1.7}>
       <circle cx="12" cy="12" r="3" />
-      <path d="M12 2v3M12 19v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M2 12h3M19 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1" strokeLinecap="round" />
+      <path d="M12 3v2.5M12 18.5V21M4.5 12H2M22 12h-2.5M6.2 6.2l1.8 1.8M16 16l1.8 1.8M6.2 17.8l1.8-1.8M16 8l1.8-1.8" strokeLinecap="round" />
     </svg>
   );
 }
 
 function ConnectIcon({ active }: { active: boolean }) {
   return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={active ? 2.2 : 1.8}>
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={active ? 2.2 : 1.7}>
       <circle cx="9" cy="8" r="3" />
       <circle cx="16" cy="15" r="3" />
       <path d="M11.5 10.5l2 2" strokeLinecap="round" />
@@ -84,12 +109,11 @@ function ConnectIcon({ active }: { active: boolean }) {
   );
 }
 
-function ProgressIcon({ active }: { active: boolean }) {
+function ProfileIcon({ active }: { active: boolean }) {
   return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={active ? 2.2 : 1.8}>
-      <path d="M4 19V5" strokeLinecap="round" />
-      <path d="M4 19h16" strokeLinecap="round" />
-      <path d="M8 16v-5M12 16V8M16 16v-3" strokeLinecap="round" strokeLinejoin="round" />
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={active ? 2.2 : 1.7}>
+      <circle cx="12" cy="8" r="3.5" />
+      <path d="M5 19.5c1.8-3.2 4.2-4.8 7-4.8s5.2 1.6 7 4.8" strokeLinecap="round" />
     </svg>
   );
 }
