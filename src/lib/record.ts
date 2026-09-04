@@ -353,11 +353,11 @@ export function todaysCustom(rec = loadRecord()) {
 export function livePillars(rec = loadRecord()) {
   return PILLAR_DEFS.map((p) => {
     const s = pillarState(rec, p.id);
-    return { ...p, level: s.level, progress: s.progress };
+    return { ...p, level: s.level, progress: s.progress, xp: s.xp };
   });
 }
 
-export function liveAchievements(rec = loadRecord()) {
+export function liveAchievements(rec: LivvRecord) {
   return ACHIEVEMENT_DEFS.map((a) => ({
     ...a,
     unlocked: rec.achievements.includes(a.id),
