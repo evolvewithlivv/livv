@@ -16,6 +16,7 @@ import { liveAchievements, loadRecord, type LivvRecord } from "@/lib/record";
 import { evolutionTitle } from "@/lib/levels";
 import { EMBERS_BLURB } from "@/lib/embers";
 import { collectionStats } from "@/lib/packs";
+import { tierColor } from "@/lib/tier-style";
 import { feedback } from "@/lib/sensory";
 
 export default function ProfilePage() {
@@ -48,6 +49,7 @@ export default function ProfilePage() {
   const evo = evolutionTitle(rec.level);
   const xpPct = Math.min(100, Math.round((rec.currentXp / rec.xpToNext) * 100));
   const achievements = liveAchievements(rec).filter((a) => a.unlocked);
+  const tc = tierColor(me.tier);
 
   const onPickPhoto = async (file?: File) => {
     if (!file) return;
@@ -62,7 +64,7 @@ export default function ProfilePage() {
         <div
           className="absolute left-1/2 top-[-40px] h-[360px] w-[360px] -translate-x-1/2 rounded-full"
           style={{
-            background: "radial-gradient(circle, rgb(var(--livv-accent) / 0.18), transparent 68%)",
+            background: `radial-gradient(circle, ${tc.glow}, transparent 68%)`,
           }}
         />
         <AmbientField />
@@ -78,14 +80,7 @@ export default function ProfilePage() {
 
         <div className="mt-10 flex flex-col items-center text-center">
           <button type="button" onClick={() => fileRef.current?.click()} className="relative">
-            <span
-              className="absolute -inset-2 rounded-full opacity-70"
-              style={{
-                background: "radial-gradient(circle, rgb(var(--livv-accent) / 0.35), transparent 70%)",
-                filter: "blur(12px)",
-              }}
-            />
-            <Avatar identity={me} size={104} />
+            <Avatar identity={me} size={104} showTierRing />
           </button>
           <input
             ref={fileRef}
@@ -96,6 +91,9 @@ export default function ProfilePage() {
           />
           <h1 className="font-display mt-6 text-[30px] font-semibold tracking-tight">{me.displayName}</h1>
           <p className="text-[14px] text-white/35">@{me.username}</p>
+          <p className="mt-2 text-[12px] font-medium tracking-wide" style={{ color: tc.hex }}>
+            {tc.label}
+          </p>
           {me.bio && <p className="mt-3 max-w-[28ch] text-[14px] text-white/50">{me.bio}</p>}
         </div>
 
@@ -112,7 +110,6 @@ export default function ProfilePage() {
           </p>
         </section>
 
-        {/* Vault */}
         <Link href="/home/vault" className="mt-10 block">
           <div
             className="rounded-[22px] px-5 py-4"
@@ -148,6 +145,7 @@ export default function ProfilePage() {
           <div className="mt-6 space-y-3">
             {TIERS.map((t) => {
               const active = me.tier === t.id;
+              const color = tierColor(t.id);
               return (
                 <button
                   key={t.id}
@@ -162,15 +160,17 @@ export default function ProfilePage() {
                     className="rounded-[22px] px-5 py-4"
                     style={{
                       background: active
-                        ? "linear-gradient(135deg, rgb(var(--livv-accent) / 0.2), rgba(255,255,255,0.03))"
+                        ? `linear-gradient(135deg, ${color.hex}33, rgba(255,255,255,0.03))`
                         : "rgba(255,255,255,0.03)",
                       boxShadow: active
-                        ? "0 0 0 1px rgb(var(--livv-accent) / 0.35), 0 0 28px rgb(var(--livv-accent) / 0.12)"
+                        ? `0 0 0 1px ${color.hex}99, 0 0 28px ${color.glow}`
                         : "inset 0 0 0 1px rgba(255,255,255,0.06)",
                     }}
                   >
                     <div className="flex items-baseline justify-between">
-                      <p className="text-[16px] font-semibold">{t.name}</p>
+                      <p className="text-[16px] font-semibold" style={{ color: active ? color.hex : undefined }}>
+                        {t.name}
+                      </p>
                       <p className="text-[13px] text-white/45">
                         {t.price}
                         {t.cadence !== "forever" ? t.cadence : ""}
@@ -178,7 +178,7 @@ export default function ProfilePage() {
                     </div>
                     <p className="mt-1 text-[13px] text-white/40">{t.blurb}</p>
                     {active && (
-                      <p className="mt-2 text-[11px] uppercase tracking-[0.16em] text-livv-accent-soft">
+                      <p className="mt-2 text-[11px] uppercase tracking-[0.16em]" style={{ color: color.hex }}>
                         Current
                       </p>
                     )}
@@ -213,7 +213,10 @@ export default function ProfilePage() {
         )}
 
         <div className="mt-12 flex flex-col gap-3">
-          <Link href="/home/progress" className="text-[14px] text-livv-accent-soft">
+          <Link href="/home/messages" className="text-[14px] text-livv-accent-soft">
+            Messages →
+          </Link>
+          <Link href="/home/progress" className="text-[14px] text-white/40">
             Progress story →
           </Link>
           <Link href="/home/evala" className="text-[14px] text-white/40">
