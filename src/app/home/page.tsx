@@ -21,6 +21,7 @@ import { evolutionTitle } from "@/lib/levels";
 import { feedback } from "@/lib/sensory";
 import { claimPacksIfDue, canClaimPacks } from "@/lib/packs";
 import { quoteForSession, type Quote } from "@/lib/quotes";
+import { dailySummary } from "@/lib/daily";
 
 const LOGO =
   "https://raw.githubusercontent.com/evolvewithlivv/livv/main/Photoroom_20260831_123254.png";
@@ -40,10 +41,14 @@ export default function HomePage() {
   const [rec, setRec] = useState<LivvRecord | null>(null);
   const [me, setMe] = useState<Identity | null>(null);
   const [quote, setQuote] = useState<Quote | null>(null);
+  const [daily, setDaily] = useState(() =>
+    typeof window !== "undefined" ? dailySummary() : null
+  );
 
   const pull = () => {
     setRec(loadRecord());
     setMe(loadIdentity());
+    setDaily(dailySummary());
   };
 
   useEffect(() => {
@@ -52,10 +57,12 @@ export default function HomePage() {
     const id = window.setInterval(() => setNow(new Date()), 30_000);
     window.addEventListener("livv-identity", pull);
     window.addEventListener("livv-record", pull);
+    window.addEventListener("livv-daily", pull);
     return () => {
       window.clearInterval(id);
       window.removeEventListener("livv-identity", pull);
       window.removeEventListener("livv-record", pull);
+      window.removeEventListener("livv-daily", pull);
     };
   }, []);
 
@@ -102,16 +109,16 @@ export default function HomePage() {
     router.push(move.href);
   };
 
+  const dailyLeft = daily ? daily.total - daily.done : 3;
+
   return (
     <main className="relative min-h-full overflow-hidden bg-[#050505] pb-10 text-white">
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <div
           className="absolute left-1/2 top-[-14rem] h-[42rem] w-[42rem] -translate-x-1/2 rounded-full"
-          style={{ background: "radial-gradient(circle, rgb(var(--livv-accent) / 0.18) 0%, transparent 64%)" }}
-        />
-        <div
-          className="absolute right-[-12rem] top-[34rem] h-[30rem] w-[30rem] rounded-full"
-          style={{ background: "radial-gradient(circle, rgb(var(--livv-accent) / 0.08) 0%, transparent 68%)" }}
+          style={{
+            background: "radial-gradient(circle, rgb(var(--livv-accent) / 0.18) 0%, transparent 64%)",
+          }}
         />
         <AmbientField intensity="strong" />
         <div className="livv-grain opacity-[0.045]" />
@@ -127,7 +134,7 @@ export default function HomePage() {
           <div className="flex items-center gap-3">
             <Link
               href="/home/messages"
-              className="rounded-full border border-white/10 bg-white/[0.035] px-3 py-1.5 text-[10px] font-medium uppercase tracking-[0.18em] text-white/45 backdrop-blur-xl transition active:scale-95"
+              className="rounded-full border border-white/10 bg-white/[0.035] px-3 py-1.5 text-[10px] font-medium uppercase tracking-[0.18em] text-white/45"
             >
               Inbox
             </Link>
@@ -137,44 +144,136 @@ export default function HomePage() {
           </div>
         </header>
 
+        {/* World state + quote */}
         <section className="relative mt-9 overflow-hidden rounded-[34px] border border-white/[0.09] bg-white/[0.025] px-6 pb-7 pt-6 shadow-2xl backdrop-blur-xl">
           <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-livv-accent/60 to-transparent" />
-          <div className="absolute -right-20 -top-20 h-48 w-48 rounded-full bg-livv-accent/10 blur-3xl" />
-
           <div className="relative flex items-start justify-between gap-5">
             <div>
-              <p className="text-[9px] font-semibold uppercase tracking-[0.34em] text-livv-accent-soft">{dateLabel}</p>
-              <h1 className="font-display mt-3 text-[30px] font-semibold leading-[0.95] tracking-[-0.04em]">
-                {greet.salutation}
-              </h1>
-              <p className="mt-2 max-w-[30ch] text-[13px] leading-relaxed text-white/40">
-                Your life is moving. Stay in the driver&apos;s seat.
+              <p className="text-[9px] font-semibold uppercase tracking-[0.34em] text-livv-accent-soft">
+                {daily?.world.title || dateLabel}
               </p>
+              <p className="mt-1 text-[10px] uppercase tracking-[0.2em] text-white/30">
+                {daily?.world.focus || greet.salutation}
+              </p>
+              <h1 className="font-display mt-3 text-[28px] font-semibold leading-[0.95] tracking-[-0.04em]">
+                {daily?.world.line || "Your life is moving."}
+              </h1>
             </div>
             <div className="shrink-0 text-right">
               <p className="text-[9px] uppercase tracking-[0.24em] text-white/25">Streak</p>
-              <p className="font-display mt-1 text-3xl font-semibold tracking-tight text-white">{rec.streak}</p>
+              <p className="font-display mt-1 text-3xl font-semibold tracking-tight">{rec.streak}</p>
               <p className="text-[9px] uppercase tracking-[0.18em] text-white/25">days</p>
             </div>
           </div>
-
           {quote && (
             <blockquote className="relative mt-8 border-l border-livv-accent/45 pl-4">
-              <p className="font-display text-[17px] font-medium leading-snug tracking-tight text-white/80">“{quote.text}”</p>
-              <footer className="mt-2 text-[10px] uppercase tracking-[0.2em] text-white/25">{quote.author}</footer>
+              <p className="font-display text-[16px] font-medium leading-snug tracking-tight text-white/80">
+                “{quote.text}”
+              </p>
+              <footer className="mt-2 text-[10px] uppercase tracking-[0.2em] text-white/25">
+                {quote.author}
+              </footer>
             </blockquote>
           )}
+          {daily?.callback && (
+            <p className="mt-5 text-[12px] leading-relaxed text-white/40">
+              30 days ago you wrote about something you were avoiding.{" "}
+              <Link href="/home/daily" className="text-livv-accent-soft">
+                See it →
+              </Link>
+            </p>
+          )}
         </section>
+
+        {/* DAILY DROP CTA — the retention hook */}
+        <Link href="/home/daily" className="mt-5 block" onClick={() => feedback("tick")}>
+          <div
+            className="relative overflow-hidden rounded-[28px] border px-5 py-5 transition active:scale-[0.99]"
+            style={{
+              borderColor: daily?.allDone
+                ? "rgb(var(--livv-accent) / 0.35)"
+                : "rgba(255,255,255,0.08)",
+              background: daily?.allDone
+                ? "linear-gradient(135deg, rgb(var(--livv-accent) / 0.18), rgba(255,255,255,0.03))"
+                : "rgba(255,255,255,0.025)",
+            }}
+          >
+            <div className="flex items-center justify-between gap-4">
+              <div>
+                <p className="text-[9px] font-semibold uppercase tracking-[0.28em] text-livv-accent-soft">
+                  Today · The Daily Drop
+                </p>
+                <p className="font-display mt-2 text-[22px] font-semibold tracking-tight">
+                  {daily?.dropClaimed
+                    ? "Drop claimed"
+                    : daily?.allDone
+                      ? "Drop ready — open it"
+                      : `${dailyLeft} thing${dailyLeft === 1 ? "" : "s"} waiting`}
+                </p>
+                <p className="mt-1 text-[12px] text-white/40">
+                  Mind · Body · Life
+                  {daily && !daily.dropClaimed
+                    ? ` → ${daily.drop.name}`
+                    : ""}
+                  {daily?.doubleXp ? " · 2× XP on" : ""}
+                </p>
+              </div>
+              <span className="flex h-12 w-12 items-center justify-center rounded-2xl border border-white/10 bg-white/[0.05] text-xl">
+                {daily?.dropClaimed ? "✓" : daily?.allDone ? daily.drop.icon : "→"}
+              </span>
+            </div>
+            {daily && (
+              <div className="mt-4 flex gap-1.5">
+                {daily.tasks.map((t) => (
+                  <span
+                    key={t.id}
+                    className={`h-1 flex-1 rounded-full ${
+                      daily.done > daily.tasks.findIndex((x) => x.id === t.id) ||
+                      (typeof window !== "undefined" &&
+                        dailySummary().done >=
+                          daily.tasks.findIndex((x) => x.id === t.id) + 1)
+                        ? "bg-livv-accent"
+                        : "bg-white/10"
+                    }`}
+                    style={{
+                      background:
+                        daily.tasks
+                          .slice(0, daily.done)
+                          .some((x) => x.id === t.id) || completedIncludes(daily, t.id)
+                          ? undefined
+                          : undefined,
+                    }}
+                  />
+                ))}
+                {/* simpler progress bars */}
+              </div>
+            )}
+            {daily && (
+              <div className="mt-3 flex gap-1.5">
+                {[0, 1, 2].map((i) => (
+                  <span
+                    key={i}
+                    className={`h-1 flex-1 rounded-full ${i < daily.done ? "bg-livv-accent" : "bg-white/10"}`}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
+        </Link>
 
         <section className="mt-5 grid grid-cols-[1fr_auto] gap-3">
           <div className="rounded-[28px] border border-white/[0.08] bg-white/[0.025] p-5 backdrop-blur-xl">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-[9px] uppercase tracking-[0.3em] text-white/25">Evolution</p>
-                <p className="font-display mt-1 text-4xl font-semibold leading-none tracking-[-0.04em]">{rec.level}</p>
+                <p className="font-display mt-1 text-4xl font-semibold leading-none tracking-[-0.04em]">
+                  {rec.level}
+                </p>
               </div>
               <div className="text-right">
-                <p className="text-[10px] text-white/30">{rec.currentXp} / {rec.xpToNext}</p>
+                <p className="text-[10px] text-white/30">
+                  {rec.currentXp} / {rec.xpToNext}
+                </p>
                 <p className="mt-0.5 text-[9px] uppercase tracking-[0.18em] text-livv-accent-soft">XP</p>
               </div>
             </div>
@@ -184,10 +283,7 @@ export default function HomePage() {
                 style={{ width: `${xpPct}%`, boxShadow: "0 0 18px rgb(var(--livv-accent) / 0.7)" }}
               />
             </div>
-            <div className="mt-3 flex items-center justify-between gap-3">
-              <p className="text-[11px] text-white/35">{evo.name}</p>
-              <p className="text-[10px] text-white/20">{xpPct}% to next</p>
-            </div>
+            <p className="mt-3 text-[11px] text-white/35">{evo.name}</p>
           </div>
 
           <Link
@@ -208,23 +304,19 @@ export default function HomePage() {
             className="group relative w-full overflow-hidden rounded-[34px] border border-livv-accent/25 text-left shadow-[0_18px_70px_rgb(var(--livv-accent)/0.12)] transition duration-300 active:scale-[0.99] disabled:cursor-default"
           >
             <div className="absolute inset-0 bg-gradient-to-br from-livv-accent/20 via-white/[0.035] to-transparent" />
-            <div className="absolute -right-16 -top-24 h-56 w-56 rounded-full bg-livv-accent/20 blur-3xl transition duration-500 group-hover:scale-125" />
             <div className="relative p-6">
-              <div className="flex items-start justify-between gap-5">
-                <div>
-                  <p className="text-[9px] font-semibold uppercase tracking-[0.32em] text-livv-accent-soft">Command</p>
-                  <p className="font-display mt-3 max-w-[13ch] text-[30px] font-semibold leading-[0.96] tracking-[-0.04em]">{move.title}</p>
-                </div>
-                <span className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-white/10 bg-white/[0.06] text-lg text-white/70">
-                  →
-                </span>
-              </div>
+              <p className="text-[9px] font-semibold uppercase tracking-[0.32em] text-livv-accent-soft">
+                Command
+              </p>
+              <p className="font-display mt-3 max-w-[13ch] text-[28px] font-semibold leading-[0.96] tracking-[-0.04em]">
+                {move.title}
+              </p>
               <p className="mt-4 max-w-[34ch] text-[13px] leading-relaxed text-white/45">{move.reason}</p>
               <div className="mt-6 flex items-center justify-between">
                 <span className="rounded-full bg-white px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-black">
                   {move.href === "/home" && checkedIn ? "Logged" : move.cta}
                 </span>
-                <span className="text-[10px] uppercase tracking-[0.2em] text-white/25">Make today count</span>
+                <span className="text-[10px] uppercase tracking-[0.2em] text-white/25">Next move</span>
               </div>
             </div>
           </button>
@@ -238,9 +330,10 @@ export default function HomePage() {
                 {done === total ? "Everything is aligned." : `${done} of ${total} signals active`}
               </p>
             </div>
-            <Link href="/home/progress" className="text-[10px] uppercase tracking-[0.18em] text-white/25">View all</Link>
+            <Link href="/home/progress" className="text-[10px] uppercase tracking-[0.18em] text-white/25">
+              View all
+            </Link>
           </div>
-
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
             {nodes.map((n) => (
               <button
@@ -254,22 +347,29 @@ export default function HomePage() {
                   }
                   router.push(PILLAR_HREF[n.id] || "/home/evala");
                 }}
-                className="group relative overflow-hidden rounded-[25px] border border-white/[0.07] bg-white/[0.025] p-4 text-left backdrop-blur-xl transition duration-300 active:scale-[0.98]"
+                className="group relative overflow-hidden rounded-[25px] border border-white/[0.07] bg-white/[0.025] p-4 text-left backdrop-blur-xl transition active:scale-[0.98]"
               >
-                <div
-                  className={`absolute -right-8 -top-8 h-20 w-20 rounded-full blur-2xl transition ${n.done ? "bg-livv-accent/20" : "bg-white/[0.03]"}`}
-                />
                 <div className="relative flex items-center justify-between">
                   <span
                     className={`flex h-9 w-9 items-center justify-center rounded-full border ${
                       n.done ? "border-livv-accent/35 bg-livv-accent/15" : "border-white/10 bg-white/[0.03]"
                     }`}
                   >
-                    <span className={`h-2 w-2 rounded-full ${n.done ? "bg-livv-accent shadow-[0_0_12px_rgb(var(--livv-accent)/0.9)]" : "bg-white/20"}`} />
+                    <span
+                      className={`h-2 w-2 rounded-full ${
+                        n.done ? "bg-livv-accent shadow-[0_0_12px_rgb(var(--livv-accent)/0.9)]" : "bg-white/20"
+                      }`}
+                    />
                   </span>
-                  <span className="text-[9px] uppercase tracking-[0.18em] text-white/20">{n.done ? "On" : "Open"}</span>
+                  <span className="text-[9px] uppercase tracking-[0.18em] text-white/20">
+                    {n.done ? "On" : "Open"}
+                  </span>
                 </div>
-                <p className={`relative mt-5 text-[11px] font-semibold uppercase tracking-[0.18em] ${n.done ? "text-white/75" : "text-white/35"}`}>
+                <p
+                  className={`relative mt-5 text-[11px] font-semibold uppercase tracking-[0.18em] ${
+                    n.done ? "text-white/75" : "text-white/35"
+                  }`}
+                >
                   {n.name}
                 </p>
               </button>
@@ -279,18 +379,19 @@ export default function HomePage() {
 
         {(recent.length > 0 || quiet) && (
           <section className="mt-9 rounded-[28px] border border-white/[0.07] bg-white/[0.02] p-5 backdrop-blur-xl">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-[9px] font-semibold uppercase tracking-[0.3em] text-white/25">Momentum</p>
-                <p className="mt-1 text-[13px] text-white/55">What has already moved today</p>
-              </div>
-              <span className="text-xl text-livv-accent/70">↗</span>
-            </div>
-            {quiet && <p className="mt-5 rounded-2xl bg-white/[0.025] px-4 py-3 text-[12px] leading-relaxed text-white/35">Yesterday was quiet. Data, not failure.</p>}
+            <p className="text-[9px] font-semibold uppercase tracking-[0.3em] text-white/25">Momentum</p>
+            {quiet && (
+              <p className="mt-4 rounded-2xl bg-white/[0.025] px-4 py-3 text-[12px] text-white/35">
+                Yesterday was quiet. Data, not failure.
+              </p>
+            )}
             {recent.length > 0 && (
               <ul className="mt-4 space-y-2">
                 {recent.map((item, i) => (
-                  <li key={`${item}-${i}`} className="flex items-center gap-3 rounded-2xl bg-white/[0.02] px-3 py-2.5 text-[12px] text-white/50">
+                  <li
+                    key={`${item}-${i}`}
+                    className="flex items-center gap-3 rounded-2xl bg-white/[0.02] px-3 py-2.5 text-[12px] text-white/50"
+                  >
                     <span className="h-1.5 w-1.5 rounded-full bg-livv-accent" />
                     {item}
                   </li>
@@ -302,15 +403,15 @@ export default function HomePage() {
 
         <nav className="mt-9 grid grid-cols-4 gap-2" aria-label="LIVV destinations">
           {[
+            ["Daily", "/home/daily"],
             ["Progress", "/home/progress"],
             ["Evala", "/home/evala"],
             ["Packs", "/home/packs"],
-            ["Vault", "/home/vault"],
           ].map(([label, href]) => (
             <Link
               key={label}
               href={href}
-              className="rounded-2xl border border-white/[0.06] bg-white/[0.018] px-2 py-3 text-center text-[9px] font-medium uppercase tracking-[0.16em] text-white/30 transition hover:bg-white/[0.04] hover:text-white/55 active:scale-[0.98]"
+              className="rounded-2xl border border-white/[0.06] bg-white/[0.018] px-2 py-3 text-center text-[9px] font-medium uppercase tracking-[0.16em] text-white/30 transition hover:text-white/55 active:scale-[0.98]"
             >
               {label}
             </Link>
@@ -321,4 +422,11 @@ export default function HomePage() {
       </div>
     </main>
   );
+}
+
+function completedIncludes(
+  daily: NonNullable<ReturnType<typeof dailySummary>>,
+  id: string
+) {
+  return daily.done > daily.tasks.findIndex((t) => t.id === id);
 }
