@@ -1,5 +1,5 @@
 import { dayKey } from "./dates";
-import { getDailyCard } from "./daily";
+import { worldState } from "./daily";
 import { loadIdentity } from "./identity";
 import {
   isCheckedInToday,
@@ -141,12 +141,13 @@ export function needsAttention(rec = loadRecord()) {
   return [...pillars].sort((a, b) => a.level - b.level || a.progress - b.progress)[0];
 }
 
+/** Daily world focus for Evala / surfaces that still call focusCard. */
 export function focusCard(date = new Date()) {
-  const card = getDailyCard(date);
+  const w = worldState(date);
   return {
-    theme: card.theme,
-    principle: card.line,
-    detail: card.note,
+    theme: w.title,
+    principle: w.line,
+    detail: w.focus,
   };
 }
 
@@ -158,3 +159,4 @@ export function actionsCompletedCount(rec = loadRecord()) {
 }
 
 void pillarState;
+void LivvRecord;
