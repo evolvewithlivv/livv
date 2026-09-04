@@ -165,7 +165,6 @@ export default function HomePage() {
           )}
         </div>
 
-        {/* Evolution mark — horizontal signal, not a big ring */}
         <section className="mt-12">
           <div className="flex items-end justify-between px-1">
             <div>
@@ -186,7 +185,6 @@ export default function HomePage() {
               </p>
             </div>
           </div>
-          {/* Thin signal bar */}
           <div className="relative mt-5 h-[3px] overflow-hidden rounded-full bg-white/[0.06]">
             <div
               className="absolute inset-y-0 left-0 rounded-full"
@@ -299,8 +297,11 @@ export default function HomePage() {
           </section>
         )}
 
-        <div className="mt-10 flex justify-center gap-6 text-[13px]">
-          <Link href="/home/packs" className="text-livv-accent-soft">
+        <div className="mt-10 flex flex-wrap justify-center gap-x-6 gap-y-2 text-[13px]">
+          <Link href="/home/progress" className="text-livv-accent-soft">
+            Progress
+          </Link>
+          <Link href="/home/packs" className="text-white/45">
             Packs
           </Link>
           <Link href="/home/evala" className="text-white/35">
