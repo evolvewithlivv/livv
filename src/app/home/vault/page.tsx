@@ -46,18 +46,12 @@ export default function VaultPage() {
     <main className="relative min-h-full overflow-hidden pb-12">
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute inset-0 bg-[#050505]" />
-        <div
-          className="absolute left-1/2 top-0 h-[320px] w-[320px] -translate-x-1/2 rounded-full"
-          style={{
-            background: "radial-gradient(circle, rgb(var(--livv-accent) / 0.12), transparent 70%)",
-          }}
-        />
         <AmbientField />
       </div>
 
       <div className="relative z-10 mx-auto max-w-lg px-5 pt-6">
-        <Link href="/home/profile" className="text-[13px] text-white/35">
-          ← Profile
+        <Link href="/home/packs" className="text-[13px] text-white/35">
+          ← Packs
         </Link>
         <p className="mt-6 text-[10px] font-medium uppercase tracking-[0.32em] text-white/30">
           Collection
@@ -81,11 +75,10 @@ export default function VaultPage() {
                   }}
                   className="shrink-0"
                 >
-                  <PackFoil kind={p.kind} size="md" pulse />
+                  <PackFoil grade={p.grade} size="md" pulse />
                 </button>
               ))}
             </div>
-            <p className="mt-3 text-[12px] text-white/35">Tap a pack to open</p>
           </section>
         )}
 
@@ -96,9 +89,7 @@ export default function VaultPage() {
               type="button"
               onClick={() => setFilter(f)}
               className={`shrink-0 rounded-full px-3 py-1.5 text-[11px] capitalize tracking-wide ${
-                filter === f
-                  ? "bg-white text-black"
-                  : "text-white/40 ring-1 ring-white/10"
+                filter === f ? "bg-white text-black" : "text-white/40 ring-1 ring-white/10"
               }`}
             >
               {f}
@@ -109,11 +100,9 @@ export default function VaultPage() {
         {filtered.length === 0 ? (
           <div className="mt-16 text-center">
             <p className="font-display text-[20px]">Vault is empty</p>
-            <p className="mt-2 text-[14px] text-white/40">
-              Check in or complete an action to earn today’s Daily Spark.
-            </p>
-            <Link href="/home" className="mt-6 inline-block text-[14px] text-livv-accent-soft">
-              Open Home →
+            <p className="mt-2 text-[14px] text-white/40">Open a pack from the Packs tab.</p>
+            <Link href="/home/packs" className="mt-6 inline-block text-[14px] text-livv-accent-soft">
+              Packs →
             </Link>
           </div>
         ) : (
@@ -129,7 +118,7 @@ export default function VaultPage() {
         <section className="mt-14">
           <p className="text-[10px] uppercase tracking-[0.28em] text-white/30">Catalog</p>
           <p className="mt-2 text-[13px] text-white/35">
-            {CARD_CATALOG.length} cards exist. Art drops in later — structure is live.
+            {CARD_CATALOG.length} cards exist. Real art drops in later.
           </p>
         </section>
       </div>
@@ -137,7 +126,7 @@ export default function VaultPage() {
       {opening && (
         <PackOpenModal
           packId={opening.id}
-          kind={opening.kind}
+          grade={opening.grade}
           onClose={() => {
             setOpening(null);
             sync();
