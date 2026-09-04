@@ -1,14 +1,11 @@
-import { addEmbers } from "./identity";
-import { logCustomAction } from "./record";
+/**
+ * LIVV Daily — the retention engine.
+ * Open → Discover → Act → Earn → Unlock → Reflect → Come back tomorrow.
+ */
 
-export type DailyCard = {
-  theme: string;
-  line: string;
-  mission: string;
-  missionHref: "/home/train" | "/home/evolve" | "/home/connect";
-  missionCta: string;
-  note: string;
-};
+import { addEmbers, loadIdentity, patchIdentity } from "./identity";
+import { logCustomAction, loadRecord, useStreakFreeze } from "./record";
+import { dayKey } from "./dates";
 
 export type DailyTask = {
   id: "mind" | "body" | "life";
@@ -26,15 +23,44 @@ export type DailyJournalEntry = {
   savedAt: number;
 };
 
+export type DropKind =
+  | "embers"
+  | "xp_boost"
+  | "streak_freeze"
+  | "pack_ticket"
+  | "frame"
+  | "artifact"
+  | "accent"
+  | "double_xp_day";
+
 export type DailyDrop = {
   id: string;
+  kind: DropKind;
   name: string;
   description: string;
-  amount: number;
   icon: string;
+  /** Embers granted on claim (0 if none) */
+  embers: number;
+  /** XP granted on claim */
+  xp: number;
+  /** Extra payload (frame id, accent hex, etc.) */
+  meta?: string;
+};
+
+export type DailyBuffs = {
+  /** dayKey until which 2x XP is active */
+  doubleXpUntil: string | null;
+  /** Owned profile frame ids */
+  frames: string[];
+  activeFrame: string | null;
+  /** Artifact collectible ids */
+  artifacts: string[];
+  /** Bonus pack tickets (claim on Packs) */
+  packTickets: number;
 };
 
 export const DAILY_KEY = "livv-daily-v1";
+export const BUFFS_KEY = "livv-daily-buffs-v1";
 export const SEASON_START = "2026-09-01";
 
 const QUESTIONS = [
@@ -48,62 +74,174 @@ const QUESTIONS = [
   "What did yesterday teach you that you can actually use today?",
   "What would make you proud of today tonight?",
   "Where are you waiting for permission you do not need?",
+  "What conversation are you delaying that would free energy?",
+  "What would you do if you trusted yourself completely?",
 ];
 
 const DAILY_SETS = [
   [
-    ["Mind", "Clear the noise", "Write one sentence about the decision you have been postponing.", "mind", "small"],
-    ["Body", "Move for 10 minutes", "Walk, stretch, or train. No optimization required. Just move.", "body", "standard"],
-    ["Life", "Fix one friction point", "Clean, organize, repair, cancel, or handle one small thing you keep stepping around.", "life", "standard"],
+    ["Mind", "Clear the noise", "Write one honest sentence about the decision you have been postponing.", "mind", "small"],
+    ["Body", "Move for 10 minutes", "Walk, stretch, or train. No optimization. Just move.", "body", "standard"],
+    ["Life", "Fix one friction point", "Clean, cancel, repair, or handle one small thing you keep stepping around.", "life", "standard"],
   ],
   [
     ["Mind", "Choose the hard truth", "Name one thing you know is true but keep negotiating with.", "mind", "small"],
-    ["Body", "20 squats + 10 push-ups", "Complete the circuit once. Scale the reps if needed, but finish it.", "body", "standard"],
-    ["Life", "Make one useful move", "Do one action that makes tomorrow easier before you do anything optional.", "life", "standard"],
+    ["Body", "20 squats + 10 push-ups", "Complete the circuit once. Scale if needed — finish it.", "body", "standard"],
+    ["Life", "Make one useful move", "Do one action that makes tomorrow easier before anything optional.", "life", "standard"],
   ],
   [
-    ["Mind", "Five minutes of silence", "Put the phone down and sit without consuming anything for five minutes.", "mind", "small"],
-    ["Body", "Get outside", "Spend at least 15 minutes outside and let your body change environments.", "body", "standard"],
+    ["Mind", "Five minutes of silence", "Phone down. Sit without consuming anything for five minutes. Then write what surfaced.", "mind", "small"],
+    ["Body", "Get outside", "At least 15 minutes outside. Change the environment.", "body", "standard"],
     ["Life", "Upgrade your space", "Improve one visible part of your environment. Small change, immediate proof.", "life", "standard"],
   ],
   [
     ["Mind", "Write the next move", "Turn one vague goal into a single physical action you can do today.", "mind", "small"],
-    ["Body", "Train the basics", "Do 3 rounds of a simple bodyweight circuit at your own pace.", "body", "major"],
-    ["Life", "Create before consuming", "Finish one useful task before entertainment, scrolling, or passive content.", "life", "standard"],
+    ["Body", "Train the basics", "3 rounds of a simple bodyweight circuit at your pace.", "body", "major"],
+    ["Life", "Create before consuming", "Finish one useful task before entertainment or scrolling.", "life", "standard"],
+  ],
+  [
+    ["Mind", "Name the resistance", "What is the real reason you have not started? Write it without editing.", "mind", "small"],
+    ["Body", "Heart rate up", "10 minutes continuous movement — walk, run, jump rope, or shadow work.", "body", "standard"],
+    ["Life", "Close one open loop", "Reply, pay, schedule, or finish one thing that has been open too long.", "life", "standard"],
   ],
 ] as const;
 
-const DROPS: DailyDrop[] = [
-  { id: "ember-cache", name: "Ember Cache", description: "A warm reserve for your evolution run.", amount: 40, icon: "✦" },
-  { id: "ember-surge", name: "Ember Surge", description: "A bigger hit of fuel for today's momentum.", amount: 75, icon: "✧" },
-  { id: "rare-cache", name: "Rare Cache", description: "A rare daily reward. Your consistency is becoming visible.", amount: 120, icon: "◇" },
-  { id: "foundry-drop", name: "Foundry Drop", description: "A premium-feeling reward for finishing the full Daily.", amount: 60, icon: "⬡" },
-  { id: "golden-drop", name: "Golden Drop", description: "The uncommon pull. You earned this one.", amount: 150, icon: "✹" },
+/** Weighted drop pool — rare outcomes are rarer. */
+const DROP_POOL: { weight: number; drop: DailyDrop }[] = [
+  {
+    weight: 28,
+    drop: {
+      id: "ember-cache",
+      kind: "embers",
+      name: "Ember Cache",
+      description: "Fuel for the long run.",
+      icon: "✦",
+      embers: 40,
+      xp: 15,
+    },
+  },
+  {
+    weight: 18,
+    drop: {
+      id: "ember-surge",
+      kind: "embers",
+      name: "Ember Surge",
+      description: "A bigger hit for finishing the full Daily.",
+      icon: "✧",
+      embers: 75,
+      xp: 25,
+    },
+  },
+  {
+    weight: 12,
+    drop: {
+      id: "xp-spark",
+      kind: "xp_boost",
+      name: "XP Spark",
+      description: "Instant progress toward your next Evolution level.",
+      icon: "↑",
+      embers: 15,
+      xp: 80,
+    },
+  },
+  {
+    weight: 10,
+    drop: {
+      id: "freeze-token",
+      kind: "streak_freeze",
+      name: "Streak Freeze",
+      description: "One more freeze in the vault. Protect the chain.",
+      icon: "❄",
+      embers: 10,
+      xp: 10,
+    },
+  },
+  {
+    weight: 8,
+    drop: {
+      id: "pack-ticket",
+      kind: "pack_ticket",
+      name: "Pack Ticket",
+      description: "An extra pull. Claim it on the Packs tab.",
+      icon: "▣",
+      embers: 20,
+      xp: 20,
+    },
+  },
+  {
+    weight: 8,
+    drop: {
+      id: "double-xp",
+      kind: "double_xp_day",
+      name: "2× XP Day",
+      description: "Tomorrow’s actions grant double XP until midnight.",
+      icon: "⚡",
+      embers: 25,
+      xp: 30,
+    },
+  },
+  {
+    weight: 6,
+    drop: {
+      id: "frame-signal",
+      kind: "frame",
+      name: "Frame · Signal",
+      description: "A profile frame. Equip it from Profile when ready.",
+      icon: "◎",
+      embers: 30,
+      xp: 20,
+      meta: "signal",
+    },
+  },
+  {
+    weight: 5,
+    drop: {
+      id: "frame-ascent",
+      kind: "frame",
+      name: "Frame · Ascent",
+      description: "Rare profile frame for people who finish Dailies.",
+      icon: "◉",
+      embers: 40,
+      xp: 25,
+      meta: "ascent",
+    },
+  },
+  {
+    weight: 4,
+    drop: {
+      id: "artifact-ledger",
+      kind: "artifact",
+      name: "Artifact · The Ledger",
+      description: "A collectible mark of continuity. Yours permanently.",
+      icon: "◈",
+      embers: 50,
+      xp: 40,
+      meta: "ledger",
+    },
+  },
+  {
+    weight: 1,
+    drop: {
+      id: "golden-drop",
+      kind: "embers",
+      name: "Golden Drop",
+      description: "The uncommon pull. Consistency made visible.",
+      icon: "✹",
+      embers: 150,
+      xp: 100,
+    },
+  },
 ];
 
-const DAYS: DailyCard[] = [
-  { theme: "Show up", line: "You do not need a perfect day. You need this one.", mission: "Complete one training session, even if it is short.", missionHref: "/home/train", missionCta: "Train now", note: "Most people wait to feel ready. Ready is after the first set." },
-  { theme: "Quiet work", line: "Nobody is watching. That is the advantage.", mission: "Check off every objective on Evolve.", missionHref: "/home/evolve", missionCta: "Do the work", note: "The version of you that you want is built on days that look boring." },
-  { theme: "One more", line: "Stop at good and you stay the same. Add one more.", mission: "Generate a workout and finish it.", missionHref: "/home/train", missionCta: "Start session", note: "The extra rep is where identity actually changes." },
-  { theme: "Protect the streak", line: "Today is not about growth. It is about not disappearing.", mission: "Mark one objective complete so the chain stays alive.", missionHref: "/home/evolve", missionCta: "Keep the chain", note: "Missing once is human. Missing twice is a new personality." },
-  { theme: "Move first", line: "Think later. Body first. Mind follows.", mission: "Train before you scroll anything else.", missionHref: "/home/train", missionCta: "Move", note: "A body in motion makes better decisions than a body on a couch." },
-  { theme: "Stay close", line: "You get sharper around people who are also building.", mission: "Open Connect and leave one real reaction.", missionHref: "/home/connect", missionCta: "Check the room", note: "Isolation feels focused until it turns into quitting in private." },
-  { theme: "Standard", line: "Today you are not chasing motivation. You are keeping a standard.", mission: "Finish a session that matches your actual day, not your fantasy day.", missionHref: "/home/train", missionCta: "Match the day", note: "Twenty minutes done beats a two hour plan you never start." },
-  { theme: "Clean inputs", line: "What you let in today becomes who you are next month.", mission: "Clear today's Evolve list before midnight.", missionHref: "/home/evolve", missionCta: "Clear the list", note: "Discipline is just choosing the same thing when it is inconvenient." },
-  { theme: "No theater", line: "Skip the announcement. Do the thing.", mission: "Start training without building the perfect plan first.", missionHref: "/home/train", missionCta: "Skip the speech", note: "Talking about the work is the easiest way to avoid it." },
-  { theme: "Return", line: "If you drifted, this is the door back in. Use it.", mission: "One objective. One session. That is a full reset.", missionHref: "/home/evolve", missionCta: "Come back", note: "You do not need a new Monday. You need the next hour." },
-  { theme: "Heat", line: "Comfort is the tax you pay for staying average.", mission: "Pick a harder focus than you feel like and train it.", missionHref: "/home/train", missionCta: "Go harder", note: "Easy days are fine. Easy weeks are how people stall." },
-  { theme: "Proof", line: "Feelings lie. Completed work does not.", mission: "Log something real in Evolve so today exists.", missionHref: "/home/evolve", missionCta: "Make it real", note: "If it is not on the record, your brain will rewrite it by tonight." },
-  { theme: "Keep the line", line: "You already started. Do not negotiate with the version of you that wants out.", mission: "Open Train and finish whatever you generate.", missionHref: "/home/train", missionCta: "Finish it", note: "The argument in your head is not wisdom. It is just resistance." },
-  { theme: "Presence", line: "Be here long enough to become someone worth being.", mission: "Spend five minutes in Connect. See who showed up.", missionHref: "/home/connect", missionCta: "Look around", note: "You do not have to be loud. You have to be consistent in public." },
-];
-
-function dateKey(date = new Date()) {
-  const y = date.getFullYear();
-  const m = String(date.getMonth() + 1).padStart(2, "0");
-  const d = String(date.getDate()).padStart(2, "0");
-  return `${y}-${m}-${d}`;
-}
+const WORLD_BY_WEEKDAY: Record<number, [string, string, string]> = {
+  0: ["THE RETURN", "Rest is strategy. Do not confuse it with escape.", "Focus: Recovery"],
+  1: ["THE ASCENT", "Start before you feel ready.", "Focus: Discipline"],
+  2: ["THE PRESSURE", "Do the thing that has been waiting on you.", "Focus: Resilience"],
+  3: ["THE CLEARING", "Remove noise. Keep what matters.", "Focus: Mental clarity"],
+  4: ["THE FORGE", "Make today’s version harder to break.", "Focus: Strength"],
+  5: ["THE EDGE", "Comfort is not the objective.", "Focus: Courage"],
+  6: ["THE STANDARD", "Keep the line when nobody is scoring it.", "Focus: Consistency"],
+};
 
 function hash(value: string) {
   let h = 2166136261;
@@ -129,14 +267,38 @@ function save(value: Record<string, unknown>) {
   window.dispatchEvent(new Event("livv-daily"));
 }
 
-export function dayNumber(date = new Date()) {
-  const start = Date.UTC(date.getFullYear(), 0, 0);
-  const now = Date.UTC(date.getFullYear(), date.getMonth(), date.getDate());
-  return Math.floor((now - start) / 86400000);
+export function loadBuffs(): DailyBuffs {
+  if (typeof window === "undefined") {
+    return { doubleXpUntil: null, frames: [], activeFrame: null, artifacts: [], packTickets: 0 };
+  }
+  try {
+    const raw = window.localStorage.getItem(BUFFS_KEY);
+    if (!raw) {
+      return { doubleXpUntil: null, frames: [], activeFrame: null, artifacts: [], packTickets: 0 };
+    }
+    return {
+      doubleXpUntil: null,
+      frames: [],
+      activeFrame: null,
+      artifacts: [],
+      packTickets: 0,
+      ...JSON.parse(raw),
+    } as DailyBuffs;
+  } catch {
+    return { doubleXpUntil: null, frames: [], activeFrame: null, artifacts: [], packTickets: 0 };
+  }
 }
 
-export function getDailyCard(date = new Date()): DailyCard {
-  return DAYS[dayNumber(date) % DAYS.length];
+function saveBuffs(b: DailyBuffs) {
+  if (typeof window === "undefined") return;
+  window.localStorage.setItem(BUFFS_KEY, JSON.stringify(b));
+  window.dispatchEvent(new Event("livv-buffs"));
+}
+
+export function isDoubleXpActive(date = new Date()) {
+  const b = loadBuffs();
+  if (!b.doubleXpUntil) return false;
+  return dayKey(date) <= b.doubleXpUntil;
 }
 
 export function seasonDay(date = new Date()) {
@@ -151,7 +313,7 @@ export function seasonState(date = new Date()) {
   const chapter = Math.floor((dayInSeason - 1) / 7) + 1;
   const chapterNames = ["Ignition", "Pressure", "Momentum", "Ascent"];
   return {
-    name: "THE ASCENT",
+    name: "SEASON 01 · THE ASCENT",
     day,
     dayInSeason,
     chapter,
@@ -161,62 +323,98 @@ export function seasonState(date = new Date()) {
   };
 }
 
-export function worldState(date = new Date()) {
-  const phases = [
-    ["THE IGNITION", "Start before you feel ready."],
-    ["THE PRESSURE", "Do the thing that has been waiting on you."],
-    ["THE CLEARING", "Remove noise. Keep what matters."],
-    ["THE ASCENT", "Stack proof. Let momentum compound."],
-    ["THE EDGE", "Comfort is not the objective."],
-    ["THE RETURN", "Come back to what you said mattered."],
-    ["THE FORGE", "Make today's version harder to break."],
-  ] as const;
-  return phases[(seasonDay(date) - 1) % phases.length];
+/** Visible world state — changes with the weekday. */
+export function worldState(date = new Date()): {
+  title: string;
+  line: string;
+  focus: string;
+} {
+  const row = WORLD_BY_WEEKDAY[date.getDay()] || WORLD_BY_WEEKDAY[1];
+  return { title: row[0], line: row[1], focus: row[2] };
 }
 
 export function dailyQuestion(date = new Date()) {
-  return QUESTIONS[hash(dateKey(date)) % QUESTIONS.length];
+  return QUESTIONS[hash(dayKey(date)) % QUESTIONS.length];
 }
 
 export function dailyTasks(date = new Date()): DailyTask[] {
-  const set = DAILY_SETS[hash(dateKey(date)) % DAILY_SETS.length];
+  const set = DAILY_SETS[hash(dayKey(date)) % DAILY_SETS.length];
   return set.map(([label, title, description, pillar, xpSize], index) => ({
-    id: ["mind", "body", "life"][index] as DailyTask["id"],
+    id: (["mind", "body", "life"] as const)[index],
     label,
     title,
     description,
     pillar,
-    xpSize,
+    xpSize: xpSize as DailyTask["xpSize"],
   }));
 }
 
-export function dailyDrop(date = new Date()) {
-  return DROPS[hash(`${dateKey(date)}-drop`) % DROPS.length];
+/** Deterministic drop for the day (same for everyone that day — FOMO shared). */
+export function dailyDrop(date = new Date()): DailyDrop {
+  const h = hash(`${dayKey(date)}-drop-v2`);
+  const total = DROP_POOL.reduce((s, x) => s + x.weight, 0);
+  let roll = h % total;
+  for (const entry of DROP_POOL) {
+    if (roll < entry.weight) return entry.drop;
+    roll -= entry.weight;
+  }
+  return DROP_POOL[0].drop;
 }
 
 export function loadDailyState(date = new Date()) {
   const data = storage();
-  const key = dateKey(date);
-  const completed = Array.isArray(data.completed) ? data.completed.filter((x): x is string => typeof x === "string") : [];
-  const journal = Array.isArray(data.journal)
-    ? data.journal.filter((x): x is DailyJournalEntry => Boolean(x && typeof x === "object" && typeof (x as DailyJournalEntry).key === "string"))
+  const key = dayKey(date);
+  const completed = Array.isArray(data.completed)
+    ? data.completed.filter((x): x is string => typeof x === "string")
     : [];
-  const claimed = data.claimed && typeof data.claimed === "object" ? data.claimed as Record<string, boolean> : {};
+  const journal = Array.isArray(data.journal)
+    ? (data.journal as DailyJournalEntry[]).filter(
+        (x) => x && typeof x === "object" && typeof x.key === "string"
+      )
+    : [];
+  const claimed =
+    data.claimed && typeof data.claimed === "object"
+      ? (data.claimed as Record<string, boolean>)
+      : {};
+  const dropRevealed =
+    data.dropRevealed && typeof data.dropRevealed === "object"
+      ? (data.dropRevealed as Record<string, boolean>)
+      : {};
+
   return {
-    completed: completed.filter((id) => id.startsWith(`${key}:`)).map((id) => id.slice(key.length + 1)),
+    key,
+    completed: completed
+      .filter((id) => id.startsWith(`${key}:`))
+      .map((id) => id.slice(key.length + 1)),
     journal,
     dropClaimed: Boolean(claimed[key]),
+    dropRevealed: Boolean(dropRevealed[key]),
   };
 }
 
 export function completeDailyTask(id: DailyTask["id"], date = new Date()) {
   const data = storage();
-  const key = dateKey(date);
-  const completed = Array.isArray(data.completed) ? data.completed.filter((x): x is string => typeof x === "string") : [];
+  const key = dayKey(date);
+  const completed = Array.isArray(data.completed)
+    ? data.completed.filter((x): x is string => typeof x === "string")
+    : [];
   const token = `${key}:${id}`;
   if (!completed.includes(token)) {
+    // Mind requires journal answer first
+    if (id === "mind") {
+      const journal = Array.isArray(data.journal) ? (data.journal as DailyJournalEntry[]) : [];
+      if (!journal.some((j) => j.key === key && j.answer.trim().length > 0)) {
+        return loadDailyState(date);
+      }
+    }
     const task = dailyTasks(date).find((item) => item.id === id);
-    if (task) logCustomAction({ title: `Daily · ${task.title}`, pillar: task.pillar, size: task.xpSize });
+    if (task) {
+      logCustomAction({
+        title: `Daily · ${task.title}`,
+        pillar: task.pillar,
+        size: task.xpSize,
+      });
+    }
     completed.push(token);
     data.completed = completed.slice(-120);
     save(data);
@@ -228,28 +426,143 @@ export function saveDailyJournal(answer: string, date = new Date()) {
   const clean = answer.trim();
   if (!clean) return loadDailyState(date);
   const data = storage();
-  const key = dateKey(date);
-  const journal = Array.isArray(data.journal) ? data.journal.filter((x): x is DailyJournalEntry => Boolean(x && typeof x === "object" && typeof (x as DailyJournalEntry).key === "string")) : [];
-  const entry: DailyJournalEntry = { key, question: dailyQuestion(date), answer: clean, savedAt: Date.now() };
+  const key = dayKey(date);
+  const journal = Array.isArray(data.journal)
+    ? (data.journal as DailyJournalEntry[]).filter(
+        (x) => x && typeof x === "object" && typeof x.key === "string"
+      )
+    : [];
+  const entry: DailyJournalEntry = {
+    key,
+    question: dailyQuestion(date),
+    answer: clean,
+    savedAt: Date.now(),
+  };
   data.journal = [...journal.filter((item) => item.key !== key), entry].slice(-90);
   save(data);
-  return loadDailyState(date);
+  // Completing the journal counts as Mind
+  return completeDailyTask("mind", date);
+}
+
+function applyDropEffects(drop: DailyDrop) {
+  if (drop.embers > 0) addEmbers(drop.embers);
+  if (drop.xp > 0) {
+    logCustomAction({
+      title: `Daily Drop · ${drop.name}`,
+      pillar: "life",
+      size: drop.xp >= 80 ? "major" : drop.xp >= 40 ? "standard" : "small",
+    });
+  }
+
+  const buffs = loadBuffs();
+
+  if (drop.kind === "streak_freeze") {
+    try {
+      const rec = loadRecord();
+      rec.streakFreezes = (rec.streakFreezes || 0) + 1;
+      // persist via localStorage path used by record
+      window.localStorage.setItem("livv-record-v1", JSON.stringify(rec));
+      window.dispatchEvent(new Event("livv-record"));
+    } catch {
+      /* noop */
+    }
+  }
+
+  if (drop.kind === "pack_ticket") {
+    buffs.packTickets += 1;
+  }
+
+  if (drop.kind === "double_xp_day") {
+    const t = new Date();
+    t.setDate(t.getDate() + 1);
+    buffs.doubleXpUntil = dayKey(t);
+  }
+
+  if (drop.kind === "frame" && drop.meta) {
+    if (!buffs.frames.includes(drop.meta)) buffs.frames.push(drop.meta);
+  }
+
+  if (drop.kind === "artifact" && drop.meta) {
+    if (!buffs.artifacts.includes(drop.meta)) buffs.artifacts.push(drop.meta);
+  }
+
+  if (drop.kind === "accent" && drop.meta) {
+    try {
+      patchIdentity({ accent: drop.meta });
+    } catch {
+      /* noop */
+    }
+  }
+
+  saveBuffs(buffs);
 }
 
 export function claimDailyDrop(date = new Date()) {
   const data = storage();
-  const key = dateKey(date);
-  const claimed = data.claimed && typeof data.claimed === "object" ? { ...(data.claimed as Record<string, boolean>) } : {};
+  const key = dayKey(date);
+  const claimed =
+    data.claimed && typeof data.claimed === "object"
+      ? { ...(data.claimed as Record<string, boolean>) }
+      : {};
   const state = loadDailyState(date);
-  if (state.completed.length < 3 || claimed[key]) return { claimed: false, drop: dailyDrop(date) };
+  if (state.completed.length < 3 || claimed[key]) {
+    return { claimed: false as const, drop: dailyDrop(date) };
+  }
   const drop = dailyDrop(date);
   claimed[key] = true;
   data.claimed = claimed;
+  const revealed =
+    data.dropRevealed && typeof data.dropRevealed === "object"
+      ? { ...(data.dropRevealed as Record<string, boolean>) }
+      : {};
+  revealed[key] = true;
+  data.dropRevealed = revealed;
   save(data);
-  addEmbers(drop.amount);
-  return { claimed: true, drop };
+  applyDropEffects(drop);
+  return { claimed: true as const, drop };
+}
+
+export function journalCallback(date = new Date()) {
+  const target = new Date(date);
+  target.setDate(target.getDate() - 30);
+  const targetKey = dayKey(target);
+  return loadDailyState(date).journal.find((e) => e.key === targetKey) || null;
 }
 
 export function journalHistory() {
-  return loadDailyState().journal.slice().sort((a, b) => b.key.localeCompare(a.key));
+  return loadDailyState()
+    .journal.slice()
+    .sort((a, b) => b.key.localeCompare(a.key));
+}
+
+/** Summary for Home — “3 things waiting” */
+export function dailySummary(date = new Date()) {
+  const state = loadDailyState(date);
+  const tasks = dailyTasks(date);
+  const world = worldState(date);
+  const season = seasonState(date);
+  const drop = dailyDrop(date);
+  const done = state.completed.length;
+  return {
+    world,
+    season,
+    tasks,
+    done,
+    total: tasks.length,
+    allDone: done >= tasks.length,
+    dropClaimed: state.dropClaimed,
+    drop,
+    question: dailyQuestion(date),
+    hasJournal: state.journal.some((j) => j.key === state.key),
+    callback: journalCallback(date),
+    doubleXp: isDoubleXpActive(date),
+  };
+}
+
+export function consumePackTicket(): boolean {
+  const b = loadBuffs();
+  if (b.packTickets <= 0) return false;
+  b.packTickets -= 1;
+  saveBuffs(b);
+  return true;
 }
