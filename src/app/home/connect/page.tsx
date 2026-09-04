@@ -50,7 +50,6 @@ export default function ConnectPage() {
   const [replyDraft, setReplyDraft] = useState("");
   const [now, setNow] = useState(() => Date.now());
   const [likeBurst, setLikeBurst] = useState<string | null>(null);
-  const [composerFocus, setComposerFocus] = useState(false);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const lastTap = useRef<{ id: string; t: number } | null>(null);
@@ -94,7 +93,6 @@ export default function ConnectPage() {
     setAllowReplies(true);
     setEditingId(null);
     setSheet("closed");
-    setComposerFocus(false);
   };
 
   const publish = () => {
@@ -193,7 +191,7 @@ export default function ConnectPage() {
       setPhoto(await fileToPostPhoto(file));
       setSheet(editingId ? "edit" : "compose");
     } catch {
-      /* ignore bad image */
+      /* ignore */
     }
   };
 
@@ -225,7 +223,6 @@ export default function ConnectPage() {
       </div>
 
       <div className="relative z-10 mx-auto max-w-lg">
-        {/* Sticky header */}
         <header className="sticky top-0 z-30 border-b border-white/[0.06] bg-[#050505]/88 px-5 pb-3 pt-5 backdrop-blur-xl">
           <div className="flex items-center justify-between">
             <div>
@@ -250,10 +247,9 @@ export default function ConnectPage() {
             </div>
           </div>
 
-          {/* Pulse strip */}
           <div className="-mx-5 mt-4 flex gap-3.5 overflow-x-auto px-5 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {PULSE.map((p) => {
-              const self = p.self;
+              const self = Boolean(p.self);
               return (
                 <button
                   key={p.username}
@@ -301,7 +297,6 @@ export default function ConnectPage() {
             })}
           </div>
 
-          {/* Tabs */}
           <div className="mt-3 flex gap-1">
             {(
               [
@@ -328,8 +323,7 @@ export default function ConnectPage() {
           </div>
         </header>
 
-        {/* Feed */}
-        <div className="mt-2 space-y-0">
+        <div className="mt-2">
           {feed.length === 0 && (
             <div className="px-5 py-20 text-center">
               <p className="font-display text-[22px] font-semibold">Empty room</p>
@@ -353,12 +347,8 @@ export default function ConnectPage() {
             return (
               <article
                 key={post.id}
-                className={cn(
-                  "relative py-5",
-                  idx > 0 && "border-t border-white/[0.05]"
-                )}
+                className={cn("relative py-5", idx > 0 && "border-t border-white/[0.05]")}
               >
-                {/* Author */}
                 <div className="flex items-center gap-3 px-5">
                   <span
                     className="shrink-0 rounded-full p-[2px]"
@@ -385,7 +375,7 @@ export default function ConnectPage() {
                         type="button"
                         aria-label="Post options"
                         onClick={() => setMenuId(menuId === post.id ? null : post.id)}
-                        className="flex h-9 w-9 items-center justify-center rounded-full text-white/35 transition hover:bg-white/[0.05]"
+                        className="flex h-9 w-9 items-center justify-center rounded-full text-white/35"
                       >
                         <MoreIcon />
                       </button>
@@ -413,14 +403,12 @@ export default function ConnectPage() {
                   )}
                 </div>
 
-                {/* Text-only */}
                 {post.text && !hasMedia && (
                   <p className="whitespace-pre-wrap px-5 pt-3 text-[17px] leading-snug tracking-[-0.015em] text-white/92">
                     {post.text}
                   </p>
                 )}
 
-                {/* Photo */}
                 {post.photo && (
                   <button
                     type="button"
@@ -428,14 +416,10 @@ export default function ConnectPage() {
                     className="relative mt-3 block w-full overflow-hidden bg-black"
                   >
                     {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img
-                      src={post.photo}
-                      alt=""
-                      className="max-h-[520px] w-full object-cover"
-                    />
+                    <img src={post.photo} alt="" className="max-h-[520px] w-full object-cover" />
                     {likeBurst === post.id && (
                       <span className="pointer-events-none absolute inset-0 flex items-center justify-center">
-                        <span className="like-burst text-white drop-shadow-lg">
+                        <span className="livv-like-burst text-white drop-shadow-lg">
                           <HeartIcon filled size={64} />
                         </span>
                       </span>
@@ -448,7 +432,6 @@ export default function ConnectPage() {
                   </button>
                 )}
 
-                {/* Music */}
                 {post.track && (
                   <button
                     type="button"
@@ -482,7 +465,7 @@ export default function ConnectPage() {
                         {[0, 1, 2, 3].map((i) => (
                           <span
                             key={i}
-                            className="eq-bar w-[3px] rounded-full bg-livv-accent"
+                            className="livv-eq-bar"
                             style={{ animationDelay: `${i * 0.1}s` }}
                           />
                         ))}
@@ -491,13 +474,12 @@ export default function ConnectPage() {
                   </button>
                 )}
 
-                {/* Actions — fixed icon boxes so nothing clips */}
                 <div className="mt-3 flex items-center gap-1 px-3">
                   <button
                     type="button"
                     onClick={() => like(post.id)}
                     className={cn(
-                      "inline-flex h-10 items-center gap-1.5 rounded-full px-3 text-[13px] transition",
+                      "inline-flex h-10 items-center gap-1.5 rounded-full px-3 text-[13px]",
                       post.likedByMe ? "text-livv-accent" : "text-white/45"
                     )}
                     aria-label={post.likedByMe ? "Unlike" : "Like"}
@@ -505,33 +487,30 @@ export default function ConnectPage() {
                     <span className="flex h-5 w-5 items-center justify-center">
                       <HeartIcon filled={post.likedByMe} />
                     </span>
-                    <span className="min-w-[1ch] tabular-nums">{post.likes}</span>
+                    <span className="tabular-nums">{post.likes}</span>
                   </button>
 
                   {post.allowReplies ? (
                     <button
                       type="button"
-                      onClick={() =>
-                        setOpenReplies(openReplies === post.id ? null : post.id)
-                      }
+                      onClick={() => setOpenReplies(openReplies === post.id ? null : post.id)}
                       className="inline-flex h-10 items-center gap-1.5 rounded-full px-3 text-[13px] text-white/45"
                       aria-label="Reply"
                     >
                       <span className="flex h-5 w-5 items-center justify-center">
                         <ReplyIcon />
                       </span>
-                      <span className="min-w-[1ch] tabular-nums">{post.replies.length}</span>
+                      <span className="tabular-nums">{post.replies.length}</span>
                     </button>
                   ) : (
                     <span className="px-3 text-[11px] text-white/25">Replies off</span>
                   )}
                 </div>
 
-                {/* Replies */}
                 {openReplies === post.id && post.allowReplies && (
                   <div className="mt-2 border-t border-white/[0.05] px-5 pt-3">
                     {post.replies.length === 0 && (
-                      <p className="mb-3 text-[12px] text-white/30">No replies yet. Start it.</p>
+                      <p className="mb-3 text-[12px] text-white/30">No replies yet.</p>
                     )}
                     {post.replies.map((reply) => (
                       <div key={reply.id} className="mb-3 flex gap-2.5">
@@ -573,7 +552,6 @@ export default function ConnectPage() {
         </div>
       </div>
 
-      {/* Compose FAB */}
       <button
         type="button"
         onClick={() => {
@@ -581,7 +559,7 @@ export default function ConnectPage() {
           setSheet("compose");
           feedback("tick");
         }}
-        className="fixed bottom-[calc(5.75rem+env(safe-area-inset-bottom))] right-5 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-white text-black shadow-[0_10px_40px_rgba(0,0,0,0.55)] transition active:scale-95"
+        className="fixed bottom-[calc(5.75rem+env(safe-area-inset-bottom))] right-5 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-white text-black shadow-[0_10px_40px_rgba(0,0,0,0.55)]"
         aria-label="New post"
       >
         <PlusIcon />
@@ -595,7 +573,6 @@ export default function ConnectPage() {
         onChange={(e) => onPhoto(e.target.files?.[0])}
       />
 
-      {/* Composer sheet */}
       {(sheet === "compose" || sheet === "edit" || sheet === "sound") && (
         <div className="fixed inset-0 z-[70] flex items-end bg-black/80 backdrop-blur-sm">
           <div className="max-h-[92dvh] w-full overflow-y-auto rounded-t-[28px] bg-[#0c0e12] p-5 pb-10 ring-1 ring-white/10">
@@ -623,11 +600,8 @@ export default function ConnectPage() {
 
                 {sheet === "edit" && editingId && (
                   <p className="mb-3 text-[11px] text-white/35">
-                    {editSecondsLeft(
-                      posts.find((p) => p.id === editingId) || posts[0],
-                      now
-                    )}
-                    s left to edit
+                    {editSecondsLeft(posts.find((p) => p.id === editingId) || posts[0], now)}s left to
+                    edit
                   </p>
                 )}
 
@@ -636,9 +610,8 @@ export default function ConnectPage() {
                   <textarea
                     value={text}
                     onChange={(e) => setText(e.target.value)}
-                    onFocus={() => setComposerFocus(true)}
                     placeholder="What’s real right now."
-                    rows={composerFocus || text ? 5 : 3}
+                    rows={4}
                     className="flex-1 resize-none bg-transparent text-[17px] leading-snug outline-none placeholder:text-white/25"
                     autoFocus
                   />
@@ -747,43 +720,10 @@ export default function ConnectPage() {
           </div>
         </div>
       )}
-
-      <style jsx>{`
-        .like-burst {
-          animation: burst 0.5s ease-out forwards;
-        }
-        @keyframes burst {
-          0% {
-            opacity: 0;
-            transform: scale(0.35);
-          }
-          40% {
-            opacity: 1;
-            transform: scale(1.12);
-          }
-          100% {
-            opacity: 0;
-            transform: scale(1.35);
-          }
-        }
-        .eq-bar {
-          height: 6px;
-          animation: eq 0.55s ease-in-out infinite alternate;
-        }
-        @keyframes eq {
-          from {
-            height: 4px;
-          }
-          to {
-            height: 14px;
-          }
-        }
-      `}</style>
     </main>
   );
 }
 
-/* Icons — fixed viewBox, never clipped */
 function HeartIcon({ filled, size = 20 }: { filled?: boolean; size?: number }) {
   return (
     <svg width={size} height={size} viewBox="0 0 24 24" fill={filled ? "currentColor" : "none"} aria-hidden>
