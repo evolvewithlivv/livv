@@ -29,9 +29,9 @@ const LOGO =
 
 const PILLAR_HREF: Record<string, string> = {
   body: "/home/train",
-  mind: "/home/evolve",
-  career: "/home/evolve",
-  finance: "/home/evolve",
+  mind: "/home/evala",
+  career: "/home/evala",
+  finance: "/home/evala",
   social: "/home/connect",
   self: "/home",
 };
@@ -92,12 +92,8 @@ export default function HomePage() {
     if (!rec) return [] as string[];
     const items: string[] = [];
     if (isCheckedInToday(rec)) items.push("Checked in");
-    if (rec.days[Object.keys(rec.days).sort().slice(-1)[0]]?.workout || rec.lastWorkout) {
-      const today = rec.days[
-        `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`
-      ];
-      if (today?.workout) items.push(rec.lastWorkout?.name || "Training session");
-    }
+    const key = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
+    if (rec.days[key]?.workout) items.push(rec.lastWorkout?.name || "Training session");
     todaysObjectives(rec)
       .filter((o) => o.completed)
       .forEach((o) => items.push(o.title));
@@ -113,7 +109,6 @@ export default function HomePage() {
   const greet = contextGreeting(now, rec);
   const move = nextMove(rec);
   const { done, total, pillars } = actionsCompletedCount(rec);
-  // map self as check-in
   const nodes = [
     ...pillars,
     { id: "self", name: "Self", done: isCheckedInToday(rec) },
@@ -151,7 +146,6 @@ export default function HomePage() {
 
   return (
     <main className="relative min-h-full overflow-hidden pb-8">
-      {/* Atmosphere */}
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute inset-0 bg-[#050505]" />
         <div
@@ -166,19 +160,14 @@ export default function HomePage() {
       </div>
 
       <div className="relative z-10 mx-auto max-w-lg px-5 pt-5">
-        {/* Header */}
         <header className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={LOGO} alt="" className="h-7 w-7 object-contain opacity-90" />
-            <span className="font-display text-[13px] font-semibold tracking-[0.18em]">LIVV</span>
-          </div>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={LOGO} alt="LIVV" className="h-8 w-8 object-contain opacity-95" />
           <Link href="/home/profile" className="rounded-full ring-1 ring-white/10">
             <Avatar identity={me} size={34} />
           </Link>
         </header>
 
-        {/* Hero copy */}
         <div className="mt-10 text-center">
           <p className="text-[10px] font-medium uppercase tracking-[0.32em] text-white/35">
             {dateLabel}
@@ -193,7 +182,6 @@ export default function HomePage() {
           )}
         </div>
 
-        {/* Evolution centerpiece */}
         <div className="relative mx-auto mt-10 flex h-[240px] w-[240px] items-center justify-center">
           <div
             className={`evo-ring absolute inset-0 rounded-full ${pulse ? "evo-pulse" : ""}`}
@@ -212,9 +200,7 @@ export default function HomePage() {
             }}
           />
           <div className="relative z-10 text-center">
-            <p className="text-[10px] font-medium uppercase tracking-[0.28em] text-white/40">
-              Evolution
-            </p>
+            <p className="text-[10px] font-medium uppercase tracking-[0.28em] text-white/40">Evolution</p>
             <p className="font-display mt-1 text-[52px] font-semibold leading-none tracking-tight">
               {rec.level}
             </p>
@@ -227,7 +213,6 @@ export default function HomePage() {
           </div>
         </div>
 
-        {/* Next move — primary */}
         <button
           type="button"
           onClick={onPrimary}
@@ -259,17 +244,14 @@ export default function HomePage() {
           </div>
         </button>
 
-        {/* Life system nodes */}
         <section className="mt-12">
-          <div className="mb-5 flex items-end justify-between px-1">
-            <div>
-              <p className="text-[10px] font-medium uppercase tracking-[0.28em] text-white/30">
-                Life system
-              </p>
-              <p className="mt-1 text-[15px] font-medium text-white/80">
-                {done === total ? "You’re clear." : `${done} / ${total} with signal`}
-              </p>
-            </div>
+          <div className="mb-5 px-1">
+            <p className="text-[10px] font-medium uppercase tracking-[0.28em] text-white/30">
+              Life system
+            </p>
+            <p className="mt-1 text-[15px] font-medium text-white/80">
+              {done === total ? "You’re clear." : `${done} / ${total} with signal`}
+            </p>
           </div>
 
           <div className="grid grid-cols-3 gap-x-3 gap-y-6">
@@ -283,7 +265,7 @@ export default function HomePage() {
                     if (!checkedIn) onPrimary();
                     return;
                   }
-                  router.push(PILLAR_HREF[n.id] || "/home/evolve");
+                  router.push(PILLAR_HREF[n.id] || "/home/evala");
                 }}
                 className="flex flex-col items-center gap-2.5"
               >
@@ -314,23 +296,18 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* Evala */}
         {insight && (
           <section className="mt-12">
             <p className="text-[10px] font-medium uppercase tracking-[0.28em] text-white/30">
               {insight.title}
             </p>
             <p className="mt-3 text-[15px] leading-relaxed text-white/65">{insight.body}</p>
-            <Link
-              href="/home/progress"
-              className="mt-3 inline-block text-[13px] text-livv-accent-soft"
-            >
-              Explore →
+            <Link href="/home/evala" className="mt-3 inline-block text-[13px] text-livv-accent-soft">
+              Open Evala →
             </Link>
           </section>
         )}
 
-        {/* Recent momentum */}
         {recent.length > 0 && (
           <section className="mt-12 border-t border-white/[0.06] pt-8">
             <p className="text-[10px] font-medium uppercase tracking-[0.28em] text-white/30">
