@@ -1,5 +1,6 @@
 import { BottomNav } from "@/components/layout/bottom-nav";
 import { RequireAuth } from "@/components/auth/require-auth";
+import { MilestoneCeremony } from "@/components/gamification/milestone-ceremony";
 
 export default function HomeLayout({
   children,
@@ -13,6 +14,7 @@ export default function HomeLayout({
           {children}
         </div>
         <BottomNav />
+        <MilestoneCeremony />
       </div>
     </RequireAuth>
   );
