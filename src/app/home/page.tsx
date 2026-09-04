@@ -5,6 +5,8 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Avatar } from "@/components/identity/avatar";
 import { AmbientField } from "@/components/layout/ambient-field";
+import { PackFoil } from "@/components/packs/pack-foil";
+import { PackOpenModal } from "@/components/packs/pack-open";
 import { addEmbers, loadIdentity, type Identity } from "@/lib/identity";
 import { getTier } from "@/lib/membership";
 import {
@@ -23,6 +25,7 @@ import {
 } from "@/lib/command";
 import { evolutionTitle } from "@/lib/levels";
 import { feedback } from "@/lib/sensory";
+import { loadPacks, tryGrantDailyPack, type PendingPack } from "@/lib/packs";
 
 const LOGO =
   "https://raw.githubusercontent.com/evolvewithlivv/livv/main/Photoroom_20260831_123254.png";
@@ -70,10 +73,13 @@ export default function HomePage() {
   const [rec, setRec] = useState<LivvRecord | null>(null);
   const [me, setMe] = useState<Identity | null>(null);
   const [pulse, setPulse] = useState(false);
+  const [pending, setPending] = useState<PendingPack[]>([]);
+  const [opening, setOpening] = useState<PendingPack | null>(null);
 
   const pull = () => {
     setRec(loadRecord());
     setMe(loadIdentity());
+    setPending(loadPacks().pending);
   };
 
   useEffect(() => {
@@ -81,10 +87,12 @@ export default function HomePage() {
     const id = window.setInterval(() => setNow(new Date()), 30_000);
     window.addEventListener("livv-identity", pull);
     window.addEventListener("livv-record", pull);
+    window.addEventListener("livv-packs", pull);
     return () => {
       window.clearInterval(id);
       window.removeEventListener("livv-identity", pull);
       window.removeEventListener("livv-record", pull);
+      window.removeEventListener("livv-packs", pull);
     };
   }, []);
 
@@ -119,6 +127,7 @@ export default function HomePage() {
   const insight = evalaInsight(rec, done, total);
   const quiet = missedYesterday(rec);
   const checkedIn = isCheckedInToday(rec);
+  const readyPack = pending[0] || null;
 
   const dateLabel = now
     .toLocaleDateString("en-US", {
@@ -136,6 +145,7 @@ export default function HomePage() {
         setPulse(true);
         window.setTimeout(() => setPulse(false), 900);
         addEmbers(10 * tier.multiplier + (emberBonus || 0));
+        tryGrantDailyPack();
         pull();
       }
       return;
@@ -213,11 +223,34 @@ export default function HomePage() {
           </div>
         </div>
 
+        {/* Pack ready */}
+        {readyPack && (
+          <button
+            type="button"
+            onClick={() => {
+              feedback("tick");
+              setOpening(readyPack);
+            }}
+            className="mx-auto mt-8 flex items-center gap-4 rounded-[22px] px-4 py-3 text-left"
+            style={{
+              background: "linear-gradient(135deg, rgb(var(--livv-accent) / 0.15), rgba(255,255,255,0.03))",
+              boxShadow: "0 0 0 1px rgb(var(--livv-accent) / 0.25), 0 0 28px rgb(var(--livv-accent) / 0.12)",
+            }}
+          >
+            <PackFoil kind={readyPack.kind} size="sm" pulse />
+            <div>
+              <p className="text-[10px] uppercase tracking-[0.2em] text-livv-accent-soft">Pack ready</p>
+              <p className="mt-0.5 text-[15px] font-semibold">Open Daily Spark</p>
+              <p className="text-[12px] text-white/40">Earned by showing up</p>
+            </div>
+          </button>
+        )}
+
         <button
           type="button"
           onClick={onPrimary}
           disabled={move.href === "/home" && checkedIn}
-          className="group relative mt-10 w-full overflow-hidden rounded-[28px] text-left"
+          className="group relative mt-8 w-full overflow-hidden rounded-[28px] text-left"
         >
           <div
             className="absolute inset-0"
@@ -326,6 +359,17 @@ export default function HomePage() {
 
         <p className="mt-14 text-center text-[11px] text-white/20">{greet.salutation}</p>
       </div>
+
+      {opening && (
+        <PackOpenModal
+          packId={opening.id}
+          kind={opening.kind}
+          onClose={() => {
+            setOpening(null);
+            pull();
+          }}
+        />
+      )}
 
       <style jsx>{`
         .evo-core {
