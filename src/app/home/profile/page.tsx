@@ -18,11 +18,18 @@ import { EMBERS_BLURB } from "@/lib/embers";
 import { collectionStats } from "@/lib/packs";
 import { tierColor } from "@/lib/tier-style";
 import { feedback } from "@/lib/sensory";
+import {
+  paidTierMessage,
+  requestTierChange,
+  isDemoUnlock,
+  enableDemoUnlock,
+} from "@/lib/billing";
 
 export default function ProfilePage() {
   const [me, setMe] = useState<Identity | null>(null);
   const [rec, setRec] = useState<LivvRecord | null>(null);
   const [picked, setPicked] = useState<LivvTier | null>(null);
+  const [billingNote, setBillingNote] = useState<string | null>(null);
   const [vault, setVault] = useState({ uniqueCount: 0, catalogSize: 16, pending: 0, totalOpened: 0 });
   const fileRef = useRef<HTMLInputElement>(null);
 
@@ -36,10 +43,12 @@ export default function ProfilePage() {
     window.addEventListener("livv-identity", sync);
     window.addEventListener("livv-record", sync);
     window.addEventListener("livv-packs", sync);
+    window.addEventListener("livv-billing", sync);
     return () => {
       window.removeEventListener("livv-identity", sync);
       window.removeEventListener("livv-record", sync);
       window.removeEventListener("livv-packs", sync);
+      window.removeEventListener("livv-billing", sync);
     };
   }, []);
 
@@ -55,6 +64,19 @@ export default function ProfilePage() {
     if (!file) return;
     feedback("tick");
     setMe(patchIdentity({ photo: await fileToPhoto(file) }));
+  };
+
+  const tryClaim = (id: LivvTier) => {
+    const result = requestTierChange(id);
+    if (result.ok) {
+      feedback("unlock");
+      setMe(loadIdentity());
+      setPicked(null);
+      setBillingNote(null);
+      return;
+    }
+    setBillingNote(paidTierMessage(id));
+    feedback("tick");
   };
 
   return (
@@ -110,11 +132,25 @@ export default function ProfilePage() {
           </p>
         </section>
 
-        <Link href="/home/vault" className="mt-10 block">
+        <Link href="/home/progress" className="mt-8 block">
           <div
             className="rounded-[22px] px-5 py-4"
             style={{
-              background: "linear-gradient(135deg, rgb(var(--livv-accent) / 0.12), rgba(255,255,255,0.03))",
+              background: "linear-gradient(135deg, rgb(var(--livv-accent) / 0.14), rgba(255,255,255,0.03))",
+              boxShadow: "0 0 0 1px rgb(var(--livv-accent) / 0.25)",
+            }}
+          >
+            <p className="text-[10px] uppercase tracking-[0.22em] text-livv-accent-soft">Long view</p>
+            <p className="mt-1 text-[17px] font-semibold">Progress · chapters · weekly clear</p>
+            <p className="mt-1 text-[13px] text-white/40">Where the system compounds →</p>
+          </div>
+        </Link>
+
+        <Link href="/home/vault" className="mt-3 block">
+          <div
+            className="rounded-[22px] px-5 py-4"
+            style={{
+              background: "rgba(255,255,255,0.03)",
               boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.08)",
             }}
           >
@@ -133,25 +169,29 @@ export default function ProfilePage() {
         </Link>
 
         <section className="mt-14">
-          <div>
-            <p className="text-[10px] uppercase tracking-[0.28em] text-white/30">Membership</p>
-            <p className="mt-2 text-[18px] font-semibold">{tier.name}</p>
-            <p className="text-[13px] text-white/40">
-              {tier.price}
-              {tier.cadence} · {tier.multiplier}x Embers
-            </p>
-          </div>
+          <p className="text-[10px] uppercase tracking-[0.28em] text-white/30">Membership</p>
+          <p className="mt-2 text-[18px] font-semibold">{tier.name}</p>
+          <p className="text-[13px] text-white/40">
+            {tier.price}
+            {tier.cadence} · {tier.multiplier}x Embers
+          </p>
+          <p className="mt-3 text-[12px] leading-relaxed text-white/35">
+            Paid tiers unlock when Stripe is connected. Until then everyone stays on Spark — unless
+            demo unlock is on for internal testing.
+          </p>
 
           <div className="mt-6 space-y-3">
             {TIERS.map((t) => {
               const active = me.tier === t.id;
               const color = tierColor(t.id);
+              const paid = t.id !== "spark";
               return (
                 <button
                   key={t.id}
                   type="button"
                   onClick={() => {
                     feedback("tick");
+                    setBillingNote(null);
                     setPicked(t.id);
                   }}
                   className="w-full text-left"
@@ -180,6 +220,11 @@ export default function ProfilePage() {
                     {active && (
                       <p className="mt-2 text-[11px] uppercase tracking-[0.16em]" style={{ color: color.hex }}>
                         Current
+                      </p>
+                    )}
+                    {!active && paid && (
+                      <p className="mt-2 text-[11px] uppercase tracking-[0.14em] text-white/30">
+                        Requires billing
                       </p>
                     )}
                   </div>
@@ -216,9 +261,6 @@ export default function ProfilePage() {
           <Link href="/home/messages" className="text-[14px] text-livv-accent-soft">
             Messages →
           </Link>
-          <Link href="/home/progress" className="text-[14px] text-white/40">
-            Progress story →
-          </Link>
           <Link href="/home/evala" className="text-[14px] text-white/40">
             Ask Evala →
           </Link>
@@ -238,24 +280,44 @@ export default function ProfilePage() {
                 </li>
               ))}
             </ul>
-            <div className="mt-8 flex gap-2">
+            {billingNote && (
+              <p className="mt-4 text-[13px] leading-relaxed text-amber-200/80">{billingNote}</p>
+            )}
+            <div className="mt-8 flex flex-col gap-2">
               <button
                 type="button"
-                onClick={() => setPicked(null)}
-                className="flex-1 py-3 text-sm text-white/40"
+                onClick={() => tryClaim(picked)}
+                className="w-full rounded-full bg-white py-3 text-sm font-semibold text-black"
               >
-                Close
+                {me.tier === picked
+                  ? "Current"
+                  : picked === "spark"
+                    ? "Switch to Spark"
+                    : isDemoUnlock()
+                      ? "Unlock (demo)"
+                      : "Notify when billing is live"}
               </button>
+              {!isDemoUnlock() && picked !== "spark" && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    enableDemoUnlock();
+                    tryClaim(picked);
+                  }}
+                  className="w-full py-2 text-[12px] text-white/30"
+                >
+                  Internal: enable demo unlock
+                </button>
+              )}
               <button
                 type="button"
                 onClick={() => {
-                  setMe(patchIdentity({ tier: picked }));
-                  feedback("unlock");
                   setPicked(null);
+                  setBillingNote(null);
                 }}
-                className="flex-1 rounded-full bg-white py-3 text-sm font-semibold text-black"
+                className="w-full py-3 text-sm text-white/40"
               >
-                {me.tier === picked ? "Current" : "Select tier"}
+                Close
               </button>
             </div>
           </div>
