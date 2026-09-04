@@ -3,6 +3,9 @@ import { ACHIEVEMENT_DEFS, OBJECTIVE_DEFS, PILLAR_DEFS } from "./evolve-data";
 import { activityFromAchievement, activityFromLevelUp } from "./activity";
 import { addEmbers } from "./identity";
 import { embersFromAction } from "./embers";
+import { noteBrokenStreak } from "./streak-repair";
+import { enqueueMilestone, evaluateMilestones } from "./milestones";
+import { bumpPairDay } from "./pair-chain";
 
 export type DayLog = {
   key: string;
@@ -112,6 +115,11 @@ export function saveRecord(next: LivvRecord) {
   if (typeof window === "undefined") return;
   window.localStorage.setItem(KEY, JSON.stringify(next));
   window.dispatchEvent(new Event("livv-record"));
+  try {
+    evaluateMilestones();
+  } catch {
+    /* noop */
+  }
 }
 
 function dayOf(rec: LivvRecord, key: string): DayLog {
@@ -133,9 +141,15 @@ function applyStreak(rec: LivvRecord, today: string) {
   if (rec.lastActiveDay === yesterdayKey() || rec.frozenDays?.includes(yesterdayKey())) {
     rec.streak += 1;
   } else {
+    if (rec.streak >= 3) noteBrokenStreak(rec.streak);
     rec.streak = 1;
   }
   rec.lastActiveDay = today;
+  try {
+    bumpPairDay();
+  } catch {
+    /* noop */
+  }
   return rec;
 }
 
@@ -146,6 +160,11 @@ function addXp(rec: LivvRecord, amount: number) {
     rec.level += 1;
     rec.xpToNext = Math.round(rec.xpToNext * 1.25);
     activityFromLevelUp({ level: rec.level });
+    try {
+      enqueueMilestone("level_up");
+    } catch {
+      /* noop */
+    }
   }
   return rec;
 }
@@ -385,6 +404,5 @@ export function missedYesterday(rec = loadRecord()) {
   if (rec.lastActiveDay === dayKey()) return false;
   const log = rec.days[y];
   if (log && (log.checkIn || log.workout || log.objectives.length)) return false;
-  // only show if user has some history
   return rec.workoutsCompleted + rec.goalsCompleted > 0;
 }
