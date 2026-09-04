@@ -15,26 +15,30 @@ import { TIERS, getTier } from "@/lib/membership";
 import { liveAchievements, loadRecord, type LivvRecord } from "@/lib/record";
 import { evolutionTitle } from "@/lib/levels";
 import { EMBERS_BLURB } from "@/lib/embers";
-import { cn } from "@/lib/utils";
+import { collectionStats } from "@/lib/packs";
 import { feedback } from "@/lib/sensory";
 
 export default function ProfilePage() {
   const [me, setMe] = useState<Identity | null>(null);
   const [rec, setRec] = useState<LivvRecord | null>(null);
   const [picked, setPicked] = useState<LivvTier | null>(null);
+  const [vault, setVault] = useState({ uniqueCount: 0, catalogSize: 16, pending: 0, totalOpened: 0 });
   const fileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const sync = () => {
       setMe(loadIdentity());
       setRec(loadRecord());
+      setVault(collectionStats());
     };
     sync();
     window.addEventListener("livv-identity", sync);
     window.addEventListener("livv-record", sync);
+    window.addEventListener("livv-packs", sync);
     return () => {
       window.removeEventListener("livv-identity", sync);
       window.removeEventListener("livv-record", sync);
+      window.removeEventListener("livv-packs", sync);
     };
   }, []);
 
@@ -95,7 +99,6 @@ export default function ProfilePage() {
           {me.bio && <p className="mt-3 max-w-[28ch] text-[14px] text-white/50">{me.bio}</p>}
         </div>
 
-        {/* Evolution strip */}
         <section className="mt-10 text-center">
           <p className="text-[10px] uppercase tracking-[0.28em] text-white/30">Evolution</p>
           <p className="font-display mt-2 text-[48px] font-semibold leading-none">{rec.level}</p>
@@ -109,17 +112,37 @@ export default function ProfilePage() {
           </p>
         </section>
 
-        {/* Membership */}
-        <section className="mt-14">
-          <div className="flex items-end justify-between">
-            <div>
-              <p className="text-[10px] uppercase tracking-[0.28em] text-white/30">Membership</p>
-              <p className="mt-2 text-[18px] font-semibold">{tier.name}</p>
-              <p className="text-[13px] text-white/40">
-                {tier.price}
-                {tier.cadence} · {tier.multiplier}x Embers
-              </p>
+        {/* Vault */}
+        <Link href="/home/vault" className="mt-10 block">
+          <div
+            className="rounded-[22px] px-5 py-4"
+            style={{
+              background: "linear-gradient(135deg, rgb(var(--livv-accent) / 0.12), rgba(255,255,255,0.03))",
+              boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.08)",
+            }}
+          >
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-[10px] uppercase tracking-[0.22em] text-white/35">Vault</p>
+                <p className="mt-1 text-[17px] font-semibold">Evolution cards</p>
+                <p className="mt-1 text-[13px] text-white/40">
+                  {vault.uniqueCount}/{vault.catalogSize} unique
+                  {vault.pending > 0 ? ` · ${vault.pending} pack ready` : ""}
+                </p>
+              </div>
+              <span className="text-livv-accent-soft">→</span>
             </div>
+          </div>
+        </Link>
+
+        <section className="mt-14">
+          <div>
+            <p className="text-[10px] uppercase tracking-[0.28em] text-white/30">Membership</p>
+            <p className="mt-2 text-[18px] font-semibold">{tier.name}</p>
+            <p className="text-[13px] text-white/40">
+              {tier.price}
+              {tier.cadence} · {tier.multiplier}x Embers
+            </p>
           </div>
 
           <div className="mt-6 space-y-3">
