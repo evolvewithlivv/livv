@@ -1,9 +1,11 @@
-/** LIVV Evolution Packs — collectible cards earned by showing up. */
+/** LIVV Evolution Packs — tier cadence + 4 pack grades. */
 
-import { dayKey } from "./dates";
+import type { LivvTier } from "./identity";
+import { loadIdentity } from "./identity";
 
 export type Rarity = "common" | "elevated" | "rare" | "apex";
-export type PackKind = "daily" | "streak" | "pillar" | "apex";
+/** Pack grade 1–4. Grade 4 is purchase-only. */
+export type PackGrade = 1 | 2 | 3 | 4;
 
 export type CardDef = {
   id: string;
@@ -11,7 +13,6 @@ export type CardDef = {
   line: string;
   pillar: string;
   rarity: Rarity;
-  /** Placeholder hue until real art lands */
   hue: number;
 };
 
@@ -19,24 +20,24 @@ export type OwnedCard = {
   instanceId: string;
   cardId: string;
   openedAt: number;
-  fromPack: PackKind;
+  fromGrade: PackGrade;
 };
 
 export type PendingPack = {
   id: string;
-  kind: PackKind;
+  grade: PackGrade;
   grantedAt: number;
-  day: string;
 };
 
 export type PackState = {
   pending: PendingPack[];
   owned: OwnedCard[];
-  lastDailyDay: string | null;
+  /** When the current membership cycle last granted packs */
+  lastGrantAt: number | null;
   totalOpened: number;
 };
 
-const KEY = "livv-packs-v1";
+const KEY = "livv-packs-v2";
 
 export const RARITY_META: Record<
   Rarity,
@@ -48,41 +49,82 @@ export const RARITY_META: Record<
   apex: { label: "Apex", weight: 4, glow: "rgba(255,210,120,0.55)" },
 };
 
-export const PACK_META: Record<
-  PackKind,
-  { name: string; subtitle: string; foil: string; foilFrom: string; foilTo: string }
+export const GRADE_META: Record<
+  PackGrade,
+  {
+    name: string;
+    subtitle: string;
+    foilFrom: string;
+    foilTo: string;
+    purchasableOnly?: boolean;
+    rarityBias: Rarity[];
+  }
 > = {
-  daily: {
-    name: "Daily Spark",
-    subtitle: "Earned by showing up",
-    foil: "cobalt",
+  1: {
+    name: "Spark Pack",
+    subtitle: "Minimum tier",
     foilFrom: "#1a4a9e",
     foilTo: "#4C8DFF",
+    rarityBias: ["common", "common", "elevated"],
   },
-  streak: {
-    name: "Streak Pack",
-    subtitle: "Chain reward",
-    foil: "ember",
-    foilFrom: "#8a4a12",
-    foilTo: "#e8a040",
-  },
-  pillar: {
-    name: "Pillar Pack",
-    subtitle: "Life system drop",
-    foil: "violet",
+  2: {
+    name: "Rise Pack",
+    subtitle: "Above minimum",
     foilFrom: "#3a2a7a",
     foilTo: "#9b7cff",
+    rarityBias: ["elevated", "elevated", "rare"],
   },
-  apex: {
+  3: {
+    name: "Signal Pack",
+    subtitle: "Third tier",
+    foilFrom: "#5a3a10",
+    foilTo: "#e8a040",
+    rarityBias: ["rare", "rare", "apex"],
+  },
+  4: {
     name: "Apex Pack",
-    subtitle: "Rare signal",
-    foil: "obsidian",
+    subtitle: "Purchase only",
     foilFrom: "#0a0c12",
-    foilTo: "#3a5a9a",
+    foilTo: "#F5C542",
+    purchasableOnly: true,
+    rarityBias: ["apex", "rare", "apex"],
   },
 };
 
-/** Starter catalog — swap art later; ids stay stable. */
+/** Cadence rules by membership. */
+export function packEntitlement(tier: LivvTier): {
+  intervalMs: number;
+  grants: PackGrade[];
+  label: string;
+} {
+  switch (tier) {
+    case "rise":
+      return {
+        intervalMs: 12 * 60 * 60 * 1000,
+        grants: [1],
+        label: "Every 12 hours · Spark Pack",
+      };
+    case "apex":
+      return {
+        intervalMs: 12 * 60 * 60 * 1000,
+        grants: [2],
+        label: "Every 12 hours · Rise Pack",
+      };
+    case "circle":
+      return {
+        intervalMs: 24 * 60 * 60 * 1000,
+        grants: [1, 1, 2, 2, 3],
+        label: "Every 24 hours · 5 packs",
+      };
+    default:
+      return {
+        intervalMs: 24 * 60 * 60 * 1000,
+        grants: [1],
+        label: "Every 24 hours · Spark Pack",
+      };
+  }
+}
+
 export const CARD_CATALOG: CardDef[] = [
   { id: "c_silence", name: "Silence First", line: "Think before the performance.", pillar: "Mind", rarity: "common", hue: 220 },
   { id: "c_show_up", name: "Show Up", line: "Presence beats perfection.", pillar: "Life", rarity: "common", hue: 200 },
@@ -109,7 +151,7 @@ export function getCard(id: string) {
 const EMPTY: PackState = {
   pending: [],
   owned: [],
-  lastDailyDay: null,
+  lastGrantAt: null,
   totalOpened: 0,
 };
 
@@ -117,12 +159,36 @@ export function loadPacks(): PackState {
   if (typeof window === "undefined") return { ...EMPTY, pending: [], owned: [] };
   try {
     const raw = window.localStorage.getItem(KEY);
-    if (!raw) return { ...EMPTY, pending: [], owned: [] };
+    if (!raw) {
+      // migrate v1 silently
+      const old = window.localStorage.getItem("livv-packs-v1");
+      if (old) {
+        const p = JSON.parse(old);
+        return {
+          pending: (p.pending || []).map((x: { id: string; grantedAt: number }) => ({
+            id: x.id,
+            grade: 1 as PackGrade,
+            grantedAt: x.grantedAt,
+          })),
+          owned: (p.owned || []).map(
+            (x: OwnedCard & { fromPack?: string }) => ({
+              instanceId: x.instanceId,
+              cardId: x.cardId,
+              openedAt: x.openedAt,
+              fromGrade: 1 as PackGrade,
+            })
+          ),
+          lastGrantAt: p.lastDailyDay ? Date.now() - 1000 : null,
+          totalOpened: p.totalOpened || 0,
+        };
+      }
+      return { ...EMPTY, pending: [], owned: [] };
+    }
     const p = JSON.parse(raw) as PackState;
     return {
       pending: p.pending || [],
       owned: p.owned || [],
-      lastDailyDay: p.lastDailyDay ?? null,
+      lastGrantAt: p.lastGrantAt ?? null,
       totalOpened: p.totalOpened || 0,
     };
   } catch {
@@ -136,50 +202,67 @@ export function savePacks(state: PackState) {
   window.dispatchEvent(new Event("livv-packs"));
 }
 
-/** Grant daily pack once per calendar day after any real action. */
-export function tryGrantDailyPack() {
+export function nextGrantAt(tier?: LivvTier): number | null {
   const state = loadPacks();
-  const today = dayKey();
-  if (state.lastDailyDay === today) return state;
-  if (state.pending.some((p) => p.kind === "daily" && p.day === today)) return state;
-
-  state.pending.push({
-    id: `pack_${Date.now()}`,
-    kind: "daily",
-    grantedAt: Date.now(),
-    day: today,
-  });
-  state.lastDailyDay = today;
-  savePacks(state);
-  return state;
+  if (!state.lastGrantAt) return Date.now(); // available now
+  const t = tier || loadIdentity().tier;
+  const { intervalMs } = packEntitlement(t);
+  return state.lastGrantAt + intervalMs;
 }
 
-export function grantStreakPack() {
+export function msUntilNextPack(tier?: LivvTier): number {
+  const at = nextGrantAt(tier);
+  if (at === null) return 0;
+  return Math.max(0, at - Date.now());
+}
+
+export function canClaimPacks(tier?: LivvTier): boolean {
+  return msUntilNextPack(tier) <= 0;
+}
+
+/** Claim all packs due for current membership. */
+export function claimPacksIfDue(): PackState {
+  const identity = loadIdentity();
   const state = loadPacks();
-  state.pending.push({
-    id: `pack_s_${Date.now()}`,
-    kind: "streak",
-    grantedAt: Date.now(),
-    day: dayKey(),
-  });
-  savePacks(state);
-  return state;
-}
+  const { intervalMs, grants } = packEntitlement(identity.tier);
+  const now = Date.now();
 
-function rollRarity(kind: PackKind): Rarity {
-  const boost = kind === "streak" ? 1.4 : kind === "apex" ? 2.2 : kind === "pillar" ? 1.2 : 1;
-  const pool = (Object.keys(RARITY_META) as Rarity[]).flatMap((r) => {
-    const w = Math.round(RARITY_META[r].weight * (r === "common" ? 1 / boost : boost));
-    return Array.from({ length: Math.max(1, w) }, () => r);
-  });
-  return pool[Math.floor(Math.random() * pool.length)];
-}
-
-function pickCard(rarity: Rarity, kind: PackKind): CardDef {
-  let pool = CARD_CATALOG.filter((c) => c.rarity === rarity);
-  if (kind === "pillar") {
-    // slight bias already via rarity; keep full pool
+  if (state.lastGrantAt && now - state.lastGrantAt < intervalMs) {
+    return state;
   }
+
+  // Don't stack infinite pending — only claim if no pending from this cycle
+  // Always allow claim when timer is up
+  for (const grade of grants) {
+    state.pending.push({
+      id: `pack_${grade}_${now}_${Math.random().toString(36).slice(2, 6)}`,
+      grade,
+      grantedAt: now,
+    });
+  }
+  state.lastGrantAt = now;
+  savePacks(state);
+  return state;
+}
+
+/** Purchase grade-4 Apex pack (demo — no payment). */
+export function purchaseApexPack(): PackState {
+  const state = loadPacks();
+  state.pending.push({
+    id: `pack_4_${Date.now()}`,
+    grade: 4,
+    grantedAt: Date.now(),
+  });
+  savePacks(state);
+  return state;
+}
+
+function rollFromBias(bias: Rarity[]): Rarity {
+  return bias[Math.floor(Math.random() * bias.length)];
+}
+
+function pickCard(rarity: Rarity): CardDef {
+  let pool = CARD_CATALOG.filter((c) => c.rarity === rarity);
   if (!pool.length) pool = CARD_CATALOG.filter((c) => c.rarity === "common");
   return pool[Math.floor(Math.random() * pool.length)];
 }
@@ -189,13 +272,14 @@ export function openPack(packId: string): { card: CardDef; owned: OwnedCard } | 
   const idx = state.pending.findIndex((p) => p.id === packId);
   if (idx < 0) return null;
   const pack = state.pending[idx];
-  const rarity = rollRarity(pack.kind);
-  const card = pickCard(rarity, pack.kind);
+  const meta = GRADE_META[pack.grade];
+  const rarity = rollFromBias(meta.rarityBias);
+  const card = pickCard(rarity);
   const owned: OwnedCard = {
     instanceId: `own_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
     cardId: card.id,
     openedAt: Date.now(),
-    fromPack: pack.kind,
+    fromGrade: pack.grade,
   };
   state.pending.splice(idx, 1);
   state.owned.unshift(owned);
@@ -222,4 +306,26 @@ export function collectionStats() {
     catalogSize: CARD_CATALOG.length,
     pending: state.pending.length,
   };
+}
+
+export function formatCountdown(ms: number): string {
+  if (ms <= 0) return "Ready";
+  const s = Math.floor(ms / 1000);
+  const h = Math.floor(s / 3600);
+  const m = Math.floor((s % 3600) / 60);
+  const sec = s % 60;
+  if (h > 0) return `${h}h ${String(m).padStart(2, "0")}m ${String(sec).padStart(2, "0")}s`;
+  return `${m}m ${String(sec).padStart(2, "0")}s`;
+}
+
+// Back-compat aliases used by older components
+export type PackKind = "daily" | "streak" | "pillar" | "apex";
+export const PACK_META = {
+  daily: GRADE_META[1],
+  streak: GRADE_META[2],
+  pillar: GRADE_META[3],
+  apex: GRADE_META[4],
+};
+export function tryGrantDailyPack() {
+  return claimPacksIfDue();
 }
