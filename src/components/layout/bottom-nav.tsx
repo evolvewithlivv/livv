@@ -7,7 +7,7 @@ import { cn } from "@/lib/utils";
 const NAV_ITEMS = [
   { href: "/home", label: "Home", icon: HomeIcon },
   { href: "/home/train", label: "Train", icon: TrainIcon },
-  { href: "/home/evala", label: "Evala", icon: EvalaIcon },
+  { href: "/home/packs", label: "Packs", icon: PacksIcon },
   { href: "/home/connect", label: "Connect", icon: ConnectIcon },
   { href: "/home/profile", label: "Profile", icon: ProfileIcon },
 ];
@@ -90,11 +90,11 @@ function TrainIcon({ active }: { active: boolean }) {
   );
 }
 
-function EvalaIcon({ active }: { active: boolean }) {
+function PacksIcon({ active }: { active: boolean }) {
   return (
     <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={active ? 2.2 : 1.7}>
-      <circle cx="12" cy="12" r="3" />
-      <path d="M12 3v2.5M12 18.5V21M4.5 12H2M22 12h-2.5M6.2 6.2l1.8 1.8M16 16l1.8 1.8M6.2 17.8l1.8-1.8M16 8l1.8-1.8" strokeLinecap="round" />
+      <rect x="6" y="3" width="12" height="18" rx="2" />
+      <path d="M6 7h12M6 17h12" strokeLinecap="round" />
     </svg>
   );
 }

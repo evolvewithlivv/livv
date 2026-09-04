@@ -1,25 +1,25 @@
 "use client";
 
 import { useState } from "react";
-import { openPack, type CardDef, type PackKind, PACK_META } from "@/lib/packs";
+import { openPack, GRADE_META, type CardDef, type PackGrade } from "@/lib/packs";
 import { feedback } from "@/lib/sensory";
 import { PackFoil } from "./pack-foil";
 import { CardFace } from "./card-face";
 
 export function PackOpenModal({
   packId,
-  kind,
+  grade,
   onClose,
   onOpened,
 }: {
   packId: string;
-  kind: PackKind;
+  grade: PackGrade;
   onClose: () => void;
   onOpened?: (card: CardDef) => void;
 }) {
   const [phase, setPhase] = useState<"idle" | "ripping" | "reveal">("idle");
   const [card, setCard] = useState<CardDef | null>(null);
-  const meta = PACK_META[kind];
+  const meta = GRADE_META[grade];
 
   const rip = () => {
     if (phase !== "idle") return;
@@ -55,8 +55,8 @@ export function PackOpenModal({
           <p className="text-[10px] uppercase tracking-[0.32em] text-white/35">{meta.subtitle}</p>
           <p className="font-display mt-2 text-[22px] font-semibold">{meta.name}</p>
           <button type="button" onClick={rip} className="mt-10" disabled={phase === "ripping"}>
-            <div className={phase === "ripping" ? "animate-pulse scale-95 transition" : ""}>
-              <PackFoil kind={kind} size="lg" pulse={phase === "idle"} />
+            <div className={phase === "ripping" ? "scale-95 animate-pulse transition" : ""}>
+              <PackFoil grade={grade} size="lg" pulse={phase === "idle"} />
             </div>
           </button>
           <p className="mt-10 text-[13px] text-white/40">

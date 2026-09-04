@@ -1,17 +1,17 @@
 "use client";
 
-import { PACK_META, type PackKind } from "@/lib/packs";
+import { GRADE_META, type PackGrade } from "@/lib/packs";
 
 export function PackFoil({
-  kind,
+  grade,
   size = "md",
   pulse,
 }: {
-  kind: PackKind;
+  grade: PackGrade;
   size?: "sm" | "md" | "lg";
   pulse?: boolean;
 }) {
-  const meta = PACK_META[kind];
+  const meta = GRADE_META[grade];
   const dims =
     size === "lg"
       ? "h-[280px] w-[180px]"
@@ -20,10 +20,7 @@ export function PackFoil({
         : "h-[160px] w-[104px]";
 
   return (
-    <div
-      className={`relative ${dims} ${pulse ? "pack-pulse" : ""}`}
-      style={{ perspective: 600 }}
-    >
+    <div className={`relative ${dims} ${pulse ? "pack-pulse" : ""}`}>
       <div
         className="absolute inset-0 overflow-hidden rounded-[14px]"
         style={{
@@ -36,7 +33,6 @@ export function PackFoil({
           `,
         }}
       >
-        {/* foil sheen */}
         <div
           className="pointer-events-none absolute -left-1/2 top-0 h-full w-[200%] opacity-40"
           style={{
@@ -45,10 +41,8 @@ export function PackFoil({
             animation: pulse ? "sheen 2.4s ease-in-out infinite" : undefined,
           }}
         />
-        {/* crimp top */}
         <div className="absolute inset-x-0 top-0 h-3 bg-black/20" />
         <div className="absolute inset-x-0 top-3 h-px bg-white/25" />
-        {/* crimp bottom */}
         <div className="absolute inset-x-0 bottom-0 h-3 bg-black/25" />
 
         <div className="absolute inset-0 flex flex-col items-center justify-center px-2 text-center">
@@ -68,8 +62,8 @@ export function PackFoil({
             }}
           />
           <p
-            className="font-medium uppercase tracking-[0.18em] text-white/90"
-            style={{ fontSize: size === "lg" ? 11 : size === "sm" ? 6 : 8 }}
+            className="font-medium uppercase tracking-[0.14em] text-white/90"
+            style={{ fontSize: size === "lg" ? 10 : size === "sm" ? 5.5 : 7.5 }}
           >
             {meta.name}
           </p>
