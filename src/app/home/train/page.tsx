@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Container } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
+import { AmbientField } from "@/components/layout/ambient-field";
 import { cn } from "@/lib/utils";
 import {
   FOCUS_OPTIONS,
@@ -47,6 +48,10 @@ function parseRestSeconds(rest: string) {
   return 40;
 }
 
+function choiceLabel(value: string) {
+  return value.replace(/-/g, " ");
+}
+
 export default function TrainPage() {
   const [phase, setPhase] = useState<Phase>("select");
   const [focus, setFocus] = useState<Focus | null>(null);
@@ -69,7 +74,7 @@ export default function TrainPage() {
     };
   }, []);
 
-  const canGenerate = focus && location && duration;
+  const canGenerate = Boolean(focus && location && duration);
 
   const handleGenerate = () => {
     if (!focus || !location || !duration) return;
@@ -112,15 +117,6 @@ export default function TrainPage() {
         exercises: w.exercises.length,
       });
       saveFullWorkout(w);
-      if (note.trim()) {
-        try {
-          const notes = JSON.parse(window.localStorage.getItem("livv-session-notes") || "[]");
-          notes.unshift({ at: Date.now(), name: w.name, note: note.trim() });
-          window.localStorage.setItem("livv-session-notes", JSON.stringify(notes.slice(0, 30)));
-        } catch {
-          // ignore
-        }
-      }
       setLogged(true);
       feedback("complete");
       setShowMoment(true);
@@ -172,90 +168,125 @@ export default function TrainPage() {
 
   if (phase === "select") {
     return (
-      <main className="pt-8 pb-4">
-        <Container>
-          <p className="text-[11px] font-medium uppercase tracking-[0.28em] text-livv-muted">Body</p>
-          <h1 className="mt-2 text-[2.4rem] font-semibold leading-none tracking-tight">Train</h1>
-          <p className="mt-3 text-sm leading-relaxed text-white/45">
-            Build a session. Finish it. It writes to your record.
-          </p>
+      <main className="relative min-h-full overflow-hidden pb-8 pt-5">
+        <AmbientField intensity="strong" />
+        <Container className="relative z-10">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-[10px] font-semibold uppercase tracking-[0.32em] text-livv-accent-soft">Physical capability</p>
+              <h1 className="mt-2 text-[2.7rem] font-semibold leading-none tracking-[-0.04em]">Train</h1>
+            </div>
+            <div className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-[10px] uppercase tracking-[0.2em] text-white/45">
+              Body // 01
+            </div>
+          </div>
 
-          {last && (
-            <button
-              type="button"
-              onClick={repeatLast}
-              className="mt-6 w-full rounded-2xl border border-livv-accent/30 bg-livv-accent/10 px-4 py-4 text-left"
-            >
-              <p className="text-[11px] uppercase tracking-[0.18em] text-livv-accent-soft">
-                Repeat last
+          <section className="relative mt-7 overflow-hidden rounded-[30px] border border-white/10 bg-white/[0.045] p-6 shadow-2xl backdrop-blur-xl">
+            <div className="absolute -right-20 -top-24 h-56 w-56 rounded-full bg-livv-accent/10 blur-3xl" />
+            <div className="relative">
+              <p className="text-[10px] uppercase tracking-[0.28em] text-white/35">Today&apos;s chamber</p>
+              <h2 className="mt-3 max-w-[290px] text-2xl font-medium leading-tight tracking-tight">
+                Put the body to work. Leave with proof.
+              </h2>
+              <p className="mt-3 max-w-[310px] text-sm leading-relaxed text-white/45">
+                Choose the intent. LIVV builds the session, tracks the finish, and adds it to your evolution record.
               </p>
-              <p className="mt-1 text-sm font-medium">
-                {last.name} · {last.duration}
-              </p>
-            </button>
-          )}
+
+              {last && (
+                <button
+                  type="button"
+                  onClick={repeatLast}
+                  className="mt-6 flex w-full items-center justify-between rounded-2xl border border-livv-accent/20 bg-livv-accent/[0.08] px-4 py-3.5 text-left transition hover:bg-livv-accent/[0.12]"
+                >
+                  <div>
+                    <p className="text-[9px] font-semibold uppercase tracking-[0.22em] text-livv-accent-soft">Continue your rhythm</p>
+                    <p className="mt-1 text-sm font-medium text-white/85">{last.name}</p>
+                  </div>
+                  <span className="text-lg text-livv-accent">↗</span>
+                </button>
+              )}
+            </div>
+          </section>
 
           <section className="mt-8">
-            <p className="mb-3 text-[11px] uppercase tracking-[0.22em] text-livv-muted">Focus</p>
-            <div className="grid grid-cols-2 gap-2">
+            <div className="mb-3 flex items-end justify-between">
+              <div>
+                <p className="text-[10px] uppercase tracking-[0.28em] text-white/35">01 / Intent</p>
+                <p className="mt-1 text-sm text-white/65">What are we building?</p>
+              </div>
+              <span className="text-[10px] text-white/25">{focus ? "LOCKED" : "SELECT ONE"}</span>
+            </div>
+            <div className="grid grid-cols-2 gap-2.5">
               {FOCUS_OPTIONS.map((opt) => (
                 <button
                   key={opt}
+                  type="button"
                   onClick={() => {
                     feedback("tick");
                     setFocus(opt);
                   }}
                   className={cn(
-                    "rounded-2xl border px-3 py-3 text-left text-sm",
+                    "group relative overflow-hidden rounded-2xl border p-4 text-left transition-all duration-300",
                     focus === opt
-                      ? "border-livv-accent bg-livv-accent/15 text-white"
-                      : "border-livv-border bg-livv-surface text-white/70"
+                      ? "border-livv-accent/60 bg-livv-accent/[0.13] shadow-[0_0_32px_rgba(255,255,255,0.05)]"
+                      : "border-white/[0.08] bg-white/[0.035] hover:border-white/15 hover:bg-white/[0.055]"
                   )}
                 >
-                  {opt}
+                  {focus === opt && <span className="absolute right-3 top-3 text-xs text-livv-accent">●</span>}
+                  <span className="text-[10px] uppercase tracking-[0.18em] text-white/30">Focus</span>
+                  <span className="mt-2 block text-sm font-medium capitalize text-white/80">{choiceLabel(opt)}</span>
                 </button>
               ))}
             </div>
           </section>
 
           <section className="mt-7">
-            <p className="mb-3 text-[11px] uppercase tracking-[0.22em] text-livv-muted">Location</p>
-            <div className="flex gap-2">
+            <div className="mb-3">
+              <p className="text-[10px] uppercase tracking-[0.28em] text-white/35">02 / Environment</p>
+              <p className="mt-1 text-sm text-white/65">Where does the work happen?</p>
+            </div>
+            <div className="flex gap-2.5">
               {LOCATION_OPTIONS.map((opt) => (
                 <button
                   key={opt}
+                  type="button"
                   onClick={() => {
                     feedback("tick");
                     setLocation(opt);
                   }}
                   className={cn(
-                    "flex-1 rounded-2xl border py-3 text-sm",
+                    "flex-1 rounded-2xl border px-3 py-4 text-left transition-all duration-300",
                     location === opt
-                      ? "border-livv-accent bg-livv-accent/15 text-white"
-                      : "border-livv-border bg-livv-surface text-white/70"
+                      ? "border-livv-accent/60 bg-livv-accent/[0.13]"
+                      : "border-white/[0.08] bg-white/[0.035] hover:border-white/15"
                   )}
                 >
-                  {opt}
+                  <span className="text-[10px] uppercase tracking-[0.18em] text-white/30">Space</span>
+                  <span className="mt-2 block text-sm font-medium capitalize text-white/80">{choiceLabel(opt)}</span>
                 </button>
               ))}
             </div>
           </section>
 
           <section className="mt-7">
-            <p className="mb-3 text-[11px] uppercase tracking-[0.22em] text-livv-muted">Duration</p>
+            <div className="mb-3">
+              <p className="text-[10px] uppercase tracking-[0.28em] text-white/35">03 / Time</p>
+              <p className="mt-1 text-sm text-white/65">How much do you have?</p>
+            </div>
             <div className="flex flex-wrap gap-2">
               {DURATION_OPTIONS.map((opt) => (
                 <button
                   key={opt.value}
+                  type="button"
                   onClick={() => {
                     feedback("tick");
                     setDuration(opt.value);
                   }}
                   className={cn(
-                    "rounded-full border px-4 py-2 text-sm",
+                    "rounded-full border px-4 py-2.5 text-xs font-medium transition-all duration-300",
                     duration === opt.value
-                      ? "border-livv-accent bg-livv-accent/15 text-white"
-                      : "border-livv-border bg-livv-surface text-white/70"
+                      ? "border-livv-accent/60 bg-livv-accent/[0.13] text-white"
+                      : "border-white/[0.08] bg-white/[0.035] text-white/55 hover:border-white/15"
                   )}
                 >
                   {opt.label}
@@ -264,10 +295,17 @@ export default function TrainPage() {
             </div>
           </section>
 
-          <div className="mt-10">
-            <Button variant="accent" size="lg" className="w-full" disabled={!canGenerate} onClick={handleGenerate}>
-              Generate Workout
+          <div className="mt-9">
+            <Button
+              variant="accent"
+              size="lg"
+              className="w-full shadow-[0_0_38px_rgba(255,255,255,0.08)]"
+              disabled={!canGenerate}
+              onClick={handleGenerate}
+            >
+              {canGenerate ? "Build My Session ↗" : "Complete the setup"}
             </Button>
+            <p className="mt-3 text-center text-[10px] uppercase tracking-[0.2em] text-white/20">No equipment required</p>
           </div>
         </Container>
       </main>
@@ -276,36 +314,47 @@ export default function TrainPage() {
 
   if (phase === "preview" && workout) {
     return (
-      <main className="pt-8 pb-4">
-        <Container>
-          <button onClick={() => setPhase("select")} className="mb-6 text-sm text-livv-muted">
-            ← Change selections
+      <main className="relative min-h-full overflow-hidden pb-8 pt-5">
+        <AmbientField intensity="strong" />
+        <Container className="relative z-10">
+          <button onClick={() => setPhase("select")} className="mb-5 text-[11px] uppercase tracking-[0.2em] text-white/35 transition hover:text-white/70">
+            ← Reconfigure
           </button>
-          <div className="rounded-3xl border border-livv-border bg-livv-surface p-5">
-            <h1 className="text-3xl font-semibold leading-tight tracking-tight">{workout.name}</h1>
-            <div className="mt-3 flex flex-wrap gap-2 text-xs">
-              <span className="rounded-full bg-black/50 px-2.5 py-1 text-livv-muted">{workout.duration}</span>
-              <span className="rounded-full bg-black/50 px-2.5 py-1 text-livv-muted">{workout.difficulty}</span>
-              <span className="rounded-full bg-black/50 px-2.5 py-1 text-livv-muted">{workout.location}</span>
+
+          <div className="overflow-hidden rounded-[30px] border border-white/10 bg-white/[0.045] p-6 backdrop-blur-xl">
+            <p className="text-[10px] uppercase tracking-[0.28em] text-livv-accent-soft">Session assembled</p>
+            <h1 className="mt-3 text-3xl font-semibold leading-tight tracking-tight">{workout.name}</h1>
+            <div className="mt-4 flex flex-wrap gap-2">
+              {[workout.duration, workout.difficulty, workout.location].map((item) => (
+                <span key={item} className="rounded-full border border-white/10 bg-black/20 px-3 py-1.5 text-[10px] uppercase tracking-[0.16em] text-white/45">
+                  {item}
+                </span>
+              ))}
             </div>
           </div>
-          <div className="mt-6 space-y-3">
+
+          <div className="mt-7 space-y-2.5">
             {workout.exercises.map((ex, i) => (
-              <div key={ex.id} className="rounded-2xl border border-livv-border bg-livv-surface p-4">
-                <p className="text-xs text-livv-muted">{i + 1}</p>
-                <p className="font-medium">{ex.name}</p>
-                <p className="mt-1 text-sm text-livv-muted">
-                  {ex.sets && `${ex.sets} sets`}
-                  {ex.reps && ` · ${ex.reps}`}
-                  {ex.duration && ` · ${ex.duration}`}
-                  {` · Rest ${ex.rest}`}
-                </p>
+              <div key={ex.id} className="group flex items-center gap-4 rounded-2xl border border-white/[0.07] bg-white/[0.03] p-4 transition hover:bg-white/[0.05]">
+                <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full border border-white/10 text-[10px] text-white/35">
+                  {String(i + 1).padStart(2, "0")}
+                </div>
+                <div className="min-w-0 flex-1">
+                  <p className="font-medium text-white/85">{ex.name}</p>
+                  <p className="mt-1 text-xs text-white/35">
+                    {ex.sets && `${ex.sets} sets`}
+                    {ex.reps && ` · ${ex.reps}`}
+                    {ex.duration && ` · ${ex.duration}`}
+                  </p>
+                </div>
+                <span className="text-[10px] text-white/25">{ex.rest} rest</span>
               </div>
             ))}
           </div>
+
           <div className="mt-8">
             <Button variant="accent" size="lg" className="w-full" onClick={handleStart}>
-              Start Workout
+              Enter Training Mode
             </Button>
           </div>
         </Container>
@@ -314,24 +363,30 @@ export default function TrainPage() {
   }
 
   if (phase === "rest" && workout) {
+    const ratio = Math.max(0, Math.min(1, restLeft / 120));
     return (
-      <main className="flex min-h-[70dvh] flex-col items-center justify-center pt-6 pb-4">
-        <Container>
+      <main className="relative flex min-h-full flex-col items-center justify-center overflow-hidden pb-8 pt-5">
+        <AmbientField intensity="strong" />
+        <Container className="relative z-10">
           <div className="text-center">
-            <p className="text-[11px] uppercase tracking-[0.22em] text-livv-muted">Rest</p>
-            <p className="mt-4 text-[72px] font-semibold leading-none tracking-tight text-livv-accent">
-              {restLeft}
-            </p>
-            <p className="mt-3 text-sm text-white/45">Next up in a few breaths</p>
+            <p className="text-[10px] uppercase tracking-[0.32em] text-livv-accent-soft">Recovery window</p>
+            <div className="relative mx-auto mt-8 flex h-64 w-64 items-center justify-center rounded-full border border-white/[0.08] bg-white/[0.025] shadow-[0_0_100px_rgba(255,255,255,0.04)]">
+              <div className="absolute inset-4 rounded-full border border-livv-accent/20" style={{ transform: `scale(${0.78 + ratio * 0.22})` }} />
+              <div>
+                <p className="text-[76px] font-semibold leading-none tracking-[-0.06em] text-white">{restLeft}</p>
+                <p className="mt-2 text-[10px] uppercase tracking-[0.24em] text-white/30">seconds</p>
+              </div>
+            </div>
+            <p className="mt-7 text-sm text-white/45">Breathe. Recover. The next rep is waiting.</p>
             <Button
               variant="secondary"
-              className="mt-10"
+              className="mt-8"
               onClick={() => {
                 if (restRef.current) window.clearInterval(restRef.current);
                 setPhase("session");
               }}
             >
-              Skip rest
+              Skip Recovery
             </Button>
           </div>
         </Container>
@@ -341,38 +396,49 @@ export default function TrainPage() {
 
   if (phase === "session" && workout) {
     const current = workout.exercises[currentIndex];
-    const progress = (currentIndex / workout.exercises.length) * 100;
+    const progress = ((currentIndex + 1) / workout.exercises.length) * 100;
+    const done = completedExercises.length;
+
     return (
-      <main className="flex min-h-[70dvh] flex-col pt-6 pb-4">
-        <Container className="flex flex-1 flex-col">
-          <div className="mb-6">
-            <div className="mb-2 flex justify-between text-xs text-livv-muted">
-              <span>
-                Exercise {currentIndex + 1} of {workout.exercises.length}
-              </span>
+      <main className="relative flex min-h-full flex-col overflow-hidden pb-8 pt-5">
+        <AmbientField intensity="strong" />
+        <Container className="relative z-10 flex flex-1 flex-col">
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="text-[10px] uppercase tracking-[0.28em] text-livv-accent-soft">Training mode</p>
+              <p className="mt-1 text-sm text-white/55">{workout.name}</p>
+            </div>
+            <span className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-[10px] text-white/35">{done} complete</span>
+          </div>
+
+          <div className="mt-7">
+            <div className="mb-2 flex justify-between text-[10px] uppercase tracking-[0.18em] text-white/30">
+              <span>Exercise {String(currentIndex + 1).padStart(2, "0")}</span>
               <span>{Math.round(progress)}%</span>
             </div>
-            <div className="h-1.5 overflow-hidden rounded-full bg-livv-border">
-              <div className="h-full bg-livv-accent transition-all duration-500" style={{ width: `${progress}%` }} />
+            <div className="h-1 overflow-hidden rounded-full bg-white/[0.07]">
+              <div className="h-full rounded-full bg-livv-accent transition-all duration-500" style={{ width: `${progress}%` }} />
             </div>
           </div>
-          <div className="flex flex-1 flex-col justify-center">
-            <div className="rounded-3xl border border-livv-border bg-livv-surface p-6 text-center">
-              <p className="text-[11px] uppercase tracking-[0.22em] text-livv-muted">Now</p>
-              <h2 className="mt-3 text-3xl font-semibold leading-tight tracking-tight">{current.name}</h2>
-              <p className="mt-4 text-lg text-livv-accent-soft">
-                {current.sets && `${current.sets} sets`}
-                {current.reps && ` · ${current.reps}`}
-                {current.duration && ` · ${current.duration}`}
-              </p>
-              <p className="mt-2 text-sm text-livv-muted">Rest {current.rest} after</p>
+
+          <div className="flex flex-1 flex-col justify-center py-10">
+            <div className="text-center">
+              <p className="text-[10px] uppercase tracking-[0.32em] text-white/25">Now</p>
+              <h1 className="mt-5 text-[2.8rem] font-semibold leading-[0.95] tracking-[-0.045em] text-white">{current.name}</h1>
+              <div className="mt-7 flex justify-center gap-2">
+                {current.sets && <span className="rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-white/70">{current.sets} sets</span>}
+                {current.reps && <span className="rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-white/70">{current.reps}</span>}
+                {current.duration && <span className="rounded-xl border border-white/10 bg-white/[0.04] px-4 py-3 text-sm text-white/70">{current.duration}</span>}
+              </div>
+              <p className="mt-5 text-xs uppercase tracking-[0.2em] text-white/25">Rest {current.rest} after</p>
             </div>
           </div>
-          <div className="mt-8 space-y-3">
-            <Button variant="accent" size="lg" className="w-full" onClick={() => handleCompleteExercise(current)}>
+
+          <div className="space-y-3">
+            <Button variant="accent" size="lg" className="w-full shadow-[0_0_42px_rgba(255,255,255,0.08)]" onClick={() => handleCompleteExercise(current)}>
               Complete Exercise
             </Button>
-            <Button variant="ghost" className="w-full" onClick={handleReset}>
+            <Button variant="ghost" className="w-full text-white/30" onClick={handleReset}>
               End Session
             </Button>
           </div>
@@ -382,7 +448,8 @@ export default function TrainPage() {
   }
 
   return (
-    <main className="pt-8 pb-4">
+    <main className="relative min-h-full overflow-hidden pb-8 pt-5">
+      <AmbientField intensity="strong" />
       {showMoment && (
         <Moment
           title="Session complete"
@@ -390,28 +457,27 @@ export default function TrainPage() {
           onDone={() => setShowMoment(false)}
         />
       )}
-      <Container>
-        <div className="pt-6 text-center">
-          <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-full border border-livv-accent/40 bg-livv-accent/10">
+      <Container className="relative z-10">
+        <div className="pt-8 text-center">
+          <div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full border border-livv-accent/30 bg-livv-accent/[0.08] text-2xl text-livv-accent shadow-[0_0_50px_rgba(255,255,255,0.07)]">
             ✓
           </div>
-          <h1 className="text-4xl font-semibold leading-none tracking-tight">Session Complete</h1>
-          <p className="mt-3 text-sm text-livv-muted">
-            {workout?.name} · {completedExercises.length} exercises
-          </p>
+          <p className="mt-7 text-[10px] uppercase tracking-[0.32em] text-livv-accent-soft">Proof added</p>
+          <h1 className="mt-3 text-4xl font-semibold leading-none tracking-[-0.04em]">Session Complete</h1>
+          <p className="mt-3 text-sm text-white/40">{workout?.name} · {completedExercises.length} exercises</p>
 
-          <div className="mt-8 text-left">
-            <p className="text-[11px] uppercase tracking-[0.18em] text-white/35">Session note</p>
+          <div className="mt-8 rounded-3xl border border-white/[0.08] bg-white/[0.035] p-5 text-left backdrop-blur-xl">
+            <p className="text-[10px] uppercase tracking-[0.22em] text-white/25">Leave a trace</p>
             <textarea
               value={note}
               onChange={(e) => setNote(e.target.value)}
-              placeholder="How did it feel. One line is enough."
+              placeholder="How did it feel? One line is enough."
               rows={3}
-              className="mt-2 w-full resize-none rounded-2xl border border-livv-border bg-livv-surface px-4 py-3 text-sm outline-none"
+              className="mt-3 w-full resize-none rounded-2xl border border-white/[0.08] bg-black/20 px-4 py-3 text-sm text-white outline-none placeholder:text-white/20 focus:border-livv-accent/30"
             />
           </div>
 
-          <div className="mt-8 space-y-3">
+          <div className="mt-7 space-y-3">
             <Button
               variant="accent"
               size="lg"
@@ -432,7 +498,7 @@ export default function TrainPage() {
               Train Again
             </Button>
             <Button variant="secondary" className="w-full" onClick={() => (window.location.href = "/home/progress")}>
-              See Progress
+              See Your Evolution
             </Button>
           </div>
         </div>
