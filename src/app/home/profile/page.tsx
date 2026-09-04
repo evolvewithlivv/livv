@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { ArrowRight, Check, ChevronRight, Crown, Flame, Settings2, Sparkles, Trophy, Zap } from "lucide-react";
 import { Avatar } from "@/components/identity/avatar";
@@ -79,128 +79,41 @@ export default function ProfilePage() {
 
       <div className="relative z-10 mx-auto max-w-lg px-5 pt-6">
         <header className="flex items-center justify-between">
-          <div>
-            <p className="text-[10px] font-medium uppercase tracking-[0.34em] text-white/30">Identity</p>
-            <p className="mt-1 text-[13px] text-white/45">Your place in LIVV.</p>
-          </div>
-          <Link href="/home/settings" aria-label="Settings" className="grid h-10 w-10 place-items-center rounded-full border border-white/10 bg-white/[0.04] text-white/55 backdrop-blur-xl">
-            <Settings2 size={17} />
-          </Link>
+          <div><p className="text-[10px] font-medium uppercase tracking-[0.34em] text-white/30">Identity</p><p className="mt-1 text-[13px] text-white/45">Your place in LIVV.</p></div>
+          <Link href="/home/settings" aria-label="Settings" className="grid h-10 w-10 place-items-center rounded-full border border-white/10 bg-white/[0.04] text-white/55 backdrop-blur-xl"><Settings2 size={17} /></Link>
         </header>
 
         <section className="relative mt-8 overflow-hidden rounded-[32px] border border-white/10 bg-white/[0.035] px-6 pb-6 pt-7 text-center shadow-2xl backdrop-blur-xl">
           <div className="absolute inset-x-10 top-0 h-px" style={{ background: `linear-gradient(90deg, transparent, ${tc.hex}, transparent)` }} />
-          <button type="button" onClick={() => fileRef.current?.click()} className="relative mx-auto block rounded-full">
-            <Avatar identity={me} size={112} showTierRing />
-            <span className="absolute bottom-0 right-0 grid h-8 w-8 place-items-center rounded-full border-4 border-[#08090b] bg-white text-black shadow-xl">
-              <Sparkles size={13} />
-            </span>
-          </button>
+          <button type="button" onClick={() => fileRef.current?.click()} className="relative mx-auto block rounded-full"><Avatar identity={me} size={112} showTierRing /><span className="absolute bottom-0 right-0 grid h-8 w-8 place-items-center rounded-full border-4 border-[#08090b] bg-white text-black shadow-xl"><Sparkles size={13} /></span></button>
           <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={(e) => onPickPhoto(e.target.files?.[0])} />
           <h1 className="font-display mt-5 text-[31px] font-semibold tracking-tight">{me.displayName}</h1>
           <p className="mt-0.5 text-[14px] text-white/35">@{me.username}</p>
-          <div className="mt-3 inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.18em]" style={{ color: tc.hex, borderColor: `${tc.hex}44`, background: `${tc.hex}12` }}>
-            <Crown size={12} /> {tc.label}
-          </div>
+          <div className="mt-3 inline-flex items-center gap-2 rounded-full border px-3 py-1.5 text-[10px] font-semibold uppercase tracking-[0.18em]" style={{ color: tc.hex, borderColor: `${tc.hex}44`, background: `${tc.hex}12` }}><Crown size={12} /> {tc.label}</div>
           {me.bio && <p className="mx-auto mt-4 max-w-[30ch] text-[14px] leading-relaxed text-white/50">{me.bio}</p>}
-
-          <div className="mt-7 grid grid-cols-3 divide-x divide-white/10 rounded-2xl border border-white/8 bg-black/20 py-4">
-            <Stat value={`${rec.streak}d`} label="streak" icon={<Flame size={13} />} />
-            <Stat value={String(rec.level)} label="level" icon={<Zap size={13} />} />
-            <Stat value={String(me.embers)} label="embers" icon={<Sparkles size={13} />} />
-          </div>
+          <div className="mt-7 grid grid-cols-3 divide-x divide-white/10 rounded-2xl border border-white/8 bg-black/20 py-4"><Stat value={`${rec.streak}d`} label="streak" icon={<Flame size={13} />} /><Stat value={String(rec.level)} label="level" icon={<Zap size={13} />} /><Stat value={String(me.embers)} label="embers" icon={<Sparkles size={13} />} /></div>
         </section>
 
         <section className="mt-5 rounded-[28px] border border-white/10 bg-white/[0.03] p-5 backdrop-blur-xl">
-          <div className="flex items-end justify-between">
-            <div>
-              <p className="text-[10px] uppercase tracking-[0.25em] text-white/30">Current evolution</p>
-              <p className="font-display mt-1 text-[27px] font-semibold">{evo.name}</p>
-            </div>
-            <p className="text-[12px] text-white/35">{rec.currentXp} / {rec.xpToNext} XP</p>
-          </div>
+          <div className="flex items-end justify-between"><div><p className="text-[10px] uppercase tracking-[0.25em] text-white/30">Current evolution</p><p className="font-display mt-1 text-[27px] font-semibold">{evo.name}</p></div><p className="text-[12px] text-white/35">{rec.currentXp} / {rec.xpToNext} XP</p></div>
           <p className="mt-1 text-[13px] leading-relaxed text-white/40">{evo.line}</p>
-          <div className="mt-5 h-2 overflow-hidden rounded-full bg-white/8">
-            <div className="h-full rounded-full bg-livv-accent shadow-[0_0_18px_rgb(var(--livv-accent)/0.65)] transition-all" style={{ width: `${xpPct}%` }} />
-          </div>
-          <div className="mt-4 flex items-center justify-between text-[11px] text-white/30">
-            <span>{xpPct}% to next level</span>
-            <Link href="/home/progress" className="font-medium text-livv-accent-soft">Open evolution <ArrowRight size={12} className="ml-1 inline" /></Link>
-          </div>
+          <div className="mt-5 h-2 overflow-hidden rounded-full bg-white/8"><div className="h-full rounded-full bg-livv-accent shadow-[0_0_18px_rgb(var(--livv-accent)/0.65)] transition-all" style={{ width: `${xpPct}%` }} /></div>
+          <div className="mt-4 flex items-center justify-between text-[11px] text-white/30"><span>{xpPct}% to next level</span><Link href="/home/progress" className="font-medium text-livv-accent-soft">Open evolution <ArrowRight size={12} className="ml-1 inline" /></Link></div>
         </section>
 
-        <div className="mt-4 grid grid-cols-2 gap-3">
-          <Link href="/home/progress" className="group rounded-[24px] border border-white/8 bg-white/[0.03] p-4 transition hover:bg-white/[0.06]">
-            <Trophy size={18} className="text-livv-accent-soft" />
-            <p className="mt-7 text-[15px] font-semibold">Progress</p>
-            <p className="mt-1 text-[11px] text-white/35">Chapters & milestones</p>
-            <ChevronRight size={15} className="mt-3 text-white/25 transition group-hover:translate-x-1" />
-          </Link>
-          <Link href="/home/vault" className="group rounded-[24px] border border-white/8 bg-white/[0.03] p-4 transition hover:bg-white/[0.06]">
-            <Sparkles size={18} className="text-livv-accent-soft" />
-            <p className="mt-7 text-[15px] font-semibold">Vault</p>
-            <p className="mt-1 text-[11px] text-white/35">{vault.uniqueCount}/{vault.catalogSize} collected</p>
-            <ChevronRight size={15} className="mt-3 text-white/25 transition group-hover:translate-x-1" />
-          </Link>
-        </div>
+        <div className="mt-4 grid grid-cols-2 gap-3"><Link href="/home/progress" className="group rounded-[24px] border border-white/8 bg-white/[0.03] p-4 transition hover:bg-white/[0.06]"><Trophy size={18} className="text-livv-accent-soft" /><p className="mt-7 text-[15px] font-semibold">Progress</p><p className="mt-1 text-[11px] text-white/35">Chapters & milestones</p><ChevronRight size={15} className="mt-3 text-white/25 transition group-hover:translate-x-1" /></Link><Link href="/home/vault" className="group rounded-[24px] border border-white/8 bg-white/[0.03] p-4 transition hover:bg-white/[0.06]"><Sparkles size={18} className="text-livv-accent-soft" /><p className="mt-7 text-[15px] font-semibold">Vault</p><p className="mt-1 text-[11px] text-white/35">{vault.uniqueCount}/{vault.catalogSize} collected</p><ChevronRight size={15} className="mt-3 text-white/25 transition group-hover:translate-x-1" /></Link></div>
 
-        <section className="mt-12">
-          <div className="flex items-end justify-between">
-            <div>
-              <p className="text-[10px] uppercase tracking-[0.28em] text-white/30">Membership</p>
-              <h2 className="font-display mt-1 text-[27px] font-semibold">Choose your room.</h2>
-            </div>
-            <span className="text-[11px] text-white/25">{TIERS.length} tiers</span>
-          </div>
-          <p className="mt-2 max-w-[34ch] text-[13px] leading-relaxed text-white/38">More access. More compounding. Pick the level that matches where you’re going.</p>
-
-          <div className="mt-5 space-y-3">
-            {TIERS.map((t) => {
-              const active = me.tier === t.id;
-              const color = tierColor(t.id);
-              return (
-                <button key={t.id} type="button" onClick={() => { feedback("tick"); setBillingNote(null); setPicked(t.id); }} className="block w-full text-left">
-                  <div className="relative overflow-hidden rounded-[26px] border p-5 transition active:scale-[0.99]" style={{ borderColor: active ? `${color.hex}88` : t.featured ? `${color.hex}55` : "rgba(255,255,255,0.08)", background: active ? `linear-gradient(135deg, ${color.hex}20, rgba(255,255,255,0.035))` : t.featured ? `linear-gradient(135deg, ${color.hex}0f, rgba(255,255,255,0.025))` : "rgba(255,255,255,0.025)", boxShadow: active ? `0 0 32px ${color.glow}` : undefined }}>
+        <section className="mt-12"><div className="flex items-end justify-between"><div><p className="text-[10px] uppercase tracking-[0.28em] text-white/30">Membership</p><h2 className="font-display mt-1 text-[27px] font-semibold">Choose your room.</h2></div><span className="text-[11px] text-white/25">{TIERS.length} tiers</span></div><p className="mt-2 max-w-[34ch] text-[13px] leading-relaxed text-white/38">More access. More compounding. Pick the level that matches where you&apos;re going.</p>
+          <div className="mt-5 space-y-3">{TIERS.map((t) => { const active = me.tier === t.id; const color = tierColor(t.id); return <button key={t.id} type="button" onClick={() => { feedback("tick"); setBillingNote(null); setPicked(t.id); }} className="block w-full text-left"><div className="relative overflow-hidden rounded-[26px] border p-5 transition active:scale-[0.99]" style={{ borderColor: active ? `${color.hex}88` : t.featured ? `${color.hex}55` : "rgba(255,255,255,0.08)", background: active ? `linear-gradient(135deg, ${color.hex}20, rgba(255,255,255,0.035))` : t.featured ? `linear-gradient(135deg, ${color.hex}0f, rgba(255,255,255,0.025))` : "rgba(255,255,255,0.025)", boxShadow: active ? `0 0 32px ${color.glow}` : undefined }}>
                     {t.featured && <div className="absolute right-4 top-4 rounded-full px-2.5 py-1 text-[9px] font-bold uppercase tracking-[0.16em]" style={{ color: color.hex, background: `${color.hex}16` }}>Most chosen</div>}
-                    <div className="flex items-start gap-4">
-                      <div className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl" style={{ background: `${color.hex}16`, color: color.hex }}>
-                        {t.id === "spark" ? <Sparkles size={19} /> : t.id === "rise" ? <Zap size={19} /> : t.id === "apex" ? <Crown size={19} /> : <Flame size={19} />}
-                      </div>
-                      <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-2 pr-20">
-                          <p className="text-[18px] font-semibold" style={{ color: active || t.featured ? color.hex : undefined }}>{t.name}</p>
-                          {active && <span className="rounded-full bg-white/10 px-2 py-0.5 text-[8px] font-bold uppercase tracking-[0.12em] text-white/55">Current</span>}
-                        </div>
-                        <div className="mt-0.5 flex items-baseline gap-1">
-                          <span className="text-[15px] font-medium text-white/75">{t.price}</span>
-                          <span className="text-[11px] text-white/30">{t.cadence !== "forever" ? t.cadence : ""}</span>
-                          <span className="ml-2 text-[10px] font-medium" style={{ color: color.hex }}>{t.multiplier}x Embers</span>
-                        </div>
-                      </div>
-                    </div>
-                    <p className="mt-4 text-[13px] leading-relaxed text-white/42">{t.blurb}</p>
-                    <div className="mt-4 grid grid-cols-2 gap-x-3 gap-y-2">
-                      {t.perks.slice(0, 4).map((perk) => <p key={perk} className="flex gap-2 text-[11px] leading-relaxed text-white/48"><Check size={12} className="mt-0.5 shrink-0" style={{ color: color.hex }} />{perk}</p>)}
-                    </div>
-                    <div className="mt-5 flex items-center justify-between border-t border-white/8 pt-4">
-                      <span className="text-[10px] uppercase tracking-[0.16em] text-white/25">Tap to explore</span>
-                      <span className="grid h-8 w-8 place-items-center rounded-full border border-white/10 bg-white/[0.04] text-white/50"><ArrowRight size={14} /></span>
-                    </div>
-                  </div>
-                </button>
-              );
-            })}
-          </div>
+                    <div className="flex items-start gap-4"><div className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl" style={{ background: `${color.hex}16`, color: color.hex }}>{t.id === "spark" ? <Sparkles size={19} /> : t.id === "rise" ? <Zap size={19} /> : t.id === "apex" ? <Crown size={19} /> : <Flame size={19} />}</div><div className="min-w-0 flex-1"><div className="flex items-center gap-2 pr-20"><p className="text-[18px] font-semibold" style={{ color: active || t.featured ? color.hex : undefined }}>{t.name}</p>{active && <span className="rounded-full bg-white/10 px-2 py-0.5 text-[8px] font-bold uppercase tracking-[0.12em] text-white/55">Current</span>}</div><div className="mt-0.5 flex items-baseline gap-1"><span className="text-[15px] font-medium text-white/75">{t.price}</span><span className="text-[11px] text-white/30">{t.cadence !== "forever" ? t.cadence : ""}</span><span className="ml-2 text-[10px] font-medium" style={{ color: color.hex }}>{t.multiplier}x Embers</span></div></div></div>
+                    <p className="mt-4 text-[13px] leading-relaxed text-white/42">{t.blurb}</p><div className="mt-4 grid grid-cols-2 gap-x-3 gap-y-2">{t.perks.slice(0, 4).map((perk) => <p key={perk} className="flex gap-2 text-[11px] leading-relaxed text-white/48"><Check size={12} className="mt-0.5 shrink-0" style={{ color: color.hex }} />{perk}</p>)}</div><div className="mt-5 flex items-center justify-between border-t border-white/8 pt-4"><span className="text-[10px] uppercase tracking-[0.16em] text-white/25">Tap to explore</span><span className="grid h-8 w-8 place-items-center rounded-full border border-white/10 bg-white/[0.04] text-white/50"><ArrowRight size={14} /></span></div>
+                  </div></button>; })}</div>
           <p className="mt-4 text-center text-[11px] leading-relaxed text-white/25">Paid tiers unlock when Stripe is connected. Internal demo unlock remains available for testing.</p>
         </section>
 
-        <section className="mt-10 rounded-[26px] border border-white/8 bg-white/[0.025] p-5">
-          <div className="flex items-center gap-3"><Sparkles size={17} className="text-livv-accent-soft" /><div><p className="text-[14px] font-semibold">Embers</p><p className="text-[11px] text-white/30">Your compounding currency</p></div><p className="ml-auto text-[24px] font-semibold">{me.embers}</p></div>
-          <p className="mt-4 text-[12px] leading-relaxed text-white/35">{EMBERS_BLURB}</p>
-        </section>
-
+        <section className="mt-10 rounded-[26px] border border-white/8 bg-white/[0.025] p-5"><div className="flex items-center gap-3"><Sparkles size={17} className="text-livv-accent-soft" /><div><p className="text-[14px] font-semibold">Embers</p><p className="text-[11px] text-white/30">Your compounding currency</p></div><p className="ml-auto text-[24px] font-semibold">{me.embers}</p></div><p className="mt-4 text-[12px] leading-relaxed text-white/35">{EMBERS_BLURB}</p></section>
         {achievements.length > 0 && <section className="mt-10"><p className="text-[10px] uppercase tracking-[0.28em] text-white/30">Unlocked</p><div className="mt-3 space-y-2">{achievements.slice(0, 5).map((a) => <div key={a.id} className="flex items-center gap-3 rounded-2xl border border-white/7 bg-white/[0.025] px-4 py-3"><span className="text-lg">{a.icon}</span><span className="text-[13px] text-white/65">{a.title}</span><span className="ml-auto text-[10px] text-white/25">earned</span></div>)}</div></section>}
-
         <div className="mt-10 flex items-center justify-between border-t border-white/8 pt-6"><Link href="/home/messages" className="text-[13px] text-livv-accent-soft">Messages →</Link><Link href="/home/evala" className="text-[13px] text-white/35">Ask Evala →</Link></div>
       </div>
 
@@ -209,6 +122,6 @@ export default function ProfilePage() {
   );
 }
 
-function Stat({ value, label, icon }: { value: string; label: string; icon: React.ReactNode }) {
+function Stat({ value, label, icon }: { value: string; label: string; icon: ReactNode }) {
   return <div className="flex flex-col items-center gap-1"><span className="flex items-center gap-1 text-[10px] uppercase tracking-[0.13em] text-white/25">{icon}{label}</span><span className="text-[17px] font-semibold text-white/75">{value}</span></div>;
 }
