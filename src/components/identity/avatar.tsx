@@ -61,13 +61,6 @@ export function Avatar({
           </span>
         )}
       </span>
-      <style jsx>{`
-        @keyframes tierSpin {
-          to {
-            transform: rotate(360deg);
-          }
-        }
-      `}</style>
     </span>
   );
 }
