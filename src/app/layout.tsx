@@ -42,8 +42,13 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
-  themeColor: "#050505",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#f2f3f6" },
+    { media: "(prefers-color-scheme: dark)", color: "#030405" },
+  ],
 };
+
+const THEME_BOOT = `(function(){try{var a='dark';var raw=localStorage.getItem('livv-identity-v1');if(raw){var p=JSON.parse(raw);if(p&&p.appearance)a=p.appearance;}var mode=a==='light'?'light':a==='system'?(window.matchMedia('(prefers-color-scheme: light)').matches?'light':'dark'):'dark';document.documentElement.setAttribute('data-theme',mode);document.documentElement.style.colorScheme=mode;}catch(e){}})();`;
 
 export default function RootLayout({
   children,
@@ -51,12 +56,13 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className={`${body.variable} ${display.variable}`}>
+    <html lang="en" className={`${body.variable} ${display.variable}`} suppressHydrationWarning>
       <head>
+        <script dangerouslySetInnerHTML={{ __html: THEME_BOOT }} />
         <link rel="apple-touch-icon" href="/api/icon?s=180" />
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
       </head>
-      <body className="min-h-dvh text-white antialiased">
+      <body className="min-h-dvh bg-[var(--livv-bg)] text-[rgb(var(--livv-fg))] antialiased">
         <ThemeShell>{children}</ThemeShell>
       </body>
     </html>

@@ -8,6 +8,18 @@ export function ThemeShell({ children }: { children: React.ReactNode }) {
     const apply = () => {
       const me = loadIdentity();
       applyAppearance(me.appearance, me.accent);
+      const mode =
+        me.appearance === "light"
+          ? "light"
+          : me.appearance === "system"
+            ? window.matchMedia("(prefers-color-scheme: light)").matches
+              ? "light"
+              : "dark"
+            : "dark";
+      document.querySelector('meta[name="theme-color"]')?.setAttribute(
+        "content",
+        mode === "light" ? "#f2f3f6" : "#030405"
+      );
     };
     apply();
     const mq = window.matchMedia("(prefers-color-scheme: light)");
