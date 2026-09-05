@@ -8,7 +8,7 @@ html[data-theme="dark"] {
   --livv-accent-soft: 163 196 255;
   --livv-accent-hex: #4c8dff;
   --livv-bg: #030405;
-  --livv-nav: rgba(7, 9, 13, 0.72);
+  --livv-nav: rgba(7, 9, 13, 0.62);
   --livv-surface: 15 17 22;
   --livv-border: 38 41 48;
   --livv-muted: 138 141 151;
@@ -40,7 +40,8 @@ html[data-theme="light"] {
       var(--livv-bg);
     color: rgb(var(--livv-fg));
     min-height: 100dvh;
-    font-family: var(--font-body), -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", system-ui, sans-serif;
+    font-family: var(--font-body), -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", system-ui,
+      sans-serif;
     letter-spacing: -0.016em;
     overflow-x: hidden;
   }
@@ -70,9 +71,11 @@ html[data-theme="light"] {
   ::selection {
     background: rgb(var(--livv-accent) / 0.4);
   }
+
   * {
     -webkit-tap-highlight-color: transparent;
   }
+
   button,
   a,
   input,
@@ -90,6 +93,15 @@ html[data-theme="light"] {
   button:active,
   a:active {
     transform: scale(0.975);
+  }
+
+  img,
+  svg {
+    max-width: 100%;
+  }
+
+  svg {
+    overflow: visible;
   }
 }
 
@@ -116,7 +128,6 @@ html[data-theme="light"] {
   border-color: rgb(var(--livv-accent) / 1);
 }
 
-/* Ambient */
 .livv-grain {
   pointer-events: none;
   position: absolute;
@@ -124,6 +135,31 @@ html[data-theme="light"] {
   background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E");
   opacity: 0.04;
   mix-blend-mode: overlay;
+}
+
+/* Page bottom clearance for fixed glass tab bar */
+.livv-page {
+  padding-bottom: 6.5rem;
+}
+
+/* Action row — never clip icons */
+.livv-actions {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  overflow: visible;
+}
+.livv-actions button {
+  overflow: visible;
+}
+.livv-icon-box {
+  display: inline-flex;
+  height: 22px;
+  width: 22px;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  overflow: visible;
 }
 
 /* Connect / social motion */
@@ -165,4 +201,65 @@ html[data-theme="light"] {
   to {
     transform: rotate(360deg);
   }
+}
+
+/* Opening screen */
+.opening-atmosphere {
+  background:
+    radial-gradient(ellipse 90% 55% at 50% -15%, rgb(var(--livv-accent) / 0.16), transparent 55%),
+    radial-gradient(ellipse 50% 40% at 50% 110%, rgb(var(--livv-accent) / 0.08), transparent 50%);
+  opacity: 0;
+  animation: openingAtmosphere 1.4s ease-out 0.05s forwards;
+}
+.opening-veil {
+  background: radial-gradient(circle at 50% 42%, rgba(255, 255, 255, 0.018), transparent 42%);
+  opacity: 0;
+  animation: openingAtmosphere 1.8s ease-out 0.15s forwards;
+}
+.opening-wordmark,
+.opening-line,
+.opening-sub,
+.opening-cta {
+  opacity: 0;
+  transform: translateY(16px);
+  animation: openingRise 0.9s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+.opening-wordmark {
+  animation-delay: 0.2s;
+}
+.opening-line {
+  animation-delay: 0.45s;
+}
+.opening-sub {
+  animation-delay: 0.58s;
+}
+.opening-cta {
+  animation-delay: 0.75s;
+}
+@keyframes openingAtmosphere {
+  to {
+    opacity: 1;
+  }
+}
+@keyframes openingRise {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Subtle ambient motion helpers */
+@keyframes livv-breathe {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 0.85;
+  }
+  50% {
+    transform: scale(1.04);
+    opacity: 1;
+  }
+}
+.livv-breathe {
+  animation: livv-breathe 4.5s ease-in-out infinite;
 }

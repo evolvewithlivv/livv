@@ -221,8 +221,7 @@ export default function ConnectPage() {
   const isMine = (post: Post) => Boolean(me && post.author.username === me.username);
 
   return (
-    <main className="relative min-h-full overflow-x-hidden bg-[#030405] pb-28 text-white">
-      {/* Atmosphere */}
+    <main className="livv-page relative min-h-full overflow-x-hidden bg-[#030405] text-white">
       <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <div
           className="absolute -left-20 top-0 h-[420px] w-[420px] rounded-full opacity-60 blur-3xl"
@@ -236,7 +235,6 @@ export default function ConnectPage() {
       </div>
 
       <div className="relative z-10 mx-auto max-w-lg">
-        {/* HEADER — totally different from before */}
         <header className="px-5 pt-6">
           <div className="flex items-start justify-between gap-3">
             <div>
@@ -272,9 +270,8 @@ export default function ConnectPage() {
             </div>
           </div>
 
-          {/* Live activity ticker */}
           <div className="mt-5 overflow-hidden rounded-2xl border border-white/[0.07] bg-white/[0.03] px-4 py-2.5">
-            <p className="flex items-center gap-2 text-[12px] text-white/55 transition-opacity">
+            <p className="flex items-center gap-2 text-[12px] text-white/55">
               <span className="text-livv-accent">●</span>
               <span key={ticker} className="truncate">
                 {LIVE_TICKER[ticker]}
@@ -282,7 +279,6 @@ export default function ConnectPage() {
             </p>
           </div>
 
-          {/* Stories / pulse */}
           <div className="-mx-5 mt-5 flex gap-4 overflow-x-auto px-5 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {PULSE.map((p) => {
               const self = Boolean(p.self);
@@ -335,7 +331,6 @@ export default function ConnectPage() {
             })}
           </div>
 
-          {/* Tabs */}
           <div className="mt-5 flex gap-1 rounded-full bg-white/[0.04] p-1 ring-1 ring-white/[0.06]">
             {(
               [
@@ -362,7 +357,6 @@ export default function ConnectPage() {
           </div>
         </header>
 
-        {/* FEED */}
         <div className="mt-4">
           {feed.length === 0 && (
             <div className="px-5 py-16 text-center">
@@ -385,9 +379,9 @@ export default function ConnectPage() {
             const hasMedia = Boolean(post.photo);
 
             return (
-              <article key={post.id} className="relative mb-2">
-                <div className="mx-3 overflow-hidden rounded-[22px] border border-white/[0.06] bg-gradient-to-b from-white/[0.05] to-white/[0.02]">
-                  {/* Author */}
+              <article key={post.id} className="relative mb-3">
+                {/* Card shell — NO overflow-hidden so icons never clip */}
+                <div className="mx-3 rounded-[22px] border border-white/[0.06] bg-gradient-to-b from-white/[0.05] to-white/[0.02]">
                   <div className="flex items-center gap-3 px-4 pt-4">
                     <span
                       className="shrink-0 rounded-full p-[2px]"
@@ -440,14 +434,12 @@ export default function ConnectPage() {
                     )}
                   </div>
 
-                  {/* Body text */}
                   {post.text && !hasMedia && (
                     <p className="whitespace-pre-wrap px-4 pt-3 text-[16px] leading-snug tracking-[-0.01em] text-white/92">
                       {post.text}
                     </p>
                   )}
 
-                  {/* Photo */}
                   {post.photo && (
                     <button
                       type="button"
@@ -471,7 +463,6 @@ export default function ConnectPage() {
                     </button>
                   )}
 
-                  {/* Track */}
                   {post.track && (
                     <button
                       type="button"
@@ -514,26 +505,32 @@ export default function ConnectPage() {
                     </button>
                   )}
 
-                  {/* Actions */}
-                  <div className="flex items-center gap-1 px-2 py-3">
+                  {/* Actions — fixed icon boxes, overflow visible */}
+                  <div className="livv-actions px-3 py-2.5">
                     <button
                       type="button"
                       onClick={() => like(post.id)}
                       className={cn(
-                        "inline-flex h-11 items-center gap-2 rounded-full px-3.5 text-[13px] font-medium",
+                        "inline-flex h-11 min-w-[3.25rem] items-center gap-2 rounded-full px-3 text-[13px] font-medium",
                         post.likedByMe ? "text-livv-accent" : "text-white/50"
                       )}
+                      aria-label={post.likedByMe ? "Unlike" : "Like"}
                     >
-                      <HeartIcon filled={post.likedByMe} />
+                      <span className="livv-icon-box">
+                        <HeartIcon filled={post.likedByMe} />
+                      </span>
                       <span className="tabular-nums">{post.likes}</span>
                     </button>
                     {post.allowReplies ? (
                       <button
                         type="button"
                         onClick={() => setOpenReplies(openReplies === post.id ? null : post.id)}
-                        className="inline-flex h-11 items-center gap-2 rounded-full px-3.5 text-[13px] font-medium text-white/50"
+                        className="inline-flex h-11 min-w-[3.25rem] items-center gap-2 rounded-full px-3 text-[13px] font-medium text-white/50"
+                        aria-label="Reply"
                       >
-                        <ReplyIcon />
+                        <span className="livv-icon-box">
+                          <ReplyIcon />
+                        </span>
                         <span className="tabular-nums">{post.replies.length}</span>
                       </button>
                     ) : (
@@ -541,7 +538,6 @@ export default function ConnectPage() {
                     )}
                   </div>
 
-                  {/* Replies */}
                   {openReplies === post.id && post.allowReplies && (
                     <div className="border-t border-white/[0.06] px-4 pb-4 pt-3">
                       {post.replies.length === 0 && (
@@ -590,7 +586,6 @@ export default function ConnectPage() {
         </div>
       </div>
 
-      {/* FAB */}
       <button
         type="button"
         onClick={() => {
@@ -598,7 +593,8 @@ export default function ConnectPage() {
           setSheet("compose");
           feedback("tick");
         }}
-        className="fixed bottom-[calc(5.75rem+env(safe-area-inset-bottom))] right-5 z-40 flex h-14 items-center gap-2 rounded-full bg-white px-5 text-[13px] font-semibold text-black shadow-[0_12px_40px_rgba(0,0,0,0.55)]"
+        className="fixed right-5 z-40 flex h-14 items-center gap-2 rounded-full bg-white px-5 text-[13px] font-semibold text-black shadow-[0_12px_40px_rgba(0,0,0,0.55)]"
+        style={{ bottom: "calc(5.75rem + env(safe-area-inset-bottom))" }}
       >
         <PlusIcon />
         Signal
@@ -612,7 +608,6 @@ export default function ConnectPage() {
         onChange={(e) => onPhoto(e.target.files?.[0])}
       />
 
-      {/* Composer */}
       {(sheet === "compose" || sheet === "edit" || sheet === "sound") && (
         <div className="fixed inset-0 z-[70] flex items-end bg-black/85 backdrop-blur-md">
           <div className="max-h-[92dvh] w-full overflow-y-auto rounded-t-[28px] bg-[#0b0d12] p-5 pb-10 ring-1 ring-white/10">
@@ -761,7 +756,14 @@ export default function ConnectPage() {
 
 function HeartIcon({ filled, size = 20 }: { filled?: boolean; size?: number }) {
   return (
-    <svg width={size} height={size} viewBox="0 0 24 24" fill={filled ? "currentColor" : "none"} aria-hidden>
+    <svg
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill={filled ? "currentColor" : "none"}
+      aria-hidden
+      style={{ overflow: "visible" }}
+    >
       <path
         d="M12 20s-7-4.35-9.15-8.05C1.2 9.15 2.35 6.1 5.4 5.55c1.75-.3 3.35.55 4.35 1.85C10.75 6.1 12.35 5.25 14.1 5.55c3.05.55 4.2 3.6 2.55 6.4C19 15.65 12 20 12 20z"
         stroke="currentColor"
@@ -774,7 +776,7 @@ function HeartIcon({ filled, size = 20 }: { filled?: boolean; size?: number }) {
 
 function ReplyIcon() {
   return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden>
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden style={{ overflow: "visible" }}>
       <path
         d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z"
         stroke="currentColor"
