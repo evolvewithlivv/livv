@@ -23,9 +23,11 @@ export function BottomNav() {
       aria-label="Primary"
     >
       <div
-        className="mx-auto flex max-w-lg items-stretch justify-between gap-0.5 rounded-[26px] border border-white/[0.09] px-1 py-1 shadow-[0_18px_50px_rgba(0,0,0,0.55),inset_0_1px_0_rgba(255,255,255,0.07)]"
+        className="mx-auto flex max-w-lg items-stretch justify-between gap-0.5 rounded-[26px] border px-1 py-1"
         style={{
-          background: "rgba(8, 10, 14, 0.62)",
+          borderColor: "rgb(var(--livv-line) / var(--livv-line-a))",
+          background: "var(--livv-nav)",
+          boxShadow: "var(--livv-shadow)",
           backdropFilter: "blur(28px) saturate(1.4)",
           WebkitBackdropFilter: "blur(28px) saturate(1.4)",
         }}
@@ -39,7 +41,7 @@ export function BottomNav() {
               aria-current={active ? "page" : undefined}
               className={cn(
                 "relative flex min-w-0 flex-1 flex-col items-center justify-center gap-0.5 rounded-[20px] px-0.5 py-2 transition-colors",
-                active ? "text-white" : "text-white/35"
+                active ? "text-[rgb(var(--livv-fg))]" : "text-[rgb(var(--livv-muted))]"
               )}
             >
               {active && (
@@ -57,7 +59,7 @@ export function BottomNav() {
               <span
                 className={cn(
                   "relative z-10 max-w-full truncate text-[9px] font-medium tracking-wide",
-                  active ? "text-white" : "text-white/35"
+                  active ? "text-[rgb(var(--livv-fg))]" : "text-[rgb(var(--livv-muted))]"
                 )}
               >
                 {item.label}
