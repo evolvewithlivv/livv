@@ -1,7 +1,7 @@
 /**
  * Entitlements & payments boundary.
- * Local demo stays free on Spark only. Paid tiers require Stripe (when configured)
- * or explicit DEMO_UNLOCK for internal testing.
+ * Spark is free. Paid tiers go through Stripe Checkout when configured.
+ * Demo unlock remains for internal QA only.
  */
 
 import type { LivvTier } from "./identity";
@@ -11,9 +11,7 @@ const ENTITLEMENTS_KEY = "livv-entitlements-v1";
 
 export type Entitlements = {
   tier: LivvTier;
-  /** ISO source: stripe | demo | spark */
   source: "stripe" | "demo" | "spark";
-  /** When set, access expires (ISO string) */
   expiresAt: string | null;
   stripeCustomerId?: string;
   stripeSubscriptionId?: string;
@@ -21,8 +19,7 @@ export type Entitlements = {
 
 export function isStripeConfigured() {
   return Boolean(
-    typeof process !== "undefined" &&
-      process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+    typeof process !== "undefined" && process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
   );
 }
 
@@ -40,9 +37,7 @@ export function loadEntitlements(): Entitlements {
     const raw = window.localStorage.getItem(ENTITLEMENTS_KEY);
     if (!raw) {
       const id = loadIdentity();
-      // Migrate: if they had claimed a paid tier in old builds, demote unless demo unlock
-      const tier =
-        id.tier !== "spark" && !isDemoUnlock() ? "spark" : id.tier;
+      const tier = id.tier !== "spark" && !isDemoUnlock() ? "spark" : id.tier;
       if (tier !== id.tier) patchIdentity({ tier: "spark" });
       const e: Entitlements = {
         tier,
@@ -59,15 +54,33 @@ export function loadEntitlements(): Entitlements {
 }
 
 function saveEntitlements(e: Entitlements) {
+  if (typeof window === "undefined") return;
   window.localStorage.setItem(ENTITLEMENTS_KEY, JSON.stringify(e));
   window.dispatchEvent(new Event("livv-billing"));
+}
+
+export function applyStripeEntitlement(input: {
+  tier: LivvTier;
+  customerId?: string | null;
+  subscriptionId?: string | null;
+}) {
+  const e: Entitlements = {
+    tier: input.tier,
+    source: "stripe",
+    expiresAt: null,
+    stripeCustomerId: input.customerId || undefined,
+    stripeSubscriptionId: input.subscriptionId || undefined,
+  };
+  saveEntitlements(e);
+  patchIdentity({ tier: input.tier });
+  return e;
 }
 
 export function canAccessTier(tier: LivvTier): boolean {
   if (tier === "spark") return true;
   if (isDemoUnlock()) return true;
   const e = loadEntitlements();
-  if (e.tier === tier || rank(e.tier) >= rank(tier)) {
+  if (rank(e.tier) >= rank(tier)) {
     if (e.expiresAt && new Date(e.expiresAt) < new Date()) return false;
     return true;
   }
@@ -80,11 +93,11 @@ function rank(t: LivvTier) {
 
 export type UpgradeResult =
   | { ok: true; tier: LivvTier }
-  | { ok: false; reason: "payments_required" | "stripe_not_configured" | "already" };
+  | { ok: false; reason: "payments_required" | "stripe_not_configured" | "already" | "redirecting" };
 
 /**
- * Attempt to set membership tier.
- * Paid tiers blocked until Stripe is live (or demo unlock).
+ * Attempt local tier change (Spark / demo only).
+ * For paid tiers without demo unlock, call startCheckout instead.
  */
 export function requestTierChange(tier: LivvTier): UpgradeResult {
   const current = loadIdentity().tier;
@@ -107,6 +120,59 @@ export function requestTierChange(tier: LivvTier): UpgradeResult {
   return { ok: false, reason: "payments_required" };
 }
 
+/** Redirects the browser to Stripe Checkout for Rise / Apex / Circle. */
+export async function startCheckout(tier: Exclude<LivvTier, "spark">): Promise<{
+  ok: boolean;
+  error?: string;
+}> {
+  if (typeof window === "undefined") return { ok: false, error: "client only" };
+
+  const me = loadIdentity();
+  try {
+    const res = await fetch("/api/stripe/checkout", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        tier,
+        username: me.username,
+        email: undefined,
+      }),
+    });
+    const data = (await res.json()) as { url?: string; error?: string };
+    if (!res.ok || !data.url) {
+      return { ok: false, error: data.error || "Checkout unavailable" };
+    }
+    window.location.href = data.url;
+    return { ok: true };
+  } catch {
+    return { ok: false, error: "Network error starting checkout" };
+  }
+}
+
+/** Opens Stripe Customer Portal when we have a customer id on file. */
+export async function openBillingPortal(): Promise<{ ok: boolean; error?: string }> {
+  if (typeof window === "undefined") return { ok: false, error: "client only" };
+  const e = loadEntitlements();
+  if (!e.stripeCustomerId) {
+    return { ok: false, error: "No Stripe customer on this device yet" };
+  }
+  try {
+    const res = await fetch("/api/stripe/portal", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ customerId: e.stripeCustomerId }),
+    });
+    const data = (await res.json()) as { url?: string; error?: string };
+    if (!res.ok || !data.url) {
+      return { ok: false, error: data.error || "Portal unavailable" };
+    }
+    window.location.href = data.url;
+    return { ok: true };
+  } catch {
+    return { ok: false, error: "Network error opening portal" };
+  }
+}
+
 export function enableDemoUnlock() {
   if (typeof window === "undefined") return;
   window.localStorage.setItem("livv-demo-unlock", "1");
@@ -119,5 +185,8 @@ export function paidTierMessage(tier: LivvTier) {
     apex: "Apex",
     circle: "Inner Circle",
   };
+  if (isStripeConfigured()) {
+    return `Continue to secure checkout to unlock ${names[tier]}.`;
+  }
   return `${names[tier]} unlocks when billing goes live. You’re on Spark until then.`;
 }
