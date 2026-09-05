@@ -8,8 +8,7 @@ export function getStripe(): Stripe | null {
   if (!key) return null;
   if (!stripe) {
     stripe = new Stripe(key, {
-      // Pin to a version supported by stripe@17
-      apiVersion: "2024-06-20",
+      apiVersion: "2025-02-24.acacia",
       typescript: true,
     });
   }
