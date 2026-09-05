@@ -5,9 +5,7 @@ import {
   isCheckedInToday,
   loadRecord,
   livePillars,
-  pillarState,
   todaysObjectives,
-  type LivvRecord,
 } from "./record";
 
 export type Move = {
@@ -125,7 +123,8 @@ export function dailyPillarStatus(rec = loadRecord()): DayPillar[] {
   return CORE_PILLARS.map((id) => {
     const name = id[0].toUpperCase() + id.slice(1);
     let done = false;
-    if (id === "body") done = Boolean(day?.workout) || objs.some((o) => o.pillar === "Body" && o.completed);
+    if (id === "body")
+      done = Boolean(day?.workout) || objs.some((o) => o.pillar === "Body" && o.completed);
     else done = objs.some((o) => o.pillar.toLowerCase() === id && o.completed);
     return { id, name, done };
   });
@@ -157,6 +156,3 @@ export function actionsCompletedCount(rec = loadRecord()) {
   const pillarDone = pillars.filter((p) => p.done).length;
   return { done: Math.min(6, pillarDone + checked), total: 6, pillars };
 }
-
-void pillarState;
-void LivvRecord;
