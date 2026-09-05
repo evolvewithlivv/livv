@@ -3,7 +3,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
 import { Avatar } from "@/components/identity/avatar";
-import { AmbientField } from "@/components/layout/ambient-field";
 import { cn } from "@/lib/utils";
 import { loadIdentity, type Identity } from "@/lib/identity";
 import {
@@ -23,7 +22,7 @@ import {
 import { feedback } from "@/lib/sensory";
 
 type Sheet = "closed" | "compose" | "sound" | "edit";
-type FeedTab = "for_you" | "following" | "proof";
+type FeedTab = "live" | "following" | "proof";
 
 const PULSE = [
   { name: "You", username: "me", accent: "#4C8DFF", self: true },
@@ -34,11 +33,19 @@ const PULSE = [
   { name: "Cole", username: "colebuilt", accent: "#A78BFA" },
 ];
 
+const LIVE_TICKER = [
+  "Maya finished Daily · Body",
+  "Andre checked in · Day 19",
+  "Nia opened a Signal pack",
+  "Jules hit a 7-day streak",
+  "Cole posted proof",
+];
+
 export default function ConnectPage() {
   const [me, setMe] = useState<Identity | null>(null);
   const [posts, setPosts] = useState<Post[]>([]);
   const [sheet, setSheet] = useState<Sheet>("closed");
-  const [tab, setTab] = useState<FeedTab>("for_you");
+  const [tab, setTab] = useState<FeedTab>("live");
   const [editingId, setEditingId] = useState<string | null>(null);
   const [menuId, setMenuId] = useState<string | null>(null);
   const [text, setText] = useState("");
@@ -50,6 +57,7 @@ export default function ConnectPage() {
   const [replyDraft, setReplyDraft] = useState("");
   const [now, setNow] = useState(() => Date.now());
   const [likeBurst, setLikeBurst] = useState<string | null>(null);
+  const [ticker, setTicker] = useState(0);
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const lastTap = useRef<{ id: string; t: number } | null>(null);
@@ -58,8 +66,10 @@ export default function ConnectPage() {
     setMe(loadIdentity());
     setPosts(loadPosts());
     const id = window.setInterval(() => setNow(Date.now()), 1000);
+    const tick = window.setInterval(() => setTicker((t) => (t + 1) % LIVE_TICKER.length), 3200);
     return () => {
       window.clearInterval(id);
+      window.clearInterval(tick);
       audioRef.current?.pause();
     };
   }, []);
@@ -202,7 +212,7 @@ export default function ConnectPage() {
       list = list.filter(
         (p) =>
           p.author.username === me.username ||
-          ["mayatrains", "andrev", "nia.runs"].includes(p.author.username)
+          ["mayatrains", "andrev", "nia.runs", "julesmoves"].includes(p.author.username)
       );
     }
     return list;
@@ -211,43 +221,69 @@ export default function ConnectPage() {
   const isMine = (post: Post) => Boolean(me && post.author.username === me.username);
 
   return (
-    <main className="relative min-h-full overflow-x-hidden bg-[#050505] pb-28 text-white">
-      <div className="pointer-events-none absolute inset-0">
+    <main className="relative min-h-full overflow-x-hidden bg-[#030405] pb-28 text-white">
+      {/* Atmosphere */}
+      <div className="pointer-events-none absolute inset-0 overflow-hidden">
         <div
-          className="absolute left-1/2 top-[-8rem] h-[28rem] w-[28rem] -translate-x-1/2 rounded-full"
-          style={{
-            background: "radial-gradient(circle, rgb(var(--livv-accent) / 0.14), transparent 70%)",
-          }}
+          className="absolute -left-20 top-0 h-[420px] w-[420px] rounded-full opacity-60 blur-3xl"
+          style={{ background: "radial-gradient(circle, rgba(76,141,255,0.22), transparent 70%)" }}
         />
-        <AmbientField />
+        <div
+          className="absolute -right-16 top-40 h-[280px] w-[280px] rounded-full opacity-40 blur-3xl"
+          style={{ background: "radial-gradient(circle, rgba(167,139,250,0.18), transparent 70%)" }}
+        />
+        <div className="livv-grain absolute inset-0" />
       </div>
 
       <div className="relative z-10 mx-auto max-w-lg">
-        <header className="sticky top-0 z-30 border-b border-white/[0.06] bg-[#050505]/88 px-5 pb-3 pt-5 backdrop-blur-xl">
-          <div className="flex items-center justify-between">
+        {/* HEADER — totally different from before */}
+        <header className="px-5 pt-6">
+          <div className="flex items-start justify-between gap-3">
             <div>
-              <p className="text-[9px] font-semibold uppercase tracking-[0.32em] text-livv-accent-soft">
-                The room
+              <div className="flex items-center gap-2">
+                <span className="relative flex h-2 w-2">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" />
+                  <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
+                </span>
+                <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-emerald-400/90">
+                  Live room
+                </p>
+              </div>
+              <h1 className="font-display mt-1.5 text-[32px] font-semibold leading-none tracking-tight">
+                Signals
+              </h1>
+              <p className="mt-2 max-w-[16rem] text-[13px] leading-snug text-white/40">
+                Proof from people building the same standard.
               </p>
-              <h1 className="font-display mt-0.5 text-[26px] font-semibold tracking-tight">Connect</h1>
             </div>
-            <div className="flex items-center gap-2.5">
+            <div className="flex items-center gap-2">
               <Link
                 href="/home/messages"
-                className="flex h-9 items-center gap-1.5 rounded-full border border-white/10 bg-white/[0.04] px-3 text-[11px] font-medium text-white/50"
+                className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/[0.04]"
+                aria-label="Messages"
               >
                 <InboxIcon />
-                DM
               </Link>
               {me && (
-                <Link href="/home/profile">
-                  <Avatar identity={me} size={34} showTierRing />
+                <Link href="/home/profile" className="block">
+                  <Avatar identity={me} size={40} showTierRing />
                 </Link>
               )}
             </div>
           </div>
 
-          <div className="-mx-5 mt-4 flex gap-3.5 overflow-x-auto px-5 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          {/* Live activity ticker */}
+          <div className="mt-5 overflow-hidden rounded-2xl border border-white/[0.07] bg-white/[0.03] px-4 py-2.5">
+            <p className="flex items-center gap-2 text-[12px] text-white/55 transition-opacity">
+              <span className="text-livv-accent">●</span>
+              <span key={ticker} className="truncate">
+                {LIVE_TICKER[ticker]}
+              </span>
+            </p>
+          </div>
+
+          {/* Stories / pulse */}
+          <div className="-mx-5 mt-5 flex gap-4 overflow-x-auto px-5 pb-1 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {PULSE.map((p) => {
               const self = Boolean(p.self);
               return (
@@ -260,36 +296,38 @@ export default function ConnectPage() {
                       feedback("tick");
                     }
                   }}
-                  className="flex w-[64px] shrink-0 flex-col items-center gap-1.5"
+                  className="flex w-[72px] shrink-0 flex-col items-center gap-2"
                 >
-                  <span className="relative flex h-[62px] w-[62px] items-center justify-center">
+                  <span className="relative flex h-[72px] w-[72px] items-center justify-center">
                     <span
-                      className="absolute inset-0 rounded-full"
+                      className="absolute inset-0 rounded-full p-[2px]"
                       style={{
                         background: self
-                          ? "conic-gradient(from 140deg, rgb(var(--livv-accent)), #fff 50%, rgb(var(--livv-accent)))"
-                          : `conic-gradient(from 0deg, ${p.accent}, transparent 50%, ${p.accent})`,
+                          ? "linear-gradient(135deg, #4C8DFF, #fff, #4C8DFF)"
+                          : `linear-gradient(135deg, ${p.accent}, transparent 55%, ${p.accent})`,
                       }}
-                    />
-                    <span className="absolute inset-[2.5px] rounded-full bg-[#050505]" />
-                    <span
-                      className="relative flex h-[52px] w-[52px] items-center justify-center overflow-hidden rounded-full text-[17px] font-semibold text-white"
-                      style={{ background: p.accent }}
                     >
-                      {self && me?.photo ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img src={me.photo} alt="" className="h-full w-full object-cover" />
-                      ) : (
-                        (self ? me?.displayName?.[0] : p.name[0]) || "L"
-                      )}
+                      <span className="block h-full w-full rounded-full bg-[#030405] p-[3px]">
+                        <span
+                          className="flex h-full w-full items-center justify-center overflow-hidden rounded-full text-[18px] font-semibold text-white"
+                          style={{ background: p.accent }}
+                        >
+                          {self && me?.photo ? (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img src={me.photo} alt="" className="h-full w-full object-cover" />
+                          ) : (
+                            (self ? me?.displayName?.[0] : p.name[0]) || "L"
+                          )}
+                        </span>
+                      </span>
                     </span>
                     {self && (
-                      <span className="absolute -bottom-0.5 -right-0.5 flex h-[18px] w-[18px] items-center justify-center rounded-full bg-white text-[13px] font-bold leading-none text-black shadow">
+                      <span className="absolute bottom-0 right-0 flex h-5 w-5 items-center justify-center rounded-full bg-white text-[14px] font-bold leading-none text-black">
                         +
                       </span>
                     )}
                   </span>
-                  <span className="w-full truncate text-center text-[10px] text-white/45">
+                  <span className="w-full truncate text-center text-[11px] font-medium text-white/50">
                     {self ? "Your pulse" : p.name}
                   </span>
                 </button>
@@ -297,10 +335,11 @@ export default function ConnectPage() {
             })}
           </div>
 
-          <div className="mt-3 flex gap-1">
+          {/* Tabs */}
+          <div className="mt-5 flex gap-1 rounded-full bg-white/[0.04] p-1 ring-1 ring-white/[0.06]">
             {(
               [
-                { id: "for_you" as const, label: "For you" },
+                { id: "live" as const, label: "Live" },
                 { id: "following" as const, label: "Following" },
                 { id: "proof" as const, label: "Proof" },
               ] as const
@@ -313,8 +352,8 @@ export default function ConnectPage() {
                   feedback("tick");
                 }}
                 className={cn(
-                  "rounded-full px-3.5 py-1.5 text-[12px] font-medium transition",
-                  tab === t.id ? "bg-white text-black" : "text-white/40"
+                  "flex-1 rounded-full py-2 text-[12px] font-semibold transition",
+                  tab === t.id ? "bg-white text-black shadow" : "text-white/40"
                 )}
               >
                 {t.label}
@@ -323,235 +362,235 @@ export default function ConnectPage() {
           </div>
         </header>
 
-        <div className="mt-2">
+        {/* FEED */}
+        <div className="mt-4">
           {feed.length === 0 && (
-            <div className="px-5 py-20 text-center">
-              <p className="font-display text-[22px] font-semibold">Empty room</p>
-              <p className="mt-2 text-[13px] text-white/35">Be the first signal today.</p>
+            <div className="px-5 py-16 text-center">
+              <p className="font-display text-[24px] font-semibold">No signals yet</p>
+              <p className="mt-2 text-[13px] text-white/35">Post the first one.</p>
               <button
                 type="button"
                 onClick={() => setSheet("compose")}
-                className="mt-6 rounded-full bg-white px-5 py-2.5 text-[12px] font-semibold text-black"
+                className="mt-6 rounded-full bg-white px-6 py-3 text-[13px] font-semibold text-black"
               >
-                Post something real
+                Drop a signal
               </button>
             </div>
           )}
 
-          {feed.map((post, idx) => {
+          {feed.map((post) => {
             const mine = isMine(post);
             const editable = mine && canEditPost(post, now);
             const seconds = editSecondsLeft(post, now);
             const hasMedia = Boolean(post.photo);
 
             return (
-              <article
-                key={post.id}
-                className={cn("relative py-5", idx > 0 && "border-t border-white/[0.05]")}
-              >
-                <div className="flex items-center gap-3 px-5">
-                  <span
-                    className="shrink-0 rounded-full p-[2px]"
-                    style={{
-                      background: `linear-gradient(135deg, ${post.author.accent}, transparent 70%)`,
-                    }}
-                  >
-                    <Avatar identity={post.author} size={38} />
-                  </span>
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-[14px] font-semibold leading-tight">
-                      {post.author.displayName}
-                    </p>
-                    <p className="mt-0.5 truncate text-[11px] text-white/35">
-                      @{post.author.username}
-                      <span className="mx-1 text-white/15">·</span>
-                      {formatSocialTime(post.createdAt, now)}
-                      {post.editedAt ? <span className="text-white/25"> · edited</span> : null}
-                    </p>
-                  </div>
-                  {mine && (
-                    <div className="relative shrink-0">
-                      <button
-                        type="button"
-                        aria-label="Post options"
-                        onClick={() => setMenuId(menuId === post.id ? null : post.id)}
-                        className="flex h-9 w-9 items-center justify-center rounded-full text-white/35"
-                      >
-                        <MoreIcon />
-                      </button>
-                      {menuId === post.id && (
-                        <div className="absolute right-0 top-10 z-20 min-w-[148px] overflow-hidden rounded-2xl border border-white/10 bg-[#12141a] py-1 shadow-2xl">
-                          {editable && (
+              <article key={post.id} className="relative mb-2">
+                <div className="mx-3 overflow-hidden rounded-[22px] border border-white/[0.06] bg-gradient-to-b from-white/[0.05] to-white/[0.02]">
+                  {/* Author */}
+                  <div className="flex items-center gap-3 px-4 pt-4">
+                    <span
+                      className="shrink-0 rounded-full p-[2px]"
+                      style={{
+                        background: `linear-gradient(135deg, ${post.author.accent}, transparent 65%)`,
+                      }}
+                    >
+                      <Avatar identity={post.author} size={40} />
+                    </span>
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-[14px] font-semibold">{post.author.displayName}</p>
+                      <p className="text-[11px] text-white/35">
+                        @{post.author.username}
+                        <span className="mx-1.5 text-white/15">·</span>
+                        {formatSocialTime(post.createdAt, now)}
+                        {post.editedAt ? <span className="text-white/25"> · edited</span> : null}
+                      </p>
+                    </div>
+                    {mine && (
+                      <div className="relative">
+                        <button
+                          type="button"
+                          aria-label="Options"
+                          onClick={() => setMenuId(menuId === post.id ? null : post.id)}
+                          className="flex h-9 w-9 items-center justify-center rounded-full text-white/40"
+                        >
+                          <MoreIcon />
+                        </button>
+                        {menuId === post.id && (
+                          <div className="absolute right-0 top-10 z-30 min-w-[150px] overflow-hidden rounded-2xl border border-white/10 bg-[#12141a] py-1 shadow-2xl">
+                            {editable && (
+                              <button
+                                type="button"
+                                onClick={() => openEdit(post)}
+                                className="block w-full px-4 py-2.5 text-left text-[13px]"
+                              >
+                                Edit · {seconds}s
+                              </button>
+                            )}
                             <button
                               type="button"
-                              onClick={() => openEdit(post)}
-                              className="block w-full px-4 py-2.5 text-left text-[13px] text-white/80"
+                              onClick={() => remove(post.id)}
+                              className="block w-full px-4 py-2.5 text-left text-[13px] text-red-400"
                             >
-                              Edit · {seconds}s
+                              Delete
                             </button>
-                          )}
-                          <button
-                            type="button"
-                            onClick={() => remove(post.id)}
-                            className="block w-full px-4 py-2.5 text-left text-[13px] text-red-400"
-                          >
-                            Delete
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  )}
-                </div>
-
-                {post.text && !hasMedia && (
-                  <p className="whitespace-pre-wrap px-5 pt-3 text-[17px] leading-snug tracking-[-0.015em] text-white/92">
-                    {post.text}
-                  </p>
-                )}
-
-                {post.photo && (
-                  <button
-                    type="button"
-                    onClick={() => onMediaTap(post)}
-                    className="relative mt-3 block w-full overflow-hidden bg-black"
-                  >
-                    {/* eslint-disable-next-line @next/next/no-img-element */}
-                    <img src={post.photo} alt="" className="max-h-[520px] w-full object-cover" />
-                    {likeBurst === post.id && (
-                      <span className="pointer-events-none absolute inset-0 flex items-center justify-center">
-                        <span className="livv-like-burst text-white drop-shadow-lg">
-                          <HeartIcon filled size={64} />
-                        </span>
-                      </span>
-                    )}
-                    {post.text && (
-                      <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 via-black/35 to-transparent px-5 pb-4 pt-16 text-left">
-                        <p className="text-[14px] leading-snug text-white/95">{post.text}</p>
+                          </div>
+                        )}
                       </div>
                     )}
-                  </button>
-                )}
+                  </div>
 
-                {post.track && (
-                  <button
-                    type="button"
-                    onClick={() => togglePlay(post)}
-                    className="mx-5 mt-3 flex w-[calc(100%-2.5rem)] items-center gap-3 overflow-hidden rounded-2xl px-3 py-2.5 text-left"
-                    style={{
-                      background:
-                        playingId === post.id
-                          ? "linear-gradient(90deg, rgb(var(--livv-accent) / 0.22), rgba(255,255,255,0.04))"
-                          : "rgba(255,255,255,0.04)",
-                      boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.08)",
-                    }}
-                  >
-                    <span
-                      className={cn(
-                        "flex h-9 w-9 shrink-0 items-center justify-center rounded-full",
-                        playingId === post.id ? "bg-white text-black" : "bg-livv-accent text-white"
-                      )}
-                    >
-                      {playingId === post.id ? <PauseIcon /> : <PlayIcon />}
-                    </span>
-                    <span className="min-w-0 flex-1">
-                      <span className="block truncate text-[13px] font-medium">{post.track.title}</span>
-                      <span className="block truncate text-[11px] text-white/40">
-                        {post.track.artist}
-                        {playingId === post.id ? " · playing" : ""}
-                      </span>
-                    </span>
-                    {playingId === post.id && (
-                      <span className="flex h-4 items-end gap-[3px] pr-1">
-                        {[0, 1, 2, 3].map((i) => (
-                          <span
-                            key={i}
-                            className="livv-eq-bar"
-                            style={{ animationDelay: `${i * 0.1}s` }}
-                          />
-                        ))}
-                      </span>
-                    )}
-                  </button>
-                )}
+                  {/* Body text */}
+                  {post.text && !hasMedia && (
+                    <p className="whitespace-pre-wrap px-4 pt-3 text-[16px] leading-snug tracking-[-0.01em] text-white/92">
+                      {post.text}
+                    </p>
+                  )}
 
-                <div className="mt-3 flex items-center gap-1 px-3">
-                  <button
-                    type="button"
-                    onClick={() => like(post.id)}
-                    className={cn(
-                      "inline-flex h-10 items-center gap-1.5 rounded-full px-3 text-[13px]",
-                      post.likedByMe ? "text-livv-accent" : "text-white/45"
-                    )}
-                    aria-label={post.likedByMe ? "Unlike" : "Like"}
-                  >
-                    <span className="flex h-5 w-5 items-center justify-center">
-                      <HeartIcon filled={post.likedByMe} />
-                    </span>
-                    <span className="tabular-nums">{post.likes}</span>
-                  </button>
-
-                  {post.allowReplies ? (
+                  {/* Photo */}
+                  {post.photo && (
                     <button
                       type="button"
-                      onClick={() => setOpenReplies(openReplies === post.id ? null : post.id)}
-                      className="inline-flex h-10 items-center gap-1.5 rounded-full px-3 text-[13px] text-white/45"
-                      aria-label="Reply"
+                      onClick={() => onMediaTap(post)}
+                      className="relative mt-3 block w-full overflow-hidden"
                     >
-                      <span className="flex h-5 w-5 items-center justify-center">
-                        <ReplyIcon />
-                      </span>
-                      <span className="tabular-nums">{post.replies.length}</span>
-                    </button>
-                  ) : (
-                    <span className="px-3 text-[11px] text-white/25">Replies off</span>
-                  )}
-                </div>
-
-                {openReplies === post.id && post.allowReplies && (
-                  <div className="mt-2 border-t border-white/[0.05] px-5 pt-3">
-                    {post.replies.length === 0 && (
-                      <p className="mb-3 text-[12px] text-white/30">No replies yet.</p>
-                    )}
-                    {post.replies.map((reply) => (
-                      <div key={reply.id} className="mb-3 flex gap-2.5">
-                        <Avatar identity={reply.author} size={28} />
-                        <div className="min-w-0 flex-1">
-                          <p className="text-[11px] text-white/35">
-                            {reply.author.displayName}
-                            <span className="mx-1 text-white/15">·</span>
-                            {formatSocialTime(reply.createdAt, now)}
-                          </p>
-                          <p className="text-[13px] leading-snug text-white/80">{reply.text}</p>
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={post.photo} alt="" className="max-h-[480px] w-full object-cover" />
+                      {likeBurst === post.id && (
+                        <span className="pointer-events-none absolute inset-0 flex items-center justify-center">
+                          <span className="livv-like-burst text-white">
+                            <HeartIcon filled size={72} />
+                          </span>
+                        </span>
+                      )}
+                      {post.text && (
+                        <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent px-4 pb-4 pt-14 text-left">
+                          <p className="text-[14px] leading-snug text-white/95">{post.text}</p>
                         </div>
-                      </div>
-                    ))}
-                    <div className="mt-2 flex gap-2 pb-1">
-                      <input
-                        value={replyDraft}
-                        onChange={(e) => setReplyDraft(e.target.value)}
-                        placeholder="Reply…"
-                        className="h-10 flex-1 rounded-full bg-white/[0.05] px-4 text-[13px] outline-none ring-1 ring-white/10 placeholder:text-white/25"
-                        onKeyDown={(e) => {
-                          if (e.key === "Enter") sendReply(post.id);
-                        }}
-                      />
+                      )}
+                    </button>
+                  )}
+
+                  {/* Track */}
+                  {post.track && (
+                    <button
+                      type="button"
+                      onClick={() => togglePlay(post)}
+                      className="mx-4 mt-3 flex w-[calc(100%-2rem)] items-center gap-3 rounded-2xl px-3 py-2.5 text-left"
+                      style={{
+                        background:
+                          playingId === post.id
+                            ? "linear-gradient(90deg, rgba(76,141,255,0.25), rgba(255,255,255,0.04))"
+                            : "rgba(255,255,255,0.04)",
+                        boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.08)",
+                      }}
+                    >
+                      <span
+                        className={cn(
+                          "flex h-10 w-10 shrink-0 items-center justify-center rounded-full",
+                          playingId === post.id ? "bg-white text-black" : "bg-livv-accent text-white"
+                        )}
+                      >
+                        {playingId === post.id ? <PauseIcon /> : <PlayIcon />}
+                      </span>
+                      <span className="min-w-0 flex-1">
+                        <span className="block truncate text-[13px] font-medium">{post.track.title}</span>
+                        <span className="block truncate text-[11px] text-white/40">
+                          {post.track.artist}
+                          {playingId === post.id ? " · playing" : ""}
+                        </span>
+                      </span>
+                      {playingId === post.id && (
+                        <span className="flex h-4 items-end gap-[3px]">
+                          {[0, 1, 2, 3].map((i) => (
+                            <span
+                              key={i}
+                              className="livv-eq-bar"
+                              style={{ animationDelay: `${i * 0.1}s` }}
+                            />
+                          ))}
+                        </span>
+                      )}
+                    </button>
+                  )}
+
+                  {/* Actions */}
+                  <div className="flex items-center gap-1 px-2 py-3">
+                    <button
+                      type="button"
+                      onClick={() => like(post.id)}
+                      className={cn(
+                        "inline-flex h-11 items-center gap-2 rounded-full px-3.5 text-[13px] font-medium",
+                        post.likedByMe ? "text-livv-accent" : "text-white/50"
+                      )}
+                    >
+                      <HeartIcon filled={post.likedByMe} />
+                      <span className="tabular-nums">{post.likes}</span>
+                    </button>
+                    {post.allowReplies ? (
                       <button
                         type="button"
-                        onClick={() => sendReply(post.id)}
-                        disabled={!replyDraft.trim()}
-                        className="h-10 shrink-0 rounded-full bg-white px-4 text-[12px] font-semibold text-black disabled:opacity-30"
+                        onClick={() => setOpenReplies(openReplies === post.id ? null : post.id)}
+                        className="inline-flex h-11 items-center gap-2 rounded-full px-3.5 text-[13px] font-medium text-white/50"
                       >
-                        Send
+                        <ReplyIcon />
+                        <span className="tabular-nums">{post.replies.length}</span>
                       </button>
-                    </div>
+                    ) : (
+                      <span className="px-3 text-[11px] text-white/25">Replies off</span>
+                    )}
                   </div>
-                )}
+
+                  {/* Replies */}
+                  {openReplies === post.id && post.allowReplies && (
+                    <div className="border-t border-white/[0.06] px-4 pb-4 pt-3">
+                      {post.replies.length === 0 && (
+                        <p className="mb-3 text-[12px] text-white/30">Be the first reply.</p>
+                      )}
+                      {post.replies.map((reply) => (
+                        <div key={reply.id} className="mb-3 flex gap-2.5">
+                          <Avatar identity={reply.author} size={28} />
+                          <div className="min-w-0 flex-1 rounded-2xl bg-white/[0.04] px-3 py-2">
+                            <p className="text-[11px] text-white/40">
+                              {reply.author.displayName}
+                              <span className="mx-1 text-white/15">·</span>
+                              {formatSocialTime(reply.createdAt, now)}
+                            </p>
+                            <p className="mt-0.5 text-[13px] leading-snug text-white/85">{reply.text}</p>
+                          </div>
+                        </div>
+                      ))}
+                      <div className="mt-2 flex gap-2">
+                        <input
+                          value={replyDraft}
+                          onChange={(e) => setReplyDraft(e.target.value)}
+                          placeholder="Reply…"
+                          className="h-11 flex-1 rounded-full bg-white/[0.05] px-4 text-[13px] outline-none ring-1 ring-white/10 placeholder:text-white/25"
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") sendReply(post.id);
+                          }}
+                        />
+                        <button
+                          type="button"
+                          onClick={() => sendReply(post.id)}
+                          disabled={!replyDraft.trim()}
+                          className="h-11 shrink-0 rounded-full bg-white px-4 text-[12px] font-semibold text-black disabled:opacity-30"
+                        >
+                          Send
+                        </button>
+                      </div>
+                    </div>
+                  )}
+                </div>
               </article>
             );
           })}
+
+          <p className="px-5 py-8 text-center text-[11px] text-white/20">You’re caught up</p>
         </div>
       </div>
 
+      {/* FAB */}
       <button
         type="button"
         onClick={() => {
@@ -559,10 +598,10 @@ export default function ConnectPage() {
           setSheet("compose");
           feedback("tick");
         }}
-        className="fixed bottom-[calc(5.75rem+env(safe-area-inset-bottom))] right-5 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-white text-black shadow-[0_10px_40px_rgba(0,0,0,0.55)]"
-        aria-label="New post"
+        className="fixed bottom-[calc(5.75rem+env(safe-area-inset-bottom))] right-5 z-40 flex h-14 items-center gap-2 rounded-full bg-white px-5 text-[13px] font-semibold text-black shadow-[0_12px_40px_rgba(0,0,0,0.55)]"
       >
         <PlusIcon />
+        Signal
       </button>
 
       <input
@@ -573,9 +612,10 @@ export default function ConnectPage() {
         onChange={(e) => onPhoto(e.target.files?.[0])}
       />
 
+      {/* Composer */}
       {(sheet === "compose" || sheet === "edit" || sheet === "sound") && (
-        <div className="fixed inset-0 z-[70] flex items-end bg-black/80 backdrop-blur-sm">
-          <div className="max-h-[92dvh] w-full overflow-y-auto rounded-t-[28px] bg-[#0c0e12] p-5 pb-10 ring-1 ring-white/10">
+        <div className="fixed inset-0 z-[70] flex items-end bg-black/85 backdrop-blur-md">
+          <div className="max-h-[92dvh] w-full overflow-y-auto rounded-t-[28px] bg-[#0b0d12] p-5 pb-10 ring-1 ring-white/10">
             {sheet !== "sound" && (
               <>
                 <div className="mb-4 flex items-center justify-between">
@@ -583,7 +623,7 @@ export default function ConnectPage() {
                     Close
                   </button>
                   <p className="text-[13px] font-semibold">
-                    {sheet === "edit" ? "Edit" : "New pulse"}
+                    {sheet === "edit" ? "Edit signal" : "New signal"}
                   </p>
                   <button
                     type="button"
@@ -600,8 +640,7 @@ export default function ConnectPage() {
 
                 {sheet === "edit" && editingId && (
                   <p className="mb-3 text-[11px] text-white/35">
-                    {editSecondsLeft(posts.find((p) => p.id === editingId) || posts[0], now)}s left to
-                    edit
+                    {editSecondsLeft(posts.find((p) => p.id === editingId) || posts[0], now)}s left
                   </p>
                 )}
 
@@ -611,7 +650,7 @@ export default function ConnectPage() {
                     value={text}
                     onChange={(e) => setText(e.target.value)}
                     placeholder="What’s real right now."
-                    rows={4}
+                    rows={5}
                     className="flex-1 resize-none bg-transparent text-[17px] leading-snug outline-none placeholder:text-white/25"
                     autoFocus
                   />
@@ -636,11 +675,7 @@ export default function ConnectPage() {
                     <p className="truncate text-[13px]">
                       {track.title} · {track.artist}
                     </p>
-                    <button
-                      type="button"
-                      className="shrink-0 text-[11px] text-white/40"
-                      onClick={() => setTrack(null)}
-                    >
+                    <button type="button" className="text-[11px] text-white/40" onClick={() => setTrack(null)}>
                       Clear
                     </button>
                   </div>
@@ -650,14 +685,14 @@ export default function ConnectPage() {
                   <button
                     type="button"
                     onClick={() => fileRef.current?.click()}
-                    className="inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-[12px] ring-1 ring-white/15"
+                    className="inline-flex items-center gap-1.5 rounded-full px-4 py-2.5 text-[12px] ring-1 ring-white/15"
                   >
                     <PhotoIcon /> Photo
                   </button>
                   <button
                     type="button"
                     onClick={() => setSheet("sound")}
-                    className="inline-flex items-center gap-1.5 rounded-full px-4 py-2 text-[12px] ring-1 ring-white/15"
+                    className="inline-flex items-center gap-1.5 rounded-full px-4 py-2.5 text-[12px] ring-1 ring-white/15"
                   >
                     <MusicIcon /> Sound
                   </button>
@@ -665,7 +700,7 @@ export default function ConnectPage() {
                     type="button"
                     onClick={() => setAllowReplies((v) => !v)}
                     className={cn(
-                      "rounded-full px-4 py-2 text-[12px] ring-1",
+                      "rounded-full px-4 py-2.5 text-[12px] ring-1",
                       allowReplies
                         ? "ring-livv-accent/40 text-livv-accent-soft"
                         : "ring-white/15 text-white/40"
@@ -701,7 +736,7 @@ export default function ConnectPage() {
                         feedback("tick");
                       }}
                       className={cn(
-                        "flex w-full items-center justify-between rounded-2xl px-4 py-3 text-left ring-1",
+                        "flex w-full items-center justify-between rounded-2xl px-4 py-3.5 text-left ring-1",
                         track?.id === item.id
                           ? "bg-livv-accent/10 ring-livv-accent/40"
                           : "ring-white/10"
@@ -778,7 +813,7 @@ function MoreIcon() {
 
 function PlusIcon() {
   return (
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2" aria-hidden>
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" aria-hidden>
       <path d="M12 5v14M5 12h14" strokeLinecap="round" />
     </svg>
   );
@@ -786,7 +821,7 @@ function PlusIcon() {
 
 function InboxIcon() {
   return (
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden>
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden>
       <path d="M4 6h16v12H4V6z" strokeLinejoin="round" />
       <path d="m4 8 8 6 8-6" strokeLinecap="round" strokeLinejoin="round" />
     </svg>

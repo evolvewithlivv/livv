@@ -35,7 +35,8 @@ export type Post = {
   replies: Reply[];
 };
 
-const POSTS_KEY = "livv-social-posts-v1";
+/** Bumped so everyone gets the new seed feed */
+const POSTS_KEY = "livv-social-posts-v3";
 export const EDIT_WINDOW_MS = 60_000;
 
 export const SOUND_LIBRARY: Track[] = [
@@ -140,23 +141,23 @@ function seedPosts(): Post[] {
   return [
     {
       id: "seed-a",
-      createdAt: now - 1000 * 60 * 18,
+      createdAt: now - 1000 * 60 * 12,
       author: {
         displayName: "Maya Chen",
         username: "mayatrains",
         photo: null,
         accent: "#3DDC97",
       },
-      text: "Did the work before my phone even unlocked. That version of me is the one I trust.",
+      text: "Did the work before my phone unlocked. That version of me is the one I trust.",
       photo: null,
       track: SOUND_LIBRARY[1],
       allowReplies: true,
-      likes: 24,
+      likes: 47,
       likedByMe: false,
       replies: [
         {
           id: "r1",
-          createdAt: now - 1000 * 60 * 11,
+          createdAt: now - 1000 * 60 * 8,
           author: {
             displayName: "Jules",
             username: "julesmoves",
@@ -165,56 +166,96 @@ function seedPosts(): Post[] {
           },
           text: "This is the standard.",
         },
+        {
+          id: "r1b",
+          createdAt: now - 1000 * 60 * 5,
+          author: {
+            displayName: "Nia",
+            username: "nia.runs",
+            photo: null,
+            accent: "#F5C542",
+          },
+          text: "Saving this for tomorrow morning.",
+        },
       ],
     },
     {
       id: "seed-b",
-      createdAt: now - 1000 * 60 * 60 * 5,
+      createdAt: now - 1000 * 60 * 55,
       author: {
         displayName: "Andre V",
         username: "andrev",
         photo: null,
         accent: "#FF5C8A",
       },
-      text: "Nobody needs to see the session for it to count.",
+      text: "Nobody needs to see the session for it to count. Logging it anyway.",
       photo: null,
       track: null,
-      allowReplies: false,
-      likes: 61,
+      allowReplies: true,
+      likes: 89,
       likedByMe: false,
       replies: [],
     },
     {
       id: "seed-c",
-      createdAt: now - 1000 * 60 * 60 * 30,
+      createdAt: now - 1000 * 60 * 60 * 3,
       author: {
         displayName: "Nia",
         username: "nia.runs",
         photo: null,
         accent: "#F5C542",
       },
-      text: "Week 3. Still here.",
+      text: "Week 3. Still here. Still boring on purpose.",
       photo: null,
       track: SOUND_LIBRARY[0],
       allowReplies: true,
-      likes: 40,
+      likes: 62,
+      likedByMe: false,
+      replies: [
+        {
+          id: "r2",
+          createdAt: now - 1000 * 60 * 60 * 2,
+          author: {
+            displayName: "Cole",
+            username: "colebuilt",
+            photo: null,
+            accent: "#A78BFA",
+          },
+          text: "Boring is the whole game.",
+        },
+      ],
+    },
+    {
+      id: "seed-d",
+      createdAt: now - 1000 * 60 * 60 * 9,
+      author: {
+        displayName: "Jules",
+        username: "julesmoves",
+        photo: null,
+        accent: "#7C9CFF",
+      },
+      text: "If you only train when you feel like it, you are training your feelings.",
+      photo: null,
+      track: SOUND_LIBRARY[4],
+      allowReplies: true,
+      likes: 134,
       likedByMe: false,
       replies: [],
     },
     {
-      id: "seed-d",
-      createdAt: now - 1000 * 60 * 60 * 24 * 9,
+      id: "seed-e",
+      createdAt: now - 1000 * 60 * 60 * 26,
       author: {
         displayName: "Cole",
         username: "colebuilt",
         photo: null,
-        accent: "#FF6A1A",
+        accent: "#A78BFA",
       },
-      text: "If it is not on the record it did not happen. Logging it anyway.",
+      text: "Put it on the record or it did not happen.",
       photo: null,
       track: null,
-      allowReplies: true,
-      likes: 18,
+      allowReplies: false,
+      likes: 41,
       likedByMe: false,
       replies: [],
     },
@@ -242,9 +283,7 @@ export function savePosts(posts: Post[]) {
   try {
     window.localStorage.setItem(POSTS_KEY, JSON.stringify(posts.slice(0, 40)));
   } catch {
-    const slim = posts.slice(0, 20).map((p, i) =>
-      i > 8 ? { ...p, photo: null } : p
-    );
+    const slim = posts.slice(0, 20).map((p, i) => (i > 8 ? { ...p, photo: null } : p));
     try {
       window.localStorage.setItem(POSTS_KEY, JSON.stringify(slim));
     } catch {
