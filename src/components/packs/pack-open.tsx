@@ -38,16 +38,12 @@ export function PackOpenModal({
       } else {
         onClose();
       }
-    }, 1250);
+    }, 1150);
   };
 
   return (
-    <div className="fixed inset-0 z-[80] flex flex-col items-center justify-center bg-black/90 backdrop-blur-md">
-      <button
-        type="button"
-        onClick={onClose}
-        className="absolute right-5 top-12 text-[13px] text-white/40"
-      >
+    <div className="fixed inset-0 z-[80] flex flex-col items-center justify-center bg-black/92 backdrop-blur-md">
+      <button type="button" onClick={onClose} className="absolute right-5 top-12 text-[13px] text-white/40">
         Close
       </button>
 
@@ -56,14 +52,10 @@ export function PackOpenModal({
           <p className="text-[10px] uppercase tracking-[0.32em] text-white/35">{meta.subtitle}</p>
           <p className="font-display mt-2 text-[22px] font-semibold">{meta.name}</p>
           <button type="button" onClick={rip} className="mt-10" disabled={phase === "ripping"}>
-            {phase === "idle" ? (
-              <PackFoil grade={grade} size="lg" pulse />
-            ) : (
-              <PackRip grade={grade} ripping />
-            )}
+            {phase === "idle" ? <PackFoil grade={grade} size="lg" pulse /> : <PackRip grade={grade} ripping />}
           </button>
           <p className="mt-10 text-[13px] text-white/40">
-            {phase === "idle" ? "Tap pack to rip" : "Ripping…"}
+            {phase === "idle" ? "Tap pack to open" : "Opening…"}
           </p>
         </>
       )}
@@ -74,11 +66,7 @@ export function PackOpenModal({
           <div className="mt-6">
             <CardFace card={card} size="lg" reveal />
           </div>
-          <button
-            type="button"
-            onClick={onClose}
-            className="mt-10 rounded-full bg-white px-8 py-3 text-[14px] font-semibold text-black"
-          >
+          <button type="button" onClick={onClose} className="mt-10 rounded-full bg-white px-8 py-3 text-[14px] font-semibold text-black">
             Add to Vault
           </button>
         </>
