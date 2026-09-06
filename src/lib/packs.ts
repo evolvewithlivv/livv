@@ -2,9 +2,9 @@
 
 import type { LivvTier } from "./identity";
 import { loadIdentity } from "./identity";
+import { applyPackGrants } from "./pack-grants";
 
 export type Rarity = "common" | "elevated" | "rare" | "apex";
-/** Pack grade 1–4. Grade 4 is purchase-only. */
 export type PackGrade = 1 | 2 | 3 | 4;
 
 export type CardDef = {
@@ -153,6 +153,11 @@ const EMPTY: PackState = {
   totalOpened: 0,
 };
 
+function withGrants(state: PackState): PackState {
+  if (typeof window === "undefined") return state;
+  return applyPackGrants(loadIdentity().username, state);
+}
+
 export function loadPacks(): PackState {
   if (typeof window === "undefined") return { ...EMPTY, pending: [], owned: [] };
   try {
@@ -161,7 +166,7 @@ export function loadPacks(): PackState {
       const old = window.localStorage.getItem("livv-packs-v1");
       if (old) {
         const p = JSON.parse(old);
-        return {
+        return withGrants({
           pending: (p.pending || []).map((x: { id: string; grantedAt: number }) => ({
             id: x.id,
             grade: 1 as PackGrade,
@@ -177,19 +182,19 @@ export function loadPacks(): PackState {
           ),
           lastGrantAt: p.lastDailyDay ? Date.now() - 1000 : null,
           totalOpened: p.totalOpened || 0,
-        };
+        });
       }
-      return { ...EMPTY, pending: [], owned: [] };
+      return withGrants({ ...EMPTY, pending: [], owned: [] });
     }
     const p = JSON.parse(raw) as PackState;
-    return {
+    return withGrants({
       pending: p.pending || [],
       owned: p.owned || [],
       lastGrantAt: p.lastGrantAt ?? null,
       totalOpened: p.totalOpened || 0,
-    };
+    });
   } catch {
-    return { ...EMPTY, pending: [], owned: [] };
+    return withGrants({ ...EMPTY, pending: [], owned: [] });
   }
 }
 
