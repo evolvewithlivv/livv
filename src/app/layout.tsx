@@ -27,11 +27,10 @@ export const metadata: Metadata = {
   },
   icons: {
     icon: [
-      { url: "/favicon.svg", type: "image/svg+xml" },
-      { url: "/api/icon?s=32", sizes: "32x32", type: "image/png" },
+      { url: "/ember.svg", type: "image/svg+xml" },
     ],
-    apple: [{ url: "/api/icon?s=180", sizes: "180x180", type: "image/png" }],
-    shortcut: ["/api/icon?s=32"],
+    apple: [{ url: "/ember.svg" }],
+    shortcut: ["/ember.svg"],
   },
   other: {
     "mobile-web-app-capable": "yes",
@@ -59,8 +58,8 @@ export default function RootLayout({
     <html lang="en" className={`${body.variable} ${display.variable}`} suppressHydrationWarning>
       <head>
         <script dangerouslySetInnerHTML={{ __html: THEME_BOOT }} />
-        <link rel="apple-touch-icon" href="/api/icon?s=180" />
-        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+        <link rel="apple-touch-icon" href="/ember.svg" />
+        <link rel="icon" href="/ember.svg" type="image/svg+xml" />
       </head>
       <body className="min-h-dvh bg-[var(--livv-bg)] text-[rgb(var(--livv-fg))] antialiased">
         <ThemeShell>{children}</ThemeShell>
