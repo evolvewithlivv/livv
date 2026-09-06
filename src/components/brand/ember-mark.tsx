@@ -1,4 +1,4 @@
-/** Official LIVV Ember — dual-flame. */
+/** Official LIVV Ember — exact glossy dual-flame. */
 
 import { EMBER_SRC } from "./ember-src";
 
@@ -8,10 +8,10 @@ type Props = {
   glow?: boolean;
 };
 
-const RATIO = 140 / 360;
+const RATIO = 201 / 320;
 
 const GLOW =
-  "drop-shadow(0 0 3px rgba(255, 170, 40, 0.9)) drop-shadow(0 0 8px rgba(255, 100, 0, 0.45))";
+  "drop-shadow(0 0 4px rgba(255, 150, 30, 0.85)) drop-shadow(0 0 10px rgba(255, 90, 0, 0.4))";
 
 export function EmberMark({ size = 56, className, glow = true }: Props) {
   const h = Math.max(size, 10);
@@ -19,7 +19,7 @@ export function EmberMark({ size = 56, className, glow = true }: Props) {
   return (
     // eslint-disable-next-line @next/next/no-img-element
     <img
-      src={`${EMBER_SRC}?v=3`}
+      src={EMBER_SRC}
       alt=""
       width={w}
       height={h}
@@ -29,7 +29,7 @@ export function EmberMark({ size = 56, className, glow = true }: Props) {
         flexShrink: 0,
         background: "transparent",
         objectFit: "contain",
-        filter: glow && size >= 18 ? GLOW : undefined,
+        filter: glow && size >= 16 ? GLOW : undefined,
       }}
     />
   );
