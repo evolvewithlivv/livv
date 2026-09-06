@@ -1,0 +1,123 @@
+.pack-pulse {
+  animation: packFloat 3s ease-in-out infinite;
+}
+.pack-sheen {
+  background: linear-gradient(
+    105deg,
+    transparent 42%,
+    rgba(255, 255, 255, 0.28) 50%,
+    transparent 58%
+  );
+  animation: sheen 2.6s ease-in-out infinite;
+}
+@keyframes packFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+@keyframes sheen {
+  0% { transform: translateX(-28%); }
+  100% { transform: translateX(28%); }
+}
+
+.pack-rip-half {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  border-radius: 16px;
+}
+.pack-rip-half img {
+  width: 200%;
+  height: 100%;
+  max-width: none;
+  object-fit: cover;
+  pointer-events: none;
+}
+.pack-rip-left {
+  clip-path: polygon(0 0, 54% 0, 48% 12%, 56% 24%, 46% 38%, 55% 52%, 47% 66%, 54% 80%, 46% 92%, 52% 100%, 0 100%);
+  transform-origin: left center;
+}
+.pack-rip-left img {
+  object-position: left center;
+}
+.pack-rip-right {
+  clip-path: polygon(100% 0, 54% 0, 48% 12%, 56% 24%, 46% 38%, 55% 52%, 47% 66%, 54% 80%, 46% 92%, 52% 100%, 100% 100%);
+  transform-origin: right center;
+}
+.pack-rip-right img {
+  margin-left: -100%;
+  object-position: right center;
+}
+.pack-rip-seam {
+  position: absolute;
+  top: -4%;
+  bottom: -4%;
+  left: 49%;
+  width: 2px;
+  opacity: 0;
+  background: linear-gradient(
+    180deg,
+    transparent,
+    rgba(255, 170, 50, 0.15),
+    rgba(255, 140, 30, 0.95),
+    rgba(255, 170, 50, 0.15),
+    transparent
+  );
+  box-shadow: 0 0 14px rgba(255, 130, 20, 0.8);
+  pointer-events: none;
+}
+.pack-rip-ember {
+  position: absolute;
+  width: 5px;
+  height: 5px;
+  border-radius: 999px;
+  background: #ff8a14;
+  opacity: 0;
+  pointer-events: none;
+  box-shadow: 0 0 8px #ff6a10;
+}
+.pack-rip-ember.e1 { left: 46%; top: 18%; }
+.pack-rip-ember.e2 { left: 52%; top: 34%; }
+.pack-rip-ember.e3 { left: 48%; top: 52%; }
+.pack-rip-ember.e4 { left: 54%; top: 68%; }
+.pack-rip-ember.e5 { left: 47%; top: 84%; }
+
+.pack-rip-on .pack-rip-left {
+  animation: ripLeft 1.15s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+.pack-rip-on .pack-rip-right {
+  animation: ripRight 1.15s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+.pack-rip-on .pack-rip-seam {
+  animation: ripSeam 0.55s ease-out forwards;
+}
+.pack-rip-on .pack-rip-ember {
+  animation: ripEmber 0.9s ease-out forwards;
+}
+.pack-rip-on .e2 { animation-delay: 0.05s; }
+.pack-rip-on .e3 { animation-delay: 0.1s; }
+.pack-rip-on .e4 { animation-delay: 0.14s; }
+.pack-rip-on .e5 { animation-delay: 0.18s; }
+
+@keyframes ripLeft {
+  0% { transform: translateX(0) rotate(0); }
+  100% { transform: translateX(-42%) rotate(-14deg); opacity: 0.15; }
+}
+@keyframes ripRight {
+  0% { transform: translateX(0) rotate(0); }
+  100% { transform: translateX(42%) rotate(13deg); opacity: 0.15; }
+}
+@keyframes ripSeam {
+  0% { opacity: 0; transform: scaleY(0.2); }
+  30% { opacity: 1; transform: scaleY(1); }
+  100% { opacity: 0; transform: scaleY(1.05); }
+}
+@keyframes ripEmber {
+  0% { opacity: 0; transform: translate(0, 0) scale(0.4); }
+  25% { opacity: 1; }
+  100% { opacity: 0; transform: translate(var(--ex, 8px), -28px) scale(0.2); }
+}
+.pack-rip-on .e1 { --ex: -16px; }
+.pack-rip-on .e2 { --ex: 14px; }
+.pack-rip-on .e3 { --ex: -10px; }
+.pack-rip-on .e4 { --ex: 18px; }
+.pack-rip-on .e5 { --ex: -12px; }

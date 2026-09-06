@@ -1,6 +1,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@import "./pack-rip.css";
 
 :root,
 html[data-theme="dark"] {
@@ -95,41 +96,3 @@ html[data-theme="light"] {
 .bg-livv-accent { background-color: rgb(var(--livv-accent) / 1); }
 .border-livv-accent { border-color: rgb(var(--livv-accent) / 1); }
 .livv-page { padding-bottom: 6.5rem; }
-
-html[data-theme="light"] .text-white { color: rgb(17 17 20) !important; }
-html[data-theme="light"] .text-white\/15 { color: rgb(17 17 20 / 0.32) !important; }
-html[data-theme="light"] .text-white\/20 { color: rgb(17 17 20 / 0.36) !important; }
-html[data-theme="light"] .text-white\/25 { color: rgb(17 17 20 / 0.40) !important; }
-html[data-theme="light"] .text-white\/30 { color: rgb(17 17 20 / 0.44) !important; }
-html[data-theme="light"] .text-white\/35 { color: rgb(17 17 20 / 0.50) !important; }
-html[data-theme="light"] .text-white\/38 { color: rgb(17 17 20 / 0.54) !important; }
-html[data-theme="light"] .text-white\/40 { color: rgb(17 17 20 / 0.56) !important; }
-html[data-theme="light"] .text-white\/42 { color: rgb(17 17 20 / 0.58) !important; }
-html[data-theme="light"] .text-white\/45 { color: rgb(17 17 20 / 0.60) !important; }
-html[data-theme="light"] .text-white\/48 { color: rgb(17 17 20 / 0.62) !important; }
-html[data-theme="light"] .text-white\/50 { color: rgb(17 17 20 / 0.64) !important; }
-html[data-theme="light"] .text-white\/55 { color: rgb(17 17 20 / 0.70) !important; }
-html[data-theme="light"] .text-white\/65 { color: rgb(17 17 20 / 0.78) !important; }
-html[data-theme="light"] .text-white\/75 { color: rgb(17 17 20 / 0.86) !important; }
-html[data-theme="light"] .bg-\[\#050505\],
-html[data-theme="light"] .bg-\[\#08090b\],
-html[data-theme="light"] .bg-\[\#0b0d11\] { background-color: var(--livv-bg) !important; }
-html[data-theme="light"] .bg-white\/\[0\.02\],
-html[data-theme="light"] .bg-white\/\[0\.025\],
-html[data-theme="light"] .bg-white\/\[0\.03\],
-html[data-theme="light"] .bg-white\/\[0\.035\],
-html[data-theme="light"] .bg-white\/\[0\.04\],
-html[data-theme="light"] .bg-white\/\[0\.045\],
-html[data-theme="light"] .bg-white\/\[0\.05\],
-html[data-theme="light"] .bg-white\/\[0\.06\],
-html[data-theme="light"] .bg-white\/5 { background-color: rgb(17 17 20 / 0.045) !important; }
-html[data-theme="light"] .bg-white\/8,
-html[data-theme="light"] .bg-white\/10 { background-color: rgb(17 17 20 / 0.08) !important; }
-html[data-theme="light"] .bg-black\/20 { background-color: rgb(17 17 20 / 0.05) !important; }
-html[data-theme="light"] .bg-black\/80 { background-color: rgb(17 17 20 / 0.45) !important; }
-html[data-theme="light"] .border-white\/7,
-html[data-theme="light"] .border-white\/8,
-html[data-theme="light"] .border-white\/10,
-html[data-theme="light"] .border-white\/\[0\.09\],
-html[data-theme="light"] .divide-white\/10 { border-color: rgb(17 17 20 / 0.12) !important; }
-html[data-theme="light"] .ring-offset-\[\#050505\] { --tw-ring-offset-color: #f2f3f6 !important; }
