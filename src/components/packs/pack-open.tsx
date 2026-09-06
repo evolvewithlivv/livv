@@ -4,6 +4,7 @@ import { useState } from "react";
 import { openPack, GRADE_META, type CardDef, type PackGrade } from "@/lib/packs";
 import { feedback } from "@/lib/sensory";
 import { PackFoil } from "./pack-foil";
+import { PackRip } from "./pack-rip";
 import { CardFace } from "./card-face";
 
 export function PackOpenModal({
@@ -37,7 +38,7 @@ export function PackOpenModal({
       } else {
         onClose();
       }
-    }, 1100);
+    }, 1250);
   };
 
   return (
@@ -55,12 +56,14 @@ export function PackOpenModal({
           <p className="text-[10px] uppercase tracking-[0.32em] text-white/35">{meta.subtitle}</p>
           <p className="font-display mt-2 text-[22px] font-semibold">{meta.name}</p>
           <button type="button" onClick={rip} className="mt-10" disabled={phase === "ripping"}>
-            <div className={phase === "ripping" ? "scale-95 animate-pulse transition" : ""}>
-              <PackFoil grade={grade} size="lg" pulse={phase === "idle"} />
-            </div>
+            {phase === "idle" ? (
+              <PackFoil grade={grade} size="lg" pulse />
+            ) : (
+              <PackRip grade={grade} ripping />
+            )}
           </button>
           <p className="mt-10 text-[13px] text-white/40">
-            {phase === "idle" ? "Tap pack to open" : "Opening…"}
+            {phase === "idle" ? "Tap pack to rip" : "Ripping…"}
           </p>
         </>
       )}

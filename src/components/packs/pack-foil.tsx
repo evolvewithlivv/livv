@@ -1,15 +1,7 @@
 "use client";
 
 import { GRADE_META, type PackGrade } from "@/lib/packs";
-
-const RAW = "https://raw.githubusercontent.com/evolvewithlivv/livv/main";
-
-const PACK_ART: Record<PackGrade, string> = {
-  1: `${RAW}/public%3Apacks%3Aspark.jpg.PNG`,
-  2: `${RAW}/public%3Apacks%3Arise.jpg.PNG`,
-  3: `${RAW}/public%3Apacks%3Asignal.jpg.PNG`,
-  4: `${RAW}/public%3Apacks%3Aapex.jpg.PNG`,
-};
+import { PACK_ART } from "./pack-art";
 
 export function PackFoil({
   grade,
@@ -49,38 +41,6 @@ export function PackFoil({
           <div className="pointer-events-none absolute -left-1/2 top-0 h-full w-[220%] pack-sheen" />
         )}
       </div>
-
-      <style jsx>{`
-        .pack-pulse {
-          animation: packFloat 3s ease-in-out infinite;
-        }
-        .pack-sheen {
-          background: linear-gradient(
-            105deg,
-            transparent 42%,
-            rgba(255, 255, 255, 0.28) 50%,
-            transparent 58%
-          );
-          animation: sheen 2.6s ease-in-out infinite;
-        }
-        @keyframes packFloat {
-          0%,
-          100% {
-            transform: translateY(0);
-          }
-          50% {
-            transform: translateY(-6px);
-          }
-        }
-        @keyframes sheen {
-          0% {
-            transform: translateX(-28%);
-          }
-          100% {
-            transform: translateX(28%);
-          }
-        }
-      `}</style>
     </div>
   );
 }
