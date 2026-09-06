@@ -1,1 +1,2 @@
-PLACEHOLDER
+/** Exact LIVV app icon artwork supplied by the founder. */
+const LIVV_ICON = "iVBORw0KGgoAAAANSUhEUgAAAgAAAAIACAYAAAD0eNT6AAD1wUlEQVR42uz9d5xl11XmjT9r7XPuvZU6qVuplW3LtmRbDm1btgF1GwfAWGBwNTYGjDFY4IEZ5";
