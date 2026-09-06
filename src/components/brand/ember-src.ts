@@ -1,2 +1,2 @@
-/** Official glossy ember flame. Use the in-repo SVG until ember.png is committed. */
+/** Official glossy ember flame. */
 export const EMBER_SRC = "/ember.svg";
