@@ -1,11 +1,5 @@
-import { getEmberPng } from "@/lib/ember-asset";
+import { NextResponse } from "next/server";
 
 export async function GET() {
-  const body = getEmberPng();
-  return new Response(new Uint8Array(body), {
-    headers: {
-      "Content-Type": "image/png",
-      "Cache-Control": "public, max-age=86400, immutable",
-    },
-  });
+  return NextResponse.redirect(new URL("/embers.jpeg", "https://evolvewithlivv.vercel.app"), 307);
 }
