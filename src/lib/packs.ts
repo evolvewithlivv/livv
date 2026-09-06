@@ -32,7 +32,6 @@ export type PendingPack = {
 export type PackState = {
   pending: PendingPack[];
   owned: OwnedCard[];
-  /** When the current membership cycle last granted packs */
   lastGrantAt: number | null;
   totalOpened: number;
 };
@@ -77,21 +76,20 @@ export const GRADE_META: Record<
   3: {
     name: "Signal Pack",
     subtitle: "Third tier",
-    foilFrom: "#5a3a10",
-    foilTo: "#e8a040",
+    foilFrom: "#8ec5ff",
+    foilTo: "#f5c2e7",
     rarityBias: ["rare", "rare", "apex"],
   },
   4: {
     name: "Apex Pack",
     subtitle: "Purchase only",
-    foilFrom: "#0a0c12",
+    foilFrom: "#5a3a10",
     foilTo: "#F5C542",
     purchasableOnly: true,
     rarityBias: ["apex", "rare", "apex"],
   },
 };
 
-/** Cadence rules by membership. */
 export function packEntitlement(tier: LivvTier): {
   intervalMs: number;
   grants: PackGrade[];
@@ -160,7 +158,6 @@ export function loadPacks(): PackState {
   try {
     const raw = window.localStorage.getItem(KEY);
     if (!raw) {
-      // migrate v1 silently
       const old = window.localStorage.getItem("livv-packs-v1");
       if (old) {
         const p = JSON.parse(old);
@@ -204,7 +201,7 @@ export function savePacks(state: PackState) {
 
 export function nextGrantAt(tier?: LivvTier): number | null {
   const state = loadPacks();
-  if (!state.lastGrantAt) return Date.now(); // available now
+  if (!state.lastGrantAt) return Date.now();
   const t = tier || loadIdentity().tier;
   const { intervalMs } = packEntitlement(t);
   return state.lastGrantAt + intervalMs;
@@ -220,7 +217,6 @@ export function canClaimPacks(tier?: LivvTier): boolean {
   return msUntilNextPack(tier) <= 0;
 }
 
-/** Claim all packs due for current membership. */
 export function claimPacksIfDue(): PackState {
   const identity = loadIdentity();
   const state = loadPacks();
@@ -231,8 +227,6 @@ export function claimPacksIfDue(): PackState {
     return state;
   }
 
-  // Don't stack infinite pending — only claim if no pending from this cycle
-  // Always allow claim when timer is up
   for (const grade of grants) {
     state.pending.push({
       id: `pack_${grade}_${now}_${Math.random().toString(36).slice(2, 6)}`,
@@ -245,7 +239,6 @@ export function claimPacksIfDue(): PackState {
   return state;
 }
 
-/** Purchase grade-4 Apex pack (demo — no payment). */
 export function purchaseApexPack(): PackState {
   const state = loadPacks();
   state.pending.push({
@@ -318,7 +311,6 @@ export function formatCountdown(ms: number): string {
   return `${m}m ${String(sec).padStart(2, "0")}s`;
 }
 
-// Back-compat aliases used by older components
 export type PackKind = "daily" | "streak" | "pillar" | "apex";
 export const PACK_META = {
   daily: GRADE_META[1],
