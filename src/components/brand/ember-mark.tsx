@@ -1,12 +1,14 @@
 /** Official LIVV Ember — glossy dual-flame, transparent. Do not flatten. */
 
+import { EMBER_SRC } from "./ember-src";
+
 type Props = {
   size?: number;
   className?: string;
 };
 
 /** Source aspect: width / height of the official mark. */
-const RATIO = 135 / 220;
+const RATIO = 74 / 120;
 
 export function EmberMark({ size = 56, className }: Props) {
   const h = Math.max(size, 10);
@@ -14,7 +16,7 @@ export function EmberMark({ size = 56, className }: Props) {
   return (
     // eslint-disable-next-line @next/next/no-img-element
     <img
-      src="/ember.svg"
+      src={EMBER_SRC}
       alt=""
       width={w}
       height={h}
