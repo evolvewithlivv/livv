@@ -1,21 +1,30 @@
-/** Official LIVV Ember — ruby stone, transparent, large. */
+/** Official LIVV Ember — glossy dual-flame, transparent. Do not flatten. */
 
 type Props = {
   size?: number;
   className?: string;
 };
 
+/** Source aspect: width / height of the official mark. */
+const RATIO = 135 / 220;
+
 export function EmberMark({ size = 56, className }: Props) {
-  const px = Math.max(size, 40);
+  const h = Math.max(size, 10);
+  const w = Math.max(7, Math.round(h * RATIO));
   return (
     // eslint-disable-next-line @next/next/no-img-element
     <img
       src="/ember.svg"
       alt=""
-      width={px}
-      height={Math.round(px * 1.25)}
+      width={w}
+      height={h}
       className={className}
-      style={{ display: "block", flexShrink: 0, background: "transparent" }}
+      style={{
+        display: "block",
+        flexShrink: 0,
+        background: "transparent",
+        objectFit: "contain",
+      }}
     />
   );
 }
