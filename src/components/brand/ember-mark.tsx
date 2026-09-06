@@ -8,7 +8,7 @@ type Props = {
 };
 
 /** Source aspect: width / height of the official mark. */
-const RATIO = 74 / 120;
+const RATIO = 220 / 360;
 
 export function EmberMark({ size = 56, className }: Props) {
   const h = Math.max(size, 10);
