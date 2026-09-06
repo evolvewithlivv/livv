@@ -11,9 +11,21 @@ export default function manifest(): MetadataRoute.Manifest {
     theme_color: "#050505",
     icons: [
       {
-        src: "/ember.svg",
-        sizes: "any",
-        type: "image/svg+xml",
+        src: "/api/icon?s=192",
+        sizes: "192x192",
+        type: "image/png",
+        purpose: "any",
+      },
+      {
+        src: "/api/icon?s=512",
+        sizes: "512x512",
+        type: "image/png",
+        purpose: "any",
+      },
+      {
+        src: "/api/icon?s=180",
+        sizes: "180x180",
+        type: "image/png",
         purpose: "any",
       },
     ],
