@@ -1,6 +1,6 @@
-/** Official LIVV Ember — exact glossy dual-flame. */
+/** Ember mark — Lucide flame, same system as streak / level. */
 
-import { EMBER_SRC } from "./ember-src";
+import { Flame } from "lucide-react";
 
 type Props = {
   size?: number;
@@ -8,28 +8,18 @@ type Props = {
   glow?: boolean;
 };
 
-const RATIO = 139 / 220;
-
-const GLOW =
-  "drop-shadow(0 0 4px rgba(255, 150, 30, 0.85)) drop-shadow(0 0 10px rgba(255, 90, 0, 0.4))";
-
-export function EmberMark({ size = 22, className, glow = true }: Props) {
-  const h = Math.max(size, 10);
-  const w = Math.max(8, Math.round(h * RATIO));
+export function EmberMark({ size = 16, className = "", glow = true }: Props) {
   return (
-    // eslint-disable-next-line @next/next/no-img-element
-    <img
-      src={EMBER_SRC}
-      alt=""
-      width={w}
-      height={h}
+    <Flame
+      size={size}
+      strokeWidth={2.2}
       className={className}
       style={{
-        display: "block",
+        color: "#ff8a2a",
         flexShrink: 0,
-        background: "transparent",
-        objectFit: "contain",
-        filter: glow && size >= 14 ? GLOW : undefined,
+        filter: glow
+          ? "drop-shadow(0 0 6px rgba(255, 120, 20, 0.55))"
+          : undefined,
       }}
     />
   );
@@ -37,7 +27,7 @@ export function EmberMark({ size = 22, className, glow = true }: Props) {
 
 export function EmberCount({
   value,
-  size = 18,
+  size = 16,
   className = "",
 }: {
   value: number;
