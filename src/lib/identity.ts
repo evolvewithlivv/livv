@@ -1,4 +1,5 @@
 import { getCurrentAccount, syncAccountFromIdentity } from "./auth";
+import { applyEmberGrants } from "./ember-grants";
 
 export type LivvTier = "spark" | "rise" | "apex" | "circle";
 export type LivvTheme = "ember" | "midnight" | "bone";
@@ -90,8 +91,9 @@ export function loadIdentity(): Identity {
   if (typeof window === "undefined") return DEFAULT_IDENTITY;
   try {
     const account = getCurrentAccount();
+    let parsed: Identity;
     if (account) {
-      return {
+      parsed = {
         displayName: account.displayName,
         username: account.username,
         bio: account.bio,
@@ -102,12 +104,21 @@ export function loadIdentity(): Identity {
         appearance: account.appearance,
         embers: account.embers,
       };
+    } else {
+      const raw = window.localStorage.getItem(KEY);
+      if (!raw) return DEFAULT_IDENTITY;
+      parsed = { ...DEFAULT_IDENTITY, ...JSON.parse(raw) } as Identity;
     }
-    const raw = window.localStorage.getItem(KEY);
-    if (!raw) return DEFAULT_IDENTITY;
-    const parsed = { ...DEFAULT_IDENTITY, ...JSON.parse(raw) } as Identity;
     if (parsed.accent === "#FF6A1A") parsed.accent = DEFAULT_ACCENT;
     if (!parsed.appearance) parsed.appearance = "dark";
+
+    const granted = applyEmberGrants(parsed.username, parsed.embers);
+    if (granted !== parsed.embers) {
+      parsed = { ...parsed, embers: granted };
+      window.localStorage.setItem(KEY, JSON.stringify(parsed));
+      syncAccountFromIdentity(parsed);
+      window.dispatchEvent(new Event("livv-identity"));
+    }
     return parsed;
   } catch {
     return DEFAULT_IDENTITY;
