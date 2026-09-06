@@ -15,7 +15,6 @@ import {
 } from "lucide-react";
 import { Avatar } from "@/components/identity/avatar";
 import { AmbientField } from "@/components/layout/ambient-field";
-import { EmberMark } from "@/components/brand/ember-mark";
 import {
   fileToPhoto,
   loadIdentity,
@@ -40,6 +39,16 @@ import {
   openBillingPortal,
   loadEntitlements,
 } from "@/lib/billing";
+
+function EmberIcon({ size = 16 }: { size?: number }) {
+  return (
+    <Flame
+      size={size}
+      strokeWidth={2.2}
+      style={{ color: "#ff8a2a", flexShrink: 0 }}
+    />
+  );
+}
 
 export default function ProfilePage() {
   const [me, setMe] = useState<Identity | null>(null);
@@ -163,7 +172,7 @@ export default function ProfilePage() {
           <div className="mt-7 grid grid-cols-3 divide-x divide-white/10 rounded-2xl border border-white/8 bg-black/20 py-4">
             <Stat value={`${rec.streak}d`} label="streak" icon={<Flame size={13} />} />
             <Stat value={String(rec.level)} label="level" icon={<Zap size={13} />} />
-            <Stat value={String(me.embers)} label="embers" icon={<EmberMark size={16} />} />
+            <Stat value={String(me.embers)} label="embers" icon={<EmberIcon size={13} />} />
           </div>
         </section>
         <section className="mt-5 rounded-[28px] border border-white/10 bg-white/[0.03] p-5 backdrop-blur-xl">
@@ -229,7 +238,7 @@ export default function ProfilePage() {
                           <span className="text-[15px] font-medium text-white/75">{t.price}</span>
                           <span className="text-[11px] text-white/30">{t.cadence !== "forever" ? t.cadence : ""}</span>
                           <span className="ml-2 inline-flex items-center gap-1 text-[10px] font-medium" style={{ color: color.hex }}>
-                            <EmberMark size={14} /> {t.multiplier}x
+                            <EmberIcon size={12} /> {t.multiplier}x
                           </span>
                         </div>
                       </div>
@@ -261,7 +270,7 @@ export default function ProfilePage() {
         </section>
         <section className="mt-10 rounded-[26px] border border-white/8 bg-white/[0.025] p-5">
           <div className="flex items-center gap-3">
-            <EmberMark size={32} />
+            <EmberIcon size={22} />
             <div>
               <p className="text-[14px] font-semibold">Embers</p>
               <p className="text-[11px] text-white/30">Your compounding currency</p>
