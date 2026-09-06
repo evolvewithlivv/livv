@@ -7,6 +7,7 @@ import {
   Check,
   ChevronRight,
   Crown,
+  CalendarCheck,
   Flame,
   Settings2,
   Sparkles,
@@ -170,8 +171,8 @@ export default function ProfilePage() {
           </div>
           {me.bio && <p className="mx-auto mt-4 max-w-[30ch] text-[14px] leading-relaxed text-white/50">{me.bio}</p>}
           <div className="mt-7 grid grid-cols-3 divide-x divide-white/10 rounded-2xl border border-white/8 bg-black/20 py-4">
-            <Stat value={`${rec.streak}d`} label="streak" icon={<Flame size={13} />} />
-            <Stat value={String(rec.level)} label="level" icon={<Zap size={13} />} />
+            <Stat value={`${rec.streak}d`} label="streak" icon={<CalendarCheck size={13} style={{ color: "#ff4d6d" }} />} />
+            <Stat value={String(rec.level)} label="level" icon={<Zap size={13} style={{ color: "#f5c518" }} />} />
             <Stat value={String(me.embers)} label="embers" icon={<EmberIcon size={13} />} />
           </div>
         </section>
