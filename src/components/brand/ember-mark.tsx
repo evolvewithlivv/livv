@@ -5,12 +5,16 @@ import { EMBER_SRC } from "./ember-src";
 type Props = {
   size?: number;
   className?: string;
+  glow?: boolean;
 };
 
-/** Source aspect: width / height of the official mark. */
-const RATIO = 220 / 360;
+/** Source aspect of the official Photoroom dual-flame mark. */
+const RATIO = 442 / 720;
 
-export function EmberMark({ size = 56, className }: Props) {
+const GLOW =
+  "drop-shadow(0 0 4px rgba(255, 190, 70, 0.85)) drop-shadow(0 0 10px rgba(255, 120, 10, 0.55)) drop-shadow(0 0 22px rgba(255, 80, 0, 0.28))";
+
+export function EmberMark({ size = 56, className, glow = true }: Props) {
   const h = Math.max(size, 10);
   const w = Math.max(7, Math.round(h * RATIO));
   return (
@@ -26,6 +30,7 @@ export function EmberMark({ size = 56, className }: Props) {
         flexShrink: 0,
         background: "transparent",
         objectFit: "contain",
+        filter: glow ? GLOW : undefined,
       }}
     />
   );
