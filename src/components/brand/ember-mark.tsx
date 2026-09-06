@@ -8,12 +8,12 @@ type Props = {
   glow?: boolean;
 };
 
-const RATIO = 201 / 320;
+const RATIO = 139 / 220;
 
 const GLOW =
   "drop-shadow(0 0 4px rgba(255, 150, 30, 0.85)) drop-shadow(0 0 10px rgba(255, 90, 0, 0.4))";
 
-export function EmberMark({ size = 56, className, glow = true }: Props) {
+export function EmberMark({ size = 22, className, glow = true }: Props) {
   const h = Math.max(size, 10);
   const w = Math.max(8, Math.round(h * RATIO));
   return (
@@ -29,7 +29,7 @@ export function EmberMark({ size = 56, className, glow = true }: Props) {
         flexShrink: 0,
         background: "transparent",
         objectFit: "contain",
-        filter: glow && size >= 16 ? GLOW : undefined,
+        filter: glow && size >= 14 ? GLOW : undefined,
       }}
     />
   );
@@ -37,7 +37,7 @@ export function EmberMark({ size = 56, className, glow = true }: Props) {
 
 export function EmberCount({
   value,
-  size = 48,
+  size = 18,
   className = "",
 }: {
   value: number;
@@ -45,7 +45,7 @@ export function EmberCount({
   className?: string;
 }) {
   return (
-    <span className={`inline-flex items-center gap-2 ${className}`}>
+    <span className={`inline-flex items-center gap-1.5 ${className}`}>
       <EmberMark size={size} />
       <span className="tabular-nums">{value}</span>
     </span>
