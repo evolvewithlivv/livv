@@ -2,11 +2,13 @@
 
 import { GRADE_META, type PackGrade } from "@/lib/packs";
 
+const RAW = "https://raw.githubusercontent.com/evolvewithlivv/livv/main";
+
 const PACK_ART: Record<PackGrade, string> = {
-  1: "/packs/spark.jpg",
-  2: "/packs/rise.jpg",
-  3: "/packs/signal.jpg",
-  4: "/packs/apex.jpg",
+  1: `${RAW}/public%3Apacks%3Aspark.jpg.PNG`,
+  2: `${RAW}/public%3Apacks%3Arise.jpg.PNG`,
+  3: `${RAW}/public%3Apacks%3Asignal.jpg.PNG`,
+  4: `${RAW}/public%3Apacks%3Aapex.jpg.PNG`,
 };
 
 export function PackFoil({
@@ -36,12 +38,11 @@ export function PackFoil({
           className="h-full w-full object-cover"
           draggable={false}
         />
-        {/* foil catch so the printed L reads as part of the bag */}
         <div
           className="pointer-events-none absolute inset-0 mix-blend-soft-light"
           style={{
             background:
-              "linear-gradient(160deg, rgba(255,255,255,0.28) 0%, transparent 36%, rgba(0,0,0,0.18) 70%, rgba(255,255,255,0.12) 100%)",
+              "linear-gradient(160deg, rgba(255,255,255,0.22) 0%, transparent 38%, rgba(0,0,0,0.16) 72%, rgba(255,255,255,0.1) 100%)",
           }}
         />
         {pulse && (
