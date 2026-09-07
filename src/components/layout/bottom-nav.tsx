@@ -26,10 +26,10 @@ export function BottomNav() {
       <div
         className="mx-auto flex max-w-lg items-stretch justify-between gap-1 rounded-[30px] px-1.5 py-1.5"
         style={{
-          background: "linear-gradient(180deg, rgba(12, 15, 21, 0.46), rgba(5, 7, 11, 0.34))",
-          boxShadow: "0 22px 60px rgba(0,0,0,.52), inset 0 1px 0 rgba(255,255,255,.055), 0 0 45px rgba(92,145,255,.045)",
-          backdropFilter: "blur(34px) saturate(1.75)",
-          WebkitBackdropFilter: "blur(34px) saturate(1.75)",
+          background: "rgba(7, 10, 16, 0.30)",
+          boxShadow: "0 24px 70px rgba(0,0,0,.58), 0 0 42px rgba(92,145,255,.075), inset 0 1px 0 rgba(255,255,255,.035)",
+          backdropFilter: "blur(38px) saturate(1.9)",
+          WebkitBackdropFilter: "blur(38px) saturate(1.9)",
         }}
       >
         {NAV_ITEMS.map((item) => {
@@ -42,7 +42,7 @@ export function BottomNav() {
               aria-current={active ? "page" : undefined}
               className={cn(
                 "relative flex min-w-0 flex-1 flex-col items-center justify-center gap-0.5 rounded-[22px] px-0.5 py-2 transition-all duration-300",
-                active ? "opacity-100" : "opacity-55 hover:opacity-90"
+                active ? "opacity-100" : "opacity-60 hover:opacity-95"
               )}
               style={{ color: item.color }}
             >
@@ -50,20 +50,18 @@ export function BottomNav() {
                 <span
                   className="absolute inset-[1px] rounded-[20px]"
                   style={{
-                    background: `radial-gradient(circle at 50% 25%, ${item.color}18, ${item.color}08 48%, transparent 78%)`,
-                    boxShadow: `inset 0 0 22px ${item.color}0d, 0 0 24px ${item.color}14`,
+                    background: `radial-gradient(circle at 50% 25%, ${item.color}1f, ${item.color}08 48%, transparent 78%)`,
+                    boxShadow: `0 0 28px ${item.color}16, inset 0 0 24px ${item.color}0d`,
                   }}
                 />
               )}
               <span
                 className="relative z-10 flex h-6 w-6 items-center justify-center transition-all duration-300"
                 style={{
-                  filter: active
-                    ? `drop-shadow(0 0 6px ${item.color}) drop-shadow(0 0 13px ${item.color}66)`
-                    : `drop-shadow(0 0 3px ${item.color}55)`,
+                  filter: `drop-shadow(0 0 ${active ? 7 : 3}px ${item.color}) drop-shadow(0 0 ${active ? 16 : 7}px ${item.color}${active ? "66" : "30"})`,
                 }}
               >
-                <Icon size={22} strokeWidth={active ? 2.15 : 1.75} />
+                <Icon size={22} strokeWidth={active ? 2.2 : 1.8} />
               </span>
               <span
                 className="relative z-10 max-w-full truncate text-[9px] font-semibold tracking-wide"
