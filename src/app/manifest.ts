@@ -2,25 +2,29 @@ import type { MetadataRoute } from "next";
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
+    id: "/",
     name: "LIVV",
     short_name: "LIVV",
-    description: "Personal evolution ecosystem",
+    description: "Evolve. Train. Connect. Progress.",
     start_url: "/",
+    scope: "/",
     display: "standalone",
-    background_color: "#050505",
-    theme_color: "#050505",
+    orientation: "portrait-primary",
+    background_color: "#030405",
+    theme_color: "#030405",
+    categories: ["health", "lifestyle", "fitness"],
     icons: [
       {
         src: "/api/icon?s=192",
         sizes: "192x192",
         type: "image/png",
-        purpose: "any",
+        purpose: "any maskable",
       },
       {
         src: "/api/icon?s=512",
         sizes: "512x512",
         type: "image/png",
-        purpose: "any",
+        purpose: "any maskable",
       },
       {
         src: "/api/icon?s=180",
