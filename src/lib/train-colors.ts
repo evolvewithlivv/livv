@@ -2,49 +2,104 @@ import type { Duration, Focus, Location } from "./train-data";
 
 export type SplitId = "ppl" | "upper-lower" | "bro" | "full" | "hybrid";
 
+export type SplitDay = {
+  id: string;
+  day: string;
+  label: string;
+  focus: Focus | null;
+  muscles: string;
+  rest?: boolean;
+};
+
 export type SplitDef = {
   id: SplitId;
   name: string;
   line: string;
-  days: Focus[];
+  detail: string;
+  days: SplitDay[];
   color: string;
 };
 
 export const SPLITS: SplitDef[] = [
   {
     id: "ppl",
-    name: "Push Pull Legs",
+    name: "Push / Pull / Legs",
     line: "Push one day. Pull the next. Legs after that.",
-    days: ["Push", "Pull", "Legs"],
+    detail: "A repeatable 6-day structure built around movement patterns and recovery.",
     color: "#FF4D6D",
+    days: [
+      { id: "ppl-mon", day: "MON", label: "Push", focus: "Push", muscles: "Chest · shoulders · triceps" },
+      { id: "ppl-tue", day: "TUE", label: "Pull", focus: "Pull", muscles: "Back · biceps" },
+      { id: "ppl-wed", day: "WED", label: "Legs", focus: "Legs", muscles: "Quads · hamstrings · glutes · calves" },
+      { id: "ppl-thu", day: "THU", label: "Push", focus: "Push", muscles: "Chest · shoulders · triceps" },
+      { id: "ppl-fri", day: "FRI", label: "Pull", focus: "Pull", muscles: "Back · biceps" },
+      { id: "ppl-sat", day: "SAT", label: "Legs", focus: "Legs", muscles: "Quads · hamstrings · glutes · calves" },
+      { id: "ppl-sun", day: "SUN", label: "Recovery", focus: null, muscles: "Rest · mobility · recovery", rest: true },
+    ],
   },
   {
     id: "upper-lower",
-    name: "Upper Lower",
+    name: "Upper / Lower",
     line: "Upper one day. Lower the next. Repeat.",
-    days: ["Upper Body", "Lower Body"],
+    detail: "Simple frequency without making every session a full-body marathon.",
     color: "#4C8DFF",
+    days: [
+      { id: "ul-mon", day: "MON", label: "Upper", focus: "Upper Body", muscles: "Chest · back · shoulders · arms" },
+      { id: "ul-tue", day: "TUE", label: "Lower", focus: "Lower Body", muscles: "Quads · hamstrings · glutes · calves" },
+      { id: "ul-wed", day: "WED", label: "Recovery", focus: null, muscles: "Rest · mobility · recovery", rest: true },
+      { id: "ul-thu", day: "THU", label: "Upper", focus: "Upper Body", muscles: "Chest · back · shoulders · arms" },
+      { id: "ul-fri", day: "FRI", label: "Lower", focus: "Lower Body", muscles: "Quads · hamstrings · glutes · calves" },
+      { id: "ul-sat", day: "SAT", label: "Recovery", focus: null, muscles: "Rest · mobility · recovery", rest: true },
+      { id: "ul-sun", day: "SUN", label: "Recovery", focus: null, muscles: "Rest · mobility · recovery", rest: true },
+    ],
   },
   {
     id: "bro",
     name: "Bro Split",
-    line: "One focus a day. Five days. High volume.",
-    days: ["Push", "Pull", "Legs", "Core", "Cardio"],
+    line: "One major focus per training day. Five days. Recover hard.",
+    detail: "Each day has a primary muscle-group mission instead of bundling everything together.",
     color: "#F5C542",
+    days: [
+      { id: "bro-mon", day: "MON", label: "Chest", focus: "Push", muscles: "Chest · supporting triceps" },
+      { id: "bro-tue", day: "TUE", label: "Back", focus: "Pull", muscles: "Lats · upper back · biceps" },
+      { id: "bro-wed", day: "WED", label: "Shoulders", focus: "Upper Body", muscles: "Front · side · rear delts" },
+      { id: "bro-thu", day: "THU", label: "Arms", focus: "Push", muscles: "Biceps · triceps · forearms" },
+      { id: "bro-fri", day: "FRI", label: "Legs", focus: "Legs", muscles: "Quads · hamstrings · glutes · calves" },
+      { id: "bro-sat", day: "SAT", label: "Recovery", focus: null, muscles: "Rest · mobility · recovery", rest: true },
+      { id: "bro-sun", day: "SUN", label: "Recovery", focus: null, muscles: "Rest · mobility · recovery", rest: true },
+    ],
   },
   {
     id: "full",
     name: "Full Body",
-    line: "Same session any day you train.",
-    days: ["Full Body"],
+    line: "Train the whole body each session. Recover between sessions.",
+    detail: "A flexible structure for people who want fewer training days without skipping muscle groups.",
     color: "#3DDC97",
+    days: [
+      { id: "full-mon", day: "MON", label: "Full Body", focus: "Full Body", muscles: "Upper · lower · core" },
+      { id: "full-tue", day: "TUE", label: "Recovery", focus: null, muscles: "Rest · mobility · recovery", rest: true },
+      { id: "full-wed", day: "WED", label: "Full Body", focus: "Full Body", muscles: "Upper · lower · core" },
+      { id: "full-thu", day: "THU", label: "THU Recovery", focus: null, muscles: "Rest · mobility · recovery", rest: true },
+      { id: "full-fri", day: "FRI", label: "Full Body", focus: "Full Body", muscles: "Upper · lower · core" },
+      { id: "full-sat", day: "SAT", label: "Recovery", focus: null, muscles: "Rest · mobility · recovery", rest: true },
+      { id: "full-sun", day: "SUN", label: "Recovery", focus: null, muscles: "Rest · mobility · recovery", rest: true },
+    ],
   },
   {
     id: "hybrid",
     name: "Hybrid",
-    line: "Lift. Engine. Trunk. Rotate those three.",
-    days: ["Full Body", "Cardio", "Core"],
+    line: "Strength, engine, and trunk work rotated across the week.",
+    detail: "A balanced structure for people who want lifting plus conditioning in one system.",
     color: "#B45CFF",
+    days: [
+      { id: "hyb-mon", day: "MON", label: "Strength", focus: "Full Body", muscles: "Full-body strength" },
+      { id: "hyb-tue", day: "TUE", label: "Engine", focus: "Cardio", muscles: "Conditioning · work capacity" },
+      { id: "hyb-wed", day: "WED", label: "Trunk", focus: "Core", muscles: "Abs · obliques · trunk stability" },
+      { id: "hyb-thu", day: "THU", label: "Strength", focus: "Full Body", muscles: "Full-body strength" },
+      { id: "hyb-fri", day: "FRI", label: "Engine", focus: "Cardio", muscles: "Conditioning · work capacity" },
+      { id: "hyb-sat", day: "SAT", label: "Recovery", focus: null, muscles: "Rest · mobility · recovery", rest: true },
+      { id: "hyb-sun", day: "SUN", label: "Recovery", focus: null, muscles: "Rest · mobility · recovery", rest: true },
+    ],
   },
 ];
 
