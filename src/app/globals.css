@@ -9,7 +9,7 @@ html[data-theme="dark"] {
   --livv-accent-soft: 163 196 255;
   --livv-accent-hex: #4c8dff;
   --livv-bg: #030405;
-  --livv-nav: rgba(7, 9, 13, 0.72);
+  --livv-nav: rgba(7, 9, 13, 0.48);
   --livv-surface: 15 17 22;
   --livv-border: 38 41 48;
   --livv-muted: 138 141 151;
@@ -24,7 +24,7 @@ html[data-theme="dark"] {
 
 html[data-theme="light"] {
   --livv-bg: #f2f3f6;
-  --livv-nav: rgba(255, 255, 255, 0.78);
+  --livv-nav: rgba(255, 255, 255, 0.54);
   --livv-surface: 255 255 255;
   --livv-border: 214 216 222;
   --livv-muted: 90 92 102;
@@ -50,14 +50,21 @@ html[data-theme="light"] {
   body {
     @apply antialiased;
     background:
-      radial-gradient(circle at 50% -15%, rgb(var(--livv-accent) / 0.075), transparent 34rem),
-      radial-gradient(circle at 100% 60%, rgb(var(--livv-accent) / 0.025), transparent 28rem),
+      radial-gradient(circle at 50% -15%, rgb(var(--livv-accent) / 0.09), transparent 34rem),
+      radial-gradient(circle at 100% 60%, rgb(var(--livv-accent) / 0.035), transparent 28rem),
+      radial-gradient(circle at 0% 82%, rgba(255, 110, 65, 0.018), transparent 30rem),
       var(--livv-bg);
     color: rgb(var(--livv-fg));
     min-height: 100dvh;
     font-family: var(--font-body), -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", system-ui, sans-serif;
     letter-spacing: -0.016em;
     overflow-x: hidden;
+  }
+  html[data-theme="light"] body {
+    background:
+      radial-gradient(circle at 50% -15%, rgb(var(--livv-accent) / 0.055), transparent 34rem),
+      radial-gradient(circle at 100% 60%, rgb(var(--livv-accent) / 0.018), transparent 28rem),
+      var(--livv-bg);
   }
   html[data-theme="light"] body::before {
     opacity: 0.035;
@@ -82,9 +89,13 @@ html[data-theme="light"] {
   }
   ::selection { background: rgb(var(--livv-accent) / 0.4); }
   * { -webkit-tap-highlight-color: transparent; }
-  button, a { transition: transform 180ms cubic-bezier(0.22, 1, 0.36, 1), opacity 180ms ease, background-color 180ms ease, border-color 180ms ease; }
+  button, a { transition: transform 180ms cubic-bezier(0.22, 1, 0.36, 1), opacity 180ms ease, background-color 180ms ease, border-color 180ms ease, box-shadow 180ms ease; }
   button:active, a:active { transform: scale(0.975); }
 }
+
+/* The screen should feel like one continuous canvas. Page-specific black shells
+   are intentionally softened so the shared LIVV atmosphere can show through. */
+[class~="bg-[#050505]"] { background-color: transparent !important; }
 
 .bg-livv-surface { background-color: rgb(var(--livv-surface) / 1); }
 .bg-livv-bg { background-color: var(--livv-bg); }
@@ -96,3 +107,17 @@ html[data-theme="light"] {
 .bg-livv-accent { background-color: rgb(var(--livv-accent) / 1); }
 .border-livv-accent { border-color: rgb(var(--livv-accent) / 1); }
 .livv-page { padding-bottom: 6.5rem; }
+
+/* Shared glass language. Use these primitives anywhere a screen needs a panel
+   without inventing another one-off surface treatment. */
+.livv-glass {
+  background: linear-gradient(135deg, rgb(var(--livv-glass) / 0.075), rgb(var(--livv-glass) / 0.018));
+  border: 1px solid rgb(var(--livv-line) / 0.075);
+  box-shadow: 0 22px 70px rgba(0,0,0,.24), inset 0 1px 0 rgba(255,255,255,.045);
+  backdrop-filter: blur(24px) saturate(1.35);
+  -webkit-backdrop-filter: blur(24px) saturate(1.35);
+}
+
+.livv-dock-glow {
+  box-shadow: 0 24px 70px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.06), 0 0 44px rgb(var(--livv-accent) / .045);
+}
