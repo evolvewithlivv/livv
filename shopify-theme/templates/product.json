@@ -1,0 +1,9 @@
+{
+  "sections": {
+    "main": {
+      "type": "livv-product",
+      "settings": {}
+    }
+  },
+  "order": ["main"]
+}
