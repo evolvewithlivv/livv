@@ -15,15 +15,15 @@ function articleColor(slug: string) {
 
 export default function MindWikiPage() {
   const [desk, setDesk] = useState<WikiDesk | "all">("all");
+  const [showAll, setShowAll] = useState(false);
   const list = useMemo(() => (desk === "all" ? WIKI : WIKI.filter((a) => a.desk === desk)), [desk]);
   const featured = list[0];
   const quick = list.slice(1, 4);
+  const explore = showAll ? list : list.slice(0, 6);
 
   return (
     <main className="relative min-h-full overflow-hidden pb-16">
       <div className="pointer-events-none fixed inset-0">
-        <div className="absolute inset-0 bg-[#050505]" />
-        <div className="absolute left-1/2 top-[-140px] h-[560px] w-[560px] -translate-x-1/2 rounded-full" style={{ background: "radial-gradient(circle, rgb(var(--livv-accent) / 0.13), transparent 68%)" }} />
         <AmbientField intensity="strong" />
       </div>
 
@@ -37,9 +37,9 @@ export default function MindWikiPage() {
         </div>
         <p className="mt-3 max-w-[36ch] text-[14px] leading-relaxed text-white/40">Ideas worth carrying. Explore by field, save what changes how you see things, then put one idea into motion.</p>
 
-        <div className="mt-6 flex gap-2 overflow-x-auto pb-1">
-          <DeskChip active={desk === "all"} onClick={() => setDesk("all")} label="All" />
-          {DESKS.map((d) => <DeskChip key={d.id} active={desk === d.id} onClick={() => setDesk(d.id)} label={d.label} />)}
+        <div className="mt-6 flex gap-2 overflow-x-auto pb-1 scrollbar-none">
+          <DeskChip active={desk === "all"} onClick={() => { setDesk("all"); setShowAll(false); }} label="All" />
+          {DESKS.map((d) => <DeskChip key={d.id} active={desk === d.id} onClick={() => { setDesk(d.id); setShowAll(false); }} label={d.label} />)}
         </div>
 
         {featured && (
@@ -66,7 +66,7 @@ export default function MindWikiPage() {
             <div className="mt-3 grid grid-cols-3 gap-2.5">
               {quick.map((a) => {
                 const c = articleColor(a.slug);
-                return <Link key={a.slug} href={`/home/mind/${a.slug}`} className="min-h-[142px] rounded-[22px] border bg-white/[.025] p-3.5 active:scale-[.97]" style={{ borderColor: `${c}42` }}>
+                return <Link key={a.slug} href={`/home/mind/${a.slug}`} className="min-h-[142px] rounded-[22px] border bg-white/[.025] p-3.5 active:scale-[.97]" style={{ borderColor: `${c}42`, boxShadow: `inset 0 0 24px ${c}08` }}>
                   <span className="block h-1.5 w-8 rounded-full" style={{ background: c, boxShadow: `0 0 12px ${c}88` }} />
                   <p className="mt-5 line-clamp-4 text-[13px] font-semibold leading-snug">{a.title}</p>
                   <p className="mt-3 text-[9px] uppercase tracking-[.15em] text-white/25">{a.readMins} min →</p>
@@ -76,18 +76,41 @@ export default function MindWikiPage() {
           </section>
         )}
 
-        <section className="mt-9">
+        <section className="mt-10">
+          <div className="flex items-end justify-between">
+            <div><p className="text-[10px] font-semibold uppercase tracking-[.28em] text-white/30">Field map</p><p className="mt-1 text-[12px] text-white/35">Pick a lane instead of hunting through a feed.</p></div>
+            <span className="text-[9px] uppercase tracking-[.18em] text-white/15">{DESKS.length} fields</span>
+          </div>
+          <div className="mt-4 grid grid-cols-2 gap-2.5">
+            {DESKS.map((d, index) => {
+              const count = WIKI.filter((a) => a.desk === d.id).length;
+              const c = ARTICLE_COLORS[index % ARTICLE_COLORS.length];
+              return <button key={d.id} type="button" onClick={() => { setDesk(d.id); setShowAll(false); window.scrollTo({ top: 0, behavior: "smooth" }); }} className="relative min-h-[96px] overflow-hidden rounded-[24px] border bg-white/[.025] p-4 text-left active:scale-[.98]" style={{ borderColor: `${c}35` }}>
+                <span className="absolute right-3 top-3 h-2 w-2 rounded-full" style={{ background: c, boxShadow: `0 0 12px ${c}` }} />
+                <span className="text-[14px] font-semibold">{d.label}</span>
+                <span className="mt-2 block text-[9px] uppercase tracking-[.18em] text-white/25">{count} notes</span>
+              </button>;
+            })}
+          </div>
+        </section>
+
+        <section className="mt-10">
           <div className="flex items-end justify-between"><div><p className="text-[10px] font-semibold uppercase tracking-[.28em] text-white/30">Explore the field</p><p className="mt-1 text-[12px] text-white/35">Tap any note to go deeper.</p></div><span className="text-[9px] uppercase tracking-[.18em] text-white/15">{list.length} available</span></div>
           <div className="mt-4 space-y-2.5">
-            {list.slice(0, 10).map((a, index) => {
+            {explore.map((a, index) => {
               const c = articleColor(a.slug);
-              return <Link key={a.slug} href={`/home/mind/${a.slug}`} className="group flex items-center gap-3 rounded-[22px] border bg-white/[.025] p-3.5 active:scale-[.985]" style={{ borderColor: `${c}30` }}>
+              return <Link key={a.slug} href={`/home/mind/${a.slug}`} className="group flex items-center gap-3 rounded-[22px] border bg-white/[.025] p-3.5 active:scale-[.985]" style={{ borderColor: `${c}30`, boxShadow: `inset 0 0 28px ${c}06` }}>
                 <div className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl" style={{ background: `${c}12`, color: c }}><span className="text-[10px] font-bold tabular-nums">{String(index + 1).padStart(2, "0")}</span></div>
                 <div className="min-w-0 flex-1"><div className="flex items-center gap-2"><span className="text-[9px] font-semibold uppercase tracking-[.16em]" style={{ color: c }}>{a.desk}</span><span className="text-[9px] uppercase tracking-[.14em] text-white/20">{a.readMins} min</span></div><p className="mt-1 text-[15px] font-semibold leading-snug">{a.title}</p></div>
                 <span className="text-lg text-white/20 transition group-hover:translate-x-0.5" style={{ color: `${c}bb` }}>→</span>
               </Link>;
             })}
           </div>
+          {list.length > 6 && (
+            <button type="button" onClick={() => setShowAll((v) => !v)} className="mt-4 w-full rounded-full border border-white/10 bg-white/[.025] py-3 text-[10px] font-semibold uppercase tracking-[.2em] text-white/45 active:scale-[.99]">
+              {showAll ? "Show less" : `Show all ${list.length} notes`}
+            </button>
+          )}
         </section>
 
         <Link href="/home/evala" className="mt-9 flex items-center justify-between rounded-[24px] border border-white/[.08] bg-white/[.025] p-4 active:scale-[.985]">
