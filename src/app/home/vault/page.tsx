@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { AmbientField } from "@/components/layout/ambient-field";
+import { PageHero } from "@/components/layout/page-hero";
 import { CardFace } from "@/components/packs/card-face";
 import { PackFoil } from "@/components/packs/pack-foil";
 import { PackOpenModal } from "@/components/packs/pack-open";
@@ -43,21 +43,15 @@ export default function VaultPage() {
   });
 
   return (
-    <main className="relative min-h-full overflow-hidden pb-12">
-      <div className="pointer-events-none absolute inset-0">
-        <div className="absolute inset-0 bg-[#050505]" />
-        <AmbientField />
-      </div>
-
-      <div className="relative z-10 mx-auto max-w-lg px-5 pt-6">
-        <Link href="/home/packs" className="text-[13px] text-white/35">
-          ← Packs
-        </Link>
-        <p className="mt-6 text-[10px] font-medium uppercase tracking-[0.32em] text-white/30">
-          Collection
-        </p>
-        <h1 className="font-display mt-2 text-[34px] font-semibold tracking-tight">Vault</h1>
-        <p className="mt-2 text-[14px] text-white/40">
+    <main className="livv-page relative min-h-full overflow-hidden pb-12">
+      <div className="relative z-10 mx-auto max-w-lg px-5 pt-5">
+        <PageHero
+          eyebrow="Collection"
+          title="Vault"
+          subtitle="Every card you’ve pulled lives here."
+          accent="#ff9f43"
+        />
+        <p className="mt-3 text-[13px] text-white/35">
           {stats.uniqueCount} / {stats.catalogSize} unique · {stats.totalOpened} opened
         </p>
 
@@ -101,7 +95,7 @@ export default function VaultPage() {
           <div className="mt-16 text-center">
             <p className="font-display text-[20px]">Vault is empty</p>
             <p className="mt-2 text-[14px] text-white/40">Open a pack from the Packs tab.</p>
-            <Link href="/home/packs" className="mt-6 inline-block text-[14px] text-livv-accent-soft">
+            <Link href="/home/shop" className="mt-6 inline-block text-[14px] text-livv-accent-soft">
               Packs →
             </Link>
           </div>

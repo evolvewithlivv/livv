@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { AmbientField } from "@/components/layout/ambient-field";
 import { articleBySlug, deskMeta, nextArticle } from "@/lib/wiki";
 import { logCustomAction } from "@/lib/record";
 import { feedback } from "@/lib/sensory";
@@ -20,7 +19,7 @@ export default function WikiArticlePage() {
   const article = articleBySlug(String(params.slug || ""));
   const [did, setDid] = useState(false);
 
-  if (!article) return <main className="min-h-dvh bg-[#050505] px-5 pt-16 text-white"><p className="text-white/40">That page is not in the wiki.</p><Link href="/home/mind" className="mt-4 inline-block text-livv-accent-soft">Back to Mind</Link></main>;
+  if (!article) return <main className="livv-page min-h-dvh px-5 pt-8 text-white"><p className="text-white/40">That page is not in the wiki.</p><Link href="/home/mind" className="mt-4 inline-block text-livv-accent-soft">Back to Mind</Link></main>;
 
   const desk = deskMeta(article.desk);
   const accent = articleColor(article.slug);
@@ -33,9 +32,8 @@ export default function WikiArticlePage() {
   };
 
   return (
-    <main className="relative min-h-full overflow-hidden pb-24">
-      <div className="pointer-events-none fixed inset-0"><div className="absolute inset-0 bg-[#050505]" /><div className="absolute left-1/2 top-[-160px] h-[520px] w-[520px] -translate-x-1/2 rounded-full blur-2xl" style={{ background: `radial-gradient(circle, ${accent}20, transparent 68%)` }} /><AmbientField intensity="strong" /></div>
-      <article className="relative z-10 mx-auto max-w-lg px-5 pt-6">
+    <main className="livv-page relative min-h-full overflow-hidden pb-24">
+      <article className="relative z-10 mx-auto max-w-lg px-5 pt-5">
         <div className="flex items-center justify-between">
           <Link href="/home/mind" className="text-[11px] text-white/40">← Field</Link>
           <span className="rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[.16em]" style={{ color: accent, background: `${accent}15`, boxShadow: `0 0 24px ${accent}18` }}>{desk.label}</span>

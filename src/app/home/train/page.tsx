@@ -3,7 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import { Container } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
-import { AmbientField } from "@/components/layout/ambient-field";
+import { PageHero } from "@/components/layout/page-hero";
 import { LOCATION_OPTIONS, DURATION_OPTIONS, generateWorkout, type Focus, type Location, type Duration, type Workout, type Exercise } from "@/lib/train-data";
 import { FOCUS_COLOR, LOCATION_COLOR, DURATION_COLOR, chipStyle, SPLITS, type SplitId, type SplitDay } from "@/lib/train-colors";
 import { activityFromWorkout } from "@/lib/activity";
@@ -152,18 +152,16 @@ export default function TrainPage() {
   };
 
   if (phase === "select") return (
-    <main className="relative min-h-full overflow-hidden pb-10 pt-5">
-      <AmbientField intensity="strong" />
+    <main className="livv-page relative min-h-full overflow-hidden pb-10 pt-5">
       <Container className="relative z-10">
-        <header className="flex items-start justify-between">
-          <div>
-            <p className="text-[10px] font-semibold uppercase tracking-[0.32em] text-livv-accent-soft">Physical capability</p>
-            <h1 className="mt-2 text-[2.7rem] font-semibold leading-none tracking-[-0.05em]">Train</h1>
-          </div>
-          <div className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-1.5 text-[10px] uppercase tracking-[0.2em] text-white/35">BODY / 01</div>
-        </header>
+        <PageHero
+          eyebrow="Physical capability"
+          title="Train"
+          subtitle="Build the week first. Then run the session."
+          accent="#ff6b91"
+        />
 
-        <section className="relative mt-7 overflow-hidden rounded-[32px] border border-white/10 bg-gradient-to-br from-white/[0.09] to-white/[0.02] p-6 shadow-2xl backdrop-blur-xl">
+        <section className="livv-glass relative mt-7 overflow-hidden rounded-[32px] p-6">
           <div className="absolute -right-24 -top-28 h-72 w-72 rounded-full bg-livv-accent/10 blur-3xl" />
           <div className="relative">
             <div className="flex items-center justify-between">
@@ -247,7 +245,7 @@ export default function TrainPage() {
   );
 
   if (phase === "preview" && workout) return (
-    <main className="relative min-h-full overflow-hidden pb-10 pt-5"><AmbientField intensity="strong" /><Container className="relative z-10">
+    <main className="relative min-h-full overflow-hidden pb-10 pt-5"><Container className="relative z-10">
       <button type="button" onClick={() => setPhase("select")} className="mb-5 text-[10px] uppercase tracking-[0.22em] text-white/35">← Reconfigure week</button>
       <div className="rounded-[32px] border border-white/10 bg-white/[0.05] p-6 backdrop-blur-xl">
         <p className="text-[10px] uppercase tracking-[0.28em] text-livv-accent-soft">Session assembled</p>
@@ -263,14 +261,14 @@ export default function TrainPage() {
   if (phase === "rest" && workout) {
     const maxRest = 120;
     const pct = Math.round((restLeft / maxRest) * 100);
-    return <main className="relative flex min-h-full flex-col items-center justify-center overflow-hidden pb-10"><AmbientField intensity="strong" /><Container className="relative z-10"><div className="text-center"><p className="text-[10px] uppercase tracking-[0.32em] text-livv-accent-soft">Recovery window</p><div className="mx-auto mt-7 flex h-56 w-56 items-center justify-center rounded-full border border-white/10 bg-white/[0.025]" style={{ background: `conic-gradient(rgb(255 255 255 / .8) ${pct}%, rgb(255 255 255 / .05) ${pct}%)` }}><div className="flex h-48 w-48 flex-col items-center justify-center rounded-full bg-[#090909]"><span className="text-6xl font-semibold tracking-tight">{restLeft}</span><span className="mt-1 text-[9px] uppercase tracking-[0.3em] text-white/30">seconds</span></div></div><p className="mt-7 text-lg font-medium">Breathe. Reset. Go again.</p><p className="mt-2 text-sm text-white/35">Next movement is waiting.</p><Button variant="secondary" className="mt-8" onClick={() => { if (restRef.current) window.clearInterval(restRef.current); setPhase("session"); }}>Skip recovery</Button></div></Container></main>;
+    return <main className="relative flex min-h-full flex-col items-center justify-center overflow-hidden pb-10"><Container className="relative z-10"><div className="text-center"><p className="text-[10px] uppercase tracking-[0.32em] text-livv-accent-soft">Recovery window</p><div className="mx-auto mt-7 flex h-56 w-56 items-center justify-center rounded-full border border-white/10 bg-white/[0.025]" style={{ background: `conic-gradient(rgb(255 255 255 / .8) ${pct}%, rgb(255 255 255 / .05) ${pct}%)` }}><div className="flex h-48 w-48 flex-col items-center justify-center rounded-full bg-[#090909]"><span className="text-6xl font-semibold tracking-tight">{restLeft}</span><span className="mt-1 text-[9px] uppercase tracking-[0.3em] text-white/30">seconds</span></div></div><p className="mt-7 text-lg font-medium">Breathe. Reset. Go again.</p><p className="mt-2 text-sm text-white/35">Next movement is waiting.</p><Button variant="secondary" className="mt-8" onClick={() => { if (restRef.current) window.clearInterval(restRef.current); setPhase("session"); }}>Skip recovery</Button></div></Container></main>;
   }
 
   if (phase === "session" && workout) {
     const current = workout.exercises[currentIndex];
     const progress = ((currentIndex + 1) / workout.exercises.length) * 100;
-    return <main className="relative flex min-h-full flex-col overflow-hidden pb-8 pt-5"><AmbientField intensity="strong" /><Container className="relative z-10 flex flex-1 flex-col"><div className="flex items-center justify-between"><div><p className="text-[10px] uppercase tracking-[0.28em] text-white/30">Training mode</p><p className="mt-1 text-xs text-white/45">{workout.name}</p></div><span className="text-[10px] uppercase tracking-[0.2em] text-livv-accent">{currentIndex + 1}/{workout.exercises.length}</span></div><div className="mt-4 h-1 overflow-hidden rounded-full bg-white/[0.08]"><div className="h-full rounded-full bg-livv-accent transition-all duration-500" style={{ width: `${progress}%` }} /></div><div className="flex flex-1 flex-col justify-center py-8"><div className="text-center"><p className="text-[10px] uppercase tracking-[0.35em] text-livv-accent-soft">Now</p><h1 className="mt-4 text-[2.7rem] font-semibold leading-[.98] tracking-[-0.05em]">{current.name}</h1><div className="mx-auto mt-7 h-px w-16 bg-white/15" /><p className="mt-6 text-lg text-white/60">{current.sets && `${current.sets} sets`}{current.reps && ` · ${current.reps}`}{current.duration && ` · ${current.duration}`}</p><p className="mt-2 text-xs uppercase tracking-[0.18em] text-white/25">Rest {current.rest} after</p></div></div><div className="space-y-3"><Button variant="accent" size="lg" className="h-14 w-full text-base" onClick={() => handleCompleteExercise(current)}>Mark Exercise Complete ✓</Button><Button variant="ghost" className="w-full" onClick={handleReset}>End Training</Button></div></Container></main>;
+    return <main className="relative flex min-h-full flex-col overflow-hidden pb-8 pt-5"><Container className="relative z-10 flex flex-1 flex-col"><div className="flex items-center justify-between"><div><p className="text-[10px] uppercase tracking-[0.28em] text-white/30">Training mode</p><p className="mt-1 text-xs text-white/45">{workout.name}</p></div><span className="text-[10px] uppercase tracking-[0.2em] text-livv-accent">{currentIndex + 1}/{workout.exercises.length}</span></div><div className="mt-4 h-1 overflow-hidden rounded-full bg-white/[0.08]"><div className="h-full rounded-full bg-livv-accent transition-all duration-500" style={{ width: `${progress}%` }} /></div><div className="flex flex-1 flex-col justify-center py-8"><div className="text-center"><p className="text-[10px] uppercase tracking-[0.35em] text-livv-accent-soft">Now</p><h1 className="mt-4 text-[2.7rem] font-semibold leading-[.98] tracking-[-0.05em]">{current.name}</h1><div className="mx-auto mt-7 h-px w-16 bg-white/15" /><p className="mt-6 text-lg text-white/60">{current.sets && `${current.sets} sets`}{current.reps && ` · ${current.reps}`}{current.duration && ` · ${current.duration}`}</p><p className="mt-2 text-xs uppercase tracking-[0.18em] text-white/25">Rest {current.rest} after</p></div></div><div className="space-y-3"><Button variant="accent" size="lg" className="h-14 w-full text-base" onClick={() => handleCompleteExercise(current)}>Mark Exercise Complete ✓</Button><Button variant="ghost" className="w-full" onClick={handleReset}>End Training</Button></div></Container></main>;
   }
 
-  return <main className="relative min-h-full overflow-hidden pb-10 pt-5"><AmbientField intensity="strong" />{showMoment && <Moment title="Training complete" subtitle={workout ? `${workout.name} added to your evolution record` : undefined} onDone={() => setShowMoment(false)} />}<Container className="relative z-10"><div className="pt-6 text-center"><div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full border border-livv-accent/40 bg-livv-accent/10 text-2xl shadow-[0_0_45px_rgba(255,255,255,0.08)]">✓</div><p className="mt-7 text-[10px] uppercase tracking-[0.32em] text-livv-accent-soft">Proof added</p><h1 className="mt-3 text-[2.7rem] font-semibold leading-none tracking-[-0.05em]">Session complete.</h1><p className="mt-4 text-sm text-white/40">{workout?.name} · {completedExercises.length} exercises</p><div className="mt-8 rounded-3xl border border-white/[0.08] bg-white/[0.035] p-5 text-left"><p className="text-[10px] uppercase tracking-[0.2em] text-white/25">Reflection</p><textarea value={note} onChange={(e) => setNote(e.target.value)} placeholder="One line. How did it feel?" rows={3} className="mt-3 w-full resize-none bg-transparent text-sm text-white/80 outline-none placeholder:text-white/20" /></div><div className="mt-6 space-y-3"><Button variant="accent" size="lg" className="w-full" onClick={() => { if (note.trim() && workout) { try { const notes = JSON.parse(window.localStorage.getItem("livv-session-notes") || "[]"); notes.unshift({ at: Date.now(), name: workout.name, note: note.trim() }); window.localStorage.setItem("livv-session-notes", JSON.stringify(notes.slice(0, 30))); } catch {} } handleReset(); }}>Train Again</Button><Button variant="secondary" className="w-full" onClick={() => window.location.href = "/home/progress"}>View Evolution ↗</Button></div></div></Container></main>;
+  return <main className="relative min-h-full overflow-hidden pb-10 pt-5">{showMoment && <Moment title="Training complete" subtitle={workout ? `${workout.name} added to your evolution record` : undefined} onDone={() => setShowMoment(false)} />}<Container className="relative z-10"><div className="pt-6 text-center"><div className="mx-auto flex h-20 w-20 items-center justify-center rounded-full border border-livv-accent/40 bg-livv-accent/10 text-2xl shadow-[0_0_45px_rgba(255,255,255,0.08)]">✓</div><p className="mt-7 text-[10px] uppercase tracking-[0.32em] text-livv-accent-soft">Proof added</p><h1 className="mt-3 text-[2.7rem] font-semibold leading-none tracking-[-0.05em]">Session complete.</h1><p className="mt-4 text-sm text-white/40">{workout?.name} · {completedExercises.length} exercises</p><div className="mt-8 rounded-3xl border border-white/[0.08] bg-white/[0.035] p-5 text-left"><p className="text-[10px] uppercase tracking-[0.2em] text-white/25">Reflection</p><textarea value={note} onChange={(e) => setNote(e.target.value)} placeholder="One line. How did it feel?" rows={3} className="mt-3 w-full resize-none bg-transparent text-sm text-white/80 outline-none placeholder:text-white/20" /></div><div className="mt-6 space-y-3"><Button variant="accent" size="lg" className="w-full" onClick={() => { if (note.trim() && workout) { try { const notes = JSON.parse(window.localStorage.getItem("livv-session-notes") || "[]"); notes.unshift({ at: Date.now(), name: workout.name, note: note.trim() }); window.localStorage.setItem("livv-session-notes", JSON.stringify(notes.slice(0, 30))); } catch {} } handleReset(); }}>Train Again</Button><Button variant="secondary" className="w-full" onClick={() => window.location.href = "/home/progress"}>View Evolution ↗</Button></div></div></Container></main>;
 }

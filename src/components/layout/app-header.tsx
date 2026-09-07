@@ -1,16 +1,14 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
 import { Avatar } from "@/components/identity/avatar";
 import { loadIdentity, type Identity } from "@/lib/identity";
 import { useEffect, useState } from "react";
 
 const LOGO = "https://raw.githubusercontent.com/evolvewithlivv/livv/main/Photoroom_20260831_123254.png";
 
-/** Shared chrome for every authenticated screen. The home screen already owns the canonical header. */
+/** Same top chrome on every authenticated screen. */
 export function AppHeader() {
-  const pathname = usePathname() || "";
   const [me, setMe] = useState<Identity | null>(null);
 
   useEffect(() => {
@@ -24,11 +22,12 @@ export function AppHeader() {
     };
   }, []);
 
-  if (pathname === "/home" || pathname === "") return null;
-
   return (
-    <header className="livv-app-header relative z-[70] px-5 pt-4">
-      <div className="mx-auto flex h-10 max-w-xl items-center justify-between">
+    <header className="livv-app-header relative z-[70] px-5">
+      <div
+        className="mx-auto flex max-w-xl items-center justify-between"
+        style={{ height: "2.75rem", marginTop: "max(0.55rem, env(safe-area-inset-top))" }}
+      >
         <Link href="/home" aria-label="LIVV home" className="group flex items-center gap-2">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={LOGO} alt="LIVV" className="h-8 w-8 object-contain transition group-active:scale-95" />
@@ -41,11 +40,11 @@ export function AppHeader() {
           >
             Inbox
           </Link>
-          {me && (
+          {me ? (
             <Link href="/home/profile" aria-label="Profile" className="shrink-0">
               <Avatar identity={me} size={34} showTierRing />
             </Link>
-          )}
+          ) : null}
         </div>
       </div>
     </header>

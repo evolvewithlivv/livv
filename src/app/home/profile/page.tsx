@@ -15,7 +15,7 @@ import {
   Zap,
 } from "lucide-react";
 import { Avatar } from "@/components/identity/avatar";
-import { AmbientField } from "@/components/layout/ambient-field";
+import { PageHero } from "@/components/layout/page-hero";
 import {
   fileToPhoto,
   loadIdentity,
@@ -84,7 +84,7 @@ export default function ProfilePage() {
     };
   }, []);
 
-  if (!me || !rec) return <main className="min-h-dvh bg-[#050505]" />;
+  if (!me || !rec) return <main className="min-h-dvh" />;
 
   const evo = evolutionTitle(rec.level);
   const xpPct = Math.min(100, Math.round((rec.currentXp / rec.xpToNext) * 100));
@@ -139,23 +139,20 @@ export default function ProfilePage() {
   };
 
   return (
-    <main className="relative min-h-full overflow-hidden pb-28">
-      <div className="pointer-events-none fixed inset-0">
-        <div className="absolute inset-0 bg-[#050505]" />
-        <div className="absolute left-1/2 top-[-90px] h-[480px] w-[480px] -translate-x-1/2 rounded-full" style={{ background: `radial-gradient(circle, ${tc.glow}, transparent 68%)` }} />
-        <AmbientField />
-      </div>
-      <div className="relative z-10 mx-auto max-w-lg px-5 pt-6">
-        <header className="flex items-center justify-between">
-          <div>
-            <p className="text-[10px] font-medium uppercase tracking-[0.34em] text-white/30">Identity</p>
-            <p className="mt-1 text-[13px] text-white/45">Your place in LIVV.</p>
-          </div>
-          <Link href="/home/settings" aria-label="Settings" className="grid h-10 w-10 place-items-center rounded-full border border-white/10 bg-white/[0.04] text-white/55 backdrop-blur-xl">
-            <Settings2 size={17} />
-          </Link>
-        </header>
-        <section className="relative mt-8 overflow-hidden rounded-[32px] border border-white/10 bg-white/[0.035] px-6 pb-6 pt-7 text-center shadow-2xl backdrop-blur-xl">
+    <main className="livv-page relative min-h-full overflow-hidden pb-28">
+      <div className="relative z-10 mx-auto max-w-lg px-5 pt-5">
+        <PageHero
+          eyebrow="Identity"
+          title="You"
+          subtitle="Your place in LIVV."
+          accent="#ff72c9"
+          right={
+            <Link href="/home/settings" aria-label="Settings" className="grid h-10 w-10 place-items-center text-white/55">
+              <Settings2 size={17} />
+            </Link>
+          }
+        />
+        <section className="livv-glass relative mt-8 overflow-hidden rounded-[32px] px-6 pb-6 pt-7 text-center">
           <div className="absolute inset-x-10 top-0 h-px" style={{ background: `linear-gradient(90deg, transparent, ${tc.hex}, transparent)` }} />
           <button type="button" onClick={() => fileRef.current?.click()} className="relative mx-auto block rounded-full">
             <Avatar identity={me} size={112} showTierRing />

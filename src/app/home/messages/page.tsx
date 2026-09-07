@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { AmbientField } from "@/components/layout/ambient-field";
+import { PageHero } from "@/components/layout/page-hero";
 import { Avatar } from "@/components/identity/avatar";
 import { loadThreads, type DmThread } from "@/lib/messages";
 
@@ -17,22 +17,15 @@ export default function MessagesPage() {
   }, []);
 
   return (
-    <main className="relative min-h-full overflow-hidden pb-12">
-      <div className="pointer-events-none absolute inset-0">
-        <div className="absolute inset-0 bg-[#050505]" />
-        <AmbientField />
-      </div>
-
-      <div className="relative z-10 mx-auto max-w-lg px-5 pt-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-[10px] font-medium uppercase tracking-[0.32em] text-white/30">Direct</p>
-            <h1 className="font-display mt-2 text-[34px] font-semibold tracking-tight">Messages</h1>
-          </div>
-          <Link href="/home/connect" className="text-[13px] text-white/35">
-            Connect
-          </Link>
-        </div>
+    <main className="livv-page relative min-h-full overflow-hidden pb-12">
+      <div className="relative z-10 mx-auto max-w-lg px-5 pt-5">
+        <PageHero
+          eyebrow="Direct"
+          title="Messages"
+          subtitle="Private threads with people in the room."
+          accent="#ff72c9"
+          right={<Link href="/home/connect" className="text-[13px] text-white/35">Connect</Link>}
+        />
 
         <div className="mt-8 space-y-1">
           {threads.map((t) => {

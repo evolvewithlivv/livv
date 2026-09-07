@@ -18,11 +18,11 @@ export function BottomNav() {
 
   return (
     <nav
-      className="fixed inset-x-0 bottom-0 z-[80] shrink-0 px-4 pt-2"
-      style={{ paddingBottom: "max(0.65rem, env(safe-area-inset-bottom))" }}
+      className="livv-tabbar fixed inset-x-0 bottom-0 z-[80] shrink-0 px-3 pt-1"
+      style={{ paddingBottom: "max(0.55rem, env(safe-area-inset-bottom))" }}
       aria-label="Primary"
     >
-      <div className="mx-auto flex max-w-lg items-end justify-between gap-1 px-1">
+      <div className="mx-auto flex max-w-lg items-end justify-between">
         {NAV_ITEMS.map((item) => {
           const active = item.match(pathname);
           const Icon = item.Icon;
@@ -31,22 +31,25 @@ export function BottomNav() {
               key={item.href}
               href={item.href}
               aria-current={active ? "page" : undefined}
-              className="group relative flex min-w-0 flex-1 flex-col items-center justify-center gap-1 px-0.5 py-1.5 transition-transform duration-200"
+              className="livv-tab group relative flex min-w-0 flex-1 flex-col items-center justify-center gap-1 py-2"
               style={{ color: item.color }}
             >
-              <span
-                className="relative z-10 flex h-6 w-6 items-center justify-center transition-all duration-200"
+              <Icon
+                size={21}
+                strokeWidth={active ? 2.35 : 1.75}
                 style={{
                   color: item.color,
-                  opacity: active ? 1 : 0.58,
-                  filter: active ? `drop-shadow(0 0 7px ${item.color})` : "none",
+                  opacity: active ? 1 : 0.42,
+                  filter: active ? `drop-shadow(0 0 8px ${item.color})` : "none",
                 }}
-              >
-                <Icon size={21} strokeWidth={active ? 2.25 : 1.8} />
-              </span>
+              />
               <span
-                className="relative z-10 max-w-full truncate text-[9px] font-semibold tracking-wide transition-all duration-200"
-                style={{ color: item.color, opacity: active ? 1 : 0.58 }}
+                className="max-w-full truncate text-[9px] font-semibold tracking-[0.12em]"
+                style={{
+                  color: item.color,
+                  opacity: active ? 1 : 0.42,
+                  textShadow: active ? `0 0 12px ${item.color}` : "none",
+                }}
               >
                 {item.label}
               </span>

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { AmbientField } from "@/components/layout/ambient-field";
+import { PageHero } from "@/components/layout/page-hero";
 import { livePillars, loadRecord, weekBars, weekHitCount, type LivvRecord } from "@/lib/record";
 import { evolutionTitle } from "@/lib/levels";
 import { needsAttention, strongestPillar } from "@/lib/command";
@@ -34,17 +34,15 @@ export default function ProgressPage() {
     return () => events.forEach((e) => window.removeEventListener(e, sync));
   }, []);
 
-  if (!rec || !season || !weekly) return <main className="min-h-dvh bg-[#030405]" />;
+  if (!rec || !season || !weekly) return <main className="min-h-dvh" />;
   const week = weekBars(rec), hits = weekHitCount(rec), pillars = livePillars(rec);
   const evo = evolutionTitle(rec.level), strong = strongestPillar(rec), weak = needsAttention(rec);
 
   return (
-    <main className="relative min-h-full overflow-hidden pb-14">
-      <div className="pointer-events-none absolute inset-0"><div className="absolute inset-0 bg-[#030405]" /><div className="absolute right-[-25%] top-0 h-[480px] w-[480px] rounded-full" style={{ background: "radial-gradient(circle, rgb(var(--livv-accent)/.14), transparent 68%)" }} /><AmbientField intensity="strong" /></div>
-      <div className="relative z-10 mx-auto max-w-lg px-5 pt-6">
-        <p className="text-[10px] uppercase tracking-[.34em] text-white/30">Long view</p>
-        <div className="flex items-end justify-between"><h1 className="font-display mt-2 text-[36px] font-semibold tracking-tight">Progress</h1><span className="mb-1 text-[10px] uppercase tracking-[.2em] text-livv-accent-soft">Evolution</span></div>
-        <section className="livv-card-glow-strong livv-glow-sweep mt-8 rounded-[28px] border border-livv-accent/20 bg-white/[.035] p-5">
+    <main className="livv-page relative min-h-full overflow-hidden pb-14">
+      <div className="relative z-10 mx-auto max-w-lg px-5 pt-5">
+        <PageHero eyebrow="Long view" title="Progress" subtitle="Evolution, chapters, and the week you actually lived." accent="#67d8ff" />
+        <section className="livv-glass mt-8 rounded-[28px] p-5">
           <div className="flex items-start justify-between"><div><p className="text-[10px] uppercase tracking-[.26em] text-white/30">Current state</p><p className="font-display mt-2 text-[27px]">{evo.name}</p></div><div className="text-right"><p className="text-[9px] uppercase tracking-[.2em] text-white/25">Level</p><p className="font-display text-[30px] text-livv-accent-soft">{rec.level}</p></div></div>
           <div className="mt-6 grid grid-cols-3 gap-2"><Stat value={`${rec.streak}d`} label="Chain" /><Stat value={`${rec.workoutsCompleted}`} label="Sessions" /><Stat value={`${rec.goalsCompleted}`} label="Actions" /></div>
           <p className="mt-5 text-[13px] leading-relaxed text-white/40">{hits >= 5 ? "You showed up more than most weeks. Keep the line." : hits >= 3 ? "Momentum is forming. Do not treat the rest of the week casually." : hits >= 1 ? "Signal exists. Stack another day." : "Empty board. One action changes that."}</p>

@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { AmbientField } from "@/components/layout/ambient-field";
+import { PageHero } from "@/components/layout/page-hero";
 import { feedback } from "@/lib/sensory";
 import {
   claimDailyDrop,
@@ -92,34 +92,17 @@ export default function DailyPage() {
   const archive = journalHistory().slice(0, 6);
 
   return (
-    <main className="relative min-h-full overflow-hidden bg-[#050505] pb-10 text-white">
-      <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div
-          className="absolute left-1/2 top-[-15rem] h-[38rem] w-[38rem] -translate-x-1/2 rounded-full blur-3xl"
-          style={{ background: "radial-gradient(circle, rgb(var(--livv-accent) / 0.16), transparent 68%)" }}
-        />
-        <AmbientField intensity="strong" />
-        <div className="livv-grain opacity-[0.045]" />
-      </div>
-
+    <main className="livv-page relative min-h-full overflow-hidden pb-10 text-white">
       <div className="relative z-10 mx-auto max-w-xl px-5 pb-8 pt-5">
-        <header className="flex items-center justify-between">
-          <div>
-            <p className="text-[9px] font-semibold uppercase tracking-[0.34em] text-livv-accent-soft">LIVV Daily</p>
-            <p className="mt-1 text-[11px] uppercase tracking-[0.18em] text-white/25">
-              {now.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" })}
-            </p>
-          </div>
-          <Link
-            href="/home"
-            className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-2 text-[9px] uppercase tracking-[0.18em] text-white/40"
-          >
-            Home
-          </Link>
-        </header>
+        <PageHero
+          eyebrow="LIVV Daily"
+          title={now.toLocaleDateString("en-US", { weekday: "long", month: "short", day: "numeric" })}
+          subtitle="Three moves. One check-in with yourself. Keep the chain."
+          accent="#ffd43b"
+        />
 
         {/* World state hero */}
-        <section className="relative mt-8 overflow-hidden rounded-[36px] border border-white/[0.09] bg-white/[0.025] p-6 shadow-2xl backdrop-blur-xl">
+        <section className="livv-glass relative mt-8 overflow-hidden rounded-[36px] p-6">
           <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-livv-accent/70 to-transparent" />
           <div className="absolute -right-20 -top-20 h-52 w-52 rounded-full bg-livv-accent/15 blur-3xl" />
           <div className="relative">
@@ -166,7 +149,7 @@ export default function DailyPage() {
                 )}
                 {tickets > 0 && (
                   <Link
-                    href="/home/packs"
+                    href="/home/shop"
                     className="rounded-full bg-white/10 px-3 py-1 text-[10px] text-white/60"
                   >
                     {tickets} pack ticket{tickets === 1 ? "" : "s"} →

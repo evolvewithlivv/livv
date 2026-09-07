@@ -3,8 +3,6 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { Avatar } from "@/components/identity/avatar";
-import { AmbientField } from "@/components/layout/ambient-field";
 import { addEmbers, loadIdentity, type Identity } from "@/lib/identity";
 import { getTier } from "@/lib/membership";
 import {
@@ -22,9 +20,6 @@ import { feedback } from "@/lib/sensory";
 import { claimPacksIfDue, canClaimPacks } from "@/lib/packs";
 import { quoteForSession, type Quote } from "@/lib/quotes";
 import { dailySummary } from "@/lib/daily";
-
-const LOGO =
-  "https://raw.githubusercontent.com/evolvewithlivv/livv/main/Photoroom_20260831_123254.png";
 
 const PILLAR_HREF: Record<string, string> = {
   body: "/home/train",
@@ -79,7 +74,7 @@ export default function HomePage() {
     return items.slice(0, 4);
   }, [rec, now]);
 
-  if (!rec || !me) return <main className="min-h-dvh bg-[#050505]" />;
+  if (!rec || !me) return <main className="min-h-dvh" />;
 
   const tier = getTier(me.tier);
   const greet = contextGreeting(now, rec);
@@ -112,39 +107,9 @@ export default function HomePage() {
   const dailyLeft = daily ? daily.total - daily.done : 3;
 
   return (
-    <main className="relative min-h-full overflow-hidden bg-[#050505] pb-10 text-white">
-      <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div
-          className="absolute left-1/2 top-[-14rem] h-[42rem] w-[42rem] -translate-x-1/2 rounded-full"
-          style={{
-            background: "radial-gradient(circle, rgb(var(--livv-accent) / 0.18) 0%, transparent 64%)",
-          }}
-        />
-        <AmbientField intensity="strong" />
-        <div className="livv-grain opacity-[0.045]" />
-      </div>
-
+    <main className="livv-page relative min-h-full overflow-hidden pb-10 text-white">
       <div className="relative z-10 mx-auto max-w-xl px-5 pt-5">
-        <header className="flex items-center justify-between">
-          <Link href="/home" aria-label="LIVV home" className="group flex items-center gap-2">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src={LOGO} alt="LIVV" className="h-8 w-8 object-contain transition group-active:scale-95" />
-            <span className="text-[10px] font-semibold tracking-[0.32em] text-white/35">LIVV</span>
-          </Link>
-          <div className="flex items-center gap-3">
-            <Link
-              href="/home/messages"
-              className="rounded-full border border-white/10 bg-white/[0.035] px-3 py-1.5 text-[10px] font-medium uppercase tracking-[0.18em] text-white/45"
-            >
-              Inbox
-            </Link>
-            <Link href="/home/profile" aria-label="Profile">
-              <Avatar identity={me} size={34} showTierRing />
-            </Link>
-          </div>
-        </header>
-
-        <section className="relative mt-9 overflow-hidden rounded-[34px] border border-white/[0.09] bg-white/[0.025] px-6 pb-7 pt-6 shadow-2xl backdrop-blur-xl">
+        <section className="livv-glass relative overflow-hidden rounded-[34px] px-6 pb-7 pt-6">
           <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-livv-accent/60 to-transparent" />
           <div className="relative flex items-start justify-between gap-5">
             <div>
@@ -232,7 +197,7 @@ export default function HomePage() {
         </Link>
 
         <section className="mt-5 grid grid-cols-[1fr_auto] gap-3">
-          <div className="rounded-[28px] border border-white/[0.08] bg-white/[0.025] p-5 backdrop-blur-xl">
+          <div className="livv-glass rounded-[28px] p-5">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-[9px] uppercase tracking-[0.3em] text-white/25">Evolution</p>

@@ -52,7 +52,7 @@ export async function POST(req: NextRequest) {
           },
         ],
         success_url: `${base}/home/billing/success?session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url: `${base}/home/packs?billing=cancel`,
+        cancel_url: `${base}/home/shop?billing=cancel`,
         customer_email: body.email || undefined,
         client_reference_id: body.username || undefined,
         metadata: {

@@ -20,12 +20,12 @@ export const RARITY_META: Record<Rarity, { label: string; weight: number; glow: 
   apex: { label: "Apex", weight: 4, glow: "rgba(255,210,120,0.55)" },
 };
 
-/* Canonical order: Spark → Rise → Apex → Signal. Signal is the premium purchasable grade. */
+/* Canonical order: Spark → Rise → Signal → Apex. Apex is the premium purchasable grade. */
 export const GRADE_META: Record<PackGrade, { name: string; subtitle: string; foilFrom: string; foilTo: string; purchasableOnly?: boolean; rarityBias: Rarity[] }> = {
   1: { name: "Spark Pack", subtitle: "Minimum tier", foilFrom: "#1a4a9e", foilTo: "#4C8DFF", rarityBias: ["common", "common", "elevated"] },
   2: { name: "Rise Pack", subtitle: "Above minimum", foilFrom: "#3a2a7a", foilTo: "#9b7cff", rarityBias: ["elevated", "elevated", "rare"] },
-  3: { name: "Apex Pack", subtitle: "Third tier", foilFrom: "#5a3a10", foilTo: "#F5C542", rarityBias: ["apex", "rare", "apex"] },
-  4: { name: "Signal Pack", subtitle: "Purchase only", foilFrom: "#8ec5ff", foilTo: "#f5c2e7", purchasableOnly: true, rarityBias: ["rare", "rare", "apex"] },
+  3: { name: "Signal Pack", subtitle: "Third tier", foilFrom: "#8ec5ff", foilTo: "#f5c2e7", rarityBias: ["rare", "rare", "apex"] },
+  4: { name: "Apex Pack", subtitle: "Purchase only", foilFrom: "#5a3a10", foilTo: "#F5C542", purchasableOnly: true, rarityBias: ["apex", "rare", "apex"] },
 };
 
 export function packEntitlement(tier: LivvTier): { intervalMs: number; grants: PackGrade[]; label: string } {
@@ -93,9 +93,8 @@ export function claimPacksIfDue(): PackState {
   state.lastGrantAt = now; savePacks(state); return state;
 }
 
-export function purchaseSignalPack(): PackState { const state = loadPacks(); state.pending.push({ id: `pack_4_${Date.now()}`, grade: 4, grantedAt: Date.now() }); savePacks(state); return state; }
-/** Backward-compatible export for older UI callers. */
-export const purchaseApexPack = purchaseSignalPack;
+export function purchaseApexPack(): PackState { const state = loadPacks(); state.pending.push({ id: `pack_4_${Date.now()}`, grade: 4, grantedAt: Date.now() }); savePacks(state); return state; }
+export function purchaseSignalPack(): PackState { const state = loadPacks(); state.pending.push({ id: `pack_3_${Date.now()}`, grade: 3, grantedAt: Date.now() }); savePacks(state); return state; }
 
 function rollFromBias(bias: Rarity[]): Rarity { return bias[Math.floor(Math.random() * bias.length)]; }
 function pickCard(rarity: Rarity): CardDef { let pool = CARD_CATALOG.filter((c) => c.rarity === rarity); if (!pool.length) pool = CARD_CATALOG.filter((c) => c.rarity === "common"); return pool[Math.floor(Math.random() * pool.length)]; }

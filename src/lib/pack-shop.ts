@@ -5,8 +5,8 @@ import { loadPacks, savePacks, type PackGrade, type PackState } from "./packs";
 export const PACK_SHOP: Record<PackGrade, { priceCents: number; price: string; value: string }> = {
   1: { priceCents: 249, price: "$2.49", value: "Optional. Vault seed. A small vote toward the first merch cut." },
   2: { priceCents: 999, price: "$9.99", value: "Optional. Elevated floor. Helps a garment reach someone who already lives this." },
-  3: { priceCents: 4999, price: "$49.99", value: "Optional. Apex-weighted. A rare pull for people deep in the LIVV system." },
-  4: { priceCents: 9900, price: "$99.00", value: "Optional. Signal-weighted. The premium pull and the highest paid pack." },
+  3: { priceCents: 4999, price: "$49.99", value: "Optional. Signal-weighted. A rare pull for people deep in the LIVV system." },
+  4: { priceCents: 9900, price: "$99.00", value: "Optional. Apex-weighted. The premium pull and the highest paid pack." },
 };
 
 export function grantPurchasedPack(grade: PackGrade, qty = 1): PackState {

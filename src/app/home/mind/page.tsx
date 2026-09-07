@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
-import { AmbientField } from "@/components/layout/ambient-field";
+import { PageHero } from "@/components/layout/page-hero";
 import { DESKS, WIKI, type WikiDesk } from "@/lib/wiki";
 
 const ARTICLE_COLORS = ["#60a5fa", "#c084fc", "#34d399", "#fbbf24", "#fb7185", "#22d3ee", "#f472b6", "#a3e635"];
@@ -22,20 +22,15 @@ export default function MindWikiPage() {
   const explore = showAll ? list : list.slice(0, 6);
 
   return (
-    <main className="relative min-h-full overflow-hidden pb-16">
-      <div className="pointer-events-none fixed inset-0">
-        <AmbientField intensity="strong" />
-      </div>
-
-      <div className="relative z-10 mx-auto max-w-lg px-5 pt-6">
-        <div className="flex items-end justify-between">
-          <div>
-            <p className="text-[10px] font-semibold uppercase tracking-[0.34em] text-white/30">Field notes</p>
-            <h1 className="font-display mt-2 text-[38px] font-semibold tracking-tight">Feed your mind.</h1>
-          </div>
-          <span className="mb-1 text-[9px] uppercase tracking-[0.22em] text-white/20">{list.length} notes</span>
-        </div>
-        <p className="mt-3 max-w-[36ch] text-[14px] leading-relaxed text-white/40">Ideas worth carrying. Explore by field, save what changes how you see things, then put one idea into motion.</p>
+    <main className="livv-page relative min-h-full overflow-hidden pb-16">
+      <div className="relative z-10 mx-auto max-w-lg px-5 pt-5">
+        <PageHero
+          eyebrow="Field notes"
+          title="Feed your mind."
+          subtitle="Ideas worth carrying. Explore by field, save what changes how you see things, then put one idea into motion."
+          accent="#b28cff"
+          right={<span className="text-[9px] uppercase tracking-[0.22em] text-white/20">{list.length} notes</span>}
+        />
 
         <div className="mt-6 flex gap-2 overflow-x-auto pb-1 scrollbar-none">
           <DeskChip active={desk === "all"} onClick={() => { setDesk("all"); setShowAll(false); }} label="All" />

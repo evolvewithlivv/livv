@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ArrowUpRight, ShoppingBag, Sparkles } from "lucide-react";
 import { PackFoil } from "@/components/packs/pack-foil";
 import { PackOpenModal } from "@/components/packs/pack-open";
+import { PageHero } from "@/components/layout/page-hero";
 import { loadPacks, GRADE_META, collectionStats, formatCountdown, msUntilNextPack, canClaimPacks, claimPacksIfDue, type PackGrade, type PendingPack } from "@/lib/packs";
 import { buyPack, PACK_SHOP } from "@/lib/pack-shop";
 import { isStripeConfigured } from "@/lib/billing";
@@ -53,17 +54,14 @@ export default function ShopPage() {
 
   return (
     <main className="livv-page relative min-h-full overflow-hidden text-white">
-      <div className="relative z-10 mx-auto max-w-xl px-5 pt-7">
-        <header>
-          <p className="text-[9px] font-semibold uppercase tracking-[0.34em] text-[#ff9f43]">LIVV Shop</p>
-          <div className="mt-2 flex items-end justify-between gap-4">
-            <div>
-              <h1 className="font-display text-[38px] font-semibold leading-none tracking-[-0.055em]">The physical layer.</h1>
-              <p className="mt-3 max-w-[34ch] text-[13px] leading-relaxed text-white/45">Wear the standard. Collect the system. Everything physical lives here.</p>
-            </div>
-            <ShoppingBag className="mb-1 shrink-0 text-[#ff9f43]" size={25} strokeWidth={1.7} />
-          </div>
-        </header>
+      <div className="relative z-10 mx-auto max-w-xl px-5 pt-5">
+        <PageHero
+          eyebrow="LIVV Shop"
+          title="The physical layer."
+          subtitle="Wear the standard. Collect the system. Packs and merch live here."
+          accent="#ff9f43"
+          right={<ShoppingBag className="text-[#ff9f43]" size={22} strokeWidth={1.7} />}
+        />
 
         <section className="mt-8">
           <div className="mb-4 flex items-end justify-between px-1">

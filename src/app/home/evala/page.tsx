@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { AmbientField } from "@/components/layout/ambient-field";
+import { PageHero } from "@/components/layout/page-hero";
 import { livePillars, loadRecord, logCustomAction, setObjective, todaysCustom, todaysObjectives, type LivvRecord } from "@/lib/record";
 import { loadIdentity } from "@/lib/identity";
 import { evolutionTitle } from "@/lib/levels";
@@ -96,27 +96,16 @@ export default function EvalaPage() {
   const total = todaysObjectives(rec).length;
 
   return (
-    <main className="relative min-h-full overflow-hidden pb-12">
-      <div className="pointer-events-none absolute inset-0">
-        <div className="absolute inset-0 bg-[#030405]" />
-        <div className="absolute left-1/2 top-[-80px] h-[520px] w-[520px] -translate-x-1/2 rounded-full" style={{ background: "radial-gradient(circle, rgb(var(--livv-accent) / 0.16), transparent 68%)" }} />
-        <AmbientField intensity="strong" />
-      </div>
+    <main className="livv-page relative min-h-full overflow-hidden pb-12">
+      <div className="relative z-10 mx-auto max-w-lg px-5 pt-5">
+        <PageHero
+          eyebrow="Intelligence layer"
+          title="Evala"
+          subtitle="Ask what is actually going on. It will answer that, not a script."
+          accent="#b28cff"
+        />
 
-      <div className="relative z-10 mx-auto max-w-lg px-5 pt-6">
-        <div className="flex items-start justify-between">
-          <div>
-            <p className="text-[10px] font-medium uppercase tracking-[0.34em] text-white/30">Intelligence layer</p>
-            <h1 className="font-display mt-2 text-[36px] font-semibold tracking-tight">Evala</h1>
-            <p className="mt-2 max-w-[29ch] text-[14px] leading-relaxed text-white/40">Ask what is actually going on. It will answer that, not a script.</p>
-          </div>
-          <div className="livv-breathe relative mt-1 flex h-12 w-12 items-center justify-center rounded-full ring-1 ring-livv-accent/30" style={{ background: "radial-gradient(circle, rgb(var(--livv-accent) / .2), transparent 68%)", boxShadow: "0 0 36px rgb(var(--livv-accent) / .15)" }}>
-            <span className="h-2.5 w-2.5 rounded-full bg-livv-accent shadow-[0_0_18px_rgb(var(--livv-accent)/.9)]" />
-            <span className="livv-orbit absolute h-16 w-16 rounded-full border border-livv-accent/10" />
-          </div>
-        </div>
-
-        <section className="livv-card-glow-strong livv-glow-sweep mt-8 overflow-hidden rounded-[28px] border border-livv-accent/20 bg-white/[0.035] p-5">
+        <section className="livv-glass mt-8 overflow-hidden rounded-[28px] p-5">
           <div className="flex items-center justify-between">
             <div>
               <p className="text-[10px] uppercase tracking-[0.28em] text-livv-accent-soft">Live read</p>

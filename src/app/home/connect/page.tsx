@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
+import { PageHero } from "@/components/layout/page-hero";
 import { Avatar } from "@/components/identity/avatar";
 import { cn } from "@/lib/utils";
 import { loadIdentity, type Identity } from "@/lib/identity";
@@ -221,54 +222,15 @@ export default function ConnectPage() {
   const isMine = (post: Post) => Boolean(me && post.author.username === me.username);
 
   return (
-    <main className="livv-page relative min-h-full overflow-x-hidden bg-[#030405] text-white">
-      <div className="pointer-events-none absolute inset-0 overflow-hidden">
-        <div
-          className="absolute -left-20 top-0 h-[420px] w-[420px] rounded-full opacity-60 blur-3xl"
-          style={{ background: "radial-gradient(circle, rgba(76,141,255,0.22), transparent 70%)" }}
-        />
-        <div
-          className="absolute -right-16 top-40 h-[280px] w-[280px] rounded-full opacity-40 blur-3xl"
-          style={{ background: "radial-gradient(circle, rgba(167,139,250,0.18), transparent 70%)" }}
-        />
-        <div className="livv-grain absolute inset-0" />
-      </div>
-
+    <main className="livv-page relative min-h-full overflow-x-hidden text-white">
       <div className="relative z-10 mx-auto max-w-lg">
-        <header className="px-5 pt-6">
-          <div className="flex items-start justify-between gap-3">
-            <div>
-              <div className="flex items-center gap-2">
-                <span className="relative flex h-2 w-2">
-                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-emerald-400 opacity-60" />
-                  <span className="relative inline-flex h-2 w-2 rounded-full bg-emerald-400" />
-                </span>
-                <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-emerald-400/90">
-                  Live room
-                </p>
-              </div>
-              <h1 className="font-display mt-1.5 text-[32px] font-semibold leading-none tracking-tight">
-                Signals
-              </h1>
-              <p className="mt-2 max-w-[16rem] text-[13px] leading-snug text-white/40">
-                Proof from people building the same standard.
-              </p>
-            </div>
-            <div className="flex items-center gap-2">
-              <Link
-                href="/home/messages"
-                className="flex h-10 w-10 items-center justify-center rounded-full border border-white/10 bg-white/[0.04]"
-                aria-label="Messages"
-              >
-                <InboxIcon />
-              </Link>
-              {me && (
-                <Link href="/home/profile" className="block">
-                  <Avatar identity={me} size={40} showTierRing />
-                </Link>
-              )}
-            </div>
-          </div>
+        <div className="px-5 pt-5">
+          <PageHero
+            eyebrow="Live room"
+            title="Signals"
+            subtitle="Proof from people building the same standard."
+            accent="#ff72c9"
+          />
 
           <div className="mt-5 overflow-hidden rounded-2xl border border-white/[0.07] bg-white/[0.03] px-4 py-2.5">
             <p className="flex items-center gap-2 text-[12px] text-white/55">

@@ -116,6 +116,30 @@ html[data-theme="light"] {
   backdrop-filter: none !important;
   -webkit-backdrop-filter: none !important;
 }
+
+/* Tab bar: glow only. No dock, no pill, no second outline. */
+.livv-tabbar,
+.livv-tabbar * {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+.livv-tabbar a,
+.livv-tabbar a:hover,
+.livv-tabbar a:focus,
+.livv-tabbar a:active,
+.livv-tabbar a[aria-current="page"] {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  outline: none !important;
+  transform: none !important;
+  -webkit-tap-highlight-color: transparent;
+}
+.livv-page-hero {
+  padding-top: 0.35rem;
+}
 .livv-ambient-watermark { display: none !important; }
 .livv-ambient-aurora {
   position: absolute;

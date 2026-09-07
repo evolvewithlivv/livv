@@ -57,7 +57,7 @@ export default function BillingSuccessPage() {
             const name = GRADE_META[data.grade as PackGrade]?.name || "Pack";
             setStatus("ok");
             setMessage(`${name} is in your chamber.`);
-            window.setTimeout(() => router.replace("/home/packs"), 1400);
+            window.setTimeout(() => router.replace("/home/shop"), 1400);
           }
           return;
         }
@@ -109,7 +109,7 @@ export default function BillingSuccessPage() {
       {status === "error" && (
         <button
           type="button"
-          onClick={() => router.replace("/home/packs")}
+          onClick={() => router.replace("/home/shop")}
           className="mt-8 rounded-full bg-white px-5 py-2.5 text-[13px] font-semibold text-black"
         >
           Back to packs

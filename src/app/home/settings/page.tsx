@@ -3,7 +3,8 @@
 import { useEffect, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, ChevronRight, CircleUserRound, Fingerprint, LogOut, Moon, Palette, Settings2, Shield, Sparkles, Volume2, Vibrate, Zap } from "lucide-react";
+import { ChevronRight, CircleUserRound, Fingerprint, LogOut, Moon, Palette, Settings2, Shield, Sparkles, Volume2, Vibrate, Zap } from "lucide-react";
+import { PageHero } from "@/components/layout/page-hero";
 import { loadIdentity, patchIdentity, APP_COLORS, type Appearance, type Identity, type LivvTier } from "@/lib/identity";
 import { getCurrentAccount, signOut } from "@/lib/auth";
 import { getTier, hasTier } from "@/lib/membership";
@@ -36,16 +37,11 @@ export default function SettingsPage() {
   const colorUnlocked = canPickColor(me.tier);
 
   return (
-    <main className="relative min-h-full overflow-hidden pb-16">
-      <div className="pointer-events-none fixed inset-0 bg-[var(--livv-bg)]" />
-      <div className="pointer-events-none fixed left-1/2 top-[-140px] h-[430px] w-[430px] -translate-x-1/2 rounded-full bg-livv-accent/10 blur-3xl" />
-      <div className="relative z-10 mx-auto max-w-lg px-5 pt-6">
-        <header className="flex items-center gap-3">
-          <Link href="/home/profile" aria-label="Back to profile" className="grid h-10 w-10 place-items-center rounded-full border border-livv-border bg-livv-surface text-livv-muted"><ArrowLeft size={17} /></Link>
-          <div><p className="text-[10px] uppercase tracking-[0.32em] text-livv-muted">Control room</p><h1 className="font-display mt-0.5 text-[28px] font-semibold tracking-tight text-livv-fg">Settings</h1></div>
-        </header>
+    <main className="livv-page relative min-h-full overflow-hidden pb-16">
+      <div className="relative z-10 mx-auto max-w-lg px-5 pt-5">
+        <PageHero eyebrow="Control room" title="Settings" subtitle="How LIVV looks, sounds, and remembers you." accent="#ff72c9" />
 
-        <section className="relative mt-7 overflow-hidden rounded-[28px] border border-livv-border bg-livv-surface p-5 backdrop-blur-xl">
+        <section className="livv-glass relative mt-7 overflow-hidden rounded-[28px] p-5">
           <div className="absolute right-0 top-0 h-32 w-32 rounded-full bg-livv-accent/10 blur-3xl" />
           <div className="relative flex items-center gap-4">
             <div className="grid h-14 w-14 place-items-center rounded-2xl border border-livv-accent/20 bg-livv-accent/10 text-livv-accent-soft"><Fingerprint size={23} /></div>
@@ -98,7 +94,7 @@ export default function SettingsPage() {
           <LinkRow href="/home/profile" icon={<CircleUserRound size={16} />} label="Profile & identity" value={me.displayName} />
           <LinkRow href="/home/profile" icon={<Zap size={16} />} label="Membership" value={tier.name} />
           <LinkRow href="/home/messages" icon={<Sparkles size={16} />} label="Messages" value="Inbox" />
-          <LinkRow href="/home/packs" icon={<Palette size={16} />} label="Packs & vault" value="Open" />
+          <LinkRow href="/home/shop" icon={<Palette size={16} />} label="Packs & vault" value="Open" />
         </section>
 
         <section className="mt-8 overflow-hidden rounded-[26px] border border-livv-border bg-livv-surface">
