@@ -1,6 +1,6 @@
 "use client";
 
-/** Soft floating particles + layered accent atmosphere. Decorative only. */
+/** Shared atmospheric layer used across LIVV screens. Decorative only. */
 export function AmbientField({ intensity = "normal" }: { intensity?: "normal" | "strong" }) {
   const dots = [
     ["8%", "12%", 3, "0s", 18], ["18%", "78%", 2, "1.2s", 22], ["32%", "22%", 4, "2.4s", 16],
@@ -13,6 +13,7 @@ export function AmbientField({ intensity = "normal" }: { intensity?: "normal" | 
 
   return (
     <div aria-hidden className={`pointer-events-none absolute inset-0 overflow-hidden ${intensity === "strong" ? "opacity-100" : "opacity-80"}`}>
+      <div className="livv-ambient-backdrop" />
       <div className="ambient-orb ambient-orb-a" />
       <div className="ambient-orb ambient-orb-b" />
       <div className="ambient-orb ambient-orb-c" />
