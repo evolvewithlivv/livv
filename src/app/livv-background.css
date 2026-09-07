@@ -10,23 +10,21 @@ html[data-theme="light"] {
   --livv-bg-art-opacity: 0.035;
 }
 
-@layer base {
-  body::after {
-    content: "";
-    position: fixed;
-    inset: 0;
-    pointer-events: none;
-    z-index: 0;
-    opacity: var(--livv-bg-art-opacity);
-    background-image: var(--livv-bg-art);
-    background-repeat: no-repeat;
-    background-position: center center;
-    background-size: min(76vw, 520px) auto;
-    mix-blend-mode: screen;
-  }
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  opacity: var(--livv-bg-art-opacity);
+  background-image: var(--livv-bg-art);
+  background-repeat: no-repeat;
+  background-position: center center;
+  background-size: min(76vw, 520px) auto;
+  mix-blend-mode: screen;
+}
 
-  body > * {
-    position: relative;
-    z-index: 1;
-  }
+body > * {
+  position: relative;
+  z-index: 1;
 }
