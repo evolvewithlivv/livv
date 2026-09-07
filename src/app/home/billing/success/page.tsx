@@ -4,13 +4,16 @@ import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { applyStripeEntitlement } from "@/lib/billing";
 import type { LivvTier } from "@/lib/identity";
+import { grantPurchasedPack } from "@/lib/pack-shop";
+import type { PackGrade } from "@/lib/packs";
+import { GRADE_META } from "@/lib/packs";
 import { feedback } from "@/lib/sensory";
 
 export default function BillingSuccessPage() {
   const router = useRouter();
   const params = useSearchParams();
   const [status, setStatus] = useState<"loading" | "ok" | "error">("loading");
-  const [message, setMessage] = useState("Confirming your membership…");
+  const [message, setMessage] = useState("Confirming payment…");
 
   useEffect(() => {
     const sessionId = params.get("session_id");
@@ -26,13 +29,40 @@ export default function BillingSuccessPage() {
       try {
         const res = await fetch(`/api/stripe/session?session_id=${encodeURIComponent(sessionId)}`);
         const data = (await res.json()) as {
+          kind?: string;
+          grade?: number;
+          qty?: number;
           tier?: LivvTier;
           customerId?: string;
           subscriptionId?: string;
           error?: string;
         };
 
-        if (!res.ok || !data.tier) {
+        if (!res.ok) {
+          if (!cancelled) {
+            setStatus("error");
+            setMessage(data.error || "Could not confirm payment.");
+          }
+          return;
+        }
+
+        if (data.kind === "pack" && data.grade) {
+          const key = `livv-pack-session-${sessionId}`;
+          if (!window.localStorage.getItem(key)) {
+            grantPurchasedPack(data.grade as PackGrade, data.qty || 1);
+            window.localStorage.setItem(key, "1");
+          }
+          feedback("unlock");
+          if (!cancelled) {
+            const name = GRADE_META[data.grade as PackGrade]?.name || "Pack";
+            setStatus("ok");
+            setMessage(`${name} is in your chamber.`);
+            window.setTimeout(() => router.replace("/home/packs"), 1400);
+          }
+          return;
+        }
+
+        if (!data.tier) {
           if (!cancelled) {
             setStatus("error");
             setMessage(data.error || "Could not confirm payment.");
@@ -79,10 +109,10 @@ export default function BillingSuccessPage() {
       {status === "error" && (
         <button
           type="button"
-          onClick={() => router.replace("/home/profile")}
+          onClick={() => router.replace("/home/packs")}
           className="mt-8 rounded-full bg-white px-5 py-2.5 text-[13px] font-semibold text-black"
         >
-          Back to profile
+          Back to packs
         </button>
       )}
     </main>
