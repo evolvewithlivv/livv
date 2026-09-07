@@ -9,22 +9,22 @@ export const PACK_SHOP: Record<
   1: {
     priceCents: 249,
     price: "$2.49",
-    value: "Entry foil. Commons plus a shot at Elevated. Vault seed.",
+    value: "Optional. Vault seed. A small vote toward the first merch cut.",
   },
   2: {
     priceCents: 999,
     price: "$9.99",
-    value: "Elevated floor. Better odds at Rare. Daily extra pull.",
+    value: "Optional. Elevated floor. Helps a garment reach someone who already lives this.",
   },
   3: {
     priceCents: 4999,
     price: "$49.99",
-    value: "Rare floor. Apex can show. This is the status pack.",
+    value: "Optional. Rare floor. This is how the physical drop finds the right bodies.",
   },
   4: {
     priceCents: 9900,
     price: "$99.00",
-    value: "Apex-weighted. Purchase only. Future cosmetics and trades start here.",
+    value: "Optional. Apex-weighted. This is how LIVV leaves the phone.",
   },
 };
 
