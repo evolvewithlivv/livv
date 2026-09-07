@@ -2,12 +2,12 @@
 :root,
 html[data-theme="dark"] {
   --livv-bg-art: url("/api/icon?s=512");
-  --livv-bg-art-opacity: 0.045;
+  --livv-bg-art-opacity: 0.052;
 }
 
 html[data-theme="light"] {
   --livv-bg-art: url("/api/icon?s=512");
-  --livv-bg-art-opacity: 0.028;
+  --livv-bg-art-opacity: 0.032;
 }
 
 body::after {
@@ -20,19 +20,24 @@ body::after {
   background-image: var(--livv-bg-art);
   background-repeat: no-repeat;
   background-position: center 43%;
-  background-size: min(70vw, 500px) auto;
+  background-size: min(74vw, 540px) auto;
   mix-blend-mode: screen;
   transform: translateZ(0);
 }
 
+html[data-theme="light"] body::after {
+  mix-blend-mode: multiply;
+}
+
 body::before {
   background-image:
-    radial-gradient(circle at 15% 18%, rgba(255, 120, 45, .045), transparent 24rem),
-    radial-gradient(circle at 85% 34%, rgba(110, 145, 255, .055), transparent 28rem),
-    radial-gradient(circle at 48% 88%, rgba(190, 90, 255, .035), transparent 30rem),
-    radial-gradient(rgba(255,255,255,.42) .45px, transparent .45px);
-  background-size: auto, auto, auto, 4px 4px;
-  background-blend-mode: screen, screen, screen, overlay;
+    radial-gradient(circle at 12% 16%, rgba(255, 120, 45, .055), transparent 24rem),
+    radial-gradient(circle at 88% 28%, rgba(110, 145, 255, .07), transparent 29rem),
+    radial-gradient(circle at 52% 92%, rgba(190, 90, 255, .045), transparent 30rem),
+    radial-gradient(circle at 50% 48%, rgba(255,255,255,.018), transparent 34rem),
+    radial-gradient(rgba(255,255,255,.38) .45px, transparent .45px);
+  background-size: auto, auto, auto, auto, 4px 4px;
+  background-blend-mode: screen, screen, screen, screen, overlay;
 }
 
 body > * {
@@ -47,9 +52,9 @@ body > * {
   z-index: 0;
   overflow: hidden;
   background:
-    radial-gradient(ellipse at 50% -10%, rgb(var(--livv-accent) / .095), transparent 42%),
-    radial-gradient(ellipse at 0% 70%, rgba(255, 100, 50, .025), transparent 35%),
-    radial-gradient(ellipse at 100% 80%, rgba(100, 120, 255, .03), transparent 38%);
+    radial-gradient(ellipse at 50% -10%, rgb(var(--livv-accent) / .10), transparent 42%),
+    radial-gradient(ellipse at 0% 70%, rgba(255, 100, 50, .03), transparent 35%),
+    radial-gradient(ellipse at 100% 80%, rgba(100, 120, 255, .035), transparent 38%);
 }
 
 .livv-ambient-backdrop::before,
