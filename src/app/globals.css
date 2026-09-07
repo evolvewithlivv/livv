@@ -93,8 +93,6 @@ html[data-theme="light"] {
   button:active, a:active { transform: scale(0.975); }
 }
 
-/* The screen should feel like one continuous canvas. Page-specific black shells
-   are intentionally softened so the shared LIVV atmosphere can show through. */
 [class~="bg-[#050505]"] { background-color: transparent !important; }
 
 .bg-livv-surface { background-color: rgb(var(--livv-surface) / 1); }
@@ -108,8 +106,6 @@ html[data-theme="light"] {
 .border-livv-accent { border-color: rgb(var(--livv-accent) / 1); }
 .livv-page { padding-bottom: 6.5rem; }
 
-/* Shared glass language. Use these primitives anywhere a screen needs a panel
-   without inventing another one-off surface treatment. */
 .livv-glass {
   background: linear-gradient(135deg, rgb(var(--livv-glass) / 0.075), rgb(var(--livv-glass) / 0.018));
   border: 1px solid rgb(var(--livv-line) / 0.075);
@@ -120,4 +116,45 @@ html[data-theme="light"] {
 
 .livv-dock-glow {
   box-shadow: 0 24px 70px rgba(0,0,0,.5), inset 0 1px 0 rgba(255,255,255,.06), 0 0 44px rgb(var(--livv-accent) / .045);
+}
+
+/* Shared atmospheric signature: a very faint LIVV mark plus slow aurora motion. */
+.livv-ambient-watermark {
+  position: absolute;
+  left: 50%;
+  top: 34%;
+  width: min(72vw, 440px);
+  aspect-ratio: 1;
+  transform: translate(-50%, -50%);
+  background: linear-gradient(145deg, rgb(var(--livv-accent) / .12), rgba(255,255,255,.035));
+  -webkit-mask: url('/api/icon?s=512') center / contain no-repeat;
+  mask: url('/api/icon?s=512') center / contain no-repeat;
+  opacity: .22;
+  filter: blur(.2px);
+  animation: livv-watermark-drift 18s ease-in-out infinite alternate;
+}
+
+.livv-ambient-aurora {
+  position: absolute;
+  inset: -18% -25%;
+  background:
+    radial-gradient(ellipse at 22% 32%, rgba(76,141,255,.09), transparent 28%),
+    radial-gradient(ellipse at 76% 58%, rgba(180,92,255,.055), transparent 26%),
+    radial-gradient(ellipse at 48% 92%, rgba(255,77,109,.035), transparent 24%);
+  filter: blur(42px);
+  animation: livv-aurora-drift 22s ease-in-out infinite alternate;
+}
+
+@keyframes livv-watermark-drift {
+  from { transform: translate(-50%, -50%) scale(.96) rotate(-1deg); }
+  to { transform: translate(-50%, -50%) scale(1.04) rotate(1deg); }
+}
+
+@keyframes livv-aurora-drift {
+  from { transform: translate3d(-2%, -1%, 0) scale(1); }
+  to { transform: translate3d(2%, 2%, 0) scale(1.06); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .livv-ambient-watermark, .livv-ambient-aurora { animation: none; }
 }
