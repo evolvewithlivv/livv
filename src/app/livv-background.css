@@ -1,32 +1,17 @@
 /* Shared LIVV atmosphere: subtle enough for readability, alive enough to feel like an app. */
 :root,
 html[data-theme="dark"] {
-  --livv-bg-art: url("/api/icon?s=512");
-  --livv-bg-art-opacity: 0.052;
+  --livv-bg-art-opacity: 0;
 }
 
 html[data-theme="light"] {
-  --livv-bg-art: url("/api/icon?s=512");
-  --livv-bg-art-opacity: 0.032;
+  --livv-bg-art-opacity: 0;
 }
 
+/* Keep the atmosphere in dedicated AmbientField components. A second fixed logo
+   layer here caused visual ghosting/stacking artifacts behind cards and navigation. */
 body::after {
-  content: "";
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 0;
-  opacity: var(--livv-bg-art-opacity);
-  background-image: var(--livv-bg-art);
-  background-repeat: no-repeat;
-  background-position: center 43%;
-  background-size: min(74vw, 540px) auto;
-  mix-blend-mode: screen;
-  transform: translateZ(0);
-}
-
-html[data-theme="light"] body::after {
-  mix-blend-mode: multiply;
+  content: none;
 }
 
 body::before {
