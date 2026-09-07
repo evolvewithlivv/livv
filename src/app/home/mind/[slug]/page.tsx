@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { AmbientField } from "@/components/layout/ambient-field";
-import { articleBySlug, WIKI } from "@/lib/wiki";
+import { articleBySlug, deskMeta, nextArticle } from "@/lib/wiki";
 import { logCustomAction } from "@/lib/record";
 import { feedback } from "@/lib/sensory";
 import { useState } from "react";
@@ -17,12 +17,13 @@ export default function WikiArticlePage() {
     return (
       <main className="min-h-dvh bg-[#050505] px-5 pt-16 text-white">
         <p className="text-white/40">That page is not in the wiki.</p>
-        <Link href="/home/mind" className="mt-4 inline-block text-livv-accent-soft">Back to Mind →</Link>
+        <Link href="/home/mind" className="mt-4 inline-block text-livv-accent-soft">Back to Mind</Link>
       </main>
     );
   }
 
-  const related = WIKI.filter((a) => a.desk === article.desk && a.slug !== article.slug).slice(0, 3);
+  const desk = deskMeta(article.desk);
+  const nxt = nextArticle(article.slug);
 
   const markRead = () => {
     if (did) return;
@@ -32,37 +33,72 @@ export default function WikiArticlePage() {
   };
 
   return (
-    <main className="relative min-h-full overflow-hidden pb-20">
+    <main className="relative min-h-full overflow-hidden pb-24">
       <div className="pointer-events-none fixed inset-0">
         <div className="absolute inset-0 bg-[#050505]" />
-        <AmbientField />
+        <div
+          className="absolute left-1/2 top-[-160px] h-[520px] w-[520px] -translate-x-1/2 rounded-full blur-2xl"
+          style={{ background: `radial-gradient(circle, ${desk.glow}, transparent 68%)` }}
+        />
+        <AmbientField intensity="strong" />
       </div>
-      <article className="relative z-10 mx-auto max-w-lg px-5 pt-6">
-        <Link href="/home/mind" className="text-[10px] uppercase tracking-[0.28em] text-white/30">Mind → {article.desk}</Link>
-        <h1 className="font-display mt-3 text-[32px] font-semibold leading-[1.05] tracking-tight">{article.title}</h1>
-        <p className="mt-3 text-[16px] leading-relaxed text-white/50">{article.hook}</p>
-        <p className="mt-3 text-[10px] uppercase tracking-[0.18em] text-white/25">{article.readMins} min read</p>
 
-        <div className="mt-8 space-y-5">
-          {article.body.map((p) => (
-            <p key={p.slice(0, 24)} className="text-[15px] leading-[1.65] text-white/72">{p}</p>
+      <article className="relative z-10 mx-auto max-w-lg px-5 pt-6">
+        <div className="flex items-center justify-between">
+          <Link href="/home/mind" className="text-[11px] text-white/40">← Wiki</Link>
+          <span
+            className="rounded-full px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[0.16em]"
+            style={{ color: desk.hex, background: `${desk.hex}22`, boxShadow: `0 0 24px ${desk.glow}` }}
+          >
+            {desk.label}
+          </span>
+        </div>
+
+        <div className="mt-6 h-1.5 overflow-hidden rounded-full bg-white/8">
+          <div className="h-full w-2/5 rounded-full" style={{ background: desk.hex, boxShadow: `0 0 16px ${desk.hex}` }} />
+        </div>
+
+        <h1 className="font-display mt-6 text-[34px] font-semibold leading-[1.02] tracking-tight">{article.title}</h1>
+        <p className="mt-3 text-[17px] leading-snug" style={{ color: desk.hex }}>
+          {article.hook}
+        </p>
+        <p className="mt-3 text-[11px] uppercase tracking-[0.16em] text-white/30">{article.readMins} min</p>
+
+        <div className="mt-8 space-y-4">
+          {article.beats.map((b) => (
+            <div
+              key={b.k}
+              className="rounded-[22px] border border-white/10 bg-white/[0.04] p-4"
+              style={{ boxShadow: `inset 3px 0 0 ${desk.hex}` }}
+            >
+              <p className="text-[10px] font-semibold tabular-nums" style={{ color: desk.hex }}>
+                {b.k}
+              </p>
+              <p className="mt-2 text-[15px] leading-[1.6] text-white/80">{b.t}</p>
+            </div>
           ))}
         </div>
 
-        <section className="mt-10 rounded-[24px] border border-livv-accent/25 bg-livv-accent/[0.07] p-5">
-          <p className="text-[10px] uppercase tracking-[0.22em] text-livv-accent-soft">The move</p>
-          <p className="mt-2 text-[15px] leading-relaxed text-white/85">{article.move}</p>
+        <section
+          className="mt-8 overflow-hidden rounded-[26px] border p-5"
+          style={{ borderColor: `${desk.hex}55`, background: `linear-gradient(180deg, ${desk.hex}22, rgba(255,255,255,0.03))` }}
+        >
+          <p className="text-[10px] font-semibold uppercase tracking-[0.22em]" style={{ color: desk.hex }}>
+            Do this now
+          </p>
+          <p className="mt-2 text-[16px] leading-relaxed text-white">{article.move}</p>
           <button
             type="button"
             onClick={markRead}
-            className="mt-4 w-full rounded-full bg-white py-3 text-[13px] font-semibold text-black"
+            className="mt-5 w-full rounded-full py-3.5 text-[14px] font-semibold text-black"
+            style={{ background: desk.hex }}
           >
-            {did ? "Logged to Mind" : "I did the move · log it"}
+            {did ? "Logged. Next page ↓" : "I did it · log + embers"}
           </button>
         </section>
 
         <section className="mt-10">
-          <p className="text-[10px] uppercase tracking-[0.24em] text-white/30">Sources</p>
+          <p className="text-[10px] uppercase tracking-[0.22em] text-white/30">Read the source</p>
           <ul className="mt-3 space-y-2">
             {article.sources.map((s) => (
               <li key={s.href}>
@@ -70,28 +106,34 @@ export default function WikiArticlePage() {
                   href={s.href}
                   target={s.href.startsWith("/") ? undefined : "_blank"}
                   rel={s.href.startsWith("/") ? undefined : "noreferrer"}
-                  className="block rounded-2xl border border-white/8 bg-white/[0.03] px-4 py-3 text-[13px] text-white/70"
+                  className="flex items-center gap-3 rounded-2xl border border-white/12 bg-white/[0.05] px-4 py-3.5 active:scale-[0.98]"
                 >
-                  {s.label}
-                  <span className="mt-1 block truncate text-[10px] text-white/25">{s.href}</span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block text-[14px] font-medium text-white/85">{s.label}</span>
+                    <span className="mt-0.5 block truncate text-[10px] text-white/30">{s.href.replace("https://", "")}</span>
+                  </span>
+                  <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full text-black" style={{ background: desk.hex }}>
+                    ↗
+                  </span>
                 </a>
               </li>
             ))}
           </ul>
         </section>
 
-        {related.length > 0 && (
-          <section className="mt-12">
-            <p className="text-[10px] uppercase tracking-[0.24em] text-white/30">Same desk</p>
-            <div className="mt-3 space-y-2">
-              {related.map((a) => (
-                <Link key={a.slug} href={`/home/mind/${a.slug}`} className="block text-[14px] text-white/55">
-                  {a.title} →
-                </Link>
-              ))}
-            </div>
-          </section>
-        )}
+        <Link
+          href={`/home/mind/${nxt.slug}`}
+          onClick={() => feedback("tick")}
+          className="mt-10 flex items-center gap-4 rounded-[26px] border border-white/12 bg-white/[0.05] p-4 active:scale-[0.98]"
+        >
+          <div className="min-w-0 flex-1">
+            <p className="text-[10px] uppercase tracking-[0.2em] text-white/30">Next page</p>
+            <p className="mt-1 text-[17px] font-semibold leading-snug">{nxt.title}</p>
+          </div>
+          <span className="grid h-12 w-12 shrink-0 place-items-center rounded-full text-lg font-semibold text-black" style={{ background: deskMeta(nxt.desk).hex }}>
+            →
+          </span>
+        </Link>
       </article>
     </main>
   );
