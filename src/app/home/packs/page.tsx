@@ -178,7 +178,7 @@ export default function PacksPage() {
           </div>
         </section>
 
-        <p className="mt-12 text-[11px] leading-relaxed text-white/20">Free cadence still runs on your tier. Paid packs stack on top. Spark $2.49 · Rise $5.99 · Signal $11.99 · Apex $24.99.</p>
+        <p className="mt-12 text-[11px] leading-relaxed text-white/20">Free cadence still runs on your tier. Paid packs stack on top. Spark $2.49 · Rise $9.99 · Signal $49.99 · Apex $99.</p>
       </div>
 
       {opening && <PackOpenModal packId={opening.id} grade={opening.grade} onClose={() => { setOpening(null); sync(); }} />}
