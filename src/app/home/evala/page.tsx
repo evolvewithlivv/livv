@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { AmbientField } from "@/components/layout/ambient-field";
 import { livePillars, loadRecord, logCustomAction, setObjective, todaysCustom, todaysObjectives, type LivvRecord } from "@/lib/record";
+import { loadIdentity } from "@/lib/identity";
 import { evolutionTitle } from "@/lib/levels";
 import { strongestPillar, needsAttention } from "@/lib/command";
 import { feedback } from "@/lib/sensory";
@@ -21,6 +22,7 @@ export default function EvalaPage() {
   const [rec, setRec] = useState<LivvRecord | null>(null);
   const [draft, setDraft] = useState("");
   const [thread, setThread] = useState<{ role: "you" | "evala"; text: string }[]>([]);
+  const [busy, setBusy] = useState(false);
   const [logOpen, setLogOpen] = useState(false);
   const [title, setTitle] = useState("");
   const [pillar, setPillar] = useState("Mind");
@@ -51,20 +53,41 @@ export default function EvalaPage() {
 
   if (!rec || !briefing) return <main className="min-h-dvh bg-[#030405]" />;
 
-  const ask = (question: string) => {
+  const snapshot = () => {
+    const me = loadIdentity();
+    return {
+      name: me.displayName || me.username,
+      level: rec.level,
+      streak: rec.streak,
+      embers: me.embers,
+      evo: briefing.evo.name,
+      strong: briefing.strong.name,
+      weak: briefing.weak.name,
+      open: briefing.open.map((o) => o.title),
+      lastWorkout: rec.lastWorkout?.name || null,
+    };
+  };
+
+  const ask = async (question: string) => {
     const q = question.trim();
-    if (!q) return;
+    if (!q || busy) return;
     feedback("tick");
-    const strong = strongestPillar(rec);
-    const weak = needsAttention(rec);
-    const objs = todaysObjectives(rec).filter((o) => !o.completed);
-    let answer = `From your record: ${briefing.evo.name} (Lv ${rec.level}). ${strong.name} is ahead. ${weak.name} needs weight. `;
-    if (objs[0]) answer += `Still open today — ${objs[0].title}. Do that before inventing new work.`;
-    else answer += `Today’s loops are clear. Protect recovery or deepen ${weak.name}.`;
-    if (/money|spend|finance/i.test(q)) answer = "Finance only moves when it is logged. Track one spend or transfer today. Silence here is usually avoidance, not strategy.";
-    if (/train|body|workout/i.test(q)) answer = rec.lastWorkout ? `Last session: ${rec.lastWorkout.name}. Repeat it or open Train and start without redesigning the plan.` : "No session on record. Open Train. Ten minutes counts.";
-    setThread((t) => [...t, { role: "you", text: q }, { role: "evala", text: answer }]);
     setDraft("");
+    setThread((t) => [...t, { role: "you", text: q }]);
+    setBusy(true);
+    try {
+      const res = await fetch("/api/evala", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ question: q, snapshot: snapshot() }),
+      });
+      const data = (await res.json()) as { text?: string };
+      setThread((t) => [...t, { role: "evala", text: data.text || "Say that again." }]);
+    } catch {
+      setThread((t) => [...t, { role: "evala", text: "I could not reach the live layer. Ask again in a second." }]);
+    } finally {
+      setBusy(false);
+    }
   };
 
   const pillars = livePillars(rec);
@@ -85,7 +108,7 @@ export default function EvalaPage() {
           <div>
             <p className="text-[10px] font-medium uppercase tracking-[0.34em] text-white/30">Intelligence layer</p>
             <h1 className="font-display mt-2 text-[36px] font-semibold tracking-tight">Evala</h1>
-            <p className="mt-2 max-w-[29ch] text-[14px] leading-relaxed text-white/40">Your life, interpreted. Your next move, made obvious.</p>
+            <p className="mt-2 max-w-[29ch] text-[14px] leading-relaxed text-white/40">Ask what is actually going on. It will answer that, not a script.</p>
           </div>
           <div className="livv-breathe relative mt-1 flex h-12 w-12 items-center justify-center rounded-full ring-1 ring-livv-accent/30" style={{ background: "radial-gradient(circle, rgb(var(--livv-accent) / .2), transparent 68%)", boxShadow: "0 0 36px rgb(var(--livv-accent) / .15)" }}>
             <span className="h-2.5 w-2.5 rounded-full bg-livv-accent shadow-[0_0_18px_rgb(var(--livv-accent)/.9)]" />
@@ -135,10 +158,11 @@ export default function EvalaPage() {
         </section>
 
         <section className="mt-11">
-          <div className="flex items-end justify-between"><div><p className="text-[10px] uppercase tracking-[0.28em] text-white/30">Ask Evala</p><p className="mt-1 text-[12px] text-white/25">No generic answers. Use your record.</p></div></div>
+          <div className="flex items-end justify-between"><div><p className="text-[10px] uppercase tracking-[0.28em] text-white/30">Ask Evala</p><p className="mt-1 text-[12px] text-white/25">It reads your question plus your record.</p></div></div>
           <div className="mt-4 flex gap-2 overflow-x-auto pb-1">{PROMPTS.map((p) => <button key={p} type="button" onClick={() => ask(p)} className="shrink-0 rounded-full border border-white/10 bg-white/[0.025] px-3 py-2 text-[11px] text-white/45">{p}</button>)}</div>
           <div className="mt-5 space-y-4">{thread.map((m, i) => <div key={i} className={m.role === "you" ? "text-right" : "text-left"}><p className="text-[9px] uppercase tracking-[0.2em] text-white/20">{m.role === "you" ? "You" : "Evala"}</p><p className={cn("mt-1 inline-block max-w-[92%] rounded-2xl px-3.5 py-3 text-[13px] leading-relaxed", m.role === "you" ? "bg-white/[0.04] text-white/55" : "bg-livv-accent/[0.07] text-white/80 ring-1 ring-livv-accent/10")}>{m.text}</p></div>)}</div>
-          <div className="mt-5 flex gap-2"><input value={draft} onChange={(e) => setDraft(e.target.value)} onKeyDown={(e) => e.key === "Enter" && ask(draft)} placeholder="Ask from your actual life…" className="h-12 min-w-0 flex-1 rounded-2xl bg-white/[0.035] px-4 text-sm outline-none ring-1 ring-white/10 placeholder:text-white/20" /><button type="button" onClick={() => ask(draft)} className="h-12 rounded-2xl bg-white px-5 text-sm font-semibold text-black">Ask</button></div>
+          {busy && <p className="mt-3 text-[11px] text-white/30">Evala is reading it…</p>}
+          <div className="mt-5 flex gap-2"><input value={draft} onChange={(e) => setDraft(e.target.value)} onKeyDown={(e) => e.key === "Enter" && ask(draft)} placeholder="Ask from your actual life…" className="h-12 min-w-0 flex-1 rounded-2xl bg-white/[0.035] px-4 text-sm outline-none ring-1 ring-white/10 placeholder:text-white/20" /><button type="button" disabled={busy} onClick={() => ask(draft)} className="h-12 rounded-2xl bg-white px-5 text-sm font-semibold text-black disabled:opacity-40">Ask</button></div>
         </section>
 
         <Link href="/home/progress" className="mt-11 flex items-center justify-between border-t border-white/[0.06] pt-5 text-[13px] text-white/35"><span>See the full evolution story</span><span>→</span></Link>
