@@ -6,120 +6,34 @@ import { applyPackGrants } from "./pack-grants";
 
 export type Rarity = "common" | "elevated" | "rare" | "apex";
 export type PackGrade = 1 | 2 | 3 | 4;
-
-export type CardDef = {
-  id: string;
-  name: string;
-  line: string;
-  pillar: string;
-  rarity: Rarity;
-  hue: number;
-};
-
-export type OwnedCard = {
-  instanceId: string;
-  cardId: string;
-  openedAt: number;
-  fromGrade: PackGrade;
-};
-
-export type PendingPack = {
-  id: string;
-  grade: PackGrade;
-  grantedAt: number;
-};
-
-export type PackState = {
-  pending: PendingPack[];
-  owned: OwnedCard[];
-  lastGrantAt: number | null;
-  totalOpened: number;
-};
+export type CardDef = { id: string; name: string; line: string; pillar: string; rarity: Rarity; hue: number };
+export type OwnedCard = { instanceId: string; cardId: string; openedAt: number; fromGrade: PackGrade };
+export type PendingPack = { id: string; grade: PackGrade; grantedAt: number };
+export type PackState = { pending: PendingPack[]; owned: OwnedCard[]; lastGrantAt: number | null; totalOpened: number };
 
 const KEY = "livv-packs-v2";
 
-export const RARITY_META: Record<
-  Rarity,
-  { label: string; weight: number; glow: string }
-> = {
+export const RARITY_META: Record<Rarity, { label: string; weight: number; glow: string }> = {
   common: { label: "Common", weight: 55, glow: "rgba(180,190,210,0.35)" },
   elevated: { label: "Elevated", weight: 28, glow: "rgba(76,141,255,0.45)" },
   rare: { label: "Rare", weight: 13, glow: "rgba(168,130,255,0.5)" },
   apex: { label: "Apex", weight: 4, glow: "rgba(255,210,120,0.55)" },
 };
 
-export const GRADE_META: Record<
-  PackGrade,
-  {
-    name: string;
-    subtitle: string;
-    foilFrom: string;
-    foilTo: string;
-    purchasableOnly?: boolean;
-    rarityBias: Rarity[];
-  }
-> = {
-  1: {
-    name: "Spark Pack",
-    subtitle: "Minimum tier",
-    foilFrom: "#1a4a9e",
-    foilTo: "#4C8DFF",
-    rarityBias: ["common", "common", "elevated"],
-  },
-  2: {
-    name: "Rise Pack",
-    subtitle: "Above minimum",
-    foilFrom: "#3a2a7a",
-    foilTo: "#9b7cff",
-    rarityBias: ["elevated", "elevated", "rare"],
-  },
-  3: {
-    name: "Signal Pack",
-    subtitle: "Third tier",
-    foilFrom: "#8ec5ff",
-    foilTo: "#f5c2e7",
-    rarityBias: ["rare", "rare", "apex"],
-  },
-  4: {
-    name: "Apex Pack",
-    subtitle: "Purchase only",
-    foilFrom: "#5a3a10",
-    foilTo: "#F5C542",
-    purchasableOnly: true,
-    rarityBias: ["apex", "rare", "apex"],
-  },
+/* Canonical order: Spark → Rise → Apex → Signal. Signal is the premium purchasable grade. */
+export const GRADE_META: Record<PackGrade, { name: string; subtitle: string; foilFrom: string; foilTo: string; purchasableOnly?: boolean; rarityBias: Rarity[] }> = {
+  1: { name: "Spark Pack", subtitle: "Minimum tier", foilFrom: "#1a4a9e", foilTo: "#4C8DFF", rarityBias: ["common", "common", "elevated"] },
+  2: { name: "Rise Pack", subtitle: "Above minimum", foilFrom: "#3a2a7a", foilTo: "#9b7cff", rarityBias: ["elevated", "elevated", "rare"] },
+  3: { name: "Apex Pack", subtitle: "Third tier", foilFrom: "#5a3a10", foilTo: "#F5C542", rarityBias: ["apex", "rare", "apex"] },
+  4: { name: "Signal Pack", subtitle: "Purchase only", foilFrom: "#8ec5ff", foilTo: "#f5c2e7", purchasableOnly: true, rarityBias: ["rare", "rare", "apex"] },
 };
 
-export function packEntitlement(tier: LivvTier): {
-  intervalMs: number;
-  grants: PackGrade[];
-  label: string;
-} {
+export function packEntitlement(tier: LivvTier): { intervalMs: number; grants: PackGrade[]; label: string } {
   switch (tier) {
-    case "rise":
-      return {
-        intervalMs: 12 * 60 * 60 * 1000,
-        grants: [1],
-        label: "Every 12 hours · Spark Pack",
-      };
-    case "apex":
-      return {
-        intervalMs: 12 * 60 * 60 * 1000,
-        grants: [2],
-        label: "Every 12 hours · Rise Pack",
-      };
-    case "circle":
-      return {
-        intervalMs: 24 * 60 * 60 * 1000,
-        grants: [1, 1, 2, 2, 3],
-        label: "Every 24 hours · 5 packs",
-      };
-    default:
-      return {
-        intervalMs: 24 * 60 * 60 * 1000,
-        grants: [1],
-        label: "Every 24 hours · Spark Pack",
-      };
+    case "rise": return { intervalMs: 12 * 60 * 60 * 1000, grants: [1], label: "Every 12 hours · Spark Pack" };
+    case "apex": return { intervalMs: 12 * 60 * 60 * 1000, grants: [2], label: "Every 12 hours · Rise Pack" };
+    case "circle": return { intervalMs: 24 * 60 * 60 * 1000, grants: [1, 1, 2, 2, 3], label: "Every 24 hours · 5 packs" };
+    default: return { intervalMs: 24 * 60 * 60 * 1000, grants: [1], label: "Every 24 hours · Spark Pack" };
   }
 }
 
@@ -142,21 +56,9 @@ export const CARD_CATALOG: CardDef[] = [
   { id: "c_momentum", name: "Momentum", line: "Day three is where most people quit.", pillar: "Life", rarity: "elevated", hue: 205 },
 ];
 
-export function getCard(id: string) {
-  return CARD_CATALOG.find((c) => c.id === id) || CARD_CATALOG[0];
-}
-
-const EMPTY: PackState = {
-  pending: [],
-  owned: [],
-  lastGrantAt: null,
-  totalOpened: 0,
-};
-
-function withGrants(state: PackState): PackState {
-  if (typeof window === "undefined") return state;
-  return applyPackGrants(loadIdentity().username, state);
-}
+export function getCard(id: string) { return CARD_CATALOG.find((c) => c.id === id) || CARD_CATALOG[0]; }
+const EMPTY: PackState = { pending: [], owned: [], lastGrantAt: null, totalOpened: 0 };
+function withGrants(state: PackState): PackState { if (typeof window === "undefined") return state; return applyPackGrants(loadIdentity().username, state); }
 
 export function loadPacks(): PackState {
   if (typeof window === "undefined") return { ...EMPTY, pending: [], owned: [] };
@@ -167,19 +69,8 @@ export function loadPacks(): PackState {
       if (old) {
         const p = JSON.parse(old);
         return withGrants({
-          pending: (p.pending || []).map((x: { id: string; grantedAt: number }) => ({
-            id: x.id,
-            grade: 1 as PackGrade,
-            grantedAt: x.grantedAt,
-          })),
-          owned: (p.owned || []).map(
-            (x: OwnedCard & { fromPack?: string }) => ({
-              instanceId: x.instanceId,
-              cardId: x.cardId,
-              openedAt: x.openedAt,
-              fromGrade: 1 as PackGrade,
-            })
-          ),
+          pending: (p.pending || []).map((x: { id: string; grantedAt: number }) => ({ id: x.id, grade: 1 as PackGrade, grantedAt: x.grantedAt })),
+          owned: (p.owned || []).map((x: OwnedCard & { fromPack?: string }) => ({ instanceId: x.instanceId, cardId: x.cardId, openedAt: x.openedAt, fromGrade: 1 as PackGrade })),
           lastGrantAt: p.lastDailyDay ? Date.now() - 1000 : null,
           totalOpened: p.totalOpened || 0,
         });
@@ -187,142 +78,37 @@ export function loadPacks(): PackState {
       return withGrants({ ...EMPTY, pending: [], owned: [] });
     }
     const p = JSON.parse(raw) as PackState;
-    return withGrants({
-      pending: p.pending || [],
-      owned: p.owned || [],
-      lastGrantAt: p.lastGrantAt ?? null,
-      totalOpened: p.totalOpened || 0,
-    });
-  } catch {
-    return withGrants({ ...EMPTY, pending: [], owned: [] });
-  }
+    return withGrants({ pending: p.pending || [], owned: p.owned || [], lastGrantAt: p.lastGrantAt ?? null, totalOpened: p.totalOpened || 0 });
+  } catch { return withGrants({ ...EMPTY, pending: [], owned: [] }); }
 }
 
-export function savePacks(state: PackState) {
-  if (typeof window === "undefined") return;
-  window.localStorage.setItem(KEY, JSON.stringify(state));
-  window.dispatchEvent(new Event("livv-packs"));
-}
-
-export function nextGrantAt(tier?: LivvTier): number | null {
-  const state = loadPacks();
-  if (!state.lastGrantAt) return Date.now();
-  const t = tier || loadIdentity().tier;
-  const { intervalMs } = packEntitlement(t);
-  return state.lastGrantAt + intervalMs;
-}
-
-export function msUntilNextPack(tier?: LivvTier): number {
-  const at = nextGrantAt(tier);
-  if (at === null) return 0;
-  return Math.max(0, at - Date.now());
-}
-
-export function canClaimPacks(tier?: LivvTier): boolean {
-  return msUntilNextPack(tier) <= 0;
-}
-
+export function savePacks(state: PackState) { if (typeof window === "undefined") return; window.localStorage.setItem(KEY, JSON.stringify(state)); window.dispatchEvent(new Event("livv-packs")); }
+export function nextGrantAt(tier?: LivvTier): number | null { const state = loadPacks(); if (!state.lastGrantAt) return Date.now(); const t = tier || loadIdentity().tier; return state.lastGrantAt + packEntitlement(t).intervalMs; }
+export function msUntilNextPack(tier?: LivvTier): number { const at = nextGrantAt(tier); return at === null ? 0 : Math.max(0, at - Date.now()); }
+export function canClaimPacks(tier?: LivvTier): boolean { return msUntilNextPack(tier) <= 0; }
 export function claimPacksIfDue(): PackState {
-  const identity = loadIdentity();
-  const state = loadPacks();
-  const { intervalMs, grants } = packEntitlement(identity.tier);
-  const now = Date.now();
-
-  if (state.lastGrantAt && now - state.lastGrantAt < intervalMs) {
-    return state;
-  }
-
-  for (const grade of grants) {
-    state.pending.push({
-      id: `pack_${grade}_${now}_${Math.random().toString(36).slice(2, 6)}`,
-      grade,
-      grantedAt: now,
-    });
-  }
-  state.lastGrantAt = now;
-  savePacks(state);
-  return state;
+  const identity = loadIdentity(); const state = loadPacks(); const { intervalMs, grants } = packEntitlement(identity.tier); const now = Date.now();
+  if (state.lastGrantAt && now - state.lastGrantAt < intervalMs) return state;
+  for (const grade of grants) state.pending.push({ id: `pack_${grade}_${now}_${Math.random().toString(36).slice(2, 6)}`, grade, grantedAt: now });
+  state.lastGrantAt = now; savePacks(state); return state;
 }
 
-export function purchaseApexPack(): PackState {
-  const state = loadPacks();
-  state.pending.push({
-    id: `pack_4_${Date.now()}`,
-    grade: 4,
-    grantedAt: Date.now(),
-  });
-  savePacks(state);
-  return state;
-}
+export function purchaseSignalPack(): PackState { const state = loadPacks(); state.pending.push({ id: `pack_4_${Date.now()}`, grade: 4, grantedAt: Date.now() }); savePacks(state); return state; }
+/** Backward-compatible export for older UI callers. */
+export const purchaseApexPack = purchaseSignalPack;
 
-function rollFromBias(bias: Rarity[]): Rarity {
-  return bias[Math.floor(Math.random() * bias.length)];
-}
-
-function pickCard(rarity: Rarity): CardDef {
-  let pool = CARD_CATALOG.filter((c) => c.rarity === rarity);
-  if (!pool.length) pool = CARD_CATALOG.filter((c) => c.rarity === "common");
-  return pool[Math.floor(Math.random() * pool.length)];
-}
-
+function rollFromBias(bias: Rarity[]): Rarity { return bias[Math.floor(Math.random() * bias.length)]; }
+function pickCard(rarity: Rarity): CardDef { let pool = CARD_CATALOG.filter((c) => c.rarity === rarity); if (!pool.length) pool = CARD_CATALOG.filter((c) => c.rarity === "common"); return pool[Math.floor(Math.random() * pool.length)]; }
 export function openPack(packId: string): { card: CardDef; owned: OwnedCard } | null {
-  const state = loadPacks();
-  const idx = state.pending.findIndex((p) => p.id === packId);
-  if (idx < 0) return null;
-  const pack = state.pending[idx];
-  const meta = GRADE_META[pack.grade];
-  const rarity = rollFromBias(meta.rarityBias);
-  const card = pickCard(rarity);
-  const owned: OwnedCard = {
-    instanceId: `own_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
-    cardId: card.id,
-    openedAt: Date.now(),
-    fromGrade: pack.grade,
-  };
-  state.pending.splice(idx, 1);
-  state.owned.unshift(owned);
-  state.totalOpened += 1;
-  savePacks(state);
-  return { card, owned };
+  const state = loadPacks(); const idx = state.pending.findIndex((p) => p.id === packId); if (idx < 0) return null; const pack = state.pending[idx];
+  const rarity = rollFromBias(GRADE_META[pack.grade].rarityBias); const card = pickCard(rarity);
+  const owned: OwnedCard = { instanceId: `own_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`, cardId: card.id, openedAt: Date.now(), fromGrade: pack.grade };
+  state.pending.splice(idx, 1); state.owned.unshift(owned); state.totalOpened += 1; savePacks(state); return { card, owned };
 }
-
-export function pendingPacks() {
-  return loadPacks().pending;
-}
-
-export function ownedCards() {
-  return loadPacks().owned;
-}
-
-export function collectionStats() {
-  const state = loadPacks();
-  const unique = new Set(state.owned.map((o) => o.cardId));
-  return {
-    totalOpened: state.totalOpened,
-    ownedCount: state.owned.length,
-    uniqueCount: unique.size,
-    catalogSize: CARD_CATALOG.length,
-    pending: state.pending.length,
-  };
-}
-
-export function formatCountdown(ms: number): string {
-  if (ms <= 0) return "Ready";
-  const s = Math.floor(ms / 1000);
-  const h = Math.floor(s / 3600);
-  const m = Math.floor((s % 3600) / 60);
-  const sec = s % 60;
-  if (h > 0) return `${h}h ${String(m).padStart(2, "0")}m ${String(sec).padStart(2, "0")}s`;
-  return `${m}m ${String(sec).padStart(2, "0")}s`;
-}
-
+export function pendingPacks() { return loadPacks().pending; }
+export function ownedCards() { return loadPacks().owned; }
+export function collectionStats() { const state = loadPacks(); const unique = new Set(state.owned.map((o) => o.cardId)); return { totalOpened: state.totalOpened, ownedCount: state.owned.length, uniqueCount: unique.size, catalogSize: CARD_CATALOG.length, pending: state.pending.length }; }
+export function formatCountdown(ms: number): string { if (ms <= 0) return "Ready"; const s = Math.floor(ms / 1000); const h = Math.floor(s / 3600); const m = Math.floor((s % 3600) / 60); const sec = s % 60; if (h > 0) return `${h}h ${String(m).padStart(2, "0")}m ${String(sec).padStart(2, "0")}s`; return `${m}m ${String(sec).padStart(2, "0")}s`; }
 export type PackKind = "daily" | "streak" | "pillar" | "apex";
-export const PACK_META = {
-  daily: GRADE_META[1],
-  streak: GRADE_META[2],
-  pillar: GRADE_META[3],
-  apex: GRADE_META[4],
-};
-export function tryGrantDailyPack() {
-  return claimPacksIfDue();
-}
+export const PACK_META = { daily: GRADE_META[1], streak: GRADE_META[2], pillar: GRADE_META[3], apex: GRADE_META[4] };
+export function tryGrantDailyPack() { return claimPacksIfDue(); }
