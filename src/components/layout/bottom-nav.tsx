@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Brain, Dumbbell, Home, Package, UserRound, Clock3 } from "lucide-react";
+import { Brain, Dumbbell, Home, Package, UserRound, Clock3, Store } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const NAV_ITEMS = [
@@ -11,6 +11,7 @@ const NAV_ITEMS = [
   { href: "/home/train", label: "Train", color: "#ff6b91", match: (p: string) => p.startsWith("/home/train"), Icon: Dumbbell },
   { href: "/home/mind", label: "Mind", color: "#b28cff", match: (p: string) => p.startsWith("/home/mind") || p.startsWith("/home/canon") || p.startsWith("/home/lab") || p.startsWith("/home/evala"), Icon: Brain },
   { href: "/home/packs", label: "Packs", color: "#36e0a3", match: (p: string) => p.startsWith("/home/packs") || p.startsWith("/home/vault"), Icon: Package },
+  { href: "/home/shop", label: "Shop", color: "#ff9f43", match: (p: string) => p.startsWith("/home/shop"), Icon: Store },
   { href: "/home/profile", label: "You", color: "#ff73bb", match: (p: string) => p.startsWith("/home/profile") || p.startsWith("/home/settings") || p.startsWith("/home/progress") || p.startsWith("/home/connect") || p.startsWith("/home/messages"), Icon: UserRound },
 ] as const;
 
@@ -19,12 +20,12 @@ export function BottomNav() {
 
   return (
     <nav
-      className="fixed inset-x-0 bottom-0 z-[80] shrink-0 px-3 pt-2"
+      className="fixed inset-x-0 bottom-0 z-[80] shrink-0 px-2 pt-2"
       style={{ paddingBottom: "max(0.65rem, env(safe-area-inset-bottom))" }}
       aria-label="Primary"
     >
       <div
-        className="mx-auto flex max-w-lg items-stretch justify-between gap-1 rounded-[30px] px-1.5 py-1.5"
+        className="mx-auto flex max-w-lg items-stretch justify-between gap-0.5 rounded-[30px] px-1.5 py-1.5"
         style={{
           background: "rgba(7, 10, 16, 0.30)",
           boxShadow: "0 24px 70px rgba(0,0,0,.58), 0 0 42px rgba(92,145,255,.075), inset 0 1px 0 rgba(255,255,255,.035)",
@@ -61,7 +62,7 @@ export function BottomNav() {
                   filter: `drop-shadow(0 0 ${active ? 7 : 3}px ${item.color}) drop-shadow(0 0 ${active ? 16 : 7}px ${item.color}${active ? "66" : "30"})`,
                 }}
               >
-                <Icon size={22} strokeWidth={active ? 2.2 : 1.8} />
+                <Icon size={21} strokeWidth={active ? 2.2 : 1.8} />
               </span>
               <span
                 className="relative z-10 max-w-full truncate text-[9px] font-semibold tracking-wide"
