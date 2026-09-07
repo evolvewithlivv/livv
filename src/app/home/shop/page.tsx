@@ -16,7 +16,7 @@ const PRODUCTS = [
     name: "Essential Long Sleeve Tee",
     subtitle: "White / Black Logo",
     price: "$44.99",
-    image: "https://cdn.shopify.com/s/files/1/1091/3644/5726/files/unisex-long-sleeve-tee-white-front-6aee93df3eae.png?v=1788799311",
+    image: "https://cdn.shopify.com/s/files/1/1091/3644/5726/files/unisex-long-sleeve-tee-white-front-6a9ee93df3eae.png?v=1788799311",
     href: `${SHOP_URL}/products/livv-essential-long-sleeve-tee`,
   },
 ];
