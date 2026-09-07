@@ -140,9 +140,11 @@ export default function PacksPage() {
         </section>
 
         <section className="mt-12">
-          <p className="text-[10px] uppercase tracking-[0.28em] text-white/30">Buy packs</p>
-          <p className="mt-2 text-[13px] leading-relaxed text-white/40">Membership still drops free packs on cadence. These are extra. Cards you pull now are the inventory for cosmetics, trades, and status later.</p>
-          <div className="mt-4 space-y-2">
+          <p className="text-[10px] uppercase tracking-[0.28em] text-white/30">Optional pulls</p>
+          <p className="mt-2 text-[15px] font-medium leading-snug text-white/80">You do not need to buy a pack to use LIVV.</p>
+          <p className="mt-3 text-[13px] leading-relaxed text-white/42">Daily, Train, Mind, Connect, and your free cadence all run if you never tap Buy. A paid pack is not a key. It is a vote to take LIVV off the screen.</p>
+          <p className="mt-3 text-[13px] leading-relaxed text-white/42">When you do buy, you are funding the first merch cuts and putting them on people who already live the standard. Not a store dump. The right bodies, on purpose.</p>
+          <div className="mt-5 space-y-2">
             {([1, 2, 3, 4] as PackGrade[]).map((g) => {
               const m = GRADE_META[g];
               const shop = PACK_SHOP[g];
@@ -178,7 +180,7 @@ export default function PacksPage() {
           </div>
         </section>
 
-        <p className="mt-12 text-[11px] leading-relaxed text-white/20">Free cadence still runs on your tier. Paid packs stack on top. Spark $2.49 · Rise $9.99 · Signal $49.99 · Apex $99.</p>
+        <p className="mt-12 text-[11px] leading-relaxed text-white/20">Paid packs are optional. They do not unlock the product. They help build the physical layer and get it to the people who should be wearing it.</p>
       </div>
 
       {opening && <PackOpenModal packId={opening.id} grade={opening.grade} onClose={() => { setOpening(null); sync(); }} />}
