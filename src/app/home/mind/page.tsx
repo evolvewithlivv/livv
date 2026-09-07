@@ -26,7 +26,7 @@ export default function MindWikiPage() {
         <p className="text-[10px] font-medium uppercase tracking-[0.34em] text-white/30">Field wiki</p>
         <h1 className="font-display mt-2 text-[38px] font-semibold tracking-tight">What we stand on.</h1>
         <p className="mt-3 max-w-[36ch] text-[14px] leading-relaxed text-white/40">
-          Sourced pages for people inside LIVV. Not a feed. Not a book log. Read it, do the move at the bottom, keep evolving.
+          Tap a card. Each one is a full sourced page with a move at the bottom.
         </p>
 
         <div className="mt-6 flex gap-2 overflow-x-auto pb-1">
@@ -36,30 +36,49 @@ export default function MindWikiPage() {
           ))}
         </div>
 
-        <section className="mt-8 rounded-[28px] border border-livv-accent/20 bg-livv-accent/[0.06] p-5">
-          <p className="text-[10px] uppercase tracking-[0.24em] text-livv-accent-soft">Start here</p>
-          <Link href="/home/mind/how-livv-wants-to-be-used" className="block">
-            <p className="font-display mt-2 text-[24px] leading-tight">How LIVV wants to be used</p>
-            <p className="mt-2 text-[13px] text-white/45">The wiki, Daily, Train, Embers — what is actually the point.</p>
-          </Link>
-        </section>
+        <p className="mt-8 text-[10px] font-semibold uppercase tracking-[0.28em] text-white/30">
+          {list.length} articles · tap to open
+        </p>
 
-        <section className="mt-8 space-y-3">
+        <Link
+          href="/home/mind/how-livv-wants-to-be-used"
+          className="mt-3 flex items-center gap-4 rounded-[26px] border border-livv-accent/35 bg-livv-accent/[0.12] p-4 active:scale-[0.98]"
+        >
+          <div className="min-w-0 flex-1">
+            <p className="text-[10px] uppercase tracking-[0.22em] text-livv-accent-soft">Start here · open page</p>
+            <p className="font-display mt-1 text-[22px] leading-tight">How LIVV wants to be used</p>
+          </div>
+          <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-white text-lg font-semibold text-black">
+            →
+          </span>
+        </Link>
+
+        <section className="mt-4 space-y-3">
           {list.map((a) => (
-            <Link key={a.slug} href={`/home/mind/${a.slug}`} className="block rounded-[24px] border border-white/8 bg-white/[0.03] p-4 transition active:scale-[0.99]">
-              <div className="flex items-center justify-between gap-3">
-                <p className="text-[9px] uppercase tracking-[0.2em] text-white/30">{a.desk}</p>
-                <p className="text-[9px] uppercase tracking-[0.16em] text-white/20">{a.readMins} min</p>
+            <Link
+              key={a.slug}
+              href={`/home/mind/${a.slug}`}
+              className="flex items-stretch gap-3 rounded-[24px] border border-white/12 bg-white/[0.05] p-3.5 active:scale-[0.98]"
+            >
+              <div className="min-w-0 flex-1">
+                <div className="flex items-center gap-2">
+                  <span className="rounded-full bg-white/10 px-2 py-0.5 text-[9px] font-semibold uppercase tracking-[0.16em] text-white/55">
+                    {a.desk}
+                  </span>
+                  <span className="text-[9px] uppercase tracking-[0.14em] text-white/30">{a.readMins} min read</span>
+                </div>
+                <p className="mt-2 text-[16px] font-semibold leading-snug">{a.title}</p>
+                <p className="mt-1 line-clamp-2 text-[12px] leading-relaxed text-white/38">{a.hook}</p>
+                <p className="mt-3 text-[11px] font-semibold uppercase tracking-[0.16em] text-livv-accent-soft">
+                  Open article
+                </p>
               </div>
-              <p className="mt-2 text-[17px] font-semibold leading-snug">{a.title}</p>
-              <p className="mt-1 text-[13px] leading-relaxed text-white/40">{a.hook}</p>
+              <span className="grid h-11 w-11 shrink-0 self-center place-items-center rounded-full border border-white/15 bg-white/[0.08] text-white/80">
+                →
+              </span>
             </Link>
           ))}
         </section>
-
-        <p className="mt-10 text-center text-[11px] leading-relaxed text-white/25">
-          Every page names its sources. If a claim cannot be linked, it does not belong here.
-        </p>
       </div>
     </main>
   );
