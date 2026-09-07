@@ -144,7 +144,6 @@ export default function HomePage() {
           </div>
         </header>
 
-        {/* World state + quote */}
         <section className="relative mt-9 overflow-hidden rounded-[34px] border border-white/[0.09] bg-white/[0.025] px-6 pb-7 pt-6 shadow-2xl backdrop-blur-xl">
           <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-livv-accent/60 to-transparent" />
           <div className="relative flex items-start justify-between gap-5">
@@ -185,7 +184,6 @@ export default function HomePage() {
           )}
         </section>
 
-        {/* DAILY DROP CTA — the retention hook */}
         <Link href="/home/daily" className="mt-5 block" onClick={() => feedback("tick")}>
           <div
             className="relative overflow-hidden rounded-[28px] border px-5 py-5 transition active:scale-[0.99]"
@@ -212,9 +210,7 @@ export default function HomePage() {
                 </p>
                 <p className="mt-1 text-[12px] text-white/40">
                   Mind · Body · Life
-                  {daily && !daily.dropClaimed
-                    ? ` → ${daily.drop.name}`
-                    : ""}
+                  {daily && !daily.dropClaimed ? ` → ${daily.drop.name}` : ""}
                   {daily?.doubleXp ? " · 2× XP on" : ""}
                 </p>
               </div>
@@ -224,32 +220,6 @@ export default function HomePage() {
             </div>
             {daily && (
               <div className="mt-4 flex gap-1.5">
-                {daily.tasks.map((t) => (
-                  <span
-                    key={t.id}
-                    className={`h-1 flex-1 rounded-full ${
-                      daily.done > daily.tasks.findIndex((x) => x.id === t.id) ||
-                      (typeof window !== "undefined" &&
-                        dailySummary().done >=
-                          daily.tasks.findIndex((x) => x.id === t.id) + 1)
-                        ? "bg-livv-accent"
-                        : "bg-white/10"
-                    }`}
-                    style={{
-                      background:
-                        daily.tasks
-                          .slice(0, daily.done)
-                          .some((x) => x.id === t.id) || completedIncludes(daily, t.id)
-                          ? undefined
-                          : undefined,
-                    }}
-                  />
-                ))}
-                {/* simpler progress bars */}
-              </div>
-            )}
-            {daily && (
-              <div className="mt-3 flex gap-1.5">
                 {[0, 1, 2].map((i) => (
                   <span
                     key={i}
@@ -280,7 +250,7 @@ export default function HomePage() {
             <div className="mt-5 h-1 overflow-hidden rounded-full bg-white/[0.07]">
               <div
                 className="h-full rounded-full bg-livv-accent transition-all duration-700"
-                style={{ width: `${xpPct}%`, boxShadow: "0 0 18px rgb(var(--livv-accent) / 0.7)" }}
+                style={{ width: `${xpPct}%` }}
               />
             </div>
             <p className="mt-3 text-[11px] text-white/35">{evo.name}</p>
@@ -330,103 +300,37 @@ export default function HomePage() {
                 {done === total ? "Everything is aligned." : `${done} of ${total} signals active`}
               </p>
             </div>
-            <Link href="/home/progress" className="text-[10px] uppercase tracking-[0.18em] text-white/25">
-              View all
-            </Link>
           </div>
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-            {nodes.map((n) => (
-              <button
-                key={n.id}
-                type="button"
-                onClick={() => {
-                  feedback("tick");
-                  if (n.id === "self") {
-                    if (!checkedIn) onPrimary();
-                    return;
-                  }
-                  router.push(PILLAR_HREF[n.id] || "/home/evala");
-                }}
-                className="group relative overflow-hidden rounded-[25px] border border-white/[0.07] bg-white/[0.025] p-4 text-left backdrop-blur-xl transition active:scale-[0.98]"
-              >
-                <div className="relative flex items-center justify-between">
-                  <span
-                    className={`flex h-9 w-9 items-center justify-center rounded-full border ${
-                      n.done ? "border-livv-accent/35 bg-livv-accent/15" : "border-white/10 bg-white/[0.03]"
-                    }`}
-                  >
-                    <span
-                      className={`h-2 w-2 rounded-full ${
-                        n.done ? "bg-livv-accent shadow-[0_0_12px_rgb(var(--livv-accent)/0.9)]" : "bg-white/20"
-                      }`}
-                    />
-                  </span>
-                  <span className="text-[9px] uppercase tracking-[0.18em] text-white/20">
-                    {n.done ? "On" : "Open"}
-                  </span>
-                </div>
-                <p
-                  className={`relative mt-5 text-[11px] font-semibold uppercase tracking-[0.18em] ${
-                    n.done ? "text-white/75" : "text-white/35"
-                  }`}
-                >
-                  {n.name}
-                </p>
-              </button>
-            ))}
+          <div className="grid grid-cols-2 gap-3">
+            {nodes.map((node) => {
+              const href = PILLAR_HREF[node.id] || "/home";
+              return (
+                <Link key={node.id} href={href} className="rounded-[24px] border border-white/[0.08] bg-white/[0.025] p-4 transition hover:bg-white/[0.05] active:scale-[0.98]">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[9px] uppercase tracking-[0.26em] text-white/25">{node.name}</span>
+                    <span className={`h-2 w-2 rounded-full ${node.done ? "bg-livv-accent shadow-[0_0_12px_rgb(var(--livv-accent)/.8)]" : "bg-white/10"}`} />
+                  </div>
+                  <p className="mt-6 text-[13px] font-medium text-white/70">{node.done ? "Active" : "Open"}</p>
+                </Link>
+              );
+            })}
           </div>
         </section>
 
-        {(recent.length > 0 || quiet) && (
-          <section className="mt-9 rounded-[28px] border border-white/[0.07] bg-white/[0.02] p-5 backdrop-blur-xl">
-            <p className="text-[9px] font-semibold uppercase tracking-[0.3em] text-white/25">Momentum</p>
-            {quiet && (
-              <p className="mt-4 rounded-2xl bg-white/[0.025] px-4 py-3 text-[12px] text-white/35">
-                Yesterday was quiet. Data, not failure.
-              </p>
-            )}
-            {recent.length > 0 && (
-              <ul className="mt-4 space-y-2">
-                {recent.map((item, i) => (
-                  <li
-                    key={`${item}-${i}`}
-                    className="flex items-center gap-3 rounded-2xl bg-white/[0.02] px-3 py-2.5 text-[12px] text-white/50"
-                  >
-                    <span className="h-1.5 w-1.5 rounded-full bg-livv-accent" />
-                    {item}
-                  </li>
-                ))}
-              </ul>
-            )}
+        {recent.length > 0 && (
+          <section className="mt-9 pb-6">
+            <p className="px-1 text-[9px] font-semibold uppercase tracking-[0.32em] text-white/25">Recent</p>
+            <div className="mt-3 space-y-2">
+              {recent.map((item, i) => (
+                <div key={`${item}-${i}`} className="flex items-center justify-between rounded-2xl border border-white/[0.07] bg-white/[0.02] px-4 py-3">
+                  <span className="text-[12px] text-white/55">{item}</span>
+                  <span className="text-[10px] text-white/20">done</span>
+                </div>
+              ))}
+            </div>
           </section>
         )}
-
-        <nav className="mt-9 grid grid-cols-4 gap-2" aria-label="LIVV destinations">
-          {[
-            ["Daily", "/home/daily"],
-            ["Progress", "/home/progress"],
-            ["Evala", "/home/evala"],
-            ["Packs", "/home/packs"],
-          ].map(([label, href]) => (
-            <Link
-              key={label}
-              href={href}
-              className="rounded-2xl border border-white/[0.06] bg-white/[0.018] px-2 py-3 text-center text-[9px] font-medium uppercase tracking-[0.16em] text-white/30 transition hover:text-white/55 active:scale-[0.98]"
-            >
-              {label}
-            </Link>
-          ))}
-        </nav>
-
-        <p className="mt-8 text-center text-[9px] uppercase tracking-[0.28em] text-white/15">{evo.line}</p>
       </div>
     </main>
   );
-}
-
-function completedIncludes(
-  daily: NonNullable<ReturnType<typeof dailySummary>>,
-  id: string
-) {
-  return daily.done > daily.tasks.findIndex((t) => t.id === id);
 }
