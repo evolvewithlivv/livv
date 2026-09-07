@@ -10,7 +10,7 @@ const NAV_ITEMS = [
   { href: "/home/train", label: "Train", match: (p: string) => p.startsWith("/home/train") },
   { href: "/home/packs", label: "Packs", match: (p: string) => p.startsWith("/home/packs") || p.startsWith("/home/vault") },
   { href: "/home/connect", label: "Connect", match: (p: string) => p.startsWith("/home/connect") || p.startsWith("/home/messages") },
-  { href: "/home/profile", label: "You", match: (p: string) => p.startsWith("/home/profile") || p.startsWith("/home/settings") || p.startsWith("/home/progress") },
+  { href: "/home/profile", label: "You", match: (p: string) => p.startsWith("/home/profile") || p.startsWith("/home/settings") || p.startsWith("/home/progress") || p.startsWith("/home/mind") || p.startsWith("/home/canon") || p.startsWith("/home/lab") || p.startsWith("/home/evala") },
 ] as const;
 
 export function BottomNav() {
