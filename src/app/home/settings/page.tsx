@@ -3,7 +3,7 @@
 import { useEffect, useState, type ReactNode } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { ArrowLeft, Bell, ChevronRight, CircleUserRound, Fingerprint, LogOut, Moon, Palette, Settings2, Shield, Sparkles, Volume2, Vibrate, Zap } from "lucide-react";
+import { ArrowLeft, ChevronRight, CircleUserRound, Fingerprint, LogOut, Moon, Palette, Settings2, Shield, Sparkles, Volume2, Vibrate, Zap } from "lucide-react";
 import { loadIdentity, patchIdentity, APP_COLORS, type Appearance, type Identity, type LivvTier } from "@/lib/identity";
 import { getCurrentAccount, signOut } from "@/lib/auth";
 import { getTier, hasTier } from "@/lib/membership";
@@ -55,9 +55,8 @@ export default function SettingsPage() {
         </section>
 
         <SettingGroup label="Experience" eyebrow="How LIVV feels">
-          <ToggleRow icon={<Volume2 size={16} />} label="Sound" hint="Ambient feedback & cues" value={prefs.sound} onChange={(v) => { setPrefs(patchPrefs({ sound: v })); if (v) feedback("tick"); }} />
-          <ToggleRow icon={<Vibrate size={16} />} label="Haptics" hint="Tactile feedback on actions" value={prefs.haptics} onChange={(v) => { setPrefs(patchPrefs({ haptics: v })); if (v) feedback("tick"); }} />
-          <ToggleRow icon={<Bell size={16} />} label="Notifications" hint="Ready for the real notification layer" value={true} disabled />
+          <ToggleRow icon={<Volume2 size={16} />} label="Sound" hint="Cues when you complete something" value={prefs.sound} onChange={(v) => { setPrefs(patchPrefs({ sound: v })); if (v) feedback("tick"); }} />
+          <ToggleRow icon={<Vibrate size={16} />} label="Haptics" hint="Tap feedback" value={prefs.haptics} onChange={(v) => { setPrefs(patchPrefs({ haptics: v })); if (v) feedback("tick"); }} />
         </SettingGroup>
 
         <SettingGroup label="Appearance" eyebrow="Make it yours">
@@ -91,7 +90,7 @@ export default function SettingsPage() {
                 );
               })}
             </div>
-            {!colorUnlocked && <Link href="/home/profile" className="mt-4 block rounded-xl border border-livv-border px-3 py-2.5 text-[11px] text-livv-accent-soft">Unlock custom signal colors with Rise →</Link>}
+            {!colorUnlocked && <Link href="/home/profile" className="mt-4 block rounded-xl border border-livv-border px-3 py-2.5 text-[11px] text-livv-accent-soft">Unlock colors with Rise</Link>}
           </div>
         </SettingGroup>
 
@@ -102,9 +101,14 @@ export default function SettingsPage() {
           <LinkRow href="/home/packs" icon={<Palette size={16} />} label="Packs & vault" value="Open" />
         </section>
 
-        <section className="mt-8 rounded-[24px] border border-livv-border bg-livv-surface p-4"><div className="flex items-start gap-3"><Shield size={16} className="mt-0.5 text-livv-muted" /><div><p className="text-[12px] font-semibold text-livv-fg">Privacy & security</p><p className="mt-1 text-[11px] leading-relaxed text-livv-muted">Your local V1 account and activity data stay on this device until the real sync layer is connected.</p></div></div></section>
+        <section className="mt-8 overflow-hidden rounded-[26px] border border-livv-border bg-livv-surface">
+          <LinkRow href="/legal/terms" icon={<Shield size={16} />} label="Terms of Use" value="The contract" />
+          <LinkRow href="/legal/privacy" icon={<Shield size={16} />} label="Privacy Policy" value="What we collect" />
+          <LinkRow href="/legal/community" icon={<Shield size={16} />} label="Community Guidelines" value="How we treat each other" />
+          <LinkRow href="/legal/refunds" icon={<Shield size={16} />} label="Refunds" value="Packs and memberships" />
+        </section>
         <button type="button" onClick={() => { signOut(); router.replace("/auth"); }} className="mt-5 flex w-full items-center justify-center gap-2 rounded-full border border-red-500/20 bg-red-500/[0.04] py-3.5 text-[13px] font-medium text-red-400"><LogOut size={15} /> Sign out</button>
-        <p className="mt-7 text-center text-[10px] uppercase tracking-[0.22em] text-livv-muted">LIVV · 0.1 · Built to evolve</p>
+        <p className="mt-7 text-center text-[10px] uppercase tracking-[0.22em] text-livv-muted">LIVV</p>
       </div>
     </main>
   );
