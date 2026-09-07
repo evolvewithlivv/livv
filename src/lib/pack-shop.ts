@@ -1,3 +1,5 @@
+import { loadIdentity } from "./identity";
+import { isStripeConfigured } from "./billing";
 import { loadPacks, savePacks, type PackGrade, type PackState } from "./packs";
 
 export const PACK_SHOP: Record<
@@ -39,4 +41,28 @@ export function grantPurchasedPack(grade: PackGrade, qty = 1): PackState {
   }
   savePacks(state);
   return state;
+}
+
+export async function buyPack(grade: PackGrade): Promise<{ ok: boolean; error?: string; local?: boolean }> {
+  if (typeof window === "undefined") return { ok: false, error: "client only" };
+  const me = loadIdentity();
+
+  if (isStripeConfigured()) {
+    try {
+      const res = await fetch("/api/stripe/checkout", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ kind: "pack", grade, qty: 1, username: me.username }),
+      });
+      const data = (await res.json()) as { url?: string; error?: string };
+      if (!res.ok || !data.url) return { ok: false, error: data.error || "Checkout unavailable" };
+      window.location.href = data.url;
+      return { ok: true };
+    } catch {
+      return { ok: false, error: "Network error starting checkout" };
+    }
+  }
+
+  grantPurchasedPack(grade);
+  return { ok: true, local: true };
 }
