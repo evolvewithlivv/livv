@@ -9,8 +9,8 @@ export default function HomeLayout({
 }) {
   return (
     <RequireAuth>
-      <div className="flex h-[100dvh] flex-col overflow-hidden bg-[var(--livv-bg)]">
-        <div className="min-h-0 flex-1 overflow-y-auto overscroll-y-contain [-webkit-overflow-scrolling:touch]">
+      <div className="relative min-h-[100dvh] overflow-hidden bg-transparent">
+        <div className="min-h-[100dvh] overflow-y-auto overscroll-y-contain pb-28 [-webkit-overflow-scrolling:touch]">
           {children}
         </div>
         <BottomNav />
