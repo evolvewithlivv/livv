@@ -1,0 +1,32 @@
+/* LIVV immersive brand watermark. The artwork is deliberately quiet so content always wins. */
+:root,
+html[data-theme="dark"] {
+  --livv-bg-art: url("/api/icon?s=512");
+  --livv-bg-art-opacity: 0.055;
+}
+
+html[data-theme="light"] {
+  --livv-bg-art: url("/api/icon?s=512");
+  --livv-bg-art-opacity: 0.035;
+}
+
+@layer base {
+  body::after {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 0;
+    opacity: var(--livv-bg-art-opacity);
+    background-image: var(--livv-bg-art);
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: min(76vw, 520px) auto;
+    mix-blend-mode: screen;
+  }
+
+  body > * {
+    position: relative;
+    z-index: 1;
+  }
+}
