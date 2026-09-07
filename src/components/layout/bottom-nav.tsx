@@ -8,9 +8,9 @@ const NAV_ITEMS = [
   { href: "/home", label: "Home", match: (p: string) => p === "/home" },
   { href: "/home/daily", label: "Daily", match: (p: string) => p.startsWith("/home/daily") },
   { href: "/home/train", label: "Train", match: (p: string) => p.startsWith("/home/train") },
+  { href: "/home/mind", label: "Mind", match: (p: string) => p.startsWith("/home/mind") || p.startsWith("/home/canon") || p.startsWith("/home/lab") || p.startsWith("/home/evala") },
   { href: "/home/packs", label: "Packs", match: (p: string) => p.startsWith("/home/packs") || p.startsWith("/home/vault") },
-  { href: "/home/connect", label: "Connect", match: (p: string) => p.startsWith("/home/connect") || p.startsWith("/home/messages") },
-  { href: "/home/profile", label: "You", match: (p: string) => p.startsWith("/home/profile") || p.startsWith("/home/settings") || p.startsWith("/home/progress") || p.startsWith("/home/mind") || p.startsWith("/home/canon") || p.startsWith("/home/lab") || p.startsWith("/home/evala") },
+  { href: "/home/profile", label: "You", match: (p: string) => p.startsWith("/home/profile") || p.startsWith("/home/settings") || p.startsWith("/home/progress") || p.startsWith("/home/connect") || p.startsWith("/home/messages") },
 ] as const;
 
 export function BottomNav() {
@@ -105,18 +105,18 @@ function NavIcon({ name, active }: { name: string; active: boolean }) {
           <path d="M6.5 9.5h11M6.5 14.5h11M9 6.5v11M15 6.5v11" />
         </svg>
       );
+    case "Mind":
+      return (
+        <svg {...common}>
+          <circle cx="12" cy="12" r="3" />
+          <path d="M12 5v2M12 17v2M5 12h2M17 12h2M7.2 7.2l1.4 1.4M15.4 15.4l1.4 1.4M7.2 16.8l1.4-1.4M15.4 8.6l1.4-1.4" />
+        </svg>
+      );
     case "Packs":
       return (
         <svg {...common}>
           <rect x="5" y="4" width="14" height="16" rx="2" />
           <path d="M9 4v16M5 10h14" />
-        </svg>
-      );
-    case "Connect":
-      return (
-        <svg {...common}>
-          <path d="M8 11a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM16 21a3 3 0 1 0 0-6 3 3 0 0 0 0 6z" />
-          <path d="M11 10.5 14 15.5" />
         </svg>
       );
     default:
