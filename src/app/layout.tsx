@@ -32,7 +32,7 @@ export const metadata: Metadata = {
       { url: "/api/icon?s=32", sizes: "32x32", type: "image/png" },
       { url: "/api/icon?s=64", sizes: "64x64", type: "image/png" },
     ],
-    apple: [{ url: "/api/icon?s=180", sizes: "180x180", type: "image/png" }],
+    apple: [{ url: "/api/icon?s=180", sizes: "180x180" }],
     shortcut: ["/api/icon?s=32"],
   },
   other: {
@@ -44,6 +44,7 @@ export const viewport: Viewport = {
   width: "device-width",
   initialScale: 1,
   maximumScale: 1,
+  viewportFit: "cover",
   themeColor: [
     { media: "(prefers-color-scheme: light)", color: "#f2f3f6" },
     { media: "(prefers-color-scheme: dark)", color: "#030405" },
