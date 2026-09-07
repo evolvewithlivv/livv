@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Plus_Jakarta_Sans, Syne } from "next/font/google";
 import "./globals.css";
-import "./pack-rip.css";
 import "./livv-background.css";
 import { ThemeShell } from "@/components/layout/theme-shell";
 
