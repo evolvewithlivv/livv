@@ -1,33 +1,13 @@
-/* Shared LIVV atmosphere: subtle enough for readability, alive enough to feel like an app. */
+/* LIVV's shared atmosphere. One visual system across every authenticated screen. */
 :root,
-html[data-theme="dark"] {
-  --livv-bg-art-opacity: 0;
-}
-
+html[data-theme="dark"],
 html[data-theme="light"] {
   --livv-bg-art-opacity: 0;
 }
 
-/* Keep the atmosphere in dedicated AmbientField components. A second fixed logo
-   layer here caused visual ghosting/stacking artifacts behind cards and navigation. */
+/* No decorative rings, dots, or secondary logo layers. */
 body::after {
   content: none;
-}
-
-body::before {
-  background-image:
-    radial-gradient(circle at 12% 16%, rgba(255, 120, 45, .055), transparent 24rem),
-    radial-gradient(circle at 88% 28%, rgba(110, 145, 255, .07), transparent 29rem),
-    radial-gradient(circle at 52% 92%, rgba(190, 90, 255, .045), transparent 30rem),
-    radial-gradient(circle at 50% 48%, rgba(255,255,255,.018), transparent 34rem),
-    radial-gradient(rgba(255,255,255,.38) .45px, transparent .45px);
-  background-size: auto, auto, auto, auto, 4px 4px;
-  background-blend-mode: screen, screen, screen, screen, overlay;
-}
-
-body > * {
-  position: relative;
-  z-index: 1;
 }
 
 .livv-ambient-backdrop {
@@ -37,44 +17,42 @@ body > * {
   z-index: 0;
   overflow: hidden;
   background:
-    radial-gradient(ellipse at 50% -10%, rgb(var(--livv-accent) / .10), transparent 42%),
-    radial-gradient(ellipse at 0% 70%, rgba(255, 100, 50, .03), transparent 35%),
-    radial-gradient(ellipse at 100% 80%, rgba(100, 120, 255, .035), transparent 38%);
+    radial-gradient(ellipse at 50% -12%, rgb(var(--livv-accent) / .105), transparent 40%),
+    radial-gradient(ellipse at 8% 72%, rgba(255, 100, 50, .028), transparent 34%),
+    radial-gradient(ellipse at 92% 78%, rgba(100, 120, 255, .032), transparent 38%);
 }
 
 .livv-ambient-backdrop::before,
 .livv-ambient-backdrop::after {
   content: "";
   position: absolute;
-  width: 42vw;
-  height: 42vw;
-  max-width: 460px;
-  max-height: 460px;
-  min-width: 220px;
-  min-height: 220px;
-  border-radius: 999px;
-  filter: blur(80px);
+  width: min(46vw, 480px);
+  height: min(46vw, 480px);
+  min-width: 260px;
+  min-height: 260px;
+  border-radius: 50%;
+  filter: blur(100px);
   opacity: .16;
-  animation: livv-drift 18s ease-in-out infinite alternate;
+  animation: livv-drift 22s ease-in-out infinite alternate;
 }
 
 .livv-ambient-backdrop::before {
-  left: -12vw;
+  left: -14vw;
   top: 18%;
-  background: rgb(var(--livv-accent) / .18);
+  background: rgb(var(--livv-accent) / .16);
 }
 
 .livv-ambient-backdrop::after {
-  right: -14vw;
-  bottom: 10%;
-  background: rgba(255, 120, 55, .12);
-  animation-delay: -7s;
+  right: -16vw;
+  bottom: 8%;
+  background: rgba(255, 105, 60, .10);
+  animation-delay: -8s;
   animation-direction: alternate-reverse;
 }
 
 @keyframes livv-drift {
   0% { transform: translate3d(0, 0, 0) scale(1); }
-  100% { transform: translate3d(7vw, -4vh, 0) scale(1.12); }
+  100% { transform: translate3d(5vw, -3vh, 0) scale(1.08); }
 }
 
 @media (prefers-reduced-motion: reduce) {
