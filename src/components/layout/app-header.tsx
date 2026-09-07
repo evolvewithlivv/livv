@@ -1,14 +1,16 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { Avatar } from "@/components/identity/avatar";
 import { loadIdentity, type Identity } from "@/lib/identity";
 import { useEffect, useState } from "react";
 
 const LOGO = "https://raw.githubusercontent.com/evolvewithlivv/livv/main/Photoroom_20260831_123254.png";
 
-/** Shared chrome for every authenticated LIVV screen. Intentionally transparent: it should flow into the page, not become another card. */
+/** Shared chrome for every authenticated screen. The home screen already owns the canonical header. */
 export function AppHeader() {
+  const pathname = usePathname() || "";
   const [me, setMe] = useState<Identity | null>(null);
 
   useEffect(() => {
@@ -21,6 +23,8 @@ export function AppHeader() {
       window.removeEventListener("storage", sync);
     };
   }, []);
+
+  if (pathname === "/home" || pathname === "") return null;
 
   return (
     <header className="livv-app-header relative z-[70] px-5 pt-4">
