@@ -1,4 +1,4 @@
-import type { PackGrade } from "./packs";
+import { loadPacks, savePacks, type PackGrade, type PackState } from "./packs";
 
 export const PACK_SHOP: Record<
   PackGrade,
@@ -26,6 +26,17 @@ export const PACK_SHOP: Record<
   },
 };
 
-export function packPriceLabel(grade: PackGrade) {
-  return PACK_SHOP[grade].price;
+export function grantPurchasedPack(grade: PackGrade, qty = 1): PackState {
+  const state = loadPacks();
+  const now = Date.now();
+  const n = Math.max(1, Math.min(10, qty));
+  for (let i = 0; i < n; i++) {
+    state.pending.push({
+      id: `buy_${grade}_${now}_${i}_${Math.random().toString(36).slice(2, 6)}`,
+      grade,
+      grantedAt: now,
+    });
+  }
+  savePacks(state);
+  return state;
 }
