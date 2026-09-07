@@ -37,7 +37,6 @@ export default function ProgressPage() {
   if (!rec || !season || !weekly) return <main className="min-h-dvh bg-[#030405]" />;
   const week = weekBars(rec), hits = weekHitCount(rec), pillars = livePillars(rec);
   const evo = evolutionTitle(rec.level), strong = strongestPillar(rec), weak = needsAttention(rec);
-  const totalXp = pillars.reduce((n, p) => n + (typeof p.xp === "number" ? p.xp : 0), 0);
 
   return (
     <main className="relative min-h-full overflow-hidden pb-14">
@@ -67,7 +66,7 @@ export default function ProgressPage() {
         <section className="mt-11 grid grid-cols-2 gap-2"><Insight title="Leading" value={strong.name} sub={`Level ${strong.level}`} /><Insight title="Needs weight" value={weak.name} sub={`Level ${weak.level}`} /></section>
         <section className="mt-11"><div className="flex items-center justify-between"><p className="text-[10px] uppercase tracking-[.28em] text-white/30">Vault sets</p><Link href="/home/vault" className="text-[12px] text-livv-accent-soft">Open vault →</Link></div><div className="mt-4 space-y-2">{sets.map((s) => <div key={s.id} className="flex items-center justify-between rounded-xl px-3 py-2.5 ring-1 ring-white/[.05]"><span className={s.complete ? "text-[12px] text-livv-accent-soft" : "text-[12px] text-white/45"}>{s.name}</span><span className="text-[11px] text-white/25">{s.have}/{s.total}</span></div>)}</div></section>
         <section className="mt-11"><p className="text-[10px] uppercase tracking-[.28em] text-white/30">Pair chain</p><p className="mt-1 text-[12px] text-white/25">Private accountability, one person, one shared pillar.</p>{pair ? <div className="mt-4 rounded-2xl border border-white/[.07] bg-white/[.025] p-4"><p className="text-[15px] font-semibold">{pair.partnerName}</p><p className="mt-1 text-[12px] text-white/35">{pair.pillar} · {pair.sharedDays} shared days</p><button onClick={() => { clearPair(); sync(); }} className="mt-3 text-[11px] text-white/25">End pair</button></div> : <div className="mt-4 flex gap-2"><input value={pairName} onChange={(e) => setPairName(e.target.value)} placeholder="Partner name" className="h-11 min-w-0 flex-1 rounded-xl bg-white/[.035] px-3 text-sm outline-none ring-1 ring-white/10" /><button onClick={() => { if(pairName.trim().length<2)return; setPair({partnerName:pairName.trim(),partnerUsername:pairName.trim().toLowerCase().replace(/\s/g,""),pillar:"Body"}); feedback("tick"); setPairName(""); sync(); }} className="rounded-xl bg-white px-4 text-xs font-semibold text-black">Link</button></div>}</section>
-        <p className="mt-12 text-center text-[10px] tracking-[.18em] text-white/15">{totalXp.toLocaleString()} TOTAL PILLAR XP · KEEP EVOLVING</p>
+        <p className="mt-12 text-center text-[10px] tracking-[.18em] text-white/15">KEEP EVOLVING</p>
       </div>
     </main>
   );
