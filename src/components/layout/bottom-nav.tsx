@@ -26,9 +26,8 @@ export function BottomNav() {
       <div
         className="mx-auto flex max-w-lg items-stretch justify-between gap-1 rounded-[30px] px-1.5 py-1.5"
         style={{
-          background: "linear-gradient(180deg, rgba(12, 15, 21, 0.54), rgba(5, 7, 11, 0.44))",
-          border: "1px solid rgba(255,255,255,0.055)",
-          boxShadow: "0 22px 60px rgba(0,0,0,.52), inset 0 1px 0 rgba(255,255,255,.065), 0 0 45px rgba(92,145,255,.045)",
+          background: "linear-gradient(180deg, rgba(12, 15, 21, 0.46), rgba(5, 7, 11, 0.34))",
+          boxShadow: "0 22px 60px rgba(0,0,0,.52), inset 0 1px 0 rgba(255,255,255,.055), 0 0 45px rgba(92,145,255,.045)",
           backdropFilter: "blur(34px) saturate(1.75)",
           WebkitBackdropFilter: "blur(34px) saturate(1.75)",
         }}
