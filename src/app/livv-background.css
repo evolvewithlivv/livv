@@ -1,13 +1,13 @@
-/* LIVV immersive brand watermark. The artwork is deliberately quiet so content always wins. */
+/* Shared LIVV atmosphere: subtle enough for readability, alive enough to feel like an app. */
 :root,
 html[data-theme="dark"] {
   --livv-bg-art: url("/api/icon?s=512");
-  --livv-bg-art-opacity: 0.055;
+  --livv-bg-art-opacity: 0.045;
 }
 
 html[data-theme="light"] {
   --livv-bg-art: url("/api/icon?s=512");
-  --livv-bg-art-opacity: 0.035;
+  --livv-bg-art-opacity: 0.028;
 }
 
 body::after {
@@ -19,12 +19,75 @@ body::after {
   opacity: var(--livv-bg-art-opacity);
   background-image: var(--livv-bg-art);
   background-repeat: no-repeat;
-  background-position: center center;
-  background-size: min(76vw, 520px) auto;
+  background-position: center 43%;
+  background-size: min(70vw, 500px) auto;
   mix-blend-mode: screen;
+  transform: translateZ(0);
+}
+
+body::before {
+  background-image:
+    radial-gradient(circle at 15% 18%, rgba(255, 120, 45, .045), transparent 24rem),
+    radial-gradient(circle at 85% 34%, rgba(110, 145, 255, .055), transparent 28rem),
+    radial-gradient(circle at 48% 88%, rgba(190, 90, 255, .035), transparent 30rem),
+    radial-gradient(rgba(255,255,255,.42) .45px, transparent .45px);
+  background-size: auto, auto, auto, 4px 4px;
+  background-blend-mode: screen, screen, screen, overlay;
 }
 
 body > * {
   position: relative;
   z-index: 1;
+}
+
+.livv-ambient-backdrop {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+  background:
+    radial-gradient(ellipse at 50% -10%, rgb(var(--livv-accent) / .095), transparent 42%),
+    radial-gradient(ellipse at 0% 70%, rgba(255, 100, 50, .025), transparent 35%),
+    radial-gradient(ellipse at 100% 80%, rgba(100, 120, 255, .03), transparent 38%);
+}
+
+.livv-ambient-backdrop::before,
+.livv-ambient-backdrop::after {
+  content: "";
+  position: absolute;
+  width: 42vw;
+  height: 42vw;
+  max-width: 460px;
+  max-height: 460px;
+  min-width: 220px;
+  min-height: 220px;
+  border-radius: 999px;
+  filter: blur(80px);
+  opacity: .16;
+  animation: livv-drift 18s ease-in-out infinite alternate;
+}
+
+.livv-ambient-backdrop::before {
+  left: -12vw;
+  top: 18%;
+  background: rgb(var(--livv-accent) / .18);
+}
+
+.livv-ambient-backdrop::after {
+  right: -14vw;
+  bottom: 10%;
+  background: rgba(255, 120, 55, .12);
+  animation-delay: -7s;
+  animation-direction: alternate-reverse;
+}
+
+@keyframes livv-drift {
+  0% { transform: translate3d(0, 0, 0) scale(1); }
+  100% { transform: translate3d(7vw, -4vh, 0) scale(1.12); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .livv-ambient-backdrop::before,
+  .livv-ambient-backdrop::after { animation: none; }
 }
