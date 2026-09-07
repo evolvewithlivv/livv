@@ -13,6 +13,8 @@ export function AmbientField({ intensity = "normal" }: { intensity?: "normal" | 
 
   return (
     <div aria-hidden className={`pointer-events-none absolute inset-0 overflow-hidden ${intensity === "strong" ? "opacity-100" : "opacity-80"}`}>
+      <div className="livv-ambient-aurora" />
+      <div className="livv-ambient-watermark" />
       <div className="livv-ambient-backdrop" />
       <div className="ambient-orb ambient-orb-a" />
       <div className="ambient-orb ambient-orb-b" />
