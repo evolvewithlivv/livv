@@ -7,7 +7,9 @@ import { PackFoil } from "@/components/packs/pack-foil";
 import { PackOpenModal } from "@/components/packs/pack-open";
 import { CardFace } from "@/components/packs/card-face";
 import { loadIdentity, type Identity } from "@/lib/identity";
-import { canClaimPacks, claimPacksIfDue, collectionStats, formatCountdown, getCard, GRADE_META, loadPacks, msUntilNextPack, packEntitlement, purchaseApexPack, type PackGrade, type PendingPack } from "@/lib/packs";
+import { canClaimPacks, claimPacksIfDue, collectionStats, formatCountdown, getCard, GRADE_META, loadPacks, msUntilNextPack, packEntitlement, type PackGrade, type PendingPack } from "@/lib/packs";
+import { buyPack, PACK_SHOP } from "@/lib/pack-shop";
+import { isStripeConfigured } from "@/lib/billing";
 import { feedback } from "@/lib/sensory";
 
 export default function PacksPage() {
@@ -138,29 +140,45 @@ export default function PacksPage() {
         </section>
 
         <section className="mt-12">
-          <p className="text-[10px] uppercase tracking-[0.28em] text-white/30">Matter classes</p>
-          <div className="mt-4 grid grid-cols-2 gap-2">
+          <p className="text-[10px] uppercase tracking-[0.28em] text-white/30">Buy packs</p>
+          <p className="mt-2 text-[13px] leading-relaxed text-white/40">Membership still drops free packs on cadence. These are extra. Cards you pull now are the inventory for cosmetics, trades, and status later.</p>
+          <div className="mt-4 space-y-2">
             {([1, 2, 3, 4] as PackGrade[]).map((g) => {
               const m = GRADE_META[g];
+              const shop = PACK_SHOP[g];
               return (
-                <div key={g} className="group rounded-[22px] border border-white/[0.07] bg-white/[0.025] p-3.5 transition hover:bg-white/[0.045]">
+                <div key={g} className="rounded-[22px] border border-white/[0.08] bg-white/[0.03] p-4">
                   <div className="flex items-center gap-3">
                     <PackFoil grade={g} size="sm" />
                     <div className="min-w-0 flex-1">
-                      <p className="text-[14px] font-semibold">{m.name}</p>
-                      <p className="mt-0.5 truncate text-[10px] text-white/30">{m.purchasableOnly ? "Purchase only" : m.subtitle}</p>
+                      <div className="flex items-baseline justify-between gap-3">
+                        <p className="text-[15px] font-semibold">{m.name}</p>
+                        <p className="text-[15px] font-semibold tabular-nums">{shop.price}</p>
+                      </div>
+                      <p className="mt-1 text-[12px] leading-relaxed text-white/40">{shop.value}</p>
                     </div>
                   </div>
-                  {m.purchasableOnly && (
-                    <button type="button" onClick={() => { purchaseApexPack(); feedback("unlock"); sync(); }} className="mt-3 w-full rounded-full bg-white py-2 text-[11px] font-semibold text-black">Acquire</button>
-                  )}
+                  <button
+                    type="button"
+                    onClick={async () => {
+                      feedback("tick");
+                      const out = await buyPack(g);
+                      if (out.local) {
+                        feedback("unlock");
+                        sync();
+                      }
+                    }}
+                    className="mt-3 w-full rounded-full bg-white py-2.5 text-[12px] font-semibold text-black"
+                  >
+                    {isStripeConfigured() ? `Buy ${shop.price}` : `Add ${shop.price} pack`}
+                  </button>
                 </div>
               );
             })}
           </div>
         </section>
 
-        <p className="mt-12 text-[11px] leading-relaxed text-white/20">Spark: 1× / 24h · Rise: 1× / 12h · Apex: 1× / 12h · Inner Circle: 5 / 24h. Apex Pack is purchase-only.</p>
+        <p className="mt-12 text-[11px] leading-relaxed text-white/20">Free cadence still runs on your tier. Paid packs stack on top. Spark $2.49 · Rise $5.99 · Signal $11.99 · Apex $24.99.</p>
       </div>
 
       {opening && <PackOpenModal packId={opening.id} grade={opening.grade} onClose={() => { setOpening(null); sync(); }} />}
