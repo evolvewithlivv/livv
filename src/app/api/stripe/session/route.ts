@@ -3,10 +3,6 @@ import { getStripe, tierFromPriceId, type PaidTier } from "@/lib/stripe-server";
 
 export const runtime = "nodejs";
 
-/**
- * After Checkout success, the client calls this with session_id
- * to confirm payment and learn which tier to unlock.
- */
 export async function GET(req: NextRequest) {
   try {
     const stripe = getStripe();
@@ -30,6 +26,17 @@ export async function GET(req: NextRequest) {
       );
     }
 
+    if (session.metadata?.livv_kind === "pack") {
+      return NextResponse.json({
+        kind: "pack",
+        grade: Number(session.metadata.livv_grade || 1),
+        qty: Number(session.metadata.livv_qty || 1),
+        customerId:
+          typeof session.customer === "string" ? session.customer : session.customer?.id,
+        email: session.customer_details?.email || session.customer_email,
+      });
+    }
+
     let tier = (session.metadata?.livv_tier as PaidTier | undefined) || null;
 
     if (!tier && session.subscription && typeof session.subscription !== "string") {
@@ -43,10 +50,11 @@ export async function GET(req: NextRequest) {
     }
 
     if (!tier) {
-      return NextResponse.json({ error: "Could not resolve tier" }, { status: 422 });
+      return NextResponse.json({ error: "Could not resolve purchase" }, { status: 422 });
     }
 
     return NextResponse.json({
+      kind: "tier",
       tier,
       customerId:
         typeof session.customer === "string" ? session.customer : session.customer?.id,
