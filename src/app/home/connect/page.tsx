@@ -90,7 +90,7 @@ export default function ConnectPage() {
       createPost({ text: text.trim(), photo, track, allowReplies });
       setPosts(loadPosts());
     }
-    setText(""); setPhoto(null); setTrack(null); setEditingId(null); setSheet("closed"); feedback("success");
+    setText(""); setPhoto(null); setTrack(null); setEditingId(null); setSheet("closed"); feedback("complete");
   };
   const beginEdit = (post: Post) => { setEditingId(post.id); setText(post.text); setPhoto(post.photo); setTrack(post.track); setAllowReplies(post.allowReplies); setMenuId(null); setSheet("edit"); };
   const remove = (id: string) => { const next = deletePost(id); setPosts(next); setMenuId(null); };
