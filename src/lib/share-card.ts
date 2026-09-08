@@ -25,14 +25,7 @@ export type WorkoutShareData = {
   streak: number;
 };
 
-function roundRect(
-  ctx: CanvasRenderingContext2D,
-  x: number,
-  y: number,
-  w: number,
-  h: number,
-  r: number
-) {
+function roundRect(ctx: CanvasRenderingContext2D, x: number, y: number, w: number, h: number, r: number) {
   const radius = Math.min(r, w / 2, h / 2);
   ctx.beginPath();
   ctx.moveTo(x + radius, y);
@@ -64,6 +57,12 @@ function paintBackground(ctx: CanvasRenderingContext2D, w: number, h: number, ac
   ctx.fillRect(0, 0, w, h);
 }
 
+function finish(ctx: CanvasRenderingContext2D, w: number, h: number) {
+  ctx.fillStyle = "rgba(255,255,255,0.25)";
+  ctx.font = "500 26px system-ui, sans-serif";
+  ctx.fillText("livvapp.com", 72, h - 60);
+}
+
 export async function renderProfileShareCard(data: ProfileShareData): Promise<Blob> {
   const w = 1080;
   const h = 1350;
@@ -72,8 +71,8 @@ export async function renderProfileShareCard(data: ProfileShareData): Promise<Bl
   canvas.height = h;
   const ctx = canvas.getContext("2d");
   if (!ctx) throw new Error("canvas");
-
-  paintBackground(ctx, w, h, data.tierColor || "#4c8dff");
+  const accent = data.tierColor || "#4c8dff";
+  paintBackground(ctx, w, h, accent);
 
   ctx.fillStyle = "rgba(255,255,255,0.55)";
   ctx.font = "600 28px system-ui, sans-serif";
@@ -82,18 +81,17 @@ export async function renderProfileShareCard(data: ProfileShareData): Promise<Bl
   ctx.fillStyle = "#ffffff";
   ctx.font = "700 72px system-ui, sans-serif";
   ctx.fillText(data.displayName.slice(0, 22), 72, 200);
-
   ctx.fillStyle = "rgba(255,255,255,0.4)";
   ctx.font = "500 32px system-ui, sans-serif";
   ctx.fillText(`@${data.username}`, 72, 250);
 
   roundRect(ctx, 72, 290, 220, 56, 28);
-  ctx.fillStyle = (data.tierColor || "#4c8dff") + "33";
+  ctx.fillStyle = accent + "33";
   ctx.fill();
-  ctx.strokeStyle = (data.tierColor || "#4c8dff") + "88";
+  ctx.strokeStyle = accent + "88";
   ctx.lineWidth = 2;
   ctx.stroke();
-  ctx.fillStyle = data.tierColor || "#4c8dff";
+  ctx.fillStyle = accent;
   ctx.font = "700 26px system-ui, sans-serif";
   ctx.fillText(data.tierLabel.toUpperCase(), 96, 328);
 
@@ -125,31 +123,24 @@ export async function renderProfileShareCard(data: ProfileShareData): Promise<Bl
   ctx.font = "700 48px system-ui, sans-serif";
   ctx.fillText(data.evolutionName.slice(0, 28), 72, 740);
 
-  if (data.badges.length > 0) {
-    ctx.fillStyle = "rgba(255,255,255,0.35)";
-    ctx.font = "600 24px system-ui, sans-serif";
-    ctx.fillText("BADGES", 72, 830);
-    data.badges.slice(0, 4).forEach((b, i) => {
-      const x = 72 + (i % 2) * 480;
-      const y = 870 + Math.floor(i / 2) * 100;
-      roundRect(ctx, x, y, 440, 80, 20);
-      ctx.fillStyle = "rgba(255,255,255,0.04)";
-      ctx.fill();
-      ctx.fillStyle = "#fff";
-      ctx.font = "32px system-ui, sans-serif";
-      ctx.fillText(b.icon, x + 24, y + 52);
-      ctx.font = "600 28px system-ui, sans-serif";
-      ctx.fillText(b.title.slice(0, 18), x + 80, y + 52);
-    });
-  }
-
-  ctx.fillStyle = "rgba(255,255,255,0.25)";
-  ctx.font = "500 26px system-ui, sans-serif";
-  ctx.fillText("evolvewithlivv.com", 72, h - 60);
-
-  return new Promise((resolve, reject) => {
-    canvas.toBlob((blob) => (blob ? resolve(blob) : reject(new Error("blob"))), "image/png");
+  ctx.fillStyle = "rgba(255,255,255,0.35)";
+  ctx.font = "600 24px system-ui, sans-serif";
+  ctx.fillText(data.badges.length ? "BADGES" : "BADGES · NONE YET", 72, 830);
+  data.badges.slice(0, 4).forEach((b, i) => {
+    const x = 72 + (i % 2) * 480;
+    const y = 870 + Math.floor(i / 2) * 100;
+    roundRect(ctx, x, y, 440, 80, 20);
+    ctx.fillStyle = "rgba(255,255,255,0.04)";
+    ctx.fill();
+    ctx.fillStyle = "#fff";
+    ctx.font = "32px system-ui, sans-serif";
+    ctx.fillText(b.icon, x + 24, y + 52);
+    ctx.font = "600 28px system-ui, sans-serif";
+    ctx.fillText(b.title.slice(0, 18), x + 80, y + 52);
   });
+  finish(ctx, w, h);
+
+  return new Promise((resolve, reject) => canvas.toBlob((blob) => blob ? resolve(blob) : reject(new Error("blob")), "image/png"));
 }
 
 export async function renderWorkoutShareCard(data: WorkoutShareData): Promise<Blob> {
@@ -160,20 +151,18 @@ export async function renderWorkoutShareCard(data: WorkoutShareData): Promise<Bl
   canvas.height = h;
   const ctx = canvas.getContext("2d");
   if (!ctx) throw new Error("canvas");
-
   paintBackground(ctx, w, h, "#ff6b91");
 
   ctx.fillStyle = "rgba(255,255,255,0.55)";
   ctx.font = "600 28px system-ui, sans-serif";
-  ctx.fillText("LIVV \u00b7 WORKOUT", 72, 90);
-
+  ctx.fillText("LIVV · WORKOUT", 72, 90);
   ctx.fillStyle = "#ff6b91";
   ctx.font = "700 28px system-ui, sans-serif";
   ctx.fillText("SESSION COMPLETE", 72, 180);
 
   ctx.fillStyle = "#ffffff";
   ctx.font = "700 64px system-ui, sans-serif";
-  const name = data.workoutName.length > 28 ? data.workoutName.slice(0, 26) + "\u2026" : data.workoutName;
+  const name = data.workoutName.length > 28 ? data.workoutName.slice(0, 26) + "…" : data.workoutName;
   const words = name.split(" ");
   let line = "";
   let y = 280;
@@ -225,14 +214,9 @@ export async function renderWorkoutShareCard(data: WorkoutShareData): Promise<Bl
   ctx.fillStyle = "rgba(255,255,255,0.3)";
   ctx.font = "500 26px system-ui, sans-serif";
   ctx.fillText("Logged in LIVV", 72, 1010);
+  finish(ctx, w, h);
 
-  ctx.fillStyle = "rgba(255,255,255,0.25)";
-  ctx.font = "500 26px system-ui, sans-serif";
-  ctx.fillText("evolvewithlivv.com", 72, h - 60);
-
-  return new Promise((resolve, reject) => {
-    canvas.toBlob((blob) => (blob ? resolve(blob) : reject(new Error("blob"))), "image/png");
-  });
+  return new Promise((resolve, reject) => canvas.toBlob((blob) => blob ? resolve(blob) : reject(new Error("blob")), "image/png"));
 }
 
 export async function shareOrDownloadBlob(blob: Blob, filename: string, title: string) {
@@ -241,9 +225,7 @@ export async function shareOrDownloadBlob(blob: Blob, filename: string, title: s
     try {
       await navigator.share({ files: [file], title, text: title });
       return "shared";
-    } catch {
-      // fall through
-    }
+    } catch {}
   }
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
