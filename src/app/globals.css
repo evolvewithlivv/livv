@@ -117,25 +117,37 @@ html[data-theme="light"] {
   -webkit-backdrop-filter: none !important;
 }
 
-/* Tab bar: glow only. No dock, no pill, no second outline. */
-.livv-tabbar,
-.livv-tabbar * {
-  background: transparent !important;
-  border: 0 !important;
-  box-shadow: none !important;
-  outline: none !important;
+/* Tab bar: soft floating bubble dock */
+.livv-tabbar {
+  background: transparent;
+  border: 0;
+  box-shadow: none;
+  outline: none;
+  pointer-events: none;
+}
+.livv-tabbar-bubble {
+  pointer-events: auto;
+  border-radius: 28px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(12, 14, 18, 0.72);
+  box-shadow:
+    0 10px 40px rgba(0, 0, 0, 0.45),
+    0 0 0 1px rgba(255, 255, 255, 0.04) inset,
+    0 1px 0 rgba(255, 255, 255, 0.08) inset;
+  backdrop-filter: blur(20px) saturate(1.35);
+  -webkit-backdrop-filter: blur(20px) saturate(1.35);
 }
 .livv-tabbar a,
 .livv-tabbar a:hover,
 .livv-tabbar a:focus,
-.livv-tabbar a:active,
-.livv-tabbar a[aria-current="page"] {
-  background: transparent !important;
-  border: 0 !important;
-  box-shadow: none !important;
-  outline: none !important;
-  transform: none !important;
+.livv-tabbar a:active {
+  background: transparent;
+  border: 0;
+  outline: none;
   -webkit-tap-highlight-color: transparent;
+}
+.livv-tabbar a[aria-current="page"] {
+  outline: none;
 }
 .livv-page-hero {
   padding-top: 0.35rem;
