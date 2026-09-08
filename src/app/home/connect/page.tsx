@@ -84,16 +84,16 @@ export default function ConnectPage() {
   const submit = () => {
     if (!me || !canSubmit) return;
     if (sheet === "edit" && editingId) {
-      const next = updatePost(posts, editingId, { text: text.trim(), photo, track, allowReplies });
-      savePosts(next); setPosts(next);
+      const next = updatePost(editingId, { text: text.trim(), photo, track, allowReplies });
+      setPosts(next);
     } else {
-      const next = createPost({ author: me, text: text.trim(), photo, track, allowReplies });
-      setPosts(next); savePosts(next);
+      createPost({ text: text.trim(), photo, track, allowReplies });
+      setPosts(loadPosts());
     }
     setText(""); setPhoto(null); setTrack(null); setEditingId(null); setSheet("closed"); feedback("success");
   };
   const beginEdit = (post: Post) => { setEditingId(post.id); setText(post.text); setPhoto(post.photo); setTrack(post.track); setAllowReplies(post.allowReplies); setMenuId(null); setSheet("edit"); };
-  const remove = (id: string) => { const next = deletePost(posts, id); savePosts(next); setPosts(next); setMenuId(null); };
+  const remove = (id: string) => { const next = deletePost(id); setPosts(next); setMenuId(null); };
   const like = (id: string) => { const next = posts.map((p) => p.id === id ? { ...p, likes: p.likes + (p.likedByMe ? -1 : 1), likedByMe: !p.likedByMe } : p); savePosts(next); setPosts(next); };
   const reply = (id: string) => {
     if (!me || !replyDraft.trim()) return;
