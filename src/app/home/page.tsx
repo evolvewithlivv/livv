@@ -120,7 +120,7 @@ export default function HomePage() {
                 {daily?.world.focus || greet.salutation}
               </p>
               <h1 className="font-display mt-3 text-[28px] font-semibold leading-[0.95] tracking-[-0.04em]">
-                {daily?.world.line || "Your life is moving."}
+                {daily?.world.line || greet.line}
               </h1>
             </div>
             <div className="shrink-0 text-right">
@@ -164,14 +164,14 @@ export default function HomePage() {
             <div className="flex items-center justify-between gap-4">
               <div>
                 <p className="text-[9px] font-semibold uppercase tracking-[0.28em] text-livv-accent-soft">
-                  Today · The Daily Drop
+                  Daily checklist
                 </p>
                 <p className="font-display mt-2 text-[22px] font-semibold tracking-tight">
                   {daily?.dropClaimed
-                    ? "Drop claimed"
+                    ? "Finished"
                     : daily?.allDone
-                      ? "Drop ready — open it"
-                      : `${dailyLeft} thing${dailyLeft === 1 ? "" : "s"} waiting`}
+                      ? "Ready to claim"
+                      : `${dailyLeft} left`}
                 </p>
                 <p className="mt-1 text-[12px] text-white/40">
                   Mind · Body · Life
@@ -200,7 +200,7 @@ export default function HomePage() {
           <div className="livv-glass rounded-[28px] p-5">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-[9px] uppercase tracking-[0.3em] text-white/25">Evolution</p>
+                <p className="text-[9px] uppercase tracking-[0.3em] text-white/25">Level</p>
                 <p className="font-display mt-1 text-4xl font-semibold leading-none tracking-[-0.04em]">
                   {rec.level}
                 </p>
@@ -225,7 +225,7 @@ export default function HomePage() {
             href="/home/progress"
             className="flex min-w-[92px] flex-col justify-between rounded-[28px] border border-white/[0.08] bg-white/[0.025] p-4 backdrop-blur-xl transition active:scale-[0.98]"
           >
-            <span className="text-[9px] uppercase tracking-[0.26em] text-white/25">Signal</span>
+            <span className="text-[9px] uppercase tracking-[0.26em] text-white/25">Done</span>
             <span className="font-display text-3xl font-semibold">{done}</span>
             <span className="text-[9px] uppercase tracking-[0.16em] text-white/25">of {total}</span>
           </Link>
@@ -241,17 +241,16 @@ export default function HomePage() {
             <div className="absolute inset-0 bg-gradient-to-br from-livv-accent/20 via-white/[0.035] to-transparent" />
             <div className="relative p-6">
               <p className="text-[9px] font-semibold uppercase tracking-[0.32em] text-livv-accent-soft">
-                Command
+                Start here
               </p>
               <p className="font-display mt-3 max-w-[13ch] text-[28px] font-semibold leading-[0.96] tracking-[-0.04em]">
                 {move.title}
               </p>
               <p className="mt-4 max-w-[34ch] text-[13px] leading-relaxed text-white/45">{move.reason}</p>
-              <div className="mt-6 flex items-center justify-between">
-                <span className="rounded-full bg-white px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-black">
-                  {move.href === "/home" && checkedIn ? "Logged" : move.cta}
+              <div className="mt-6">
+                <span className="inline-flex rounded-full bg-white px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-black">
+                  {move.href === "/home" && checkedIn ? "Done" : move.cta}
                 </span>
-                <span className="text-[10px] uppercase tracking-[0.2em] text-white/25">Next move</span>
               </div>
             </div>
           </button>
@@ -260,9 +259,9 @@ export default function HomePage() {
         <section className="mt-9">
           <div className="mb-4 flex items-end justify-between px-1">
             <div>
-              <p className="text-[9px] font-semibold uppercase tracking-[0.32em] text-white/25">Life system</p>
+              <p className="text-[9px] font-semibold uppercase tracking-[0.32em] text-white/25">Today</p>
               <p className="mt-1 text-[14px] font-medium text-white/70">
-                {done === total ? "Everything is aligned." : `${done} of ${total} signals active`}
+                {done === total ? "All done for today." : `${done} of ${total} done`}
               </p>
             </div>
           </div>
@@ -275,7 +274,7 @@ export default function HomePage() {
                     <span className="text-[9px] uppercase tracking-[0.26em] text-white/25">{node.name}</span>
                     <span className={`h-2 w-2 rounded-full ${node.done ? "bg-livv-accent shadow-[0_0_12px_rgb(var(--livv-accent)/.8)]" : "bg-white/10"}`} />
                   </div>
-                  <p className="mt-6 text-[13px] font-medium text-white/70">{node.done ? "Active" : "Open"}</p>
+                  <p className="mt-6 text-[13px] font-medium text-white/70">{node.done ? "Done" : "Not yet"}</p>
                 </Link>
               );
             })}
