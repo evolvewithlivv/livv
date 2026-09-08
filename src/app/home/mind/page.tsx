@@ -25,9 +25,9 @@ export default function MindWikiPage() {
     <main className="livv-page relative min-h-full overflow-hidden pb-16">
       <div className="relative z-10 mx-auto max-w-lg px-5 pt-5">
         <PageHero
-          eyebrow="Field notes"
-          title="Feed your mind."
-          subtitle="Ideas worth carrying. Explore by field, save what changes how you see things, then put one idea into motion."
+          eyebrow="Read"
+          title="Ideas"
+          subtitle="Short reads. Save what sticks."
           accent="#b28cff"
           right={<span className="text-[9px] uppercase tracking-[0.22em] text-white/20">{list.length} notes</span>}
         />
@@ -42,63 +42,60 @@ export default function MindWikiPage() {
             <div className="absolute right-[-45px] top-[-55px] h-40 w-40 rounded-full blur-3xl" style={{ background: articleColor(featured.slug), opacity: .16 }} />
             <div className="relative flex items-start justify-between gap-4">
               <div>
-                <p className="text-[9px] font-semibold uppercase tracking-[0.28em]" style={{ color: articleColor(featured.slug) }}>Featured field note</p>
-                <p className="font-display mt-3 text-[27px] font-semibold leading-[1.02] tracking-tight">{featured.title}</p>
-                <p className="mt-3 max-w-[31ch] text-[13px] leading-relaxed text-white/45">{featured.hook}</p>
+                <p className="text-[9px] font-semibold uppercase tracking-[0.28em]" style={{ color: articleColor(featured.slug) }}>Featured</p>
+                <p className="font-display mt-3 max-w-[18ch] text-[28px] font-semibold leading-[0.98] tracking-tight">{featured.title}</p>
+                <p className="mt-3 max-w-[34ch] text-[13px] leading-relaxed text-white/45">{featured.summary}</p>
+                <p className="mt-4 text-[11px] text-white/30">{featured.desk} · {featured.readMins} min</p>
               </div>
-              <span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-white text-lg font-semibold text-black transition-transform group-hover:translate-x-0.5">↗</span>
-            </div>
-            <div className="relative mt-6 flex items-center justify-between border-t border-white/[.07] pt-3">
-              <span className="text-[9px] uppercase tracking-[.2em] text-white/30">{featured.desk} · {featured.readMins} min</span>
-              <span className="text-[9px] font-semibold uppercase tracking-[.18em]" style={{ color: articleColor(featured.slug) }}>Open note</span>
+              <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-white text-black">→</span>
             </div>
           </Link>
         )}
 
         {quick.length > 0 && (
           <section className="mt-8">
-            <div className="flex items-center justify-between"><p className="text-[10px] font-semibold uppercase tracking-[.28em] text-white/30">Quick reads</p><span className="text-[9px] uppercase tracking-[.18em] text-white/15">2–5 min</span></div>
-            <div className="mt-3 grid grid-cols-3 gap-2.5">
+            <p className="text-[9px] uppercase tracking-[0.28em] text-white/25">Quick picks</p>
+            <div className="mt-3 space-y-2">
               {quick.map((a) => {
                 const c = articleColor(a.slug);
-                return <Link key={a.slug} href={`/home/mind/${a.slug}`} className="min-h-[142px] rounded-[22px] border bg-white/[.025] p-3.5 active:scale-[.97]" style={{ borderColor: `${c}42`, boxShadow: `inset 0 0 24px ${c}08` }}>
-                  <span className="block h-1.5 w-8 rounded-full" style={{ background: c, boxShadow: `0 0 12px ${c}88` }} />
-                  <p className="mt-5 line-clamp-4 text-[13px] font-semibold leading-snug">{a.title}</p>
-                  <p className="mt-3 text-[9px] uppercase tracking-[.15em] text-white/25">{a.readMins} min →</p>
-                </Link>;
+                return (
+                  <Link key={a.slug} href={`/home/mind/${a.slug}`} className="flex items-center gap-3 rounded-[20px] border border-white/[0.07] bg-white/[0.025] p-3.5 active:scale-[0.99]">
+                    <span className="h-2.5 w-2.5 rounded-full" style={{ background: c, boxShadow: `0 0 12px ${c}` }} />
+                    <span className="min-w-0 flex-1">
+                      <span className="block text-[14px] font-semibold">{a.title}</span>
+                      <span className="text-[11px] text-white/35">{a.desk} · {a.readMins} min</span>
+                    </span>
+                    <span className="text-white/25">→</span>
+                  </Link>
+                );
               })}
             </div>
           </section>
         )}
 
-        <section className="mt-10">
+        <section className="mt-9">
           <div className="flex items-end justify-between">
-            <div><p className="text-[10px] font-semibold uppercase tracking-[.28em] text-white/30">Field map</p><p className="mt-1 text-[12px] text-white/35">Pick a lane instead of hunting through a feed.</p></div>
-            <span className="text-[9px] uppercase tracking-[.18em] text-white/15">{DESKS.length} fields</span>
+            <p className="text-[9px] uppercase tracking-[0.28em] text-white/25">All notes</p>
+            <span className="text-[10px] uppercase tracking-[0.18em] text-white/15">{list.length} available</span>
           </div>
-          <div className="mt-4 grid grid-cols-2 gap-2.5">
-            {DESKS.map((d, index) => {
-              const count = WIKI.filter((a) => a.desk === d.id).length;
-              const c = ARTICLE_COLORS[index % ARTICLE_COLORS.length];
-              return <button key={d.id} type="button" onClick={() => { setDesk(d.id); setShowAll(false); window.scrollTo({ top: 0, behavior: "smooth" }); }} className="relative min-h-[96px] overflow-hidden rounded-[24px] border bg-white/[.025] p-4 text-left active:scale-[.98]" style={{ borderColor: `${c}35` }}>
-                <span className="absolute right-3 top-3 h-2 w-2 rounded-full" style={{ background: c, boxShadow: `0 0 12px ${c}` }} />
-                <span className="text-[14px] font-semibold">{d.label}</span>
-                <span className="mt-2 block text-[9px] uppercase tracking-[.18em] text-white/25">{count} notes</span>
-              </button>;
-            })}
-          </div>
-        </section>
-
-        <section className="mt-10">
-          <div className="flex items-end justify-between"><div><p className="text-[10px] font-semibold uppercase tracking-[.28em] text-white/30">Explore the field</p><p className="mt-1 text-[12px] text-white/35">Tap any note to go deeper.</p></div><span className="text-[9px] uppercase tracking-[.18em] text-white/15">{list.length} available</span></div>
           <div className="mt-4 space-y-2.5">
             {explore.map((a, index) => {
               const c = articleColor(a.slug);
-              return <Link key={a.slug} href={`/home/mind/${a.slug}`} className="group flex items-center gap-3 rounded-[22px] border bg-white/[.025] p-3.5 active:scale-[.985]" style={{ borderColor: `${c}30`, boxShadow: `inset 0 0 28px ${c}06` }}>
-                <div className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl" style={{ background: `${c}12`, color: c }}><span className="text-[10px] font-bold tabular-nums">{String(index + 1).padStart(2, "0")}</span></div>
-                <div className="min-w-0 flex-1"><div className="flex items-center gap-2"><span className="text-[9px] font-semibold uppercase tracking-[.16em]" style={{ color: c }}>{a.desk}</span><span className="text-[9px] uppercase tracking-[.14em] text-white/20">{a.readMins} min</span></div><p className="mt-1 text-[15px] font-semibold leading-snug">{a.title}</p></div>
-                <span className="text-lg text-white/20 transition group-hover:translate-x-0.5" style={{ color: `${c}bb` }}>→</span>
-              </Link>;
+              return (
+                <Link key={a.slug} href={`/home/mind/${a.slug}`} className="group flex items-center gap-3 rounded-[22px] border bg-white/[.025] p-3.5 active:scale-[.985]" style={{ borderColor: `${c}30`, boxShadow: `inset 0 0 28px ${c}06` }}>
+                  <div className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl" style={{ background: `${c}12`, color: c }}>
+                    <span className="text-[10px] font-bold tabular-nums">{String(index + 1).padStart(2, "0")}</span>
+                  </div>
+                  <div className="min-w-0 flex-1">
+                    <div className="flex items-center gap-2">
+                      <span className="text-[9px] font-semibold uppercase tracking-[.16em]" style={{ color: c }}>{a.desk}</span>
+                      <span className="text-[9px] uppercase tracking-[.14em] text-white/20">{a.readMins} min</span>
+                    </div>
+                    <p className="mt-1 text-[15px] font-semibold leading-snug">{a.title}</p>
+                  </div>
+                  <span className="text-lg text-white/20 transition group-hover:translate-x-0.5" style={{ color: `${c}bb` }}>→</span>
+                </Link>
+              );
             })}
           </div>
           {list.length > 6 && (
@@ -109,7 +106,11 @@ export default function MindWikiPage() {
         </section>
 
         <Link href="/home/evala" className="mt-9 flex items-center justify-between rounded-[24px] border border-white/[.08] bg-white/[.025] p-4 active:scale-[.985]">
-          <div><p className="text-[9px] uppercase tracking-[.24em] text-white/25">Go beyond reading</p><p className="mt-1 text-[16px] font-semibold">Take an idea into Evala.</p></div><span className="grid h-10 w-10 place-items-center rounded-full bg-white text-black">→</span>
+          <div>
+            <p className="text-[9px] uppercase tracking-[.24em] text-white/25">Next step</p>
+            <p className="mt-1 text-[16px] font-semibold">Ask Evala about an idea.</p>
+          </div>
+          <span className="grid h-10 w-10 place-items-center rounded-full bg-white text-black">→</span>
         </Link>
       </div>
     </main>
@@ -117,5 +118,13 @@ export default function MindWikiPage() {
 }
 
 function DeskChip({ label, active, onClick }: { label: string; active: boolean; onClick: () => void }) {
-  return <button type="button" onClick={onClick} className={active ? "shrink-0 rounded-full bg-white px-3 py-1.5 text-[11px] font-semibold text-black" : "shrink-0 rounded-full border border-white/10 bg-white/[.02] px-3 py-1.5 text-[11px] text-white/45"}>{label}</button>;
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={active ? "shrink-0 rounded-full bg-white px-3 py-1.5 text-[11px] font-semibold text-black" : "shrink-0 rounded-full border border-white/10 bg-white/[.02] px-3 py-1.5 text-[11px] text-white/45"}
+    >
+      {label}
+    </button>
+  );
 }
