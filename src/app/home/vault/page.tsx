@@ -46,9 +46,9 @@ export default function VaultPage() {
     <main className="livv-page relative min-h-full overflow-hidden pb-12">
       <div className="relative z-10 mx-auto max-w-lg px-5 pt-5">
         <PageHero
-          eyebrow="Collection"
+          eyebrow="Cards"
           title="Vault"
-          subtitle="Every card you’ve pulled lives here."
+          subtitle="Cards you've opened from packs."
           accent="#ff9f43"
         />
         <p className="mt-3 text-[13px] text-white/35">
@@ -94,9 +94,9 @@ export default function VaultPage() {
         {filtered.length === 0 ? (
           <div className="mt-16 text-center">
             <p className="font-display text-[20px]">Vault is empty</p>
-            <p className="mt-2 text-[14px] text-white/40">Open a pack from the Packs tab.</p>
+            <p className="mt-2 text-[14px] text-white/40">Open a pack from Shop.</p>
             <Link href="/home/shop" className="mt-6 inline-block text-[14px] text-livv-accent-soft">
-              Packs →
+              Shop →
             </Link>
           </div>
         ) : (
