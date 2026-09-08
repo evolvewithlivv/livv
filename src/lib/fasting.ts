@@ -35,9 +35,7 @@ export const PROTOCOLS: FastProtocol[] = [
   { id: "custom", name: "Custom", hours: 16, blurb: "Set your own target hours." },
 ];
 
-function empty(): FastState {
-  return { sessions: [], activeId: null };
-}
+function empty(): FastState { return { sessions: [], activeId: null }; }
 
 export function loadFastState(): FastState {
   if (typeof window === "undefined") return empty();
@@ -46,20 +44,16 @@ export function loadFastState(): FastState {
     if (!raw) return empty();
     const parsed = JSON.parse(raw) as FastState;
     if (!parsed || !Array.isArray(parsed.sessions)) return empty();
-    return parsed;
-  } catch {
-    return empty();
-  }
+    return { sessions: parsed.sessions.slice(0, 60), activeId: parsed.activeId || null };
+  } catch { return empty(); }
 }
 
 export function saveFastState(state: FastState) {
   if (typeof window === "undefined") return;
   try {
-    window.localStorage.setItem(KEY, JSON.stringify(state));
+    window.localStorage.setItem(KEY, JSON.stringify({ sessions: state.sessions.slice(0, 60), activeId: state.activeId }));
     window.dispatchEvent(new Event("livv-fasting"));
-  } catch {
-    // quota
-  }
+  } catch {}
 }
 
 export function getActiveFast(state = loadFastState()): FastSession | null {
@@ -67,18 +61,12 @@ export function getActiveFast(state = loadFastState()): FastSession | null {
   return state.sessions.find((s) => s.id === state.activeId && s.status === "active") || null;
 }
 
-export function startFast(opts: {
-  protocolId: string;
-  targetHours?: number;
-  note?: string;
-}): FastSession {
+export function startFast(opts: { protocolId: string; targetHours?: number; note?: string }): FastSession {
   const state = loadFastState();
-  if (state.activeId) {
-    const current = getActiveFast(state);
-    if (current) return current;
-  }
+  const current = getActiveFast(state);
+  if (current) return current;
   const protocol = PROTOCOLS.find((p) => p.id === opts.protocolId) || PROTOCOLS[0];
-  const hours = opts.targetHours && opts.targetHours > 0 ? opts.targetHours : protocol.hours;
+  const hours = opts.targetHours && Number.isFinite(opts.targetHours) && opts.targetHours > 0 ? Math.min(168, opts.targetHours) : protocol.hours;
   const session: FastSession = {
     id: `f_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
     protocolId: protocol.id,
@@ -99,10 +87,9 @@ export function endFast(opts?: { broken?: boolean; note?: string }): FastSession
   const state = loadFastState();
   const active = getActiveFast(state);
   if (!active) return null;
-  const elapsedH = (Date.now() - active.startedAt) / 3_600_000;
-  const hitTarget = elapsedH >= active.targetHours * 0.95;
   active.endedAt = Date.now();
-  active.status = opts?.broken ? "broken" : hitTarget ? "completed" : "completed";
+  const elapsedH = (active.endedAt - active.startedAt) / 3_600_000;
+  active.status = opts?.broken ? "broken" : elapsedH >= active.targetHours * 0.95 ? "completed" : "broken";
   if (opts?.note?.trim()) active.note = opts.note.trim();
   state.activeId = null;
   state.sessions = state.sessions.map((s) => (s.id === active.id ? active : s));
@@ -110,9 +97,17 @@ export function endFast(opts?: { broken?: boolean; note?: string }): FastSession
   return active;
 }
 
+export function cancelFast() {
+  const state = loadFastState();
+  const active = getActiveFast(state);
+  if (!active) return;
+  state.activeId = null;
+  state.sessions = state.sessions.filter((s) => s.id !== active.id);
+  saveFastState(state);
+}
+
 export function elapsedMs(session: FastSession, now = Date.now()) {
-  const end = session.endedAt ?? now;
-  return Math.max(0, end - session.startedAt);
+  return Math.max(0, (session.endedAt ?? now) - session.startedAt);
 }
 
 export function progressPct(session: FastSession, now = Date.now()) {
@@ -139,20 +134,17 @@ export function formatClock(ms: number) {
 }
 
 export function remainingMs(session: FastSession, now = Date.now()) {
-  const target = session.targetHours * 3_600_000;
-  return Math.max(0, target - elapsedMs(session, now));
+  return Math.max(0, session.targetHours * 3_600_000 - elapsedMs(session, now));
 }
 
 export function fastingStats(state = loadFastState()) {
   const done = state.sessions.filter((s) => s.status === "completed");
   const totalHours = done.reduce((sum, s) => sum + elapsedMs(s) / 3_600_000, 0);
   const longest = done.reduce((max, s) => Math.max(max, elapsedMs(s)), 0);
-  const days = new Set(
-    done.map((s) => {
-      const d = new Date(s.endedAt || s.startedAt);
-      return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
-    })
-  );
+  const days = new Set(done.map((s) => {
+    const d = new Date(s.endedAt || s.startedAt);
+    return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
+  }));
   let streak = 0;
   const cursor = new Date();
   for (let i = 0; i < 60; i++) {
@@ -164,10 +156,5 @@ export function fastingStats(state = loadFastState()) {
       cursor.setDate(cursor.getDate() - 1);
     } else break;
   }
-  return {
-    completed: done.length,
-    totalHours: Math.round(totalHours * 10) / 10,
-    longestMs: longest,
-    streak,
-  };
+  return { completed: done.length, totalHours: Math.round(totalHours * 10) / 10, longestMs: longest, streak };
 }
