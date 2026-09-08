@@ -33,7 +33,6 @@ export default function DailyPage() {
   const question = useMemo(() => dailyQuestion(now), [now]);
   const summary = useMemo(() => dailySummary(now), [now]);
   const drop = useMemo(() => dailyDrop(now), [now]);
-  const key = summary.season ? `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}` : "";
 
   const refresh = () => {
     const state = loadDailyState(now);
@@ -95,13 +94,12 @@ export default function DailyPage() {
     <main className="livv-page relative min-h-full overflow-hidden pb-10 text-white">
       <div className="relative z-10 mx-auto max-w-xl px-5 pb-8 pt-5">
         <PageHero
-          eyebrow="LIVV Daily"
+          eyebrow="Today"
           title={now.toLocaleDateString("en-US", { weekday: "long", month: "short", day: "numeric" })}
-          subtitle="Three moves. One check-in with yourself. Keep the chain."
+          subtitle="Three small things. Check them off."
           accent="#ffd43b"
         />
 
-        {/* World state hero */}
         <section className="livv-glass relative mt-8 overflow-hidden rounded-[36px] p-6">
           <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-livv-accent/70 to-transparent" />
           <div className="absolute -right-20 -top-20 h-52 w-52 rounded-full bg-livv-accent/15 blur-3xl" />
@@ -166,7 +164,6 @@ export default function DailyPage() {
           <Metric value={claimed ? "Open" : allDone ? "Ready" : "Locked"} label="Drop" />
         </section>
 
-        {/* Tasks */}
         <section className="mt-8">
           <p className="text-[9px] font-semibold uppercase tracking-[0.28em] text-white/25">01 — The run</p>
           <p className="mt-1 text-[14px] font-medium text-white/70">Three things before midnight.</p>
@@ -225,13 +222,12 @@ export default function DailyPage() {
           </div>
         </section>
 
-        {/* Question */}
         <section
           id="daily-question"
           className="mt-8 rounded-[30px] border border-white/[0.08] bg-white/[0.025] p-5 backdrop-blur-xl"
         >
           <p className="text-[9px] font-semibold uppercase tracking-[0.28em] text-white/25">02 — The question</p>
-          <p className="mt-1 text-[14px] font-medium text-white/70">Saved to your Evolution Journal.</p>
+          <p className="mt-1 text-[14px] font-medium text-white/70">Saved to your journal.</p>
           <p className="font-display mt-5 text-[22px] font-medium leading-tight tracking-tight text-white/85">
             {question}
           </p>
@@ -256,7 +252,6 @@ export default function DailyPage() {
           </div>
         </section>
 
-        {/* 30-day callback */}
         {summary.callback && (
           <section className="mt-5 rounded-[30px] border border-livv-accent/15 bg-livv-accent/[0.045] p-5">
             <p className="text-[9px] font-semibold uppercase tracking-[0.24em] text-livv-accent-soft">
@@ -270,7 +265,6 @@ export default function DailyPage() {
           </section>
         )}
 
-        {/* Drop */}
         <section className="mt-8 overflow-hidden rounded-[34px] border border-white/[0.09] bg-white/[0.025] p-6 backdrop-blur-xl">
           <div className="flex items-start justify-between gap-5">
             <div>
@@ -343,7 +337,7 @@ export default function DailyPage() {
         )}
 
         <p className="mt-10 text-center text-[9px] uppercase tracking-[0.28em] text-white/15">
-          Come back tomorrow. The world changes.
+          Come back tomorrow.
         </p>
       </div>
     </main>
