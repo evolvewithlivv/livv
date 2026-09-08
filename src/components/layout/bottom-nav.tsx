@@ -22,7 +22,7 @@ export function BottomNav() {
       style={{ paddingBottom: "max(0.55rem, env(safe-area-inset-bottom))" }}
       aria-label="Primary"
     >
-      <div className="mx-auto flex max-w-lg items-end justify-between">
+      <div className="livv-tabbar-bubble mx-auto flex max-w-lg items-end justify-between gap-0.5 px-1.5 py-1.5">
         {NAV_ITEMS.map((item) => {
           const active = item.match(pathname);
           const Icon = item.Icon;
@@ -31,9 +31,17 @@ export function BottomNav() {
               key={item.href}
               href={item.href}
               aria-current={active ? "page" : undefined}
-              className="livv-tab group relative flex min-w-0 flex-1 flex-col items-center justify-center gap-1 py-2"
+              className="livv-tab group relative flex min-w-0 flex-1 flex-col items-center justify-center gap-1 rounded-2xl py-2"
               style={{ color: item.color }}
             >
+              {active && (
+                <span
+                  className="absolute inset-0 -z-10 rounded-2xl"
+                  style={{
+                    background: `radial-gradient(circle at 50% 40%, ${item.color}22, transparent 70%)`,
+                  }}
+                />
+              )}
               <Icon
                 size={21}
                 strokeWidth={active ? 2.35 : 1.75}
