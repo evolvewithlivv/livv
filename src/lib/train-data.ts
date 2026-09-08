@@ -13,7 +13,11 @@ export type Focus =
   | "Pull"
   | "Legs"
   | "Core"
-  | "Cardio";
+  | "Cardio"
+  | "Chest"
+  | "Back"
+  | "Shoulders"
+  | "Arms";
 
 export type Location = "Home" | "Gym" | "Anywhere";
 export type Equipment = "None" | "Dumbbells" | "Bands" | "Full gym";
@@ -39,6 +43,7 @@ export type Workout = {
   exercises: Exercise[];
   goal?: Goal;
   equipment?: Equipment;
+  mission?: string;
 };
 
 const EXERCISE_POOL: Record<Focus, Exercise[]> = {
@@ -49,6 +54,7 @@ const EXERCISE_POOL: Record<Focus, Exercise[]> = {
     { id: "fb4", name: "Glute Bridges", sets: 3, reps: "12-15", rest: "40s" },
     { id: "fb5", name: "Plank", sets: 3, duration: "30-45s", rest: "30s" },
     { id: "fb6", name: "Jumping Jacks", sets: 2, duration: "40s", rest: "20s" },
+    { id: "fb7", name: "Reverse Lunges", sets: 2, reps: "8/leg", rest: "40s" },
   ],
   "Upper Body": [
     { id: "ub1", name: "Push-ups", sets: 4, reps: "8-12", rest: "50s" },
@@ -56,6 +62,7 @@ const EXERCISE_POOL: Record<Focus, Exercise[]> = {
     { id: "ub3", name: "Dumbbell Rows", sets: 3, reps: "10-12", rest: "45s" },
     { id: "ub4", name: "Shoulder Taps", sets: 3, reps: "10/side", rest: "40s" },
     { id: "ub5", name: "Tricep Dips", sets: 3, reps: "8-12", rest: "45s" },
+    { id: "ub6", name: "Bicep Curls", sets: 3, reps: "10-12", rest: "40s" },
   ],
   "Lower Body": [
     { id: "lb1", name: "Squats", sets: 4, reps: "12-15", rest: "50s" },
@@ -63,6 +70,7 @@ const EXERCISE_POOL: Record<Focus, Exercise[]> = {
     { id: "lb3", name: "Romanian Deadlifts", sets: 3, reps: "10-12", rest: "50s" },
     { id: "lb4", name: "Calf Raises", sets: 3, reps: "15-20", rest: "30s" },
     { id: "lb5", name: "Wall Sit", sets: 2, duration: "40s", rest: "40s" },
+    { id: "lb6", name: "Hip Thrusts", sets: 3, reps: "12-15", rest: "45s" },
   ],
   Push: [
     { id: "p1", name: "Push-ups", sets: 4, reps: "8-12", rest: "50s" },
@@ -70,6 +78,7 @@ const EXERCISE_POOL: Record<Focus, Exercise[]> = {
     { id: "p3", name: "Incline Push-ups", sets: 3, reps: "10-12", rest: "45s" },
     { id: "p4", name: "Lateral Raises", sets: 3, reps: "12-15", rest: "40s" },
     { id: "p5", name: "Tricep Extensions", sets: 3, reps: "12", rest: "40s" },
+    { id: "p6", name: "Diamond Push-ups", sets: 3, reps: "6-10", rest: "45s" },
   ],
   Pull: [
     { id: "pl1", name: "Pull-ups / Inverted Rows", sets: 4, reps: "6-10", rest: "60s" },
@@ -77,6 +86,7 @@ const EXERCISE_POOL: Record<Focus, Exercise[]> = {
     { id: "pl3", name: "Face Pulls", sets: 3, reps: "12-15", rest: "40s" },
     { id: "pl4", name: "Bicep Curls", sets: 3, reps: "10-12", rest: "40s" },
     { id: "pl5", name: "Superman Holds", sets: 3, duration: "25s", rest: "30s" },
+    { id: "pl6", name: "Rear Delt Raises", sets: 3, reps: "12-15", rest: "35s" },
   ],
   Legs: [
     { id: "lg1", name: "Goblet Squats", sets: 4, reps: "10-12", rest: "50s" },
@@ -84,6 +94,7 @@ const EXERCISE_POOL: Record<Focus, Exercise[]> = {
     { id: "lg3", name: "Hip Thrusts", sets: 3, reps: "12-15", rest: "45s" },
     { id: "lg4", name: "Step-ups", sets: 3, reps: "10/leg", rest: "40s" },
     { id: "lg5", name: "Calf Raises", sets: 3, reps: "15-20", rest: "30s" },
+    { id: "lg6", name: "Romanian Deadlifts", sets: 3, reps: "10-12", rest: "50s" },
   ],
   Core: [
     { id: "c1", name: "Plank", sets: 3, duration: "40s", rest: "30s" },
@@ -91,6 +102,7 @@ const EXERCISE_POOL: Record<Focus, Exercise[]> = {
     { id: "c3", name: "Russian Twists", sets: 3, reps: "16-20", rest: "30s" },
     { id: "c4", name: "Leg Raises", sets: 3, reps: "10-12", rest: "35s" },
     { id: "c5", name: "Side Plank", sets: 2, duration: "30s/side", rest: "30s" },
+    { id: "c6", name: "Hollow Holds", sets: 3, duration: "20-30s", rest: "30s" },
   ],
   Cardio: [
     { id: "cd1", name: "Jumping Jacks", sets: 4, duration: "40s", rest: "20s" },
@@ -98,6 +110,39 @@ const EXERCISE_POOL: Record<Focus, Exercise[]> = {
     { id: "cd3", name: "Burpees", sets: 3, reps: "8-10", rest: "40s" },
     { id: "cd4", name: "Mountain Climbers", sets: 3, duration: "30s", rest: "25s" },
     { id: "cd5", name: "Shadow Boxing", sets: 3, duration: "45s", rest: "30s" },
+    { id: "cd6", name: "Skater Bounds", sets: 3, duration: "30s", rest: "25s" },
+  ],
+  Chest: [
+    { id: "ch1", name: "Push-ups", sets: 4, reps: "8-12", rest: "50s" },
+    { id: "ch2", name: "Incline Push-ups", sets: 3, reps: "10-12", rest: "45s" },
+    { id: "ch3", name: "Wide Push-ups", sets: 3, reps: "8-12", rest: "45s" },
+    { id: "ch4", name: "Chest Squeeze Press", sets: 3, reps: "10-12", rest: "40s" },
+    { id: "ch5", name: "Decline Push-ups", sets: 3, reps: "6-10", rest: "50s" },
+    { id: "ch6", name: "Pause Push-ups", sets: 3, reps: "6-8", rest: "50s" },
+  ],
+  Back: [
+    { id: "bk1", name: "Pull-ups / Inverted Rows", sets: 4, reps: "6-10", rest: "60s" },
+    { id: "bk2", name: "Dumbbell Rows", sets: 4, reps: "10-12", rest: "45s" },
+    { id: "bk3", name: "Superman Holds", sets: 3, duration: "25s", rest: "30s" },
+    { id: "bk4", name: "Face Pulls", sets: 3, reps: "12-15", rest: "40s" },
+    { id: "bk5", name: "Prone Y Raises", sets: 3, reps: "10-12", rest: "35s" },
+    { id: "bk6", name: "Back Widows", sets: 3, reps: "12", rest: "35s" },
+  ],
+  Shoulders: [
+    { id: "sh1", name: "Pike Push-ups", sets: 4, reps: "6-10", rest: "50s" },
+    { id: "sh2", name: "Overhead Press", sets: 3, reps: "8-10", rest: "50s" },
+    { id: "sh3", name: "Lateral Raises", sets: 3, reps: "12-15", rest: "40s" },
+    { id: "sh4", name: "Rear Delt Raises", sets: 3, reps: "12-15", rest: "35s" },
+    { id: "sh5", name: "Shoulder Taps", sets: 3, reps: "10/side", rest: "40s" },
+    { id: "sh6", name: "Arnold Press", sets: 3, reps: "8-10", rest: "45s" },
+  ],
+  Arms: [
+    { id: "ar1", name: "Diamond Push-ups", sets: 3, reps: "6-10", rest: "45s" },
+    { id: "ar2", name: "Tricep Dips", sets: 3, reps: "8-12", rest: "45s" },
+    { id: "ar3", name: "Bicep Curls", sets: 3, reps: "10-12", rest: "40s" },
+    { id: "ar4", name: "Hammer Curls", sets: 3, reps: "10-12", rest: "40s" },
+    { id: "ar5", name: "Tricep Extensions", sets: 3, reps: "12", rest: "40s" },
+    { id: "ar6", name: "Close-grip Push-ups", sets: 3, reps: "8-12", rest: "45s" },
   ],
 };
 
@@ -109,16 +154,11 @@ function getDifficulty(duration: Duration): Workout["difficulty"] {
 
 function getExerciseCount(duration: Duration): number {
   switch (duration) {
-    case "10":
-      return 3;
-    case "20":
-      return 4;
-    case "30":
-      return 5;
-    case "45":
-      return 6;
-    default:
-      return 7;
+    case "10": return 3;
+    case "20": return 4;
+    case "30": return 5;
+    case "45": return 6;
+    default: return 6;
   }
 }
 
@@ -127,26 +167,16 @@ export function generateWorkout(
   location: Location,
   duration: Duration,
   goal?: Goal,
-  equipment?: Equipment
+  equipment?: Equipment,
+  mission?: string
 ): Workout {
   const pool = EXERCISE_POOL[focus];
   const count = Math.min(getExerciseCount(duration), pool.length);
   const exercises = pool.slice(0, count);
 
-  const nameMap: Record<Focus, string> = {
-    "Full Body": "Full Body Ignition",
-    "Upper Body": "Upper Body Drive",
-    "Lower Body": "Lower Body Power",
-    Push: "Push Protocol",
-    Pull: "Pull Protocol",
-    Legs: "Leg Engine",
-    Core: "Core Stability",
-    Cardio: "Cardio Surge",
-  };
-
   return {
     id: `w-${Date.now()}`,
-    name: nameMap[focus],
+    name: mission || `${focus} session`,
     focus,
     location,
     duration: duration === "60+" ? "60+ min" : `${duration} min`,
@@ -154,6 +184,7 @@ export function generateWorkout(
     exercises,
     goal,
     equipment,
+    mission,
   };
 }
 
@@ -174,6 +205,10 @@ export const FOCUS_OPTIONS: Focus[] = [
   "Legs",
   "Core",
   "Cardio",
+  "Chest",
+  "Back",
+  "Shoulders",
+  "Arms",
 ];
 
 export const LOCATION_OPTIONS: Location[] = ["Home", "Gym", "Anywhere"];
