@@ -49,7 +49,7 @@ export function contextGreeting(now = new Date(), rec = loadRecord()) {
   } else if (rec.streak >= 6) {
     line = `${rec.streak}-day streak. Keep it going.`;
   } else if (rec.streak >= 2) {
-    line = `${rec.streak} days in a row.`;
+    line = "A few days in a row — keep going.";
   } else if (done === 0 && hour >= 14) {
     line = "Nothing done yet — still recoverable.";
   } else {
@@ -78,16 +78,15 @@ export function nextMove(rec = loadRecord()): Move {
   if (incomplete) {
     const map: Record<string, { title: string; cta: string; href: string }> = {
       Body: { title: "Train your body", cta: "Open Train", href: "/home/train" },
-      Mind: { title: "Clear your mind", cta: "Open Mind", href: "/home/mind" },
-      Career: { title: "Move your work", cta: "Open Daily", href: "/home/daily" },
-      Finance: { title: "Look at the money", cta: "Open Daily", href: "/home/daily" },
+      Mind: { title: "Clear your mind", cta: "Open Evala", href: "/home/evala" },
+      Career: { title: "Finish the priority", cta: "Log deep work", href: "/home/evala" },
+      Finance: { title: "Protect your money", cta: "Log today", href: "/home/evala" },
       Social: { title: "Reach someone real", cta: "Open Connect", href: "/home/connect" },
-      Life: { title: "Finish the daily", cta: "Open Daily", href: "/home/daily" },
     };
     const m = map[incomplete.pillar] || {
       title: incomplete.title,
-      cta: "Open Daily",
-      href: "/home/daily",
+      cta: "Open Evala",
+      href: "/home/evala",
     };
     return {
       title: m.title,
@@ -104,48 +103,56 @@ export function nextMove(rec = loadRecord()): Move {
       reason: "Close the day so it counts.",
       cta: "Check in",
       href: "/home",
-      pillar: "Self",
+      pillar: "Life",
     };
   }
 
   return {
-    title: "Day is locked",
-    reason: "Everything on the board is done.",
+    title: "Day is done",
+    reason: "Today is logged. Review your week if you want.",
     cta: "View progress",
     href: "/home/progress",
   };
 }
 
-export function actionsCompletedCount(rec = loadRecord()) {
+export function dailyPillarStatus(rec = loadRecord()): DayPillar[] {
+  const today = dayKey();
+  const day = rec.days[today];
   const objs = todaysObjectives(rec);
-  const done = objs.filter((o) => o.completed).length;
-  const pillars = CORE_PILLARS.map((id) => {
+
+  return CORE_PILLARS.map((id) => {
     const name = id[0].toUpperCase() + id.slice(1);
-    const hit = objs.some((o) => o.pillar.toLowerCase() === id && o.completed);
-    return { id, name, done: hit } satisfies DayPillar;
+    let done = false;
+    if (id === "body")
+      done = Boolean(day?.workout) || objs.some((o) => o.pillar === "Body" && o.completed);
+    else done = objs.some((o) => o.pillar.toLowerCase() === id && o.completed);
+    return { id, name, done };
   });
-  return { done, total: objs.length || CORE_PILLARS.length, pillars };
 }
 
 export function strongestPillar(rec = loadRecord()) {
-  const live = livePillars(rec);
-  return live.slice().sort((a, b) => b.level - a.level)[0] || live[0];
+  const pillars = livePillars(rec);
+  return [...pillars].sort((a, b) => b.level - a.level || b.progress - a.progress)[0];
 }
 
 export function needsAttention(rec = loadRecord()) {
-  const live = livePillars(rec);
-  return live.slice().sort((a, b) => a.level - b.level)[0] || live[0];
+  const pillars = livePillars(rec);
+  return [...pillars].sort((a, b) => a.level - b.level || a.progress - b.progress)[0];
 }
 
-export function missedYesterday(rec = loadRecord()) {
-  const d = new Date();
-  d.setDate(d.getDate() - 1);
-  const key = dayKey(d);
-  const y = rec.days[key];
-  if (!y) return true;
-  return !y.checkIn && !y.workout;
+/** Daily world focus for Evala / surfaces that still call focusCard. */
+export function focusCard(date = new Date()) {
+  const w = worldState(date);
+  return {
+    theme: w.title,
+    principle: w.line,
+    detail: w.focus,
+  };
 }
 
-export function worldLine(now = new Date()) {
-  return worldState(now).title;
+export function actionsCompletedCount(rec = loadRecord()) {
+  const pillars = dailyPillarStatus(rec);
+  const checked = isCheckedInToday(rec) ? 1 : 0;
+  const pillarDone = pillars.filter((p) => p.done).length;
+  return { done: Math.min(6, pillarDone + checked), total: 6, pillars };
 }

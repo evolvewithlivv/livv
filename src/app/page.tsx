@@ -39,11 +39,11 @@ export default function OpeningPage() {
         </div>
 
         <p className="opening-line mt-5 max-w-[18rem] text-center text-[15px] leading-snug text-white/55">
-          Your personal operating system for becoming more capable.
+          Train. Read. Check in. Build a better day.
         </p>
 
         <p className="opening-sub mt-3 text-[11px] uppercase tracking-[0.28em] text-white/25">
-          Body · Mind · Work · Money · People
+          Start simple. Stay consistent.
         </p>
 
         <div className="opening-cta mt-12 flex w-full max-w-xs flex-col items-center gap-4">
