@@ -23,82 +23,82 @@ export type SplitDef = {
 export const SPLITS: SplitDef[] = [
   {
     id: "ppl",
-    name: "Push / Pull / Legs",
-    line: "Push one day. Pull the next. Legs after that.",
-    detail: "A repeatable 6-day structure built around movement patterns and recovery.",
+    name: "6-Day Push / Pull / Legs",
+    line: "The week is the system. Push, pull, legs. Repeat. Sunday off.",
+    detail: "Split = what gets trained. Workout = how you train it.",
     color: "#FF4D6D",
     days: [
-      { id: "ppl-mon", day: "MON", label: "Push", focus: "Push", muscles: "Chest · shoulders · triceps" },
-      { id: "ppl-tue", day: "TUE", label: "Pull", focus: "Pull", muscles: "Back · biceps" },
-      { id: "ppl-wed", day: "WED", label: "Legs", focus: "Legs", muscles: "Quads · hamstrings · glutes · calves" },
-      { id: "ppl-thu", day: "THU", label: "Push", focus: "Push", muscles: "Chest · shoulders · triceps" },
-      { id: "ppl-fri", day: "FRI", label: "Pull", focus: "Pull", muscles: "Back · biceps" },
-      { id: "ppl-sat", day: "SAT", label: "Legs", focus: "Legs", muscles: "Quads · hamstrings · glutes · calves" },
-      { id: "ppl-sun", day: "SUN", label: "Recovery", focus: null, muscles: "Rest · mobility · recovery", rest: true },
+      { id: "ppl-mon", day: "MON", label: "Push", focus: "Push", muscles: "Chest + shoulders + triceps" },
+      { id: "ppl-tue", day: "TUE", label: "Pull", focus: "Pull", muscles: "Back + biceps" },
+      { id: "ppl-wed", day: "WED", label: "Legs", focus: "Legs", muscles: "Quads + hamstrings + glutes + calves" },
+      { id: "ppl-thu", day: "THU", label: "Push", focus: "Push", muscles: "Chest + shoulders + triceps" },
+      { id: "ppl-fri", day: "FRI", label: "Pull", focus: "Pull", muscles: "Back + biceps" },
+      { id: "ppl-sat", day: "SAT", label: "Legs", focus: "Legs", muscles: "Quads + hamstrings + glutes + calves" },
+      { id: "ppl-sun", day: "SUN", label: "Rest", focus: null, muscles: "Off. Recovery is in the split.", rest: true },
     ],
   },
   {
     id: "upper-lower",
     name: "Upper / Lower",
-    line: "Upper one day. Lower the next. Repeat.",
-    detail: "Simple frequency without making every session a full-body marathon.",
+    line: "Upper. Lower. Rest. Upper. Lower. Then rest again.",
+    detail: "Four training days. The split decides the half of the body. The workout fills the day.",
     color: "#4C8DFF",
     days: [
-      { id: "ul-mon", day: "MON", label: "Upper", focus: "Upper Body", muscles: "Chest · back · shoulders · arms" },
-      { id: "ul-tue", day: "TUE", label: "Lower", focus: "Lower Body", muscles: "Quads · hamstrings · glutes · calves" },
-      { id: "ul-wed", day: "WED", label: "Recovery", focus: null, muscles: "Rest · mobility · recovery", rest: true },
-      { id: "ul-thu", day: "THU", label: "Upper", focus: "Upper Body", muscles: "Chest · back · shoulders · arms" },
-      { id: "ul-fri", day: "FRI", label: "Lower", focus: "Lower Body", muscles: "Quads · hamstrings · glutes · calves" },
-      { id: "ul-sat", day: "SAT", label: "Recovery", focus: null, muscles: "Rest · mobility · recovery", rest: true },
-      { id: "ul-sun", day: "SUN", label: "Recovery", focus: null, muscles: "Rest · mobility · recovery", rest: true },
+      { id: "ul-mon", day: "MON", label: "Upper", focus: "Upper Body", muscles: "Chest + back + shoulders + arms" },
+      { id: "ul-tue", day: "TUE", label: "Lower", focus: "Lower Body", muscles: "Quads + hamstrings + glutes + calves" },
+      { id: "ul-wed", day: "WED", label: "Rest", focus: null, muscles: "Off.", rest: true },
+      { id: "ul-thu", day: "THU", label: "Upper", focus: "Upper Body", muscles: "Chest + back + shoulders + arms" },
+      { id: "ul-fri", day: "FRI", label: "Lower", focus: "Lower Body", muscles: "Quads + hamstrings + glutes + calves" },
+      { id: "ul-sat", day: "SAT", label: "Rest", focus: null, muscles: "Off.", rest: true },
+      { id: "ul-sun", day: "SUN", label: "Rest", focus: null, muscles: "Off.", rest: true },
     ],
   },
   {
     id: "bro",
     name: "Bro Split",
-    line: "One major focus per training day. Five days. Recover hard.",
-    detail: "Each day has a primary muscle-group mission instead of bundling everything together.",
+    line: "One muscle group owns the day. Five days. Weekend off.",
+    detail: "Monday chest is not Tuesday back. Each day gets its own workout.",
     color: "#F5C542",
     days: [
-      { id: "bro-mon", day: "MON", label: "Chest", focus: "Push", muscles: "Chest · supporting triceps" },
-      { id: "bro-tue", day: "TUE", label: "Back", focus: "Pull", muscles: "Lats · upper back · biceps" },
-      { id: "bro-wed", day: "WED", label: "Shoulders", focus: "Upper Body", muscles: "Front · side · rear delts" },
-      { id: "bro-thu", day: "THU", label: "Arms", focus: "Push", muscles: "Biceps · triceps · forearms" },
-      { id: "bro-fri", day: "FRI", label: "Legs", focus: "Legs", muscles: "Quads · hamstrings · glutes · calves" },
-      { id: "bro-sat", day: "SAT", label: "Recovery", focus: null, muscles: "Rest · mobility · recovery", rest: true },
-      { id: "bro-sun", day: "SUN", label: "Recovery", focus: null, muscles: "Rest · mobility · recovery", rest: true },
+      { id: "bro-mon", day: "MON", label: "Chest", focus: "Chest", muscles: "Chest" },
+      { id: "bro-tue", day: "TUE", label: "Back", focus: "Back", muscles: "Back" },
+      { id: "bro-wed", day: "WED", label: "Shoulders", focus: "Shoulders", muscles: "Shoulders" },
+      { id: "bro-thu", day: "THU", label: "Arms", focus: "Arms", muscles: "Biceps + triceps" },
+      { id: "bro-fri", day: "FRI", label: "Legs", focus: "Legs", muscles: "Quads + hamstrings + glutes + calves" },
+      { id: "bro-sat", day: "SAT", label: "Rest", focus: null, muscles: "Off.", rest: true },
+      { id: "bro-sun", day: "SUN", label: "Rest", focus: null, muscles: "Off.", rest: true },
     ],
   },
   {
     id: "full",
     name: "Full Body",
-    line: "Train the whole body each session. Recover between sessions.",
-    detail: "A flexible structure for people who want fewer training days without skipping muscle groups.",
+    line: "Three full-body days. The whole body every session.",
+    detail: "No muscle group is parked on a different day. Recovery sits between sessions.",
     color: "#3DDC97",
     days: [
-      { id: "full-mon", day: "MON", label: "Full Body", focus: "Full Body", muscles: "Upper · lower · core" },
-      { id: "full-tue", day: "TUE", label: "Recovery", focus: null, muscles: "Rest · mobility · recovery", rest: true },
-      { id: "full-wed", day: "WED", label: "Full Body", focus: "Full Body", muscles: "Upper · lower · core" },
-      { id: "full-thu", day: "THU", label: "THU Recovery", focus: null, muscles: "Rest · mobility · recovery", rest: true },
-      { id: "full-fri", day: "FRI", label: "Full Body", focus: "Full Body", muscles: "Upper · lower · core" },
-      { id: "full-sat", day: "SAT", label: "Recovery", focus: null, muscles: "Rest · mobility · recovery", rest: true },
-      { id: "full-sun", day: "SUN", label: "Recovery", focus: null, muscles: "Rest · mobility · recovery", rest: true },
+      { id: "full-mon", day: "MON", label: "Full Body", focus: "Full Body", muscles: "Whole body" },
+      { id: "full-tue", day: "TUE", label: "Rest", focus: null, muscles: "Off.", rest: true },
+      { id: "full-wed", day: "WED", label: "Full Body", focus: "Full Body", muscles: "Whole body" },
+      { id: "full-thu", day: "THU", label: "Rest", focus: null, muscles: "Off.", rest: true },
+      { id: "full-fri", day: "FRI", label: "Full Body", focus: "Full Body", muscles: "Whole body" },
+      { id: "full-sat", day: "SAT", label: "Rest", focus: null, muscles: "Off.", rest: true },
+      { id: "full-sun", day: "SUN", label: "Rest", focus: null, muscles: "Off.", rest: true },
     ],
   },
   {
     id: "hybrid",
     name: "Hybrid",
-    line: "Strength, engine, and trunk work rotated across the week.",
-    detail: "A balanced structure for people who want lifting plus conditioning in one system.",
+    line: "Strength. Engine. Trunk. Then repeat.",
+    detail: "The week mixes lift days and conditioning days on purpose.",
     color: "#B45CFF",
     days: [
-      { id: "hyb-mon", day: "MON", label: "Strength", focus: "Full Body", muscles: "Full-body strength" },
-      { id: "hyb-tue", day: "TUE", label: "Engine", focus: "Cardio", muscles: "Conditioning · work capacity" },
-      { id: "hyb-wed", day: "WED", label: "Trunk", focus: "Core", muscles: "Abs · obliques · trunk stability" },
-      { id: "hyb-thu", day: "THU", label: "Strength", focus: "Full Body", muscles: "Full-body strength" },
-      { id: "hyb-fri", day: "FRI", label: "Engine", focus: "Cardio", muscles: "Conditioning · work capacity" },
-      { id: "hyb-sat", day: "SAT", label: "Recovery", focus: null, muscles: "Rest · mobility · recovery", rest: true },
-      { id: "hyb-sun", day: "SUN", label: "Recovery", focus: null, muscles: "Rest · mobility · recovery", rest: true },
+      { id: "hyb-mon", day: "MON", label: "Strength", focus: "Full Body", muscles: "Whole-body strength" },
+      { id: "hyb-tue", day: "TUE", label: "Engine", focus: "Cardio", muscles: "Conditioning" },
+      { id: "hyb-wed", day: "WED", label: "Trunk", focus: "Core", muscles: "Abs + obliques" },
+      { id: "hyb-thu", day: "THU", label: "Strength", focus: "Full Body", muscles: "Whole-body strength" },
+      { id: "hyb-fri", day: "FRI", label: "Engine", focus: "Cardio", muscles: "Conditioning" },
+      { id: "hyb-sat", day: "SAT", label: "Rest", focus: null, muscles: "Off.", rest: true },
+      { id: "hyb-sun", day: "SUN", label: "Rest", focus: null, muscles: "Off.", rest: true },
     ],
   },
 ];
@@ -112,6 +112,10 @@ export const FOCUS_COLOR: Record<Focus, string> = {
   Legs: "#C8F542",
   Core: "#86E35A",
   Cardio: "#FF3B6B",
+  Chest: "#FF8C42",
+  Back: "#3D7EFF",
+  Shoulders: "#D46BFF",
+  Arms: "#FF5CA8",
 };
 
 export const LOCATION_COLOR: Record<Location, string> = {
@@ -127,6 +131,22 @@ export const DURATION_COLOR: Record<Duration, string> = {
   "45": "#FF8AB4",
   "60+": "#FF6B35",
 };
+
+const SPLIT_KEY = "livv-active-split";
+
+export function loadActiveSplit(): SplitId | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = window.localStorage.getItem(SPLIT_KEY);
+    if (raw === "ppl" || raw === "upper-lower" || raw === "bro" || raw === "full" || raw === "hybrid") return raw;
+  } catch {}
+  return null;
+}
+
+export function saveActiveSplit(id: SplitId) {
+  if (typeof window === "undefined") return;
+  try { window.localStorage.setItem(SPLIT_KEY, id); } catch {}
+}
 
 export function chipStyle(hex: string, on: boolean) {
   return {
