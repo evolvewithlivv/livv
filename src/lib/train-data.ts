@@ -15,24 +15,18 @@ export type Focus =
   | "Core"
   | "Cardio";
 
+export type SplitTarget = Focus | "Chest" | "Back" | "Shoulders" | "Arms";
 export type Location = "Home" | "Gym" | "Anywhere";
 export type Equipment = "None" | "Dumbbells" | "Bands" | "Full gym";
 export type Duration = "10" | "20" | "30" | "45" | "60+";
 
-export type Exercise = {
-  id: string;
-  name: string;
-  sets?: number;
-  reps?: string;
-  duration?: string;
-  rest: string;
-  notes?: string;
-};
+export type Exercise = { id: string; name: string; sets?: number; reps?: string; duration?: string; rest: string; notes?: string };
 
 export type Workout = {
   id: string;
   name: string;
   focus: Focus;
+  target?: SplitTarget;
   location: Location;
   duration: string;
   difficulty: "Beginner" | "Intermediate" | "Advanced";
@@ -41,7 +35,7 @@ export type Workout = {
   equipment?: Equipment;
 };
 
-const EXERCISE_POOL: Record<Focus, Exercise[]> = {
+const EXERCISE_POOL: Record<SplitTarget, Exercise[]> = {
   "Full Body": [
     { id: "fb1", name: "Bodyweight Squats", sets: 3, reps: "12-15", rest: "45s" },
     { id: "fb2", name: "Push-ups", sets: 3, reps: "8-12", rest: "45s" },
@@ -99,6 +93,34 @@ const EXERCISE_POOL: Record<Focus, Exercise[]> = {
     { id: "cd4", name: "Mountain Climbers", sets: 3, duration: "30s", rest: "25s" },
     { id: "cd5", name: "Shadow Boxing", sets: 3, duration: "45s", rest: "30s" },
   ],
+  Chest: [
+    { id: "ch1", name: "Push-ups", sets: 4, reps: "8-12", rest: "50s" },
+    { id: "ch2", name: "Incline Push-ups", sets: 3, reps: "10-12", rest: "45s" },
+    { id: "ch3", name: "Wide Push-ups", sets: 3, reps: "8-12", rest: "45s" },
+    { id: "ch4", name: "Chest Squeeze Press", sets: 3, reps: "10-15", rest: "40s" },
+    { id: "ch5", name: "Slow Eccentric Push-ups", sets: 2, reps: "6-10", rest: "45s" },
+  ],
+  Back: [
+    { id: "ba1", name: "Pull-ups / Inverted Rows", sets: 4, reps: "6-10", rest: "60s" },
+    { id: "ba2", name: "Dumbbell Rows", sets: 3, reps: "10-12", rest: "50s" },
+    { id: "ba3", name: "Bent-over Rows", sets: 3, reps: "10-12", rest: "50s" },
+    { id: "ba4", name: "Face Pulls", sets: 3, reps: "12-15", rest: "40s" },
+    { id: "ba5", name: "Superman Holds", sets: 3, duration: "25s", rest: "30s" },
+  ],
+  Shoulders: [
+    { id: "sh1", name: "Pike Push-ups", sets: 4, reps: "6-10", rest: "50s" },
+    { id: "sh2", name: "Overhead Press", sets: 3, reps: "8-10", rest: "50s" },
+    { id: "sh3", name: "Lateral Raises", sets: 3, reps: "12-15", rest: "40s" },
+    { id: "sh4", name: "Rear Delt Raises", sets: 3, reps: "12-15", rest: "40s" },
+    { id: "sh5", name: "Shoulder Taps", sets: 3, reps: "10/side", rest: "30s" },
+  ],
+  Arms: [
+    { id: "ar1", name: "Bicep Curls", sets: 3, reps: "10-12", rest: "40s" },
+    { id: "ar2", name: "Hammer Curls", sets: 3, reps: "10-12", rest: "40s" },
+    { id: "ar3", name: "Tricep Dips", sets: 3, reps: "8-12", rest: "45s" },
+    { id: "ar4", name: "Tricep Extensions", sets: 3, reps: "10-15", rest: "40s" },
+    { id: "ar5", name: "Diamond Push-ups", sets: 2, reps: "6-10", rest: "45s" },
+  ],
 };
 
 function getDifficulty(duration: Duration): Workout["difficulty"] {
@@ -109,80 +131,30 @@ function getDifficulty(duration: Duration): Workout["difficulty"] {
 
 function getExerciseCount(duration: Duration): number {
   switch (duration) {
-    case "10":
-      return 3;
-    case "20":
-      return 4;
-    case "30":
-      return 5;
-    case "45":
-      return 6;
-    default:
-      return 7;
+    case "10": return 3;
+    case "20": return 4;
+    case "30": return 5;
+    case "45": return 6;
+    default: return 7;
   }
 }
 
-export function generateWorkout(
-  focus: Focus,
-  location: Location,
-  duration: Duration,
-  goal?: Goal,
-  equipment?: Equipment
-): Workout {
-  const pool = EXERCISE_POOL[focus];
+export function generateWorkout(focus: Focus, location: Location, duration: Duration, goal?: Goal, equipment?: Equipment, target: SplitTarget = focus): Workout {
+  const pool = EXERCISE_POOL[target];
   const count = Math.min(getExerciseCount(duration), pool.length);
   const exercises = pool.slice(0, count);
-
-  const nameMap: Record<Focus, string> = {
-    "Full Body": "Full Body Ignition",
-    "Upper Body": "Upper Body Drive",
-    "Lower Body": "Lower Body Power",
-    Push: "Push Protocol",
-    Pull: "Pull Protocol",
-    Legs: "Leg Engine",
-    Core: "Core Stability",
-    Cardio: "Cardio Surge",
+  const nameMap: Record<SplitTarget, string> = {
+    "Full Body": "Full Body Ignition", "Upper Body": "Upper Body Drive", "Lower Body": "Lower Body Power",
+    Push: "Push Protocol", Pull: "Pull Protocol", Legs: "Leg Engine", Core: "Core Stability", Cardio: "Cardio Surge",
+    Chest: "Chest Protocol", Back: "Back Protocol", Shoulders: "Shoulder Session", Arms: "Arm Session",
   };
-
-  return {
-    id: `w-${Date.now()}`,
-    name: nameMap[focus],
-    focus,
-    location,
-    duration: duration === "60+" ? "60+ min" : `${duration} min`,
-    difficulty: getDifficulty(duration),
-    exercises,
-    goal,
-    equipment,
-  };
+  return { id: `w-${Date.now()}`, name: nameMap[target], focus, target, location, duration: duration === "60+" ? "60+ min" : `${duration} min`, difficulty: getDifficulty(duration), exercises, goal, equipment };
 }
 
-export const GOAL_OPTIONS: Goal[] = [
-  "Build muscle",
-  "Lose fat",
-  "Get stronger",
-  "Endurance",
-  "General fitness",
-];
-
-export const FOCUS_OPTIONS: Focus[] = [
-  "Full Body",
-  "Upper Body",
-  "Lower Body",
-  "Push",
-  "Pull",
-  "Legs",
-  "Core",
-  "Cardio",
-];
-
+export const GOAL_OPTIONS: Goal[] = ["Build muscle", "Lose fat", "Get stronger", "Endurance", "General fitness"];
+export const FOCUS_OPTIONS: Focus[] = ["Full Body", "Upper Body", "Lower Body", "Push", "Pull", "Legs", "Core", "Cardio"];
 export const LOCATION_OPTIONS: Location[] = ["Home", "Gym", "Anywhere"];
 export const EQUIPMENT_OPTIONS: Equipment[] = ["None", "Dumbbells", "Bands", "Full gym"];
-
 export const DURATION_OPTIONS: { value: Duration; label: string }[] = [
-  { value: "10", label: "10 min" },
-  { value: "20", label: "20 min" },
-  { value: "30", label: "30 min" },
-  { value: "45", label: "45 min" },
-  { value: "60+", label: "60+ min" },
+  { value: "10", label: "10 min" }, { value: "20", label: "20 min" }, { value: "30", label: "30 min" }, { value: "45", label: "45 min" }, { value: "60+", label: "60+ min" },
 ];
