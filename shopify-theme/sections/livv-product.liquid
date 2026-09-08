@@ -1,2 +1,59 @@
-<section class='livv-product-page'><div class='livv-wrap'><div class='livv-product-layout'><div class='livv-product-visual'>{% if product.featured_media %}<img id='LivvProductImage' src='{{ product.featured_media | image_url: width: 1400 }}' alt='{{ product.featured_media.alt | default: product.title | escape }}'>{% endif %}</div><div class='livv-product-copy'><div class='livv-eyebrow'>LIVV ESSENTIAL</div><h1>{{ product.title }}</h1><div class='livv-product-price' id='LivvProductPrice'>{{ product.selected_or_first_available_variant.price | money }}</div><div class='livv-product-description'>{{ product.description }}</div>{% form 'product', product, id: 'LivvProductForm', class: 'livv-product-form' %}{% unless product.has_only_default_variant %}{% for option in product.options_with_values %}<fieldset class='livv-option'><legend>{{ option.name }}</legend><select class='livv-select LivvOption' data-position='{{ option.position }}' aria-label='{{ option.name }}'>{% for value in option.values %}<option value='{{ value | escape }}' {% if option.selected_value == value %}selected{% endif %}>{{ value }}</option>{% endfor %}</select></fieldset>{% endfor %}{% endunless %}<input type='hidden' name='id' id='LivvVariantId' value='{{ product.selected_or_first_available_variant.id }}'><label class='livv-option'><span style='display:block;font-size:10px;text-transform:uppercase;letter-spacing:.22em;color:var(--dim);margin-bottom:10px'>Quantity</span><input class='livv-select livv-qty' type='number' name='quantity' min='1' value='1'></label><button class='livv-add' id='LivvAdd' type='submit' {% unless product.selected_or_first_available_variant.available %}disabled{% endunless %}>{% if product.selected_or_first_available_variant.available %}Add to cart{% else %}Sold out{% endif %}</button><div class='livv-buy'>{{ form | payment_button }}</div>{% endform %}<div class='livv-trust'><div>Made to order through LIVV fulfillment.</div><div>Secure Shopify checkout.</div><div>Built to be worn, used, and lived in.</div></div></div></div></div></section>
-<script>(()=>{const form=document.getElementById('LivvProductForm');if(!form)return;const variants={{ product.variants | json }};const selects=[...form.querySelectorAll('.LivvOption')];const idInput=document.getElementById('LivvVariantId');const price=document.getElementById('LivvProductPrice');const add=document.getElementById('LivvAdd');const money=new Intl.NumberFormat(undefined,{style:'currency',currency:'{{ cart.currency.iso_code }}'});function update(){const selected=selects.map(s=>s.value);const match=variants.find(v=>JSON.stringify(v.options)===JSON.stringify(selected));if(!match){add.disabled=true;add.textContent='Unavailable';return}idInput.value=match.id;price.textContent=money.format(match.price/100);add.disabled=!match.available;add.textContent=match.available?'Add to cart':'Sold out';if(match.featured_image&&match.featured_image.src){const image=document.getElementById('LivvProductImage');if(image)image.src=match.featured_image.src}}selects.forEach(s=>s.addEventListener('change',update));update()})();</script>
+<section class="livv-pdp">
+  <div class="livv-wrap livv-pdp-grid">
+    <div class="livv-pdp-media">
+      {%- if product.selected_or_first_available_variant.featured_media -%}
+        {%- assign media = product.selected_or_first_available_variant.featured_media -%}
+      {%- else -%}
+        {%- assign media = product.featured_media -%}
+      {%- endif -%}
+      {%- if media -%}
+        <img id="LivvProductImage" src="{{ media | image_url: width: 1200 }}" alt="{{ media.alt | default: product.title | escape }}" width="600" height="750">
+      {%- endif -%}
+    </div>
+    <div class="livv-glass livv-pdp-panel">
+      <p class="livv-eyebrow">Essential</p>
+      <h1>{{ product.title }}</h1>
+      <p class="livv-pdp-price" id="LivvProductPrice">{{ product.selected_or_first_available_variant.price | money }}</p>
+      {%- if product.description != blank -%}
+        <div class="livv-pdp-desc">{{ product.description }}</div>
+      {%- else -%}
+        <p class="livv-pdp-desc">Built for the LIVV standard. Same language as the app — clean, intentional, ready to live in.</p>
+      {%- endif -%}
+      {% form 'product', product, id: 'LivvProductForm' %}
+        {%- unless product.has_only_default_variant -%}
+          {%- for option in product.options_with_values -%}
+            <fieldset class="livv-option">
+              <legend>{{ option.name }}</legend>
+              <select class="livv-select LivvOption" data-position="{{ option.position }}" aria-label="{{ option.name }}">
+                {%- for value in option.values -%}
+                  <option value="{{ value | escape }}" {% if option.selected_value == value %}selected{% endif %}>{{ value }}</option>
+                {%- endfor -%}
+              </select>
+            </fieldset>
+          {%- endfor -%}
+        {%- endunless -%}
+        <input type="hidden" name="id" id="LivvVariantId" value="{{ product.selected_or_first_available_variant.id }}">
+        <label class="livv-option"><span>Quantity</span><input class="livv-select livv-qty" type="number" name="quantity" min="1" value="1"></label>
+        <button class="livv-add" id="LivvAdd" type="submit" {% unless product.selected_or_first_available_variant.available %}disabled{% endunless %}>
+          {%- if product.selected_or_first_available_variant.available -%}Add to cart{%- else -%}Sold out{%- endif -%}
+        </button>
+        <div class="livv-buy">{{ form | payment_button }}</div>
+      {% endform %}
+      <div class="livv-trust">
+        <div>Secure Shopify checkout</div>
+        <div>Made for the LIVV ecosystem</div>
+        <div>Open the app → livv-app-v1-tau.vercel.app</div>
+      </div>
+    </div>
+  </div>
+</section>
+<script>
+(()=>{const form=document.getElementById('LivvProductForm');if(!form)return;const variants={{ product.variants | json }};const selects=[...form.querySelectorAll('.LivvOption')];const idInput=document.getElementById('LivvVariantId');const price=document.getElementById('LivvProductPrice');const add=document.getElementById('LivvAdd');const money=new Intl.NumberFormat(undefined,{style:'currency',currency:'{{ cart.currency.iso_code }}'});function update(){const selected=selects.map(s=>s.value);const match=variants.find(v=>JSON.stringify(v.options)===JSON.stringify(selected));if(!match){add.disabled=true;add.textContent='Unavailable';return}idInput.value=match.id;price.textContent=money.format(match.price/100);add.disabled=!match.available;add.textContent=match.available?'Add to cart':'Sold out';if(match.featured_image&&match.featured_image.src){const image=document.getElementById('LivvProductImage');if(image)image.src=match.featured_image.src}}selects.forEach(s=>s.addEventListener('change',update));update()})();
+</script>
+{% schema %}
+{
+  "name": "LIVV Product",
+  "settings": [],
+  "presets": [{ "name": "LIVV Product" }]
+}
+{% endschema %}

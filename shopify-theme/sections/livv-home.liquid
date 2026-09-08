@@ -1,6 +1,95 @@
-<div class='livv-home'>
-<section class='livv-hero'><div class='livv-hero-inner livv-wrap'><div class='livv-kicker'>The physical side of LIVV</div><h1>Become more capable.<span>Live more.</span></h1><p class='livv-hero-copy'>LIVV is a personal operating system for becoming more capable across your body, mind, work, money, and relationships. The app is the system. The store is what you can take into the real world.</p><div class='livv-actions'><a class='livv-btn livv-btn-primary' href='#shop'>Shop LIVV</a><a class='livv-btn livv-btn-secondary' href='https://livv-app-v1-tau.vercel.app' target='_blank' rel='noopener'>Open the app →</a></div></div></section>
-<section class='livv-section'><div class='livv-wrap'><div class='livv-section-head'><div><div class='livv-eyebrow'>The LIVV system</div><h2>One life.<br>Five pillars.</h2></div><p class='livv-section-intro'>LIVV isn't just fitness, productivity, or motivation. It's about building the capability to handle your own life.</p></div><div class='livv-pillars'><div class='livv-pillar'><b>01</b><strong>Body</strong><p>Train, recover, eat, move.</p></div><div class='livv-pillar'><b>02</b><strong>Mind</strong><p>Think clearly. Build self-awareness.</p></div><div class='livv-pillar'><b>03</b><strong>Work</strong><p>Build skills, output, and direction.</p></div><div class='livv-pillar'><b>04</b><strong>Money</strong><p>Become more financially capable.</p></div><div class='livv-pillar'><b>05</b><strong>People</strong><p>Build stronger connections and a better life.</p></div></div></div></section>
-<section class='livv-section' id='shop'><div class='livv-wrap'><div class='livv-section-head'><div><div class='livv-eyebrow'>LIVV Essentials</div><h2>Built to be lived in.</h2></div><a class='livv-link' href='{{ routes.all_products_collection_url }}'>View all</a></div><div class='livv-products'>{% assign shown = 0 %}{% for product in collections.all.products %}{% if product.title contains 'LIVV' and shown < 4 %}{% assign shown = shown | plus: 1 %}<article class='livv-product-card'><a href='{{ product.url }}'><div class='livv-product-media'>{% if product.featured_media %}<img src='{{ product.featured_media | image_url: width: 1000 }}' alt='{{ product.featured_media.alt | default: product.title | escape }}' loading='lazy'>{% endif %}</div></a><div class='livv-product-info'><div class='livv-product-meta'>LIVV ESSENTIAL</div><div class='livv-product-title'>{{ product.title }}</div><div class='livv-product-bottom'><span>{{ product.price | money }}</span><a class='livv-link' href='{{ product.url }}'>Explore</a></div></div></article>{% endif %}{% endfor %}</div>{% if shown == 0 %}<div class='livv-empty'><p class='livv-section-intro'>Your first LIVV products are almost here.</p></div>{% endif %}</div></section>
-<section class='livv-section'><div class='livv-wrap'><div class='livv-app'><div class='livv-eyebrow'>The app</div><h2>Don't just wear the brand. Use the system.</h2><p>LIVV helps you turn intention into action with training, daily objectives, evolution, reflection, connection, and the next move. Start in the app, then bring LIVV into the rest of your life.</p><div class='livv-actions' style='justify-content:flex-start;margin-top:24px'><a class='livv-btn livv-btn-primary' href='https://livv-app-v1-tau.vercel.app' target='_blank' rel='noopener'>Enter LIVV →</a></div></div></div></section>
+<div class="livv-home">
+  <section class="livv-hero">
+    <div class="livv-wrap">
+      <img class="livv-hero-mark" src="https://raw.githubusercontent.com/evolvewithlivv/livv/main/Photoroom_20260831_123254.png" alt="LIVV" width="64" height="64">
+      <p class="livv-eyebrow blue">LIVV Shop</p>
+      <h1>Packs and merch.<span>Wear the standard.</span></h1>
+      <p class="livv-hero-copy">Same system as the app. Essentials you can wear. Built to evolve with you.</p>
+      <p class="livv-hero-sub">Start simple. Stay consistent.</p>
+      <div class="livv-actions">
+        <a class="livv-btn livv-btn-primary" href="#shop">Shop essentials</a>
+        <a class="livv-btn livv-btn-secondary" href="https://livv-app-v1-tau.vercel.app" target="_blank" rel="noopener">Enter LIVV →</a>
+      </div>
+    </div>
+  </section>
+
+  <section class="livv-section" id="shop">
+    <div class="livv-wrap">
+      <div class="livv-section-head">
+        <div>
+          <p class="livv-eyebrow">Essentials</p>
+          <h2>Wear the evolution.</h2>
+        </div>
+        <a class="livv-link" href="{{ routes.all_products_collection_url }}">View all</a>
+      </div>
+      <div class="livv-products">
+        {%- assign shown = 0 -%}
+        {%- for product in collections.all.products -%}
+          {%- if shown < 6 -%}
+            {%- assign shown = shown | plus: 1 -%}
+            <article class="livv-product-card">
+              <a href="{{ product.url }}">
+                <div class="livv-product-media">
+                  {%- if product.featured_media -%}
+                    <img src="{{ product.featured_media | image_url: width: 900 }}" alt="{{ product.featured_media.alt | default: product.title | escape }}" loading="lazy" width="450" height="560">
+                  {%- endif -%}
+                </div>
+                <div class="livv-product-info">
+                  <div class="livv-product-meta">Essential</div>
+                  <div class="livv-product-title">{{ product.title }}</div>
+                  <div class="livv-product-bottom">
+                    <span>{{ product.price | money }}</span>
+                    <span class="livv-arrow" aria-hidden="true">↗</span>
+                  </div>
+                </div>
+              </a>
+            </article>
+          {%- endif -%}
+        {%- endfor -%}
+      </div>
+      {%- if shown == 0 -%}
+        <div class="livv-empty"><p>Products are loading into the catalog. Check back shortly.</p></div>
+      {%- endif -%}
+    </div>
+  </section>
+
+  <section class="livv-section">
+    <div class="livv-wrap">
+      <div class="livv-section-head">
+        <div>
+          <p class="livv-eyebrow blue">The system</p>
+          <h2>Five pillars.</h2>
+        </div>
+      </div>
+      <div class="livv-pillars">
+        <div class="livv-pillar"><b>01</b><strong>Body</strong><p>Train. Recover. Move.</p></div>
+        <div class="livv-pillar"><b>02</b><strong>Mind</strong><p>Read. Reflect. Focus.</p></div>
+        <div class="livv-pillar"><b>03</b><strong>Work</strong><p>Skills and output.</p></div>
+        <div class="livv-pillar"><b>04</b><strong>Money</strong><p>Protect and grow.</p></div>
+        <div class="livv-pillar"><b>05</b><strong>People</strong><p>Real connection.</p></div>
+        <div class="livv-pillar"><b>06</b><strong>Self</strong><p>Check in daily.</p></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="livv-section">
+    <div class="livv-wrap">
+      <div class="livv-glass livv-app-cta">
+        <p class="livv-eyebrow blue">The app</p>
+        <h2>Don't just wear it. Use the system.</h2>
+        <p>Training, daily checklist, Connect feed — all in one place. The store is the physical layer. The app is the operating system.</p>
+        <div class="livv-actions">
+          <a class="livv-btn livv-btn-primary" href="https://livv-app-v1-tau.vercel.app" target="_blank" rel="noopener">Open the app →</a>
+        </div>
+      </div>
+    </div>
+  </section>
 </div>
+
+{% schema %}
+{
+  "name": "LIVV Home",
+  "settings": [],
+  "presets": [{ "name": "LIVV Home" }]
+}
+{% endschema %}
