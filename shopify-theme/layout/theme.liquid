@@ -1,27 +1,48 @@
 <!doctype html>
-<html lang='{{ request.locale.iso_code }}'>
-<head>
-<meta charset='utf-8'>
-<meta name='viewport' content='width=device-width,initial-scale=1'>
-<meta name='theme-color' content='#050505'>
-<link rel='canonical' href='{{ canonical_url }}'>
-<title>{% if page_title %}{{ page_title }}{% else %}LIVV — Evolve With LIVV{% endif %}</title>
-{% if page_description %}<meta name='description' content='{{ page_description | escape }}'>{% endif %}
-{{ content_for_header }}
-{{ 'livv-storefront.css' | asset_url | stylesheet_tag }}
-</head>
-<body class='livv-body'>
-<div class='livv-noise' aria-hidden='true'></div>
-<header class='livv-header'>
-<a class='livv-brand' href='{{ routes.root_url }}'><img src='https://raw.githubusercontent.com/evolvewithlivv/livv/main/Photoroom_20260831_123254.png' alt='LIVV' width='34' height='34'><span>LIVV</span></a>
-<nav class='livv-nav'><a href='{{ routes.root_url }}'>Home</a><a href='{{ routes.all_products_collection_url }}'>Shop</a><a href='https://livv-app-v1-tau.vercel.app' target='_blank' rel='noopener'>Open App</a></nav>
-<a class='livv-cart' href='{{ routes.cart_url }}'>Cart <span>{{ cart.item_count }}</span></a>
-</header>
-<main id='MainContent'>{{ content_for_layout }}</main>
-<footer class='livv-footer'>
-<div><div class='livv-brand'><img src='https://raw.githubusercontent.com/evolvewithlivv/livv/main/Photoroom_20260831_123254.png' alt='LIVV' width='30' height='30'><span>LIVV</span></div><p>Become more capable. Build a life you can actually live.</p></div>
-<div class='livv-footer-links'><a href='{{ routes.all_products_collection_url }}'>Shop</a><a href='https://livv-app-v1-tau.vercel.app' target='_blank' rel='noopener'>The App</a><a href='{{ routes.cart_url }}'>Cart</a></div>
-<small>© {{ 'now' | date: '%Y' }} LIVV. Evolve with LIVV.</small>
-</footer>
-</body>
+<html lang="{{ request.locale.iso_code }}">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+    <meta name="theme-color" content="#030405">
+    <link rel="canonical" href="{{ canonical_url }}">
+    <title>
+      {%- if page_title -%}{{ page_title }} · LIVV{%- else -%}LIVV — Train. Read. Check in.{%- endif -%}
+    </title>
+    {%- if page_description -%}
+      <meta name="description" content="{{ page_description | escape }}">
+    {%- endif -%}
+    {{ content_for_header }}
+    {{ 'livv-storefront.css' | asset_url | stylesheet_tag }}
+  </head>
+  <body class="livv-body">
+    <div class="livv-atmosphere" aria-hidden="true"></div>
+    <div class="livv-shell">
+      <header class="livv-header">
+        <a class="livv-brand" href="{{ routes.root_url }}">
+          <img src="https://raw.githubusercontent.com/evolvewithlivv/livv/main/Photoroom_20260831_123254.png" alt="LIVV" width="28" height="28">
+          <span>LIVV</span>
+        </a>
+        <nav class="livv-nav" aria-label="Primary">
+          <a href="{{ routes.root_url }}">Home</a>
+          <a href="{{ routes.all_products_collection_url }}">Shop</a>
+          <a href="https://livv-app-v1-tau.vercel.app" target="_blank" rel="noopener">App</a>
+        </nav>
+        <a class="livv-cart" href="{{ routes.cart_url }}">Cart <span>{{ cart.item_count }}</span></a>
+      </header>
+      <main id="MainContent" role="main">{{ content_for_layout }}</main>
+      <footer class="livv-footer">
+        <a class="livv-brand" href="{{ routes.root_url }}">
+          <img src="https://raw.githubusercontent.com/evolvewithlivv/livv/main/Photoroom_20260831_123254.png" alt="" width="28" height="28">
+          <span>LIVV</span>
+        </a>
+        <p>Train. Read. Check in. Build a better day.</p>
+        <div class="livv-footer-links">
+          <a href="{{ routes.all_products_collection_url }}">Shop</a>
+          <a href="https://livv-app-v1-tau.vercel.app" target="_blank" rel="noopener">Open app</a>
+          <a href="{{ routes.cart_url }}">Cart</a>
+        </div>
+        <small>© {{ 'now' | date: '%Y' }} LIVV</small>
+      </footer>
+    </div>
+  </body>
 </html>

@@ -1,0 +1,9 @@
+{
+  "sections": {
+    "livv_home": {
+      "type": "livv-home",
+      "settings": {}
+    }
+  },
+  "order": ["livv_home"]
+}
