@@ -36,7 +36,6 @@ export default function OpeningPage() {
             alt="LIVV"
             className="h-16 w-16 object-contain drop-shadow-[0_0_40px_rgb(var(--livv-accent)/0.35)]"
           />
-          <p className="mt-6 font-display text-[42px] font-semibold tracking-[-0.04em]">LIVV</p>
         </div>
 
         <p className="opening-line mt-5 max-w-[18rem] text-center text-[15px] leading-snug text-white/55">
