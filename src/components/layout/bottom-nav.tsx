@@ -18,11 +18,12 @@ export function BottomNav() {
 
   return (
     <nav
-      className="livv-tabbar fixed inset-x-0 bottom-0 z-[80] shrink-0 px-3 pt-1"
-      style={{ paddingBottom: "max(0.55rem, env(safe-area-inset-bottom))" }}
+      className="livv-tabbar fixed inset-x-0 bottom-0 z-[80] shrink-0 px-4"
+      style={{ paddingBottom: "max(0.65rem, env(safe-area-inset-bottom))" }}
       aria-label="Primary"
     >
-      <div className="livv-tabbar-bubble mx-auto flex max-w-lg items-end justify-between gap-0.5 px-1.5 py-1.5">
+      {/* Single continuous glass dock — icons sit on it, no per-icon boxes */}
+      <div className="livv-tabbar-dock mx-auto flex max-w-md items-center justify-between gap-0 px-3 py-2.5">
         {NAV_ITEMS.map((item) => {
           const active = item.match(pathname);
           const Icon = item.Icon;
@@ -31,36 +32,36 @@ export function BottomNav() {
               key={item.href}
               href={item.href}
               aria-current={active ? "page" : undefined}
-              className="livv-tab group relative flex min-w-0 flex-1 flex-col items-center justify-center gap-1 rounded-2xl py-2"
+              className="livv-tab relative flex min-w-0 flex-1 flex-col items-center justify-center gap-1 py-1"
               style={{ color: item.color }}
             >
-              {active && (
-                <span
-                  className="absolute inset-0 -z-10 rounded-2xl"
-                  style={{
-                    background: `radial-gradient(circle at 50% 40%, ${item.color}22, transparent 70%)`,
-                  }}
-                />
-              )}
               <Icon
-                size={21}
-                strokeWidth={active ? 2.35 : 1.75}
+                size={22}
+                strokeWidth={active ? 2.4 : 1.7}
+                absoluteStrokeWidth={false}
                 style={{
                   color: item.color,
-                  opacity: active ? 1 : 0.42,
-                  filter: active ? `drop-shadow(0 0 8px ${item.color})` : "none",
+                  opacity: active ? 1 : 0.45,
+                  filter: active ? `drop-shadow(0 0 10px ${item.color})` : "none",
                 }}
               />
               <span
-                className="max-w-full truncate text-[9px] font-semibold tracking-[0.12em]"
+                className="max-w-full truncate text-[9px] font-semibold tracking-[0.1em]"
                 style={{
                   color: item.color,
-                  opacity: active ? 1 : 0.42,
-                  textShadow: active ? `0 0 12px ${item.color}` : "none",
+                  opacity: active ? 1 : 0.4,
+                  textShadow: active ? `0 0 14px ${item.color}` : "none",
                 }}
               >
                 {item.label}
               </span>
+              {active && (
+                <span
+                  className="absolute -bottom-0.5 h-0.5 w-3 rounded-full"
+                  style={{ background: item.color, boxShadow: `0 0 8px ${item.color}` }}
+                  aria-hidden
+                />
+              )}
             </Link>
           );
         })}

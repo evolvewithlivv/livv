@@ -117,7 +117,7 @@ html[data-theme="light"] {
   -webkit-backdrop-filter: none !important;
 }
 
-/* Tab bar: soft floating bubble dock */
+/* Tab bar: Apple-style continuous glass dock — icons sit on it, no per-icon boxes */
 .livv-tabbar {
   background: transparent;
   border: 0;
@@ -125,29 +125,43 @@ html[data-theme="light"] {
   outline: none;
   pointer-events: none;
 }
+.livv-tabbar-dock,
 .livv-tabbar-bubble {
   pointer-events: auto;
-  border-radius: 28px;
-  border: 1px solid rgba(255, 255, 255, 0.12);
-  background: rgba(12, 14, 18, 0.72);
+  border-radius: 26px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.09) 0%, rgba(255, 255, 255, 0.02) 100%),
+    rgba(8, 10, 14, 0.78);
   box-shadow:
-    0 10px 40px rgba(0, 0, 0, 0.45),
-    0 0 0 1px rgba(255, 255, 255, 0.04) inset,
-    0 1px 0 rgba(255, 255, 255, 0.08) inset;
-  backdrop-filter: blur(20px) saturate(1.35);
-  -webkit-backdrop-filter: blur(20px) saturate(1.35);
+    0 12px 40px rgba(0, 0, 0, 0.55),
+    0 0 0 0.5px rgba(255, 255, 255, 0.06) inset,
+    0 1px 0 rgba(255, 255, 255, 0.12) inset;
+  backdrop-filter: blur(28px) saturate(1.6);
+  -webkit-backdrop-filter: blur(28px) saturate(1.6);
 }
 .livv-tabbar a,
 .livv-tabbar a:hover,
 .livv-tabbar a:focus,
-.livv-tabbar a:active {
-  background: transparent;
-  border: 0;
-  outline: none;
+.livv-tabbar a:active,
+.livv-tab {
+  background: transparent !important;
+  border: 0 !important;
+  outline: none !important;
+  box-shadow: none !important;
   -webkit-tap-highlight-color: transparent;
+  border-radius: 0 !important;
 }
 .livv-tabbar a[aria-current="page"] {
   outline: none;
+  background: transparent !important;
+}
+/* Kill any residual icon wrappers / lucide bg squares */
+.livv-tabbar svg {
+  display: block;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
 }
 .livv-page-hero {
   padding-top: 0.35rem;
