@@ -104,7 +104,7 @@ export default function ConnectPage() {
 
   return (
     <main className="relative min-h-full overflow-hidden pb-28">
-      <PageHero eyebrow="CONNECT" title="Your people. Your proof." description="Build in public, share progress, and keep the standard high." />
+      <PageHero eyebrow="CONNECT" title="Your people. Your proof." subtitle="Build in public, share progress, and keep the standard high." />
       <section className="relative z-10 mx-auto max-w-xl px-4 pt-2">
         <div className="mb-4 flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
           {PULSE.map((person) => <div key={person.username} className="shrink-0 text-center"><div className="mx-auto mb-1 flex h-12 w-12 items-center justify-center rounded-full border border-white/10 bg-white/[0.035]" style={{ boxShadow: `0 0 18px ${person.accent}22` }}><span className="text-[10px] font-bold" style={{ color: person.accent }}>{person.name.slice(0, 1)}</span></div><span className="text-[9px] text-white/45">{person.name}</span></div>)}
