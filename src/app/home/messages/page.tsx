@@ -20,9 +20,9 @@ export default function MessagesPage() {
     <main className="livv-page relative min-h-full overflow-hidden pb-12">
       <div className="relative z-10 mx-auto max-w-lg px-5 pt-5">
         <PageHero
-          eyebrow="Direct"
+          eyebrow="Inbox"
           title="Messages"
-          subtitle="Private threads with people in the room."
+          subtitle="Private messages."
           accent="#ff72c9"
           right={<Link href="/home/connect" className="text-[13px] text-white/35">Connect</Link>}
         />
@@ -69,9 +69,9 @@ export default function MessagesPage() {
 }
 
 function formatWhen(at: number) {
-  const diff = Date.now() - at;
-  if (diff < 60_000) return "now";
-  if (diff < 3600_000) return `${Math.floor(diff / 60_000)}m`;
-  if (diff < 86400_000) return `${Math.floor(diff / 3600_000)}h`;
-  return `${Math.floor(diff / 86400_000)}d`;
+  const d = Date.now() - at;
+  if (d < 60_000) return "now";
+  if (d < 3_600_000) return `${Math.floor(d / 60_000)}m`;
+  if (d < 86_400_000) return `${Math.floor(d / 3_600_000)}h`;
+  return `${Math.floor(d / 86_400_000)}d`;
 }
