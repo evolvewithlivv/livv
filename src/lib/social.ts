@@ -28,6 +28,8 @@ export type Post = {
   author: SocialAuthor;
   text: string;
   photo: string | null;
+  video: string | null;
+  kind: "text" | "photo" | "video" | "proof";
   track: Track | null;
   allowReplies: boolean;
   likes: number;
@@ -35,47 +37,16 @@ export type Post = {
   replies: Reply[];
 };
 
-/** Bumped so everyone gets the new seed feed */
-const POSTS_KEY = "livv-social-posts-v3";
+const POSTS_KEY = "livv-social-posts-v4";
 export const EDIT_WINDOW_MS = 60_000;
 
 export const SOUND_LIBRARY: Track[] = [
-  {
-    id: "helix-1",
-    title: "First Light",
-    artist: "LIVV Sound",
-    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3",
-  },
-  {
-    id: "helix-2",
-    title: "No Audience",
-    artist: "LIVV Sound",
-    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3",
-  },
-  {
-    id: "helix-3",
-    title: "Slow Burn",
-    artist: "LIVV Sound",
-    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3",
-  },
-  {
-    id: "helix-8",
-    title: "After Hours",
-    artist: "LIVV Sound",
-    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3",
-  },
-  {
-    id: "helix-9",
-    title: "Keep the Line",
-    artist: "LIVV Sound",
-    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-9.mp3",
-  },
-  {
-    id: "helix-16",
-    title: "Quiet Work",
-    artist: "LIVV Sound",
-    url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-16.mp3",
-  },
+  { id: "helix-1", title: "First Light", artist: "LIVV Sound", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" },
+  { id: "helix-2", title: "No Audience", artist: "LIVV Sound", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" },
+  { id: "helix-3", title: "Slow Burn", artist: "LIVV Sound", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3" },
+  { id: "helix-8", title: "After Hours", artist: "LIVV Sound", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3" },
+  { id: "helix-9", title: "Keep the Line", artist: "LIVV Sound", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-9.mp3" },
+  { id: "helix-16", title: "Quiet Work", artist: "LIVV Sound", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-16.mp3" },
 ];
 
 export function authorFromIdentity(me: Identity): SocialAuthor {
@@ -136,129 +107,69 @@ export function fileToPostPhoto(file: File): Promise<string> {
   });
 }
 
+function withDefaults(p: Partial<Post> & Pick<Post, "id" | "createdAt" | "author" | "text">): Post {
+  return {
+    photo: null,
+    video: null,
+    kind: "text",
+    track: null,
+    allowReplies: true,
+    likes: 0,
+    likedByMe: false,
+    replies: [],
+    ...p,
+    video: p.video ?? null,
+    kind: p.kind ?? (p.photo ? "photo" : p.video ? "video" : "text"),
+  };
+}
+
 function seedPosts(): Post[] {
   const now = Date.now();
   return [
-    {
+    withDefaults({
       id: "seed-a",
       createdAt: now - 1000 * 60 * 12,
-      author: {
-        displayName: "Maya Chen",
-        username: "mayatrains",
-        photo: null,
-        accent: "#3DDC97",
-      },
+      author: { displayName: "Maya Chen", username: "mayatrains", photo: null, accent: "#3DDC97" },
       text: "Did the work before my phone unlocked. That version of me is the one I trust.",
-      photo: null,
       track: SOUND_LIBRARY[1],
-      allowReplies: true,
       likes: 47,
-      likedByMe: false,
       replies: [
-        {
-          id: "r1",
-          createdAt: now - 1000 * 60 * 8,
-          author: {
-            displayName: "Jules",
-            username: "julesmoves",
-            photo: null,
-            accent: "#7C9CFF",
-          },
-          text: "This is the standard.",
-        },
-        {
-          id: "r1b",
-          createdAt: now - 1000 * 60 * 5,
-          author: {
-            displayName: "Nia",
-            username: "nia.runs",
-            photo: null,
-            accent: "#F5C542",
-          },
-          text: "Saving this for tomorrow morning.",
-        },
+        { id: "r1", createdAt: now - 1000 * 60 * 8, author: { displayName: "Jules", username: "julesmoves", photo: null, accent: "#7C9CFF" }, text: "This is the standard." },
+        { id: "r1b", createdAt: now - 1000 * 60 * 5, author: { displayName: "Nia", username: "nia.runs", photo: null, accent: "#F5C542" }, text: "Saving this for tomorrow morning." },
       ],
-    },
-    {
+    }),
+    withDefaults({
       id: "seed-b",
       createdAt: now - 1000 * 60 * 55,
-      author: {
-        displayName: "Andre V",
-        username: "andrev",
-        photo: null,
-        accent: "#FF5C8A",
-      },
+      author: { displayName: "Andre V", username: "andrev", photo: null, accent: "#FF5C8A" },
       text: "Nobody needs to see the session for it to count. Logging it anyway.",
-      photo: null,
-      track: null,
-      allowReplies: true,
       likes: 89,
-      likedByMe: false,
-      replies: [],
-    },
-    {
+    }),
+    withDefaults({
       id: "seed-c",
       createdAt: now - 1000 * 60 * 60 * 3,
-      author: {
-        displayName: "Nia",
-        username: "nia.runs",
-        photo: null,
-        accent: "#F5C542",
-      },
+      author: { displayName: "Nia", username: "nia.runs", photo: null, accent: "#F5C542" },
       text: "Week 3. Still here. Still boring on purpose.",
-      photo: null,
       track: SOUND_LIBRARY[0],
-      allowReplies: true,
       likes: 62,
-      likedByMe: false,
-      replies: [
-        {
-          id: "r2",
-          createdAt: now - 1000 * 60 * 60 * 2,
-          author: {
-            displayName: "Cole",
-            username: "colebuilt",
-            photo: null,
-            accent: "#A78BFA",
-          },
-          text: "Boring is the whole game.",
-        },
-      ],
-    },
-    {
+      replies: [{ id: "r2", createdAt: now - 1000 * 60 * 60 * 2, author: { displayName: "Cole", username: "colebuilt", photo: null, accent: "#A78BFA" }, text: "Boring is the whole game." }],
+    }),
+    withDefaults({
       id: "seed-d",
       createdAt: now - 1000 * 60 * 60 * 9,
-      author: {
-        displayName: "Jules",
-        username: "julesmoves",
-        photo: null,
-        accent: "#7C9CFF",
-      },
+      author: { displayName: "Jules", username: "julesmoves", photo: null, accent: "#7C9CFF" },
       text: "If you only train when you feel like it, you are training your feelings.",
-      photo: null,
       track: SOUND_LIBRARY[4],
-      allowReplies: true,
       likes: 134,
-      likedByMe: false,
-      replies: [],
-    },
-    {
+    }),
+    withDefaults({
       id: "seed-e",
       createdAt: now - 1000 * 60 * 60 * 26,
-      author: {
-        displayName: "Cole",
-        username: "colebuilt",
-        photo: null,
-        accent: "#A78BFA",
-      },
+      author: { displayName: "Cole", username: "colebuilt", photo: null, accent: "#A78BFA" },
       text: "Put it on the record or it did not happen.",
-      photo: null,
-      track: null,
       allowReplies: false,
       likes: 41,
-      likedByMe: false,
-      replies: [],
-    },
+    }),
   ];
 }
 
@@ -272,7 +183,8 @@ export function loadPosts(): Post[] {
       return seeded;
     }
     const parsed = JSON.parse(raw) as Post[];
-    return Array.isArray(parsed) ? parsed : seedPosts();
+    if (!Array.isArray(parsed)) return seedPosts();
+    return parsed.map((p) => withDefaults(p));
   } catch {
     return seedPosts();
   }
@@ -283,7 +195,7 @@ export function savePosts(posts: Post[]) {
   try {
     window.localStorage.setItem(POSTS_KEY, JSON.stringify(posts.slice(0, 40)));
   } catch {
-    const slim = posts.slice(0, 20).map((p, i) => (i > 8 ? { ...p, photo: null } : p));
+    const slim = posts.slice(0, 20).map((p, i) => (i > 8 ? { ...p, photo: null, video: null } : p));
     try {
       window.localStorage.setItem(POSTS_KEY, JSON.stringify(slim));
     } catch {
@@ -295,15 +207,20 @@ export function savePosts(posts: Post[]) {
 export function createPost(input: {
   text: string;
   photo: string | null;
+  video?: string | null;
   track: Track | null;
   allowReplies: boolean;
+  kind?: Post["kind"];
 }): Post {
+  const kind = input.kind || (input.video ? "video" : input.photo ? "photo" : "text");
   const post: Post = {
     id: `p_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`,
     createdAt: Date.now(),
     author: authorFromIdentity(loadIdentity()),
     text: input.text.trim(),
     photo: input.photo,
+    video: input.video || null,
+    kind,
     track: input.track,
     allowReplies: input.allowReplies,
     likes: 0,
@@ -316,7 +233,7 @@ export function createPost(input: {
 
 export function updatePost(
   id: string,
-  patch: Partial<Pick<Post, "text" | "photo" | "track" | "allowReplies">>
+  patch: Partial<Pick<Post, "text" | "photo" | "video" | "track" | "allowReplies" | "kind">>
 ) {
   const posts = loadPosts();
   const next = posts.map((p) => {
