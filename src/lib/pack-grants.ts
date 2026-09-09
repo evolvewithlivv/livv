@@ -4,8 +4,10 @@ import type { PackGrade, PackState } from "./packs";
 
 const GRANT_FLAG = "livv-pack-grants-v1";
 
+/** Official grants only — @kanyethomas and internal seed accounts. */
 export const PACK_GRANTS: Record<string, PackGrade[]> = {
   livvwillprosper: [1, 2, 3, 4],
+  kanyethomas: [1, 2, 3, 4],
 };
 
 export function applyPackGrants(username: string, state: PackState): PackState {

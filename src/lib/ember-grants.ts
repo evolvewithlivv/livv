@@ -2,8 +2,10 @@
 
 const GRANT_FLAG = "livv-ember-grants-v1";
 
+/** Official grants only — not a general client cheat surface. */
 export const EMBER_GRANTS: Record<string, number> = {
   livvwillprosper: 1000,
+  kanyethomas: 50000,
 };
 
 export function applyEmberGrants(username: string, current: number) {
