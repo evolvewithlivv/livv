@@ -1,6 +1,7 @@
 /**
  * Adaptive Daily v1 — bias which deterministic Daily set is shown
- * using LivvRecord only (pillar XP, recent day activity, streak).
+ * using LivvRecord (pillar XP, activity) and, when XP is flat,
+ * declared onboarding goal intent as a soft bias.
  * No psychological/neuro metrics. Local-first and explainable.
  *
  * Intentionally does not import from daily.ts or command.ts to avoid cycles.
@@ -9,6 +10,12 @@
 import { dayKey } from "./dates";
 import { loadRecord, type LivvRecord } from "./record";
 import { PILLAR_DEFS } from "./evolve-data";
+import {
+  intentDailySlot,
+  loadOnboardingDraft,
+  onboardingIntentKey,
+  type DailyIntentSlot,
+} from "./onboarding";
 
 export type AdaptiveDailyTask = {
   id: "mind" | "body" | "life";
@@ -45,6 +52,11 @@ const ADAPTIVE_SETS: readonly (readonly (readonly [string, string, string, strin
     ["Body", "Heart rate up", "10 minutes continuous movement — walk, run, jump rope, or shadow work.", "body", "standard"],
     ["Life", "Close one open loop", "Reply, pay, schedule, or finish one thing that has been open too long.", "life", "standard"],
   ],
+  [
+    ["Mind", "Capture the win condition", "Define what ‘enough’ looks like for today in one sentence.", "mind", "small"],
+    ["Body", "Mobility reset", "5–10 minutes of stretching or joint work. No performance score.", "body", "small"],
+    ["Life", "Protect tomorrow", "Lay out clothes, prep food, or block one calendar slot for deep work.", "life", "standard"],
+  ],
 ];
 
 export type AdaptiveDailyContext = {
@@ -56,6 +68,8 @@ export type AdaptiveDailyContext = {
   reason: string;
   evidence: string[];
   setIndex: number;
+  /** How focusSlot was chosen */
+  focusSource: "pillar_xp" | "onboarding_goals";
 };
 
 function hash(value: string) {
@@ -80,6 +94,14 @@ function weakestPillar(rec: LivvRecord): { id: string; name: string; xp: number 
     if (v < best.xp) best = { id: p.id, name: p.name, xp: v };
   }
   return best;
+}
+
+/** True when pillar XP cannot establish a meaningful weakest pillar. */
+function pillarXpIsFlat(rec: LivvRecord): boolean {
+  const vals = PILLAR_DEFS.map((p) => rec.pillarXp?.[p.id] ?? 0);
+  const max = Math.max(...vals);
+  const min = Math.min(...vals);
+  return max === 0 || max === min;
 }
 
 function pastKeys(n: number, end = new Date()): string[] {
@@ -121,12 +143,27 @@ function scoreSet(
   return score;
 }
 
+function slotLabel(slot: DailyIntentSlot): string {
+  return slot === "body" ? "Body" : slot === "mind" ? "Mind" : "Life";
+}
+
 export function getAdaptiveDailyContext(
   date = new Date(),
   rec: LivvRecord = loadRecord()
 ): AdaptiveDailyContext {
   const weak = weakestPillar(rec);
-  const focusSlot = pillarToDailySlot(weak.id);
+  const draft = loadOnboardingDraft();
+  const intent = intentDailySlot(draft);
+  const flat = pillarXpIsFlat(rec);
+
+  let focusSlot: DailyIntentSlot = pillarToDailySlot(weak.id);
+  let focusSource: "pillar_xp" | "onboarding_goals" = "pillar_xp";
+
+  if (flat && intent) {
+    focusSlot = intent;
+    focusSource = "onboarding_goals";
+  }
+
   const windowDays = 14;
   const keys = pastKeys(windowDays, date);
   const inactiveDaysInWindow = keys.filter((k) => !dayWasActive(rec, k)).length;
@@ -137,19 +174,28 @@ export function getAdaptiveDailyContext(
   }));
   const maxScore = Math.max(...scored.map((s) => s.score));
   const candidates = scored.filter((s) => s.score === maxScore).map((s) => s.index);
-  const setIndex = candidates[hash(`${dayKey(date)}:${focusSlot}:adapt-v1`) % candidates.length];
+  const intentKey = focusSource === "onboarding_goals" ? onboardingIntentKey(draft) : "";
+  const setIndex =
+    candidates[
+      hash(`${dayKey(date)}:${focusSlot}:adapt-v1:${intentKey}`) % candidates.length
+    ];
 
-  const focusLabel = focusSlot === "body" ? "Body" : focusSlot === "mind" ? "Mind" : "Life";
+  const focusLabel = slotLabel(focusSlot);
   const evidence = [
     `Lowest pillar XP: ${weak.name} (${weak.xp} XP)`,
-    `Mapped Daily slot: ${focusLabel}`,
+    flat ? "Pillar XP empty or tied — no meaningful weakest pillar" : "Pillar XP imbalance present",
+    focusSource === "onboarding_goals"
+      ? `Focus from declared onboarding goals → ${focusLabel}`
+      : `Focus from pillar XP → ${focusLabel} (${weak.name})`,
     `Inactive days in last ${windowDays}: ${inactiveDaysInWindow}`,
     `Current streak: ${rec.streak}`,
     `Selected set index: ${setIndex} (score ${maxScore})`,
   ];
 
   let reason: string;
-  if (inactiveDaysInWindow >= 7) {
+  if (focusSource === "onboarding_goals") {
+    reason = `Pillar XP is flat. Today's set leans ${focusLabel} from goals you chose in onboarding — declared direction, not measured traits.`;
+  } else if (inactiveDaysInWindow >= 7) {
     reason = `${inactiveDaysInWindow} quiet days in the last ${windowDays}. Today's set leans ${focusLabel} because ${weak.name} has the least pillar XP.`;
   } else if (rec.streak === 0) {
     reason = `No active chain. Set biased toward ${focusLabel} from ${weak.name} XP standing.`;
@@ -166,6 +212,7 @@ export function getAdaptiveDailyContext(
     reason,
     evidence,
     setIndex,
+    focusSource,
   };
 }
 

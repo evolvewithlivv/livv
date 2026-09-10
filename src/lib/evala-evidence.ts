@@ -1,6 +1,6 @@
 /**
  * Evala Evidence Layer — why the live read says what it says.
- * Built only from LivvRecord + existing command helpers.
+ * Built only from LivvRecord + existing command helpers + declared onboarding goals.
  * No invented psychology. Local-first.
  */
 
@@ -14,6 +14,7 @@ import {
   type LivvRecord,
 } from "./record";
 import { buildProgressInsights } from "./progress-insights";
+import { formatGoalsLine, goalLabels, loadOnboardingDraft } from "./onboarding";
 
 export type EvalaEvidenceItem = {
   claim: string;
@@ -38,25 +39,41 @@ export function buildEvalaEvidence(rec: LivvRecord = loadRecord()): EvalaEvidenc
   const open = todaysObjectives(rec).filter((o) => !o.completed);
   const done = todaysObjectives(rec).filter((o) => o.completed);
   const log = todayLog(rec);
-  const weekHits = weekHitCount(rec);
   const insights = buildProgressInsights(rec, 14);
+  const weekHits = weekHitCount(rec);
+  const draft = loadOnboardingDraft();
+  const labels = goalLabels(draft.goals);
 
   const items: EvalaEvidenceItem[] = [];
 
-  if (open[0]) {
+  if (labels.length > 0) {
+    const line = formatGoalsLine(draft.goals);
     items.push({
-      claim: `Open loop still on today: "${open[0].title}".`,
+      claim: `You set direction in onboarding: ${labels.slice(0, 4).join(", ")}.`,
       because: [
-        `Objective id ${open[0].id} is not marked completed`,
-        `Pillar: ${open[0].pillar}`,
-        `Completed today: ${done.length}/${done.length + open.length}`,
+        "Source: livv-onboarding-v1 goals (user-selected, not measured traits)",
+        line || `goal ids: ${draft.goals.join(", ")}`,
+        draft.completedAt
+          ? `onboarding completedAt=${new Date(draft.completedAt).toISOString().slice(0, 10)}`
+          : "onboarding completedAt not set",
+        "premium is ignored for behavioral recommendations",
+      ],
+    });
+  }
+
+  if (open.length > 0) {
+    items.push({
+      claim: `Open on today's list: ${open[0].title}.`,
+      because: [
+        `${open.length} incomplete objective(s) on ${dayKey()}`,
+        open.map((o) => o.title).slice(0, 3).join(" · "),
       ],
     });
   } else if (done.length > 0) {
     items.push({
-      claim: "Today's listed objectives are cleared.",
+      claim: `Today's objectives are complete (${done.length}).`,
       because: [
-        `Completed ${done.length} objective(s) on ${dayKey()}`,
+        `${done.length} objective(s) on ${dayKey()}`,
         done.map((o) => o.title).slice(0, 3).join(" · ") || "—",
       ],
     });
