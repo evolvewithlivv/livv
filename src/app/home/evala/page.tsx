@@ -10,6 +10,7 @@ import { strongestPillar, needsAttention } from "@/lib/command";
 import { feedback } from "@/lib/sensory";
 import { cn } from "@/lib/utils";
 import { PILLAR_DEFS } from "@/lib/evolve-data";
+import { buildEvalaEvidence } from "@/lib/evala-evidence";
 
 const PROMPTS = [
   "What is pulling my attention off course this week?",
@@ -41,13 +42,10 @@ export default function EvalaPage() {
     const weak = needsAttention(rec);
     const evo = evolutionTitle(rec.level);
     const open = todaysObjectives(rec).filter((o) => !o.completed);
+    const evidence = buildEvalaEvidence(rec);
     return {
-      evo, strong, weak, open,
-      line: open[0]
-        ? `Open loop: ${open[0].title}. That is the highest leverage move still sitting on today.`
-        : rec.streak > 0
-          ? `Chain is alive at ${rec.streak} days. ${strong.name} leads. ${weak.name} is quiet.`
-          : `No active chain. One logged action is enough to re-enter.`,
+      evo, strong, weak, open, evidence,
+      line: evidence.headline,
     };
   }, [rec]);
 
@@ -65,6 +63,7 @@ export default function EvalaPage() {
       weak: briefing.weak.name,
       open: briefing.open.map((o) => o.title),
       lastWorkout: rec.lastWorkout?.name || null,
+      evidence: briefing.evidence.snapshotLines.slice(0, 12),
     };
   };
 
@@ -118,6 +117,18 @@ export default function EvalaPage() {
             <Metric label="EVOLUTION" value={`Lv ${rec.level}`} />
             <Metric label="CHAIN" value={`${rec.streak}d`} />
             <Metric label="TODAY" value={`${completed}/${total}`} />
+          </div>
+          <div className="mt-6 border-t border-white/[0.06] pt-5">
+            <p className="text-[9px] uppercase tracking-[0.24em] text-white/25">Why I'm saying this</p>
+            <p className="mt-1 text-[11px] text-white/30">From your local record only — not a mood model.</p>
+            <ul className="mt-4 space-y-3">
+              {briefing.evidence.items.slice(0, 5).map((item) => (
+                <li key={item.claim} className="rounded-2xl border border-white/[0.06] bg-black/20 px-3.5 py-3">
+                  <p className="text-[13px] font-medium text-white/85">{item.claim}</p>
+                  <p className="mt-1.5 text-[10px] leading-relaxed text-white/35">{item.because.slice(0, 3).join(" · ")}</p>
+                </li>
+              ))}
+            </ul>
           </div>
         </section>
 
