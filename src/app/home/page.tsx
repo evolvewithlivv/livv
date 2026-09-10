@@ -21,6 +21,7 @@ import { feedback } from "@/lib/sensory";
 import { claimPacksIfDue, canClaimPacks } from "@/lib/packs";
 import { quoteForSession, type Quote } from "@/lib/quotes";
 import { dailySummary } from "@/lib/daily";
+import { consumeFirstSessionPending, loadOnboardingDraft } from "@/lib/onboarding";
 
 const PILLAR_HREF: Record<string, string> = {
   body: "/home/train",
@@ -40,6 +41,8 @@ export default function HomePage() {
   const [daily, setDaily] = useState(() =>
     typeof window !== "undefined" ? dailySummary() : null
   );
+  const [showFirst, setShowFirst] = useState(false);
+  const [onboardingWhy, setOnboardingWhy] = useState("");
 
   const pull = () => {
     setRec(loadRecord());
@@ -50,6 +53,9 @@ export default function HomePage() {
   useEffect(() => {
     pull();
     setQuote(quoteForSession());
+    if (consumeFirstSessionPending()) setShowFirst(true);
+    const draft = loadOnboardingDraft();
+    if (draft.why) setOnboardingWhy(draft.why);
     const id = window.setInterval(() => setNow(new Date()), 30_000);
     window.addEventListener("livv-identity", pull);
     window.addEventListener("livv-record", pull);
@@ -150,6 +156,38 @@ export default function HomePage() {
             </p>
           )}
         </section>
+
+        {showFirst && (
+          <section className="mt-5 rounded-[28px] border border-livv-accent/30 bg-livv-accent/10 p-5">
+            <p className="text-[9px] font-semibold uppercase tracking-[0.28em] text-livv-accent-soft">
+              First move
+            </p>
+            <p className="mt-2 text-[15px] font-medium leading-snug text-white/90">
+              {onboardingWhy
+                ? `You said: “${onboardingWhy.slice(0, 90)}${onboardingWhy.length > 90 ? "…" : "”"}`
+                : "Your session is live on this device."}
+            </p>
+            <p className="mt-2 text-[12px] leading-relaxed text-white/45">
+              Check in or finish one Daily task so Progress has something real to track.
+            </p>
+            <div className="mt-4 flex flex-wrap gap-2">
+              <button
+                type="button"
+                onClick={onPrimary}
+                className="rounded-full bg-white px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-black"
+              >
+                {move.href === "/home" ? "Check in" : move.cta}
+              </button>
+              <Link
+                href="/home/daily"
+                onClick={() => feedback("tick")}
+                className="rounded-full border border-white/15 px-4 py-2 text-[11px] font-semibold uppercase tracking-[0.12em] text-white/70"
+              >
+                Open Daily
+              </Link>
+            </div>
+          </section>
+        )}
 
         <Link href="/home/daily" className="mt-5 block" onClick={() => feedback("tick")}>
           <div
@@ -272,7 +310,7 @@ export default function HomePage() {
         <section className="mt-9">
           <div className="mb-4 flex items-end justify-between px-1">
             <div>
-              <p className="text-[9px] font-semibold uppercase tracking-[0.32em] text-white/25">Today</p>
+              <p className="text-[9px] uppercase tracking-[0.32em] text-white/25">Today</p>
               <p className="mt-1 text-[14px] font-medium text-white/70">
                 {done === total ? "All done for today." : `${done} of ${total} done`}
               </p>
