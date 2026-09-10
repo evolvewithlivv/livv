@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Container } from "@/components/ui/container";
 import { Avatar } from "@/components/identity/avatar";
-import { loadIdentity, type Identity } from "@/lib/identity";
+import { loadIdentity, DEFAULT_IDENTITY, type Identity } from "@/lib/identity";
 import { getTier } from "@/lib/membership";
 import { liveAchievements, loadRecord, type LivvRecord } from "@/lib/record";
 import { evolutionTitle } from "@/lib/levels";
@@ -40,7 +40,7 @@ export default function SharePage() {
   };
 
   return <main className="livv-page min-h-full pb-10 pt-5"><Container>
-    <div className="flex items-center gap-4"><Avatar identity={me || undefined} size={56} /><div><p className="text-[10px] uppercase tracking-[0.25em] text-white/30">Share your evolution</p><h1 className="mt-1 text-3xl font-semibold tracking-tight">Make it postable.</h1></div></div>
+    <div className="flex items-center gap-4"><Avatar identity={me ?? DEFAULT_IDENTITY} size={56} /><div><p className="text-[10px] uppercase tracking-[0.25em] text-white/30">Share your evolution</p><h1 className="mt-1 text-3xl font-semibold tracking-tight">Make it postable.</h1></div></div>
     <div className="mt-7 grid grid-cols-2 gap-2.5">{(["profile", "workout"] as Mode[]).map((m) => <button key={m} onClick={() => setMode(m)} className={`rounded-2xl border px-4 py-3 text-sm font-semibold ${mode === m ? "border-white/30 bg-white/10" : "border-white/10 bg-white/[0.035] text-white/45"}`}>{m === "profile" ? "Profile card" : "Workout card"}</button>)}</div>
 
     <div className="mt-5 overflow-hidden rounded-[30px] border border-white/10 bg-white/[0.045] p-5 shadow-2xl">
