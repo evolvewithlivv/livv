@@ -21,7 +21,11 @@ import { feedback } from "@/lib/sensory";
 import { claimPacksIfDue, canClaimPacks } from "@/lib/packs";
 import { quoteForSession, type Quote } from "@/lib/quotes";
 import { dailySummary } from "@/lib/daily";
-import { consumeFirstSessionPending, loadOnboardingDraft } from "@/lib/onboarding";
+import {
+  consumeFirstSessionPending,
+  formatGoalsLine,
+  loadOnboardingDraft,
+} from "@/lib/onboarding";
 
 const PILLAR_HREF: Record<string, string> = {
   body: "/home/train",
@@ -43,6 +47,7 @@ export default function HomePage() {
   );
   const [showFirst, setShowFirst] = useState(false);
   const [onboardingWhy, setOnboardingWhy] = useState("");
+  const [goalsLine, setGoalsLine] = useState("");
 
   const pull = () => {
     setRec(loadRecord());
@@ -56,6 +61,7 @@ export default function HomePage() {
     if (consumeFirstSessionPending()) setShowFirst(true);
     const draft = loadOnboardingDraft();
     if (draft.why) setOnboardingWhy(draft.why);
+    setGoalsLine(formatGoalsLine(draft.goals));
     const id = window.setInterval(() => setNow(new Date()), 30_000);
     window.addEventListener("livv-identity", pull);
     window.addEventListener("livv-record", pull);
@@ -164,9 +170,12 @@ export default function HomePage() {
             </p>
             <p className="mt-2 text-[15px] font-medium leading-snug text-white/90">
               {onboardingWhy
-                ? `You said: “${onboardingWhy.slice(0, 90)}${onboardingWhy.length > 90 ? "…" : "”"}`
+                ? `You said: “${onboardingWhy.slice(0, 90)}${onboardingWhy.length > 90 ? "…" : ""}”`
                 : "Your session is live on this device."}
             </p>
+            {goalsLine ? (
+              <p className="mt-1.5 text-[11px] leading-relaxed text-white/35">{goalsLine}</p>
+            ) : null}
             <p className="mt-2 text-[12px] leading-relaxed text-white/45">
               Check in or finish one Daily task so Progress has something real to track.
             </p>
@@ -310,7 +319,7 @@ export default function HomePage() {
         <section className="mt-9">
           <div className="mb-4 flex items-end justify-between px-1">
             <div>
-              <p className="text-[9px] uppercase tracking-[0.32em] text-white/25">Today</p>
+              <p className="text-[9px] font-semibold uppercase tracking-[0.32em] text-white/25">Today</p>
               <p className="mt-1 text-[14px] font-medium text-white/70">
                 {done === total ? "All done for today." : `${done} of ${total} done`}
               </p>
