@@ -18,6 +18,7 @@ import {
   type DailyDrop,
   type DailyJournalEntry,
 } from "@/lib/daily";
+import { getAdaptiveDailyContext } from "@/lib/daily-adaptive";
 
 export default function DailyPage() {
   const [now] = useState(() => new Date());
@@ -30,6 +31,7 @@ export default function DailyPage() {
   const [doubleXp, setDoubleXp] = useState(false);
 
   const tasks = useMemo(() => dailyTasks(now), [now]);
+  const adapt = useMemo(() => getAdaptiveDailyContext(now), [now]);
   const question = useMemo(() => dailyQuestion(now), [now]);
   const summary = useMemo(() => dailySummary(now), [now]);
   const drop = useMemo(() => dailyDrop(now), [now]);
@@ -99,6 +101,11 @@ export default function DailyPage() {
           subtitle="Three small things. Check them off."
           accent="#ffd43b"
         />
+
+        <p className="mt-4 text-[12px] leading-relaxed text-white/35">
+          <span className="text-[10px] uppercase tracking-[0.2em] text-white/25">Adaptive · </span>
+          {adapt.reason}
+        </p>
 
         <section className="livv-glass relative mt-8 overflow-hidden rounded-[36px] p-6">
           <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-livv-accent/70 to-transparent" />
