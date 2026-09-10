@@ -44,7 +44,7 @@ export default function MindWikiPage() {
               <div>
                 <p className="text-[9px] font-semibold uppercase tracking-[0.28em]" style={{ color: articleColor(featured.slug) }}>Featured</p>
                 <p className="font-display mt-3 max-w-[18ch] text-[28px] font-semibold leading-[0.98] tracking-tight">{featured.title}</p>
-                <p className="mt-3 max-w-[34ch] text-[13px] leading-relaxed text-white/45">{featured.summary}</p>
+                <p className="mt-3 max-w-[34ch] text-[13px] leading-relaxed text-white/45">{featured.hook}</p>
                 <p className="mt-4 text-[11px] text-white/30">{featured.desk} · {featured.readMins} min</p>
               </div>
               <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-white text-black">→</span>
