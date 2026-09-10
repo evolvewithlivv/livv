@@ -13,6 +13,7 @@ import { applyStreakRepair, getRepairOffer } from "@/lib/streak-repair";
 import { setProgress as vaultSetProgress } from "@/lib/vault-sets";
 import { clearPair, loadPair, setPair, type PairChain } from "@/lib/pair-chain";
 import { addEmbers } from "@/lib/identity";
+import { buildProgressInsights } from "@/lib/progress-insights";
 
 export default function ProgressPage() {
   const [rec, setRec] = useState<LivvRecord | null>(null);
@@ -37,6 +38,7 @@ export default function ProgressPage() {
   if (!rec || !season || !weekly) return <main className="min-h-dvh" />;
   const week = weekBars(rec), hits = weekHitCount(rec), pillars = livePillars(rec);
   const evo = evolutionTitle(rec.level), strong = strongestPillar(rec), weak = needsAttention(rec);
+  const insights = buildProgressInsights(rec, 14);
 
   return (
     <main className="livv-page relative min-h-full overflow-hidden pb-14">
@@ -45,24 +47,45 @@ export default function ProgressPage() {
         <section className="livv-glass mt-8 rounded-[28px] p-5">
           <div className="flex items-start justify-between"><div><p className="text-[10px] uppercase tracking-[.26em] text-white/30">Current state</p><p className="font-display mt-2 text-[27px]">{evo.name}</p></div><div className="text-right"><p className="text-[9px] uppercase tracking-[.2em] text-white/25">Level</p><p className="font-display text-[30px] text-livv-accent-soft">{rec.level}</p></div></div>
           <div className="mt-6 grid grid-cols-3 gap-2"><Stat value={`${rec.streak}d`} label="Chain" /><Stat value={`${rec.workoutsCompleted}`} label="Sessions" /><Stat value={`${rec.goalsCompleted}`} label="Actions" /></div>
-          <p className="mt-5 text-[13px] leading-relaxed text-white/40">{hits >= 5 ? "Strong week. Keep it up." : hits >= 3 ? "Good momentum. Stack another day." : hits >= 1 ? "Started. One more day helps." : "Nothing logged yet. One action changes that."}</p>
+          <div className="mt-5"><div className="mb-1.5 flex justify-between text-[10px] text-white/30"><span>XP</span><span>{rec.currentXp}/{rec.xpToNext}</span></div><div className="h-1.5 overflow-hidden rounded-full bg-white/[.08]"><div className="h-full rounded-full bg-livv-accent" style={{ width: `${Math.min(100, (rec.currentXp / Math.max(1, rec.xpToNext)) * 100)}%` }} /></div></div>
         </section>
         {repair && <section className="mt-7 rounded-[24px] border border-livv-accent/25 bg-livv-accent/[.07] p-5"><p className="text-[10px] uppercase tracking-[.24em] text-livv-accent-soft">Chain recovery</p><p className="mt-2 text-[17px] font-semibold">Restore {repair.restored} of your {repair.previous}-day chain.</p><p className="mt-1 text-[12px] text-white/35">Half returns. The rest gets earned again.</p><button type="button" onClick={() => { applyStreakRepair(); feedback("unlock"); sync(); }} className="mt-4 rounded-full bg-white px-4 py-2 text-[12px] font-semibold text-black">Repair chain</button></section>}
         <section className="mt-10">
-          <div className="flex items-end justify-between"><div><p className="text-[10px] uppercase tracking-[.28em] text-white/30">Chapter</p><p className="font-display mt-2 text-[25px]">{season.def.name}</p><p className="mt-1 text-[13px] text-white/35">{season.def.line}</p></div><span className="text-[12px] text-white/25">{season.remaining}d left</span></div>
-          <div className="mt-5 h-1.5 overflow-hidden rounded-full bg-white/[.08]"><div className="h-full rounded-full bg-livv-accent shadow-[0_0_14px_rgb(var(--livv-accent)/.5)] transition-all" style={{ width: `${season.pct}%` }} /></div>
-          <div className="mt-5 space-y-2">{season.objectives.map((o: any) => <div key={o.id} className="flex items-center gap-3 rounded-2xl border border-white/[.06] bg-white/[.02] px-4 py-3"><span className={o.done ? "flex h-7 w-7 items-center justify-center rounded-full bg-livv-accent text-xs" : "h-7 w-7 rounded-full ring-1 ring-white/10"}>{o.done ? "✓" : ""}</span><span className={o.done ? "flex-1 text-[13px] text-white/35 line-through" : "flex-1 text-[13px] text-white/65"}>{o.title}</span><span className="text-[11px] text-white/25">{o.current}/{o.target}</span></div>)}</div>
-          {season.allDone && !season.state.claimed && <button type="button" onClick={() => { claimSeasonComplete(); addEmbers(50); feedback("unlock"); advanceSeason(); sync(); }} className="mt-4 w-full rounded-2xl bg-white py-3 text-[13px] font-semibold text-black">Complete chapter · +50 Embers</button>}
+          <div className="mb-3 flex items-end justify-between"><p className="text-[10px] uppercase tracking-[.28em] text-white/30">This week</p><p className="text-[11px] text-white/25">{hits}/7 active</p></div>
+          <div className="flex items-end gap-1.5">{week.map((d: any) => <div key={d.key} className="flex flex-1 flex-col items-center gap-2"><div className="w-full rounded-full bg-white/[.06]" style={{ height: 56 }}><div className="w-full rounded-full bg-livv-accent/80" style={{ height: `${Math.max(8, d.v)}%`, marginTop: `${100 - Math.max(8, d.v)}%` }} /></div><span className="text-[9px] text-white/25">{d.d}</span></div>)}</div>
         </section>
         <section className="mt-11 rounded-[26px] border border-white/[.07] bg-white/[.025] p-5">
-          <div className="flex items-end justify-between"><div><p className="text-[10px] uppercase tracking-[.28em] text-white/30">Weekly clear</p><p className="mt-2 font-display text-[46px] leading-none">{weekly.hits}<span className="text-[21px] text-white/25"> / {weekly.target}</span></p></div><p className="max-w-[15ch] text-right text-[11px] leading-relaxed text-white/25">{weekly.met ? "Target hit. Claim your clear." : `${weekly.remaining} active day${weekly.remaining === 1 ? "" : "s"} remaining`}</p></div>
-          <div className="mt-5 flex gap-2">{[3,4,5,6,7].map((n) => <button key={n} type="button" onClick={() => { setWeeklyTarget(n); feedback("tick"); sync(); }} className={weekly.target === n ? "h-9 w-9 rounded-full bg-white text-[12px] font-semibold text-black" : "h-9 w-9 rounded-full text-[12px] text-white/35 ring-1 ring-white/10"}>{n}</button>)}</div>
-          {weekly.met && !weekly.claimed && <button type="button" onClick={() => { claimWeeklyClear(); addEmbers(25); feedback("complete"); sync(); }} className="mt-4 rounded-full bg-livv-accent px-4 py-2 text-[12px] font-semibold">Claim clear · +25</button>}
-          <div className="mt-7 flex h-24 items-end gap-2">{week.map((d: any) => <div key={d.key} className="flex h-full flex-1 flex-col justify-end"><div className="rounded-t-lg" style={{ height: `${Math.max(d.v, d.active ? 14 : 4)}%`, background: d.active ? "linear-gradient(to top, rgb(var(--livv-accent)), rgb(var(--livv-accent)/.45))" : "rgba(255,255,255,.08)" }} /><span className="mt-2 text-center text-[9px] text-white/25">{d.d}</span></div>)}</div>
+          <div className="flex items-start justify-between gap-3"><div><p className="text-[10px] uppercase tracking-[.24em] text-white/30">Season {season.index}</p><p className="mt-1 text-[16px] font-semibold">{season.name}</p><p className="mt-1 text-[12px] text-white/35">{season.line}</p></div><p className="text-[12px] text-livv-accent-soft">{season.daysLeft}d left</p></div>
+          <div className="mt-4 h-1.5 overflow-hidden rounded-full bg-white/[.08]"><div className="h-full rounded-full bg-livv-accent" style={{ width: `${season.progress}%` }} /></div>
+          <div className="mt-4 flex gap-2"><button type="button" onClick={() => { claimSeasonComplete(); addEmbers(25); feedback("complete"); sync(); }} className="rounded-full bg-white px-4 py-2 text-[11px] font-semibold text-black">Claim season</button><button type="button" onClick={() => { advanceSeason(); feedback("tick"); sync(); }} className="rounded-full border border-white/15 px-4 py-2 text-[11px] text-white/55">Next season</button></div>
         </section>
         <section className="mt-11"><p className="text-[10px] uppercase tracking-[.28em] text-white/30">Energy map</p><div className="mt-4 grid grid-cols-2 gap-2">{pillars.map((p: any) => <div key={p.id} className="rounded-2xl border border-white/[.06] bg-white/[.02] p-4"><div className="flex items-center justify-between"><span className="text-[12px] text-white/55">{p.name}</span><span className="text-[11px] text-livv-accent-soft">Lv {p.level}</span></div><div className="mt-4 h-1 overflow-hidden rounded-full bg-white/[.07]"><div className="h-full rounded-full bg-livv-accent" style={{ width: `${p.progress}%` }} /></div><p className="mt-2 text-[10px] text-white/20">{typeof p.xp === "number" ? p.xp : 0} XP · {p.progress}%</p></div>)}</div></section>
+        <section className="mt-11">
+          <p className="text-[10px] uppercase tracking-[.28em] text-white/30">Intelligence</p>
+          <p className="mt-1 text-[12px] text-white/30">Derived from your local day logs and counters only — not cloud sync.</p>
+          <div className="mt-4 grid grid-cols-3 gap-2">
+            <Stat value={`${insights.consistencyPct}%`} label={`${insights.windowDays}d active`} />
+            <Stat value={`${insights.longestActiveRun}d`} label="Best run" />
+            <Stat value={`${insights.objectivesCompletedInWindow}`} label="Actions 14d" />
+          </div>
+          <div className="mt-3 space-y-2">
+            {insights.bullets.slice(0, 4).map((b) => (
+              <div key={b.title} className="rounded-[22px] border border-white/[.07] bg-white/[.025] p-4">
+                <p className="text-[9px] uppercase tracking-[.2em] text-white/25">{b.title}</p>
+                <p className="mt-2 text-[14px] font-medium leading-snug text-white/85">{b.detail}</p>
+                <p className="mt-2 text-[10px] leading-relaxed text-white/30">{b.evidence.facts.slice(0, 3).join(" · ")}</p>
+              </div>
+            ))}
+          </div>
+        </section>
         <section className="mt-11 grid grid-cols-2 gap-2"><Insight title="Leading" value={strong.name} sub={`Level ${strong.level}`} /><Insight title="Needs work" value={weak.name} sub={`Level ${weak.level}`} /></section>
-        <section className="mt-11"><div className="flex items-center justify-between"><p className="text-[10px] uppercase tracking-[.28em] text-white/30">Vault sets</p><Link href="/home/vault" className="text-[12px] text-livv-accent-soft">Open vault →</Link></div><div className="mt-4 space-y-2">{sets.map((s) => <div key={s.id} className="flex items-center justify-between rounded-xl px-3 py-2.5 ring-1 ring-white/[.05]"><span className={s.complete ? "text-[12px] text-livv-accent-soft" : "text-[12px] text-white/45"}>{s.name}</span><span className="text-[11px] text-white/25">{s.have}/{s.total}</span></div>)}</div></section>
+        <section className="mt-11 rounded-[26px] border border-white/[.07] bg-white/[.025] p-5">
+          <p className="text-[10px] uppercase tracking-[.24em] text-white/30">Weekly clear</p>
+          <p className="mt-2 text-[15px] font-semibold">{weekly.done}/{weekly.target} actions</p>
+          <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-white/[.08]"><div className="h-full rounded-full bg-livv-accent" style={{ width: `${Math.min(100, (weekly.done / Math.max(1, weekly.target)) * 100)}%` }} /></div>
+          <div className="mt-4 flex flex-wrap gap-2"><button type="button" onClick={() => { setWeeklyTarget(Math.max(3, weekly.target - 1)); sync(); }} className="rounded-full border border-white/10 px-3 py-1.5 text-[11px] text-white/45">− target</button><button type="button" onClick={() => { setWeeklyTarget(weekly.target + 1); sync(); }} className="rounded-full border border-white/10 px-3 py-1.5 text-[11px] text-white/45">+ target</button><button type="button" onClick={() => { claimWeeklyClear(); feedback("complete"); sync(); }} className="rounded-full bg-white px-3 py-1.5 text-[11px] font-semibold text-black">Claim clear</button></div>
+        </section>
+        <section className="mt-11"><div className="mb-3 flex items-center justify-between"><p className="text-[10px] uppercase tracking-[.28em] text-white/30">Vault sets</p><Link href="/home/vault" className="text-[12px] text-livv-accent-soft">Open vault →</Link></div><div className="mt-4 space-y-2">{sets.map((s) => <div key={s.id} className="flex items-center justify-between rounded-xl px-3 py-2.5 ring-1 ring-white/[.05]"><span className={s.complete ? "text-[12px] text-livv-accent-soft" : "text-[12px] text-white/45"}>{s.name}</span><span className="text-[11px] text-white/25">{s.have}/{s.total}</span></div>)}</div></section>
         <section className="mt-11"><p className="text-[10px] uppercase tracking-[.28em] text-white/30">Pair chain</p><p className="mt-1 text-[12px] text-white/25">Private accountability, one person, one shared pillar.</p>{pair ? <div className="mt-4 rounded-2xl border border-white/[.07] bg-white/[.025] p-4"><p className="text-[15px] font-semibold">{pair.partnerName}</p><p className="mt-1 text-[12px] text-white/35">{pair.pillar} · {pair.sharedDays} shared days</p><button onClick={() => { clearPair(); sync(); }} className="mt-3 text-[11px] text-white/25">End pair</button></div> : <div className="mt-4 flex gap-2"><input value={pairName} onChange={(e) => setPairName(e.target.value)} placeholder="Partner name" className="h-11 min-w-0 flex-1 rounded-xl bg-white/[.035] px-3 text-sm outline-none ring-1 ring-white/10" /><button onClick={() => { if(pairName.trim().length<2)return; setPair({partnerName:pairName.trim(),partnerUsername:pairName.trim().toLowerCase().replace(/\s/g,""),pillar:"Body"}); feedback("tick"); setPairName(""); sync(); }} className="rounded-xl bg-white px-4 text-xs font-semibold text-black">Link</button></div>}</section>
         <p className="mt-12 text-center text-[10px] tracking-[.18em] text-white/15">KEEP GOING</p>
       </div>
