@@ -2,14 +2,23 @@
  * Adaptive Daily v1 — bias which deterministic Daily set is shown
  * using LivvRecord only (pillar XP, recent day activity, streak).
  * No psychological/neuro metrics. Local-first and explainable.
+ *
+ * Intentionally does not import from daily.ts or command.ts to avoid cycles.
  */
 
 import { dayKey } from "./dates";
-import { needsAttention } from "./command";
 import { loadRecord, type LivvRecord } from "./record";
-import type { DailyTask } from "./daily";
+import { PILLAR_DEFS } from "./evolve-data";
 
-/** Same shape as DAILY_SETS rows in daily.ts — kept local to avoid circular imports of the pool. */
+export type AdaptiveDailyTask = {
+  id: "mind" | "body" | "life";
+  label: string;
+  title: string;
+  description: string;
+  pillar: string;
+  xpSize: "small" | "standard" | "major";
+};
+
 const ADAPTIVE_SETS: readonly (readonly (readonly [string, string, string, string, string])[])[] = [
   [
     ["Mind", "Clear the noise", "Write one honest sentence about the decision you have been postponing.", "mind", "small"],
@@ -60,8 +69,17 @@ export function pillarToDailySlot(pillarIdOrName: string): "mind" | "body" | "li
   const p = pillarIdOrName.toLowerCase();
   if (p === "body") return "body";
   if (p === "mind") return "mind";
-  // career / finance / social / life → life slot (open loops, environment, useful moves)
   return "life";
+}
+
+function weakestPillar(rec: LivvRecord): { id: string; name: string; xp: number } {
+  const xp = rec.pillarXp || {};
+  let best = { id: "mind", name: "Mind", xp: Number.POSITIVE_INFINITY };
+  for (const p of PILLAR_DEFS) {
+    const v = xp[p.id] ?? 0;
+    if (v < best.xp) best = { id: p.id, name: p.name, xp: v };
+  }
+  return best;
 }
 
 function pastKeys(n: number, end = new Date()): string[] {
@@ -93,11 +111,11 @@ function scoreSet(
   let score = 0;
   set.forEach((row, i) => {
     const slot = (["mind", "body", "life"] as const)[i];
-    const xp = row[4];
+    const size = row[4];
     if (slot === focus) {
       score += 10;
-      if (xp === "major") score += 6;
-      else if (xp === "standard") score += 3;
+      if (size === "major") score += 6;
+      else if (size === "standard") score += 3;
     }
   });
   return score;
@@ -107,8 +125,8 @@ export function getAdaptiveDailyContext(
   date = new Date(),
   rec: LivvRecord = loadRecord()
 ): AdaptiveDailyContext {
-  const weak = needsAttention(rec);
-  const focusSlot = pillarToDailySlot(weak.id || weak.name);
+  const weak = weakestPillar(rec);
+  const focusSlot = pillarToDailySlot(weak.id);
   const windowDays = 14;
   const keys = pastKeys(windowDays, date);
   const inactiveDaysInWindow = keys.filter((k) => !dayWasActive(rec, k)).length;
@@ -119,12 +137,11 @@ export function getAdaptiveDailyContext(
   }));
   const maxScore = Math.max(...scored.map((s) => s.score));
   const candidates = scored.filter((s) => s.score === maxScore).map((s) => s.index);
-  // Deterministic among best sets for this calendar day + focus
   const setIndex = candidates[hash(`${dayKey(date)}:${focusSlot}:adapt-v1`) % candidates.length];
 
   const focusLabel = focusSlot === "body" ? "Body" : focusSlot === "mind" ? "Mind" : "Life";
   const evidence = [
-    `Weakest pillar signal: ${weak.name} (Lv ${weak.level})`,
+    `Lowest pillar XP: ${weak.name} (${weak.xp} XP)`,
     `Mapped Daily slot: ${focusLabel}`,
     `Inactive days in last ${windowDays}: ${inactiveDaysInWindow}`,
     `Current streak: ${rec.streak}`,
@@ -133,11 +150,11 @@ export function getAdaptiveDailyContext(
 
   let reason: string;
   if (inactiveDaysInWindow >= 7) {
-    reason = `${inactiveDaysInWindow} quiet days in the last ${windowDays}. Today's set leans ${focusLabel} because ${weak.name} is the lightest pillar on record.`;
+    reason = `${inactiveDaysInWindow} quiet days in the last ${windowDays}. Today's set leans ${focusLabel} because ${weak.name} has the least pillar XP.`;
   } else if (rec.streak === 0) {
     reason = `No active chain. Set biased toward ${focusLabel} from ${weak.name} XP standing.`;
   } else {
-    reason = `Set biased toward ${focusLabel} — ${weak.name} has the least pillar XP. Same day always resolves the same way.`;
+    reason = `Set biased toward ${focusLabel} — ${weak.name} has the least pillar XP. Same calendar day resolves the same way.`;
   }
 
   return {
@@ -155,21 +172,13 @@ export function getAdaptiveDailyContext(
 export function adaptiveDailyTasks(
   date = new Date(),
   rec: LivvRecord = loadRecord()
-): DailyTask[] {
+): AdaptiveDailyTask[] {
   const ctx = getAdaptiveDailyContext(date, rec);
   const set = ADAPTIVE_SETS[ctx.setIndex];
   return set.map(([label, title, description, pillar, xpSize], index) => {
     const id = (["mind", "body", "life"] as const)[index];
-    let size = xpSize as DailyTask["xpSize"];
-    // Mild, visible bias: if this is the focus slot and still "small", bump to standard
+    let size = xpSize as AdaptiveDailyTask["xpSize"];
     if (id === ctx.focusSlot && size === "small") size = "standard";
-    return {
-      id,
-      label,
-      title,
-      description,
-      pillar,
-      xpSize: size,
-    };
+    return { id, label, title, description, pillar, xpSize: size };
   });
 }
