@@ -269,6 +269,66 @@ export async function signUpWithProvider(input: {
   return account;
 }
 
+/**
+ * Finish onboarding on this device: create or refresh a local session + identity.
+ * Not OAuth. Not cloud. Session lives in localStorage with the rest of LIVV.
+ */
+export async function completeDeviceOnboarding(input: {
+  displayName: string;
+}): Promise<{ account: Account; isNew: boolean }> {
+  await delay(200);
+  const displayName = input.displayName.trim() || "Member";
+
+  if (isSignedIn()) {
+    const existing = getCurrentAccount();
+    if (existing) {
+      const accounts = loadAccounts();
+      const idx = accounts.findIndex((a) => a.id === existing.id);
+      if (idx >= 0) {
+        accounts[idx] = {
+          ...accounts[idx],
+          displayName,
+          lastLoginAt: Date.now(),
+        };
+        saveAccounts(accounts);
+        writeIdentityFromAccount(accounts[idx]);
+        return { account: accounts[idx], isNew: false };
+      }
+    }
+  }
+
+  const username = suggestUsername(displayName, "email");
+  const account: Account = {
+    id: `acc_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
+    provider: "email",
+    // No email/password: device-local session only until the user adds credentials later.
+    displayName,
+    username,
+    usernameLocked: true,
+    photo: null,
+    accent: DEFAULT_ACCENT,
+    appearance: "dark",
+    tier: "spark",
+    theme: "ember",
+    embers: 0,
+    bio: "",
+    createdAt: Date.now(),
+    lastLoginAt: Date.now(),
+  };
+
+  const accounts = loadAccounts();
+  accounts.push(account);
+  saveAccounts(accounts);
+
+  const map = loadUsernameMap();
+  map[username] = account.id;
+  saveUsernameMap(map);
+
+  setSession(account.id);
+  writeIdentityFromAccount(account);
+  return { account, isNew: true };
+}
+
 export async function signInWithEmail(email: string, password: string) {
   await delay(350);
   const account = loadAccounts().find(

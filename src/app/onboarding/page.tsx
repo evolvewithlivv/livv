@@ -1,8 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
+import { completeDeviceOnboarding, isSignedIn } from "@/lib/auth";
+import {
+  loadOnboardingDraft,
+  markFirstSessionPending,
+  markOnboardingComplete,
+  saveOnboardingDraft,
+} from "@/lib/onboarding";
 import { cn } from "@/lib/utils";
 
 const GOALS = [
@@ -28,17 +35,44 @@ export default function OnboardingPage() {
   const [selectedGoals, setSelectedGoals] = useState<string[]>([]);
   const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
   const [displayName, setDisplayName] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
+
+  useEffect(() => {
+    const draft = loadOnboardingDraft();
+    if (draft.why) setWhy(draft.why);
+    if (draft.goals.length) setSelectedGoals(draft.goals);
+    if (draft.interests.length) setSelectedInterests(draft.interests);
+    if (draft.displayName) setDisplayName(draft.displayName);
+    // Returning signed-in users who already finished onboarding go Home.
+    if (isSignedIn() && draft.completedAt) {
+      router.replace("/home");
+    }
+  }, [router]);
+
+  const persist = (partial: {
+    why?: string;
+    goals?: string[];
+    interests?: string[];
+    displayName?: string;
+  }) => {
+    saveOnboardingDraft(partial);
+  };
 
   const toggleGoal = (id: string) => {
-    setSelectedGoals((prev) =>
-      prev.includes(id) ? prev.filter((g) => g !== id) : [...prev, id]
-    );
+    setSelectedGoals((prev) => {
+      const next = prev.includes(id) ? prev.filter((g) => g !== id) : [...prev, id];
+      persist({ goals: next });
+      return next;
+    });
   };
 
   const toggleInterest = (label: string) => {
-    setSelectedInterests((prev) =>
-      prev.includes(label) ? prev.filter((i) => i !== label) : [...prev, label]
-    );
+    setSelectedInterests((prev) => {
+      const next = prev.includes(label) ? prev.filter((i) => i !== label) : [...prev, label];
+      persist({ interests: next });
+      return next;
+    });
   };
 
   const canContinue =
@@ -47,11 +81,38 @@ export default function OnboardingPage() {
     (step === "interests" && selectedInterests.length > 0) ||
     (step === "profile" && displayName.trim().length > 1);
 
-  const handleNext = () => {
-    if (step === "why") setStep("goals");
-    else if (step === "goals") setStep("interests");
-    else if (step === "interests") setStep("profile");
-    else router.push("/home");
+  const handleNext = async () => {
+    setError("");
+    if (step === "why") {
+      persist({ why: why.trim() });
+      setStep("goals");
+      return;
+    }
+    if (step === "goals") {
+      persist({ goals: selectedGoals });
+      setStep("interests");
+      return;
+    }
+    if (step === "interests") {
+      persist({ interests: selectedInterests });
+      setStep("profile");
+      return;
+    }
+
+    // Final step: persist draft, open local session, enter Home.
+    setBusy(true);
+    try {
+      const name = displayName.trim();
+      persist({ displayName: name, why: why.trim(), goals: selectedGoals, interests: selectedInterests });
+      await completeDeviceOnboarding({ displayName: name });
+      markOnboardingComplete();
+      markFirstSessionPending();
+      router.replace("/home");
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Could not start your session");
+    } finally {
+      setBusy(false);
+    }
   };
 
   return (
@@ -84,6 +145,7 @@ export default function OnboardingPage() {
             <textarea
               value={why}
               onChange={(e) => setWhy(e.target.value)}
+              onBlur={() => persist({ why: why.trim() })}
               placeholder="I want to become more disciplined and consistent..."
               className="mt-8 min-h-[140px] w-full flex-1 resize-none rounded-2xl border border-livv-border bg-livv-surface px-4 py-3 text-base text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-livv-accent/40"
               maxLength={200}
@@ -103,12 +165,13 @@ export default function OnboardingPage() {
               {GOALS.map((goal) => (
                 <button
                   key={goal.id}
+                  type="button"
                   onClick={() => toggleGoal(goal.id)}
                   className={cn(
                     "w-full rounded-2xl border px-4 py-4 text-left transition-all duration-200",
                     selectedGoals.includes(goal.id)
-                      ? "border-livv-accent bg-livv-accent/10 text-white"
-                      : "border-livv-border bg-livv-surface text-white/80 hover:border-white/20"
+                      ? "border-livv-accent bg-livv-accent/15 text-white"
+                      : "border-livv-border bg-livv-surface text-white/70 hover:border-white/20"
                   )}
                 >
                   {goal.label}
@@ -124,12 +187,13 @@ export default function OnboardingPage() {
               What are you into?
             </h1>
             <p className="mt-3 text-sm text-white/45">
-              Pick the areas that excite you.
+              We’ll use this to shape what you see first.
             </p>
-            <div className="mt-8 flex flex-wrap gap-2.5">
+            <div className="mt-8 flex flex-wrap gap-2">
               {INTERESTS.map((interest) => (
                 <button
                   key={interest}
+                  type="button"
                   onClick={() => toggleInterest(interest)}
                   className={cn(
                     "rounded-full border px-4 py-2.5 text-sm transition-all duration-200",
@@ -151,7 +215,7 @@ export default function OnboardingPage() {
               Create your LIVV identity
             </h1>
             <p className="mt-3 text-sm text-white/45">
-              Just a display name for now. You can refine everything later.
+              Display name only. Your session stays on this device — not cloud login.
             </p>
             <div className="mt-10">
               <label className="text-[11px] uppercase tracking-[0.22em] text-livv-muted">
@@ -161,11 +225,15 @@ export default function OnboardingPage() {
                 type="text"
                 value={displayName}
                 onChange={(e) => setDisplayName(e.target.value)}
+                onBlur={() => persist({ displayName: displayName.trim() })}
                 placeholder="How should people know you?"
                 className="mt-2 w-full rounded-2xl border border-livv-border bg-livv-surface px-4 py-3.5 text-base text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-livv-accent/40"
                 maxLength={32}
               />
             </div>
+            {error && (
+              <p className="mt-4 text-sm text-red-400/90">{error}</p>
+            )}
           </div>
         )}
 
@@ -174,6 +242,7 @@ export default function OnboardingPage() {
             <Button
               variant="ghost"
               className="flex-1"
+              disabled={busy}
               onClick={() => {
                 if (step === "goals") setStep("why");
                 else if (step === "interests") setStep("goals");
@@ -186,10 +255,10 @@ export default function OnboardingPage() {
           <Button
             variant="accent"
             className="flex-1"
-            disabled={!canContinue}
-            onClick={handleNext}
+            disabled={!canContinue || busy}
+            onClick={() => void handleNext()}
           >
-            {step === "profile" ? "Enter LIVV" : "Continue"}
+            {busy ? "Starting…" : step === "profile" ? "Enter LIVV" : "Continue"}
           </Button>
         </div>
       </div>
