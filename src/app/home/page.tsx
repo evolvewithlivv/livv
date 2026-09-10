@@ -15,6 +15,7 @@ import {
   type LivvRecord,
 } from "@/lib/record";
 import { actionsCompletedCount, contextGreeting, nextMove } from "@/lib/command";
+import { buildBehaviorLoop } from "@/lib/behavior-loop";
 import { evolutionTitle } from "@/lib/levels";
 import { feedback } from "@/lib/sensory";
 import { claimPacksIfDue, canClaimPacks } from "@/lib/packs";
@@ -79,6 +80,7 @@ export default function HomePage() {
   const tier = getTier(me.tier);
   const greet = contextGreeting(now, rec);
   const move = nextMove(rec);
+  const loop = buildBehaviorLoop(rec, now);
   const { done, total, pillars } = actionsCompletedCount(rec);
   const nodes = [...pillars, { id: "self", name: "Self", done: isCheckedInToday(rec) }];
   const evo = evolutionTitle(rec.level);
@@ -195,6 +197,17 @@ export default function HomePage() {
             )}
           </div>
         </Link>
+
+        <section className="mt-5 rounded-[28px] border border-white/[0.07] bg-white/[0.025] p-5">
+          <p className="text-[9px] uppercase tracking-[0.28em] text-white/25">Loop</p>
+          <p className="mt-2 text-[14px] font-medium leading-snug text-white/85">{loop.status}</p>
+          <p className="mt-3 text-[11px] leading-relaxed text-white/35">{loop.because.join(" · ")}</p>
+          <div className="mt-4 flex flex-wrap gap-2 text-[10px] uppercase tracking-[0.14em] text-white/30">
+            <span className="rounded-full border border-white/10 px-2.5 py-1">Daily → {loop.adapt.focusLabel}</span>
+            <span className="rounded-full border border-white/10 px-2.5 py-1">{loop.progress.consistencyPct}% · 14d</span>
+            <span className="rounded-full border border-white/10 px-2.5 py-1">Next · {loop.move.cta}</span>
+          </div>
+        </section>
 
         <section className="mt-5 grid grid-cols-[1fr_auto] gap-3">
           <div className="livv-glass rounded-[28px] p-5">
