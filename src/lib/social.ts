@@ -70,7 +70,20 @@ export function fileToPostVideo(file: File): Promise<string> {
 }
 
 function withDefaults(p: Partial<Post> & Pick<Post, "id" | "createdAt" | "author" | "text">): Post {
-  return { photo: null, video: null, kind: "text", track: null, allowReplies: true, likes: 0, likedByMe: false, replies: [], ...p, video: p.video ?? null, kind: p.kind ?? (p.photo ? "photo" : p.video ? "video" : "text") };
+  const photo = p.photo ?? null;
+  const video = p.video ?? null;
+  const kind = p.kind ?? (photo ? "photo" : video ? "video" : "text");
+  return {
+    track: null,
+    allowReplies: true,
+    likes: 0,
+    likedByMe: false,
+    replies: [],
+    ...p,
+    photo,
+    video,
+    kind,
+  };
 }
 
 function seedPosts(): Post[] {
