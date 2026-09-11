@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { addEmbers, loadIdentity, type Identity } from "@/lib/identity";
 import { getTier } from "@/lib/membership";
+import { getEffectiveTier } from "@/lib/billing";
 import {
   checkInRecord,
   isCheckedInToday,
@@ -66,11 +67,13 @@ export default function HomePage() {
     window.addEventListener("livv-identity", pull);
     window.addEventListener("livv-record", pull);
     window.addEventListener("livv-daily", pull);
+    window.addEventListener("livv-billing", pull);
     return () => {
       window.clearInterval(id);
       window.removeEventListener("livv-identity", pull);
       window.removeEventListener("livv-record", pull);
       window.removeEventListener("livv-daily", pull);
+      window.removeEventListener("livv-billing", pull);
     };
   }, []);
 
@@ -89,7 +92,8 @@ export default function HomePage() {
 
   if (!rec || !me) return <main className="min-h-dvh" />;
 
-  const tier = getTier(me.tier);
+  const effectiveTier = getEffectiveTier();
+  const tier = getTier(effectiveTier);
   const greet = contextGreeting(now, rec);
   const move = nextMove(rec);
   const loop = buildBehaviorLoop(rec, now);
@@ -109,7 +113,7 @@ export default function HomePage() {
       if (!already) {
         feedback("checkin");
         addEmbers(10 * tier.multiplier + (emberBonus || 0));
-        if (canClaimPacks(me.tier)) claimPacksIfDue();
+        if (canClaimPacks(effectiveTier)) claimPacksIfDue();
         pull();
       }
       return;
