@@ -29,7 +29,9 @@ import {
   type Identity,
   type LivvTier,
 } from "@/lib/identity";
-import { getCurrentAccount, signOut } from "@/lib/auth";
+import { getCurrentAccount, setCurrentAccountEmail, signOut } from "@/lib/auth";
+import { isSupabaseConfigured } from "@/lib/supabase/client";
+import { linkEmailPasswordToCurrentUser } from "@/lib/supabase/link-account";
 import { getTier, hasTier } from "@/lib/membership";
 import { loadPrefs, patchPrefs, type LivvPrefs } from "@/lib/prefs";
 import { feedback } from "@/lib/sensory";
@@ -62,13 +64,23 @@ export default function SettingsPage() {
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [linkEmail, setLinkEmail] = useState("");
+  const [linkPassword, setLinkPassword] = useState("");
+  const [linkBusy, setLinkBusy] = useState(false);
+  const [linkStatus, setLinkStatus] = useState("");
+  const [linkError, setLinkError] = useState("");
+  const [accountEmail, setAccountEmail] = useState<string | null>(null);
+  const [cloudReady, setCloudReady] = useState(false);
 
   useEffect(() => {
     const sync = () => {
       setMe(loadIdentity());
       setPrefs(loadPrefs());
-      setProvider(getCurrentAccount()?.provider || "");
+      const acc = getCurrentAccount();
+      setProvider(acc?.provider || "");
+      setAccountEmail(acc?.email || null);
       setKeyCount(countManagedKeysPresent());
+      setCloudReady(isSupabaseConfigured());
     };
     sync();
     window.addEventListener("livv-identity", sync);
@@ -189,6 +201,77 @@ export default function SettingsPage() {
             </Link>
           </div>
         </section>
+
+        {cloudReady && (
+          <SettingGroup label="Save your account" eyebrow="Cloud identity">
+            <div className="space-y-3 p-4">
+              <p className="text-[12px] leading-relaxed text-livv-muted">
+                {accountEmail
+                  ? "Email is saved on this device account. Progress still lives on this browser until cloud sync ships."
+                  : "Keep the same LIVV identity by adding email and password. Your progress on this device is unchanged."}
+              </p>
+              {accountEmail && (
+                <p className="text-[12px] text-livv-fg">
+                  Linked email: <span className="font-medium">{accountEmail}</span>
+                </p>
+              )}
+              <input
+                type="email"
+                autoComplete="email"
+                placeholder="Email"
+                value={linkEmail}
+                onChange={(e) => setLinkEmail(e.target.value)}
+                className="w-full rounded-2xl border border-livv-border bg-livv-bg px-4 py-3 text-[14px] text-livv-fg outline-none placeholder:text-livv-muted focus:border-livv-accent/40"
+              />
+              <input
+                type="password"
+                autoComplete="new-password"
+                placeholder="Password (6+ characters)"
+                value={linkPassword}
+                onChange={(e) => setLinkPassword(e.target.value)}
+                className="w-full rounded-2xl border border-livv-border bg-livv-bg px-4 py-3 text-[14px] text-livv-fg outline-none placeholder:text-livv-muted focus:border-livv-accent/40"
+              />
+              {(linkError || linkStatus) && (
+                <p className={"text-[12px] leading-relaxed " + (linkError ? "text-red-400" : "text-livv-accent-soft")}>
+                  {linkError || linkStatus}
+                </p>
+              )}
+              <button
+                type="button"
+                disabled={linkBusy}
+                onClick={async () => {
+                  setLinkBusy(true);
+                  setLinkError("");
+                  setLinkStatus("");
+                  try {
+                    const result = await linkEmailPasswordToCurrentUser(linkEmail, linkPassword);
+                    if (!result.ok) {
+                      setLinkError(result.message);
+                      return;
+                    }
+                    setCurrentAccountEmail(result.email);
+                    setAccountEmail(result.email);
+                    setLinkPassword("");
+                    if (result.confirmationRequired) {
+                      setLinkStatus(
+                        "Check your inbox to confirm this email. Your account id is unchanged and progress stays on this device."
+                      );
+                    } else {
+                      setLinkStatus("Account protected. Same identity — progress stays on this device.");
+                    }
+                  } catch (e) {
+                    setLinkError(e instanceof Error ? e.message : "Could not save account.");
+                  } finally {
+                    setLinkBusy(false);
+                  }
+                }}
+                className="flex w-full items-center justify-center rounded-full border border-livv-accent/30 bg-livv-accent/10 py-3 text-[13px] font-semibold text-livv-accent-soft disabled:opacity-50"
+              >
+                {linkBusy ? "Saving…" : accountEmail ? "Update email protection" : "Protect with email"}
+              </button>
+            </div>
+          </SettingGroup>
+        )}
 
         <SettingGroup label="Experience" eyebrow="Feedback">
           <ToggleRow
