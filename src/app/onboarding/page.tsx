@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { completeDeviceOnboarding, isSignedIn } from "@/lib/auth";
+import { completeDeviceOnboarding, isSignedInLocal } from "@/lib/auth";
 import {
   loadOnboardingDraft,
   markFirstSessionPending,
@@ -44,8 +44,8 @@ export default function OnboardingPage() {
     if (draft.goals.length) setSelectedGoals(draft.goals);
     if (draft.interests.length) setSelectedInterests(draft.interests);
     if (draft.displayName) setDisplayName(draft.displayName);
-    // Returning signed-in users who already finished onboarding go Home.
-    if (isSignedIn() && draft.completedAt) {
+    // Local product session only — cloud anon alone must not skip onboarding (A3-3).
+    if (isSignedInLocal() && draft.completedAt) {
       router.replace("/home");
     }
   }, [router]);
@@ -59,208 +59,157 @@ export default function OnboardingPage() {
     saveOnboardingDraft(partial);
   };
 
-  const toggleGoal = (id: string) => {
-    setSelectedGoals((prev) => {
-      const next = prev.includes(id) ? prev.filter((g) => g !== id) : [...prev, id];
-      persist({ goals: next });
-      return next;
-    });
+  const toggle = (list: string[], id: string, set: (v: string[]) => void) => {
+    set(list.includes(id) ? list.filter((x) => x !== id) : [...list, id]);
   };
 
-  const toggleInterest = (label: string) => {
-    setSelectedInterests((prev) => {
-      const next = prev.includes(label) ? prev.filter((i) => i !== label) : [...prev, label];
-      persist({ interests: next });
-      return next;
-    });
-  };
-
-  const canContinue =
-    (step === "why" && why.trim().length > 2) ||
-    (step === "goals" && selectedGoals.length > 0) ||
-    (step === "interests" && selectedInterests.length > 0) ||
-    (step === "profile" && displayName.trim().length > 1);
-
-  const handleNext = async () => {
-    setError("");
-    if (step === "why") {
-      persist({ why: why.trim() });
-      setStep("goals");
+  const finish = async () => {
+    const name = displayName.trim();
+    if (!name) {
+      setError("Add a display name to continue.");
       return;
     }
-    if (step === "goals") {
-      persist({ goals: selectedGoals });
-      setStep("interests");
-      return;
-    }
-    if (step === "interests") {
-      persist({ interests: selectedInterests });
-      setStep("profile");
-      return;
-    }
-
-    // Final step: persist draft, open local session, enter Home.
     setBusy(true);
+    setError("");
     try {
-      const name = displayName.trim();
-      persist({ displayName: name, why: why.trim(), goals: selectedGoals, interests: selectedInterests });
-      await completeDeviceOnboarding({ displayName: name });
+      persist({ why, goals: selectedGoals, interests: selectedInterests, displayName: name });
       markOnboardingComplete();
       markFirstSessionPending();
+      await completeDeviceOnboarding({ displayName: name });
       router.replace("/home");
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Could not start your session");
+      setError(e instanceof Error ? e.message : "Could not finish onboarding");
     } finally {
       setBusy(false);
     }
   };
 
   return (
-    <main className="flex min-h-dvh flex-col bg-livv-black">
-      <div className="px-5 pb-2 pt-6">
-        <div className="flex gap-1.5">
-          {(["why", "goals", "interests", "profile"] as Step[]).map((s, i) => (
-            <div
-              key={s}
-              className={cn(
-                "h-1 flex-1 rounded-full transition-colors duration-300",
-                i <= ["why", "goals", "interests", "profile"].indexOf(step)
-                  ? "bg-livv-accent"
-                  : "bg-livv-border"
-              )}
-            />
-          ))}
-        </div>
-      </div>
+    <main className="livv-page relative min-h-dvh overflow-hidden pb-16 pt-10 text-white">
+      <div className="relative z-10 mx-auto max-w-md px-5">
+        <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-livv-accent-soft">
+          Onboarding
+        </p>
+        <h1 className="font-display mt-2 text-3xl font-semibold tracking-tight">
+          {step === "why" && "Why are you here?"}
+          {step === "goals" && "What are you building?"}
+          {step === "interests" && "What pulls you in?"}
+          {step === "profile" && "What should we call you?"}
+        </h1>
 
-      <div className="mx-auto flex w-full max-w-lg flex-1 flex-col px-5 pb-8 pt-8">
         {step === "why" && (
-          <div className="flex flex-1 animate-fade-in flex-col">
-            <h1 className="font-display text-[2.15rem] leading-tight">
-              Why are you here?
-            </h1>
-            <p className="mt-3 text-sm leading-relaxed text-white/45">
-              One sentence is enough. This helps LIVV understand your direction.
-            </p>
+          <div className="mt-8">
             <textarea
               value={why}
-              onChange={(e) => setWhy(e.target.value)}
-              onBlur={() => persist({ why: why.trim() })}
-              placeholder="I want to become more disciplined and consistent..."
-              className="mt-8 min-h-[140px] w-full flex-1 resize-none rounded-2xl border border-livv-border bg-livv-surface px-4 py-3 text-base text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-livv-accent/40"
-              maxLength={200}
+              onChange={(e) => {
+                setWhy(e.target.value);
+                persist({ why: e.target.value });
+              }}
+              rows={5}
+              placeholder="One honest sentence."
+              className="w-full rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-[15px] text-white outline-none placeholder:text-white/25 focus:border-white/25"
             />
+            <Button
+              className="mt-6 w-full"
+              onClick={() => setStep("goals")}
+            >
+              Continue
+            </Button>
           </div>
         )}
 
         {step === "goals" && (
-          <div className="flex flex-1 animate-fade-in flex-col">
-            <h1 className="font-display text-[2.15rem] leading-tight">
-              What do you want to accomplish?
-            </h1>
-            <p className="mt-3 text-sm text-white/45">
-              Select everything that resonates.
-            </p>
-            <div className="mt-8 space-y-3">
-              {GOALS.map((goal) => (
-                <button
-                  key={goal.id}
-                  type="button"
-                  onClick={() => toggleGoal(goal.id)}
-                  className={cn(
-                    "w-full rounded-2xl border px-4 py-4 text-left transition-all duration-200",
-                    selectedGoals.includes(goal.id)
-                      ? "border-livv-accent bg-livv-accent/15 text-white"
-                      : "border-livv-border bg-livv-surface text-white/70 hover:border-white/20"
-                  )}
-                >
-                  {goal.label}
-                </button>
-              ))}
+          <div className="mt-8 space-y-2">
+            {GOALS.map((g) => (
+              <button
+                key={g.id}
+                type="button"
+                onClick={() => {
+                  const next = selectedGoals.includes(g.id)
+                    ? selectedGoals.filter((x) => x !== g.id)
+                    : [...selectedGoals, g.id];
+                  setSelectedGoals(next);
+                  persist({ goals: next });
+                }}
+                className={cn(
+                  "flex w-full items-center rounded-2xl border px-4 py-3.5 text-left text-[14px] transition",
+                  selectedGoals.includes(g.id)
+                    ? "border-livv-accent/50 bg-livv-accent/10 text-white"
+                    : "border-white/10 bg-white/[0.03] text-white/70"
+                )}
+              >
+                {g.label}
+              </button>
+            ))}
+            <div className="flex gap-2 pt-4">
+              <Button variant="ghost" className="flex-1" onClick={() => setStep("why")}>
+                Back
+              </Button>
+              <Button className="flex-1" onClick={() => setStep("interests")}>
+                Continue
+              </Button>
             </div>
           </div>
         )}
 
         {step === "interests" && (
-          <div className="flex flex-1 animate-fade-in flex-col">
-            <h1 className="font-display text-[2.15rem] leading-tight">
-              What are you into?
-            </h1>
-            <p className="mt-3 text-sm text-white/45">
-              We’ll use this to shape what you see first.
-            </p>
-            <div className="mt-8 flex flex-wrap gap-2">
-              {INTERESTS.map((interest) => (
+          <div className="mt-8">
+            <div className="flex flex-wrap gap-2">
+              {INTERESTS.map((label) => (
                 <button
-                  key={interest}
+                  key={label}
                   type="button"
-                  onClick={() => toggleInterest(interest)}
+                  onClick={() => {
+                    const next = selectedInterests.includes(label)
+                      ? selectedInterests.filter((x) => x !== label)
+                      : [...selectedInterests, label];
+                    setSelectedInterests(next);
+                    persist({ interests: next });
+                  }}
                   className={cn(
-                    "rounded-full border px-4 py-2.5 text-sm transition-all duration-200",
-                    selectedInterests.includes(interest)
-                      ? "border-livv-accent bg-livv-accent/15 text-white"
-                      : "border-livv-border bg-livv-surface text-white/70 hover:border-white/20"
+                    "rounded-full border px-3.5 py-2 text-[12px] font-medium transition",
+                    selectedInterests.includes(label)
+                      ? "border-white/30 bg-white text-black"
+                      : "border-white/10 bg-white/[0.03] text-white/60"
                   )}
                 >
-                  {interest}
+                  {label}
                 </button>
               ))}
+            </div>
+            <div className="mt-6 flex gap-2">
+              <Button variant="ghost" className="flex-1" onClick={() => setStep("goals")}>
+                Back
+              </Button>
+              <Button className="flex-1" onClick={() => setStep("profile")}>
+                Continue
+              </Button>
             </div>
           </div>
         )}
 
         {step === "profile" && (
-          <div className="flex flex-1 animate-fade-in flex-col">
-            <h1 className="font-display text-[2.15rem] leading-tight">
-              Create your LIVV identity
-            </h1>
-            <p className="mt-3 text-sm text-white/45">
-              Display name only. Your session stays on this device — not cloud login.
-            </p>
-            <div className="mt-10">
-              <label className="text-[11px] uppercase tracking-[0.22em] text-livv-muted">
-                Display name
-              </label>
-              <input
-                type="text"
-                value={displayName}
-                onChange={(e) => setDisplayName(e.target.value)}
-                onBlur={() => persist({ displayName: displayName.trim() })}
-                placeholder="How should people know you?"
-                className="mt-2 w-full rounded-2xl border border-livv-border bg-livv-surface px-4 py-3.5 text-base text-white placeholder:text-white/30 focus:outline-none focus:ring-2 focus:ring-livv-accent/40"
-                maxLength={32}
-              />
+          <div className="mt-8">
+            <input
+              value={displayName}
+              onChange={(e) => {
+                setDisplayName(e.target.value);
+                persist({ displayName: e.target.value });
+              }}
+              placeholder="Display name"
+              className="w-full rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3.5 text-[15px] text-white outline-none placeholder:text-white/25 focus:border-white/25"
+            />
+            {error && <p className="mt-3 text-[13px] text-red-400">{error}</p>}
+            <div className="mt-6 flex gap-2">
+              <Button variant="ghost" className="flex-1" onClick={() => setStep("interests")}>
+                Back
+              </Button>
+              <Button className="flex-1" disabled={busy} onClick={() => void finish()}>
+                {busy ? "Entering…" : "Enter LIVV"}
+              </Button>
             </div>
-            {error && (
-              <p className="mt-4 text-sm text-red-400/90">{error}</p>
-            )}
           </div>
         )}
-
-        <div className="mt-10 flex gap-3">
-          {step !== "why" && (
-            <Button
-              variant="ghost"
-              className="flex-1"
-              disabled={busy}
-              onClick={() => {
-                if (step === "goals") setStep("why");
-                else if (step === "interests") setStep("goals");
-                else if (step === "profile") setStep("interests");
-              }}
-            >
-              Back
-            </Button>
-          )}
-          <Button
-            variant="accent"
-            className="flex-1"
-            disabled={!canContinue || busy}
-            onClick={() => void handleNext()}
-          >
-            {busy ? "Starting…" : step === "profile" ? "Enter LIVV" : "Continue"}
-          </Button>
-        </div>
       </div>
     </main>
   );
