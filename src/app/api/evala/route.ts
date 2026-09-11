@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { getVerifiedSupabaseUser, isSupabaseServerConfigured } from "@/lib/supabase/server-auth";
 
 type Body = {
   question: string;
@@ -12,6 +13,7 @@ type Body = {
     weak?: string;
     open?: string[];
     lastWorkout?: string | null;
+    evidence?: string[];
   };
 };
 
@@ -86,19 +88,41 @@ async function callModel(question: string, snapshot: Body["snapshot"]) {
 
 export async function POST(req: NextRequest) {
   try {
+    if (isSupabaseServerConfigured()) {
+      const verified = await getVerifiedSupabaseUser(req);
+      if (!verified) {
+        return NextResponse.json({ error: "Authenticated session required" }, { status: 401 });
+      }
+    }
+
     const body = (await req.json()) as Body;
     const question = (body.question || "").trim();
     if (question.length < 2) {
       return NextResponse.json({ text: "Ask something real." }, { status: 400 });
     }
+    if (question.length > 2000) {
+      return NextResponse.json({ text: "Keep the question under 2,000 characters." }, { status: 413 });
+    }
+
+    const snapshot = body.snapshot
+      ? {
+          ...body.snapshot,
+          open: Array.isArray(body.snapshot.open) ? body.snapshot.open.slice(0, 20) : [],
+          evidence: Array.isArray(body.snapshot.evidence)
+            ? body.snapshot.evidence.slice(0, 20)
+            : [],
+        }
+      : undefined;
+
     try {
-      const live = await callModel(question, body.snapshot);
+      const live = await callModel(question, snapshot);
       if (live) return NextResponse.json({ text: live, live: true });
     } catch {
       // fall through
     }
+
     return NextResponse.json({
-      text: fallback(question, body.snapshot),
+      text: fallback(question, snapshot),
       live: false,
     });
   } catch {
