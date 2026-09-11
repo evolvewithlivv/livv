@@ -1,22 +1,17 @@
 -- LIVV Supabase schema index
 -- -----------------------------------------------------------------------------
--- A3-1 (current identity slice):
---   Run the full contents of:
---     supabase/migrations/a3_1_identity_profiles.sql
---   in the Supabase Dashboard → SQL Editor.
+-- A3-1 (identity):
+--   supabase/migrations/a3_1_identity_profiles.sql
+--   (profiles + anon bootstrap + RLS; already applied live when verified)
 --
--- That migration creates:
---   - public.profiles (FK auth.users)
---   - unique username index
---   - handle_new_user trigger (anon_* placeholder username)
---   - RLS: select/insert/update own row only
+-- B1 (subscription entitlements):
+--   supabase/migrations/b1_entitlements.sql
+--   Apply in Supabase Dashboard → SQL Editor if not yet applied.
+--   Requires SUPABASE_SERVICE_ROLE_KEY on the Vercel server for webhook writes.
 --
--- Manual dashboard step (not SQL):
---   Authentication → Providers → Anonymous → Enable
---
--- Deferred (not part of A3-1):
---   records, pack_state, subscriptions
+-- Deferred:
+--   pack purchases, client entitlement read path (B2), portal ownership checks
 -- -----------------------------------------------------------------------------
 
 -- Do not use psql \i here — the Supabase SQL Editor does not support it.
--- Copy/paste migrations/a3_1_identity_profiles.sql to apply.
+-- Copy/paste migration files to apply.
