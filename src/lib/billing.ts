@@ -3,8 +3,11 @@
  * Spark is free. Paid tiers go through Stripe Checkout when configured.
  * Demo unlock remains for internal QA only.
  *
- * B0: Checkout requests send the Supabase access token so the server can
- * bind Stripe sessions to auth.users.id. Entitlement storage remains local.
+ * B0: Checkout binds Stripe to verified Supabase auth.users.id.
+ * B1: Webhook writes public.entitlements (server authority).
+ * B2: Client dual-reads server entitlements with localStorage fallback.
+ *      Network/no-row never strips local paid access.
+ *      Explicit server canceled/unpaid may revoke paid access.
  */
 
 import type { LivvTier } from "./identity";
@@ -21,6 +24,23 @@ export type Entitlements = {
   stripeCustomerId?: string;
   stripeSubscriptionId?: string;
 };
+
+/** Server row shape from public.entitlements (B1). */
+export type ServerEntitlement = {
+  tier: LivvTier;
+  status: string;
+  stripe_customer_id: string | null;
+  stripe_subscription_id: string | null;
+  current_period_end: string | null;
+};
+
+/**
+ * undefined = not hydrated yet (use local)
+ * null = hydrated, no server row (use local)
+ * object = server row present
+ */
+let serverCache: ServerEntitlement | null | undefined = undefined;
+let hydrateInflight: Promise<void> | null = null;
 
 export function isStripeConfigured() {
   return Boolean(
@@ -81,19 +101,170 @@ export function applyStripeEntitlement(input: {
   return e;
 }
 
+function rank(t: LivvTier) {
+  return { spark: 0, rise: 1, apex: 2, circle: 3 }[t] ?? 0;
+}
+
+function isLivvTier(v: string): v is LivvTier {
+  return v === "spark" || v === "rise" || v === "apex" || v === "circle";
+}
+
+/**
+ * B2 · Single resolver for paid access.
+ * - Demo unlock: local (QA).
+ * - Server canceled/unpaid: spark (authoritative revoke).
+ * - Server active/trialing/past_due with paid tier: server tier.
+ * - No row / not hydrated / fetch failure: local (never strip paid).
+ */
+export function resolveEffectiveEntitlement(): Entitlements {
+  const local = loadEntitlements();
+
+  if (isDemoUnlock()) {
+    return local.source === "demo" || local.tier !== "spark"
+      ? local
+      : { ...local, source: "demo" };
+  }
+
+  if (serverCache === undefined) {
+    return local;
+  }
+
+  if (serverCache === null) {
+    return local;
+  }
+
+  const status = (serverCache.status || "").toLowerCase();
+  const tier = isLivvTier(serverCache.tier) ? serverCache.tier : "spark";
+
+  if (status === "canceled" || status === "unpaid") {
+    return {
+      tier: "spark",
+      source: "stripe",
+      expiresAt: serverCache.current_period_end,
+      stripeCustomerId: serverCache.stripe_customer_id || undefined,
+      stripeSubscriptionId: serverCache.stripe_subscription_id || undefined,
+    };
+  }
+
+  if (status === "active" || status === "trialing" || status === "past_due") {
+    if (rank(tier) > 0) {
+      return {
+        tier,
+        source: "stripe",
+        expiresAt: serverCache.current_period_end,
+        stripeCustomerId: serverCache.stripe_customer_id || undefined,
+        stripeSubscriptionId: serverCache.stripe_subscription_id || undefined,
+      };
+    }
+  }
+
+  // incomplete / none / unknown — do not revoke local paid
+  return local;
+}
+
+export function getEffectiveTier(): LivvTier {
+  return resolveEffectiveEntitlement().tier;
+}
+
 export function canAccessTier(tier: LivvTier): boolean {
   if (tier === "spark") return true;
   if (isDemoUnlock()) return true;
-  const e = loadEntitlements();
+  const e = resolveEffectiveEntitlement();
   if (rank(e.tier) >= rank(tier)) {
-    if (e.expiresAt && new Date(e.expiresAt) < new Date()) return false;
+    if (e.expiresAt && new Date(e.expiresAt) < new Date() && e.source !== "stripe") {
+      return false;
+    }
+    // Server past_due still grants until canceled (matches B1 effectiveTier)
     return true;
   }
   return false;
 }
 
-function rank(t: LivvTier) {
-  return { spark: 0, rise: 1, apex: 2, circle: 3 }[t] ?? 0;
+/**
+ * Fetch own public.entitlements row via RLS (JWT). Soft-fail preserves local.
+ * Safe to call multiple times; coalesces in-flight requests.
+ */
+export async function hydrateServerEntitlement(): Promise<void> {
+  if (typeof window === "undefined") return;
+  if (!isSupabaseConfigured()) {
+    serverCache = null;
+    return;
+  }
+  if (hydrateInflight) return hydrateInflight;
+
+  hydrateInflight = (async () => {
+    try {
+      await ensureAnonymousSession();
+      const client = getSupabaseBrowserClient();
+      if (!client) {
+        // Leave cache undefined so we keep using local
+        return;
+      }
+
+      const { data: sessionData } = await client.auth.getSession();
+      const uid = sessionData.session?.user?.id;
+      if (!uid) {
+        return;
+      }
+
+      const { data, error } = await client
+        .from("entitlements")
+        .select(
+          "tier, status, stripe_customer_id, stripe_subscription_id, current_period_end"
+        )
+        .eq("user_id", uid)
+        .maybeSingle();
+
+      if (error) {
+        console.info("[billing] server entitlement read failed — using local", error.message);
+        // Do not set cache to null on error — keep prior or undefined → local
+        return;
+      }
+
+      if (!data) {
+        serverCache = null;
+        window.dispatchEvent(new Event("livv-billing"));
+        return;
+      }
+
+      const tier = isLivvTier(String(data.tier)) ? (data.tier as LivvTier) : "spark";
+      serverCache = {
+        tier,
+        status: String(data.status || "none"),
+        stripe_customer_id: data.stripe_customer_id ?? null,
+        stripe_subscription_id: data.stripe_subscription_id ?? null,
+        current_period_end: data.current_period_end ?? null,
+      };
+
+      // Soft mirror: if server is paid and local is behind, refresh local cache + identity display
+      const effective = resolveEffectiveEntitlement();
+      if (rank(effective.tier) > rank(loadEntitlements().tier)) {
+        saveEntitlements(effective);
+        patchIdentity({ tier: effective.tier });
+      } else if (
+        (serverCache.status === "canceled" || serverCache.status === "unpaid") &&
+        loadEntitlements().source === "stripe"
+      ) {
+        // Authoritative revoke for prior stripe-local grants
+        saveEntitlements(effective);
+        patchIdentity({ tier: effective.tier });
+      }
+
+      window.dispatchEvent(new Event("livv-billing"));
+    } catch (err) {
+      console.info("[billing] hydrate failed — using local", err);
+      // leave serverCache as-is (undefined or previous)
+    } finally {
+      hydrateInflight = null;
+    }
+  })();
+
+  return hydrateInflight;
+}
+
+/** Test helper / force re-read after checkout return. */
+export function invalidateServerEntitlementCache() {
+  serverCache = undefined;
 }
 
 export type UpgradeResult =
@@ -101,13 +272,14 @@ export type UpgradeResult =
   | { ok: false; reason: "payments_required" | "stripe_not_configured" | "already" | "redirecting" };
 
 export function requestTierChange(tier: LivvTier): UpgradeResult {
-  const current = loadIdentity().tier;
+  const current = getEffectiveTier();
   if (tier === current && canAccessTier(tier)) {
     return { ok: true, tier };
   }
   if (tier === "spark") {
     saveEntitlements({ tier: "spark", source: "spark", expiresAt: null });
     patchIdentity({ tier: "spark" });
+    serverCache = undefined;
     return { ok: true, tier: "spark" };
   }
   if (isDemoUnlock()) {
@@ -175,7 +347,7 @@ export async function startCheckout(tier: Exclude<LivvTier, "spark">): Promise<{
 /** Opens Stripe Customer Portal when we have a customer id on file. */
 export async function openBillingPortal(): Promise<{ ok: boolean; error?: string }> {
   if (typeof window === "undefined") return { ok: false, error: "client only" };
-  const e = loadEntitlements();
+  const e = resolveEffectiveEntitlement();
   if (!e.stripeCustomerId) {
     return { ok: false, error: "No Stripe customer on this device yet." };
   }

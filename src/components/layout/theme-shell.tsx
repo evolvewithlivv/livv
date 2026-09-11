@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { applyAppearance, loadIdentity } from "@/lib/identity";
+import { hydrateServerEntitlement } from "@/lib/billing";
 import { ensureAnonymousSession } from "@/lib/supabase/anon-session";
 
 export function ThemeShell({ children }: { children: React.ReactNode }) {
@@ -25,8 +26,11 @@ export function ThemeShell({ children }: { children: React.ReactNode }) {
     apply();
 
     // A3-2: restore or create anonymous Supabase session (no-op if env unset).
-    // Does not gate UI; does not clear local progress on failure.
-    void ensureAnonymousSession();
+    // B2: after session, dual-read public.entitlements (soft-fail → local).
+    void (async () => {
+      await ensureAnonymousSession();
+      await hydrateServerEntitlement();
+    })();
 
     const mq = window.matchMedia("(prefers-color-scheme: light)");
     const onScheme = () => {
