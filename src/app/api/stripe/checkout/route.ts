@@ -2,6 +2,10 @@ import { NextRequest, NextResponse } from "next/server";
 import { appUrl, getStripe, priceIdForTier, type PaidTier } from "@/lib/stripe-server";
 import { GRADE_META, type PackGrade } from "@/lib/packs";
 import { PACK_SHOP } from "@/lib/pack-shop";
+import {
+  getVerifiedSupabaseUser,
+  isSupabaseServerConfigured,
+} from "@/lib/supabase/server-auth";
 
 export const runtime = "nodejs";
 
@@ -18,6 +22,25 @@ export async function POST(req: NextRequest) {
       );
     }
 
+    // B0: when Supabase is configured, require a verified Auth JWT (anon or linked).
+    let livvUserId: string | null = null;
+    let verifiedEmail: string | null = null;
+
+    if (isSupabaseServerConfigured()) {
+      const verified = await getVerifiedSupabaseUser(req);
+      if (!verified) {
+        return NextResponse.json(
+          {
+            error:
+              "Sign-in required for checkout. Open LIVV so your identity session can attach, then try again.",
+          },
+          { status: 401 }
+        );
+      }
+      livvUserId = verified.id;
+      verifiedEmail = verified.email;
+    }
+
     const body = (await req.json()) as {
       kind?: string;
       grade?: number;
@@ -26,6 +49,15 @@ export async function POST(req: NextRequest) {
       email?: string;
       username?: string;
     };
+
+    // Username is display-only metadata — never treated as proof of identity.
+    const usernameMeta = (body.username || "").slice(0, 64);
+    // Prefer verified email; body.email is never authoritative for identity.
+    const customerEmail =
+      verifiedEmail ||
+      (typeof body.email === "string" && body.email.includes("@")
+        ? body.email.trim().toLowerCase()
+        : undefined);
 
     const base = appUrl();
 
@@ -53,13 +85,15 @@ export async function POST(req: NextRequest) {
         ],
         success_url: `${base}/home/billing/success?session_id={CHECKOUT_SESSION_ID}`,
         cancel_url: `${base}/home/shop?billing=cancel`,
-        customer_email: body.email || undefined,
-        client_reference_id: body.username || undefined,
+        customer_email: customerEmail || undefined,
+        // Canonical purchaser identity when Supabase is configured.
+        client_reference_id: livvUserId || usernameMeta || undefined,
         metadata: {
           livv_kind: "pack",
           livv_grade: String(grade),
           livv_qty: String(qty),
-          livv_username: body.username || "",
+          livv_username: usernameMeta,
+          ...(livvUserId ? { livv_user_id: livvUserId } : {}),
         },
         allow_promotion_codes: true,
       });
@@ -84,17 +118,19 @@ export async function POST(req: NextRequest) {
       line_items: [{ price: priceId, quantity: 1 }],
       success_url: `${base}/home/billing/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${base}/home/profile?billing=cancel`,
-      customer_email: body.email || undefined,
-      client_reference_id: body.username || undefined,
+      customer_email: customerEmail || undefined,
+      client_reference_id: livvUserId || usernameMeta || undefined,
       metadata: {
         livv_kind: "tier",
         livv_tier: tier,
-        livv_username: body.username || "",
+        livv_username: usernameMeta,
+        ...(livvUserId ? { livv_user_id: livvUserId } : {}),
       },
       subscription_data: {
         metadata: {
           livv_tier: tier,
-          livv_username: body.username || "",
+          livv_username: usernameMeta,
+          ...(livvUserId ? { livv_user_id: livvUserId } : {}),
         },
       },
       allow_promotion_codes: true,

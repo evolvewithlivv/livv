@@ -2,10 +2,15 @@
  * Entitlements & payments boundary.
  * Spark is free. Paid tiers go through Stripe Checkout when configured.
  * Demo unlock remains for internal QA only.
+ *
+ * B0: Checkout requests send the Supabase access token so the server can
+ * bind Stripe sessions to auth.users.id. Entitlement storage remains local.
  */
 
 import type { LivvTier } from "./identity";
 import { loadIdentity, patchIdentity } from "./identity";
+import { ensureAnonymousSession } from "./supabase/anon-session";
+import { getSupabaseBrowserClient, isSupabaseConfigured } from "./supabase/client";
 
 const ENTITLEMENTS_KEY = "livv-entitlements-v1";
 
@@ -95,10 +100,6 @@ export type UpgradeResult =
   | { ok: true; tier: LivvTier }
   | { ok: false; reason: "payments_required" | "stripe_not_configured" | "already" | "redirecting" };
 
-/**
- * Attempt local tier change (Spark / demo only).
- * For paid tiers without demo unlock, call startCheckout instead.
- */
 export function requestTierChange(tier: LivvTier): UpgradeResult {
   const current = loadIdentity().tier;
   if (tier === current && canAccessTier(tier)) {
@@ -120,6 +121,22 @@ export function requestTierChange(tier: LivvTier): UpgradeResult {
   return { ok: false, reason: "payments_required" };
 }
 
+/** Bearer token for Checkout when Supabase is configured (anon or linked). */
+async function getCheckoutAuthHeader(): Promise<Record<string, string>> {
+  if (!isSupabaseConfigured()) return {};
+  try {
+    await ensureAnonymousSession();
+    const client = getSupabaseBrowserClient();
+    if (!client) return {};
+    const { data } = await client.auth.getSession();
+    const token = data.session?.access_token;
+    if (!token) return {};
+    return { Authorization: `Bearer ${token}` };
+  } catch {
+    return {};
+  }
+}
+
 /** Redirects the browser to Stripe Checkout for Rise / Apex / Circle. */
 export async function startCheckout(tier: Exclude<LivvTier, "spark">): Promise<{
   ok: boolean;
@@ -129,13 +146,19 @@ export async function startCheckout(tier: Exclude<LivvTier, "spark">): Promise<{
 
   const me = loadIdentity();
   try {
+    const authHeader = await getCheckoutAuthHeader();
+    if (isSupabaseConfigured() && !authHeader.Authorization) {
+      return {
+        ok: false,
+        error: "Identity session missing. Reload LIVV and try checkout again.",
+      };
+    }
     const res = await fetch("/api/stripe/checkout", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
+      headers: { "Content-Type": "application/json", ...authHeader },
       body: JSON.stringify({
         tier,
         username: me.username,
-        email: undefined,
       }),
     });
     const data = (await res.json()) as { url?: string; error?: string };
@@ -154,7 +177,7 @@ export async function openBillingPortal(): Promise<{ ok: boolean; error?: string
   if (typeof window === "undefined") return { ok: false, error: "client only" };
   const e = loadEntitlements();
   if (!e.stripeCustomerId) {
-    return { ok: false, error: "No Stripe customer on this device yet" };
+    return { ok: false, error: "No Stripe customer on this device yet." };
   }
   try {
     const res = await fetch("/api/stripe/portal", {
