@@ -1,13 +1,37 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getStripe, tierFromPriceId, type PaidTier } from "@/lib/stripe-server";
+import { getVerifiedSupabaseUser } from "@/lib/supabase/server-auth";
 
 export const runtime = "nodejs";
+
+function isUuid(value: string | null | undefined): value is string {
+  return !!value && /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value);
+}
+
+function sessionBelongsToUser(
+  session: { client_reference_id: string | null; metadata?: Stripe.Metadata },
+  userId: string
+) {
+  const metadataUserId = session.metadata?.livv_user_id || null;
+  const clientReferenceId = session.client_reference_id || null;
+  const boundIds = [metadataUserId, clientReferenceId].filter(isUuid);
+
+  // B0-bound sessions must identify the same auth.users row. If both bindings
+  // exist they must agree; unbound historical sessions are not authoritative.
+  if (boundIds.length === 0) return false;
+  return boundIds.every((id) => id === userId);
+}
 
 export async function GET(req: NextRequest) {
   try {
     const stripe = getStripe();
     if (!stripe) {
       return NextResponse.json({ error: "Stripe not configured" }, { status: 503 });
+    }
+
+    const user = await getVerifiedSupabaseUser(req);
+    if (!user) {
+      return NextResponse.json({ error: "Authentication required" }, { status: 401 });
     }
 
     const sessionId = req.nextUrl.searchParams.get("session_id");
@@ -18,6 +42,10 @@ export async function GET(req: NextRequest) {
     const session = await stripe.checkout.sessions.retrieve(sessionId, {
       expand: ["subscription", "line_items"],
     });
+
+    if (!sessionBelongsToUser(session, user.id)) {
+      return NextResponse.json({ error: "Checkout session does not belong to this account" }, { status: 403 });
+    }
 
     if (session.payment_status !== "paid" && session.status !== "complete") {
       return NextResponse.json(
