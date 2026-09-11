@@ -293,7 +293,7 @@ export function requestTierChange(tier: LivvTier): UpgradeResult {
   return { ok: false, reason: "payments_required" };
 }
 
-/** Bearer token for Checkout when Supabase is configured (anon or linked). */
+/** Bearer token for Checkout and authenticated billing APIs when Supabase is configured. */
 async function getCheckoutAuthHeader(): Promise<Record<string, string>> {
   if (!isSupabaseConfigured()) return {};
   try {
@@ -344,18 +344,18 @@ export async function startCheckout(tier: Exclude<LivvTier, "spark">): Promise<{
   }
 }
 
-/** Opens Stripe Customer Portal when we have a customer id on file. */
+/** Opens Stripe Customer Portal using the authenticated user's server-bound customer. */
 export async function openBillingPortal(): Promise<{ ok: boolean; error?: string }> {
   if (typeof window === "undefined") return { ok: false, error: "client only" };
-  const e = resolveEffectiveEntitlement();
-  if (!e.stripeCustomerId) {
-    return { ok: false, error: "No Stripe customer on this device yet." };
-  }
   try {
+    const authHeader = await getCheckoutAuthHeader();
+    if (isSupabaseConfigured() && !authHeader.Authorization) {
+      return { ok: false, error: "Identity session missing. Reload LIVV and try again." };
+    }
+
     const res = await fetch("/api/stripe/portal", {
       method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ customerId: e.stripeCustomerId }),
+      headers: { "Content-Type": "application/json", ...authHeader },
     });
     const data = (await res.json()) as { url?: string; error?: string };
     if (!res.ok || !data.url) {
