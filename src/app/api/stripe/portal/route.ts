@@ -5,26 +5,36 @@ import { getVerifiedSupabaseUser, isSupabaseServerConfigured } from "@/lib/supab
 
 export const runtime = "nodejs";
 
+function json(data: unknown, init?: ResponseInit) {
+  return NextResponse.json(data, {
+    ...init,
+    headers: {
+      "Cache-Control": "no-store",
+      ...(init?.headers || {}),
+    },
+  });
+}
+
 /** Opens Stripe Customer Portal for the authenticated user's server-bound customer. */
 export async function POST(req: NextRequest) {
   try {
     const stripe = getStripe();
     if (!stripe) {
-      return NextResponse.json({ error: "Stripe not configured" }, { status: 503 });
+      return json({ error: "Stripe not configured" }, { status: 503 });
     }
 
     if (!isSupabaseServerConfigured() || !isSupabaseAdminConfigured()) {
-      return NextResponse.json({ error: "Billing identity is not configured" }, { status: 503 });
+      return json({ error: "Billing identity is not configured" }, { status: 503 });
     }
 
     const verified = await getVerifiedSupabaseUser(req);
     if (!verified) {
-      return NextResponse.json({ error: "Authenticated session required" }, { status: 401 });
+      return json({ error: "Authenticated session required" }, { status: 401 });
     }
 
     const admin = getSupabaseAdmin();
     if (!admin) {
-      return NextResponse.json({ error: "Billing identity is not configured" }, { status: 503 });
+      return json({ error: "Billing identity is not configured" }, { status: 503 });
     }
 
     const { data: entitlement, error } = await admin
@@ -35,12 +45,12 @@ export async function POST(req: NextRequest) {
 
     if (error) {
       console.error("[stripe/portal] entitlement lookup", error.message);
-      return NextResponse.json({ error: "Could not verify billing ownership" }, { status: 500 });
+      return json({ error: "Could not verify billing ownership" }, { status: 500 });
     }
 
     const customerId = entitlement?.stripe_customer_id;
     if (!customerId) {
-      return NextResponse.json({ error: "No Stripe customer is linked to this account" }, { status: 404 });
+      return json({ error: "No Stripe customer is linked to this account" }, { status: 404 });
     }
 
     const portal = await stripe.billingPortal.sessions.create({
@@ -48,10 +58,10 @@ export async function POST(req: NextRequest) {
       return_url: `${appUrl()}/home/profile`,
     });
 
-    return NextResponse.json({ url: portal.url });
+    return json({ url: portal.url });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Portal failed";
     console.error("[stripe/portal]", message);
-    return NextResponse.json({ error: message }, { status: 500 });
+    return json({ error: message }, { status: 500 });
   }
 }
