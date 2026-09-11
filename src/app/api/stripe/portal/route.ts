@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { appUrl, getStripe } from "@/lib/stripe-server";
+import { getSupabaseAdmin } from "@/lib/supabase/admin";
+import { getVerifiedSupabaseUser } from "@/lib/supabase/server-auth";
 
 export const runtime = "nodejs";
 
-/** Opens Stripe Customer Portal so users can cancel / update payment method. */
+/** Opens Stripe Customer Portal for the authenticated user's own customer. */
 export async function POST(req: NextRequest) {
   try {
     const stripe = getStripe();
@@ -11,13 +13,33 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Stripe not configured" }, { status: 503 });
     }
 
-    const body = (await req.json()) as { customerId?: string };
-    if (!body.customerId) {
-      return NextResponse.json({ error: "Missing customerId" }, { status: 400 });
+    const user = await getVerifiedSupabaseUser(req);
+    if (!user) {
+      return NextResponse.json({ error: "Authentication required" }, { status: 401 });
+    }
+
+    const admin = getSupabaseAdmin();
+    if (!admin) {
+      return NextResponse.json({ error: "Billing identity unavailable" }, { status: 503 });
+    }
+
+    const { data: entitlement, error } = await admin
+      .from("entitlements")
+      .select("stripe_customer_id")
+      .eq("user_id", user.id)
+      .maybeSingle();
+
+    if (error) {
+      console.error("[stripe/portal] entitlement lookup failed", error.message);
+      return NextResponse.json({ error: "Billing identity unavailable" }, { status: 503 });
+    }
+
+    if (!entitlement?.stripe_customer_id) {
+      return NextResponse.json({ error: "No Stripe customer on this account" }, { status: 404 });
     }
 
     const portal = await stripe.billingPortal.sessions.create({
-      customer: body.customerId,
+      customer: entitlement.stripe_customer_id,
       return_url: `${appUrl()}/home/profile`,
     });
 
