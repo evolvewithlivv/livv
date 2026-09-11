@@ -2,15 +2,20 @@
 -- -----------------------------------------------------------------------------
 -- A3-1 (identity):
 --   supabase/migrations/a3_1_identity_profiles.sql
---   (profiles + anon bootstrap + RLS; already applied live when verified)
+--   profiles + anonymous bootstrap + RLS.
 --
 -- B1 (subscription entitlements):
 --   supabase/migrations/b1_entitlements.sql
---   Apply in Supabase Dashboard → SQL Editor if not yet applied.
---   Requires SUPABASE_SERVICE_ROLE_KEY on the Vercel server for webhook writes.
+--   Server-side subscription entitlements + Stripe webhook idempotency.
 --
--- Deferred:
---   pack purchases, client entitlement read path (B2), portal ownership checks
+-- B3 security hardening:
+--   supabase/migrations/security_harden_function_privileges.sql
+--   supabase/migrations/security_harden_profile_privileges.sql
+--   Trigger helpers are no longer callable through client RPC, and client
+--   profile writes are restricted to presentation fields.
+--
+-- Deferred / product work:
+--   server-side pack ledger, refund fulfillment, progress sync.
 -- -----------------------------------------------------------------------------
 
 -- Do not use psql \i here — the Supabase SQL Editor does not support it.
