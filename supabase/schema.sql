@@ -1,16 +1,22 @@
 -- LIVV Supabase schema index
 -- -----------------------------------------------------------------------------
--- A3-1 (current): identity only — see migrations/a3_1_identity_profiles.sql
--- Apply that file in the Supabase SQL Editor for Anonymous Auth readiness.
+-- A3-1 (current identity slice):
+--   Run the full contents of:
+--     supabase/migrations/a3_1_identity_profiles.sql
+--   in the Supabase Dashboard → SQL Editor.
 --
--- Deferred (do not apply for A3-1):
---   records, pack_state, subscriptions — later sync / billing batches
+-- That migration creates:
+--   - public.profiles (FK auth.users)
+--   - unique username index
+--   - handle_new_user trigger (anon_* placeholder username)
+--   - RLS: select/insert/update own row only
 --
--- Dashboard (manual, not SQL):
+-- Manual dashboard step (not SQL):
 --   Authentication → Providers → Anonymous → Enable
+--
+-- Deferred (not part of A3-1):
+--   records, pack_state, subscriptions
 -- -----------------------------------------------------------------------------
 
--- Re-export of A3-1 for convenience (same as migrations/a3_1_identity_profiles.sql).
--- Prefer running the migration file so history stays clear.
-
-\i migrations/a3_1_identity_profiles.sql
+-- Do not use psql \i here — the Supabase SQL Editor does not support it.
+-- Copy/paste migrations/a3_1_identity_profiles.sql to apply.
