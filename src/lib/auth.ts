@@ -155,7 +155,6 @@ export async function resolveHomeAccess(): Promise<"ok" | "deny"> {
   if (typeof window === "undefined") return "deny";
 
   if (isSignedInLocal()) {
-    // Keep cloud identity warm; do not block home on failure.
     try {
       await ensureAnonymousSession();
     } catch {
@@ -170,11 +169,9 @@ export async function resolveHomeAccess(): Promise<"ok" | "deny"> {
 
   const cloud = await ensureAnonymousSession();
   if (cloud.status === "ready" && cloud.userId) {
-    // Anonymous (or any) Supabase session is authoritative identity for /home.
     return "ok";
   }
 
-  // unavailable / error with no local session
   return "deny";
 }
 
@@ -212,6 +209,22 @@ export function signOut() {
   // Local product session only. Supabase anonymous UUID stays on device.
   // Progress keys are never cleared here.
   window.localStorage.removeItem(SESSION_KEY);
+  window.dispatchEvent(new Event("livv-auth"));
+}
+
+/** A3-4: set email metadata on the current local account only. Does not change acc_* id. */
+export function setCurrentAccountEmail(email: string) {
+  if (typeof window === "undefined") return;
+  const session = getSession();
+  if (!session) return;
+  const accounts = loadAccounts();
+  const idx = accounts.findIndex((a) => a.id === session.accountId);
+  if (idx < 0) return;
+  accounts[idx] = {
+    ...accounts[idx],
+    email: email.trim().toLowerCase() || undefined,
+  };
+  saveAccounts(accounts);
   window.dispatchEvent(new Event("livv-auth"));
 }
 
@@ -327,10 +340,6 @@ export async function signUpWithProvider(input: {
   return account;
 }
 
-/**
- * Finish onboarding on this device: create or refresh a local session + identity.
- * Ensures stable anonymous Supabase id when configured (non-blocking on failure).
- */
 export async function completeDeviceOnboarding(input: {
   displayName: string;
 }): Promise<{ account: Account; isNew: boolean }> {
