@@ -1,9 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
 import { appUrl, getStripe } from "@/lib/stripe-server";
+import { getSupabaseAdmin, isSupabaseAdminConfigured } from "@/lib/supabase/admin";
+import { getVerifiedSupabaseUser, isSupabaseServerConfigured } from "@/lib/supabase/server-auth";
 
 export const runtime = "nodejs";
 
-/** Opens Stripe Customer Portal so users can cancel / update payment method. */
+/** Opens Stripe Customer Portal for the authenticated user's server-bound customer. */
 export async function POST(req: NextRequest) {
   try {
     const stripe = getStripe();
@@ -11,13 +13,38 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Stripe not configured" }, { status: 503 });
     }
 
-    const body = (await req.json()) as { customerId?: string };
-    if (!body.customerId) {
-      return NextResponse.json({ error: "Missing customerId" }, { status: 400 });
+    if (!isSupabaseServerConfigured() || !isSupabaseAdminConfigured()) {
+      return NextResponse.json({ error: "Billing identity is not configured" }, { status: 503 });
+    }
+
+    const verified = await getVerifiedSupabaseUser(req);
+    if (!verified) {
+      return NextResponse.json({ error: "Authenticated session required" }, { status: 401 });
+    }
+
+    const admin = getSupabaseAdmin();
+    if (!admin) {
+      return NextResponse.json({ error: "Billing identity is not configured" }, { status: 503 });
+    }
+
+    const { data: entitlement, error } = await admin
+      .from("entitlements")
+      .select("stripe_customer_id")
+      .eq("user_id", verified.id)
+      .maybeSingle();
+
+    if (error) {
+      console.error("[stripe/portal] entitlement lookup", error.message);
+      return NextResponse.json({ error: "Could not verify billing ownership" }, { status: 500 });
+    }
+
+    const customerId = entitlement?.stripe_customer_id;
+    if (!customerId) {
+      return NextResponse.json({ error: "No Stripe customer is linked to this account" }, { status: 404 });
     }
 
     const portal = await stripe.billingPortal.sessions.create({
-      customer: body.customerId,
+      customer: customerId,
       return_url: `${appUrl()}/home/profile`,
     });
 
