@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { applyAppearance, loadIdentity } from "@/lib/identity";
+import { ensureAnonymousSession } from "@/lib/supabase/anon-session";
 
 export function ThemeShell({ children }: { children: React.ReactNode }) {
   useEffect(() => {
@@ -22,6 +23,11 @@ export function ThemeShell({ children }: { children: React.ReactNode }) {
       );
     };
     apply();
+
+    // A3-2: restore or create anonymous Supabase session (no-op if env unset).
+    // Does not gate UI; does not clear local progress on failure.
+    void ensureAnonymousSession();
+
     const mq = window.matchMedia("(prefers-color-scheme: light)");
     const onScheme = () => {
       if (loadIdentity().appearance === "system") apply();
