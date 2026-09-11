@@ -5,16 +5,26 @@ import { isUuid } from "@/lib/stripe-entitlements";
 
 export const runtime = "nodejs";
 
+function json(data: unknown, init?: ResponseInit) {
+  return NextResponse.json(data, {
+    ...init,
+    headers: {
+      "Cache-Control": "no-store",
+      ...(init?.headers || {}),
+    },
+  });
+}
+
 export async function GET(req: NextRequest) {
   try {
     const stripe = getStripe();
     if (!stripe) {
-      return NextResponse.json({ error: "Stripe not configured" }, { status: 503 });
+      return json({ error: "Stripe not configured" }, { status: 503 });
     }
 
     const sessionId = req.nextUrl.searchParams.get("session_id");
     if (!sessionId) {
-      return NextResponse.json({ error: "Missing session_id" }, { status: 400 });
+      return json({ error: "Missing session_id" }, { status: 400 });
     }
 
     // B3-1: when Supabase is configured, the Checkout session must belong to
@@ -23,7 +33,7 @@ export async function GET(req: NextRequest) {
     if (isSupabaseServerConfigured()) {
       const verified = await getVerifiedSupabaseUser(req);
       if (!verified) {
-        return NextResponse.json({ error: "Authenticated session required" }, { status: 401 });
+        return json({ error: "Authenticated session required" }, { status: 401 });
       }
       verifiedUserId = verified.id;
     }
@@ -33,7 +43,7 @@ export async function GET(req: NextRequest) {
     });
 
     if (session.payment_status !== "paid" && session.status !== "complete") {
-      return NextResponse.json(
+      return json(
         { error: "Payment not complete", status: session.status },
         { status: 402 }
       );
@@ -42,12 +52,12 @@ export async function GET(req: NextRequest) {
     if (verifiedUserId) {
       const boundId = session.metadata?.livv_user_id || session.client_reference_id;
       if (!isUuid(boundId) || boundId !== verifiedUserId) {
-        return NextResponse.json({ error: "Checkout session does not belong to this account" }, { status: 403 });
+        return json({ error: "Checkout session does not belong to this account" }, { status: 403 });
       }
     }
 
     if (session.metadata?.livv_kind === "pack") {
-      return NextResponse.json({
+      return json({
         kind: "pack",
         grade: Number(session.metadata.livv_grade || 1),
         qty: Number(session.metadata.livv_qty || 1),
@@ -70,10 +80,10 @@ export async function GET(req: NextRequest) {
     }
 
     if (!tier) {
-      return NextResponse.json({ error: "Could not resolve purchase" }, { status: 422 });
+      return json({ error: "Could not resolve purchase" }, { status: 422 });
     }
 
-    return NextResponse.json({
+    return json({
       kind: "tier",
       tier,
       customerId:
@@ -87,6 +97,6 @@ export async function GET(req: NextRequest) {
   } catch (err) {
     const message = err instanceof Error ? err.message : "Session lookup failed";
     console.error("[stripe/session]", message);
-    return NextResponse.json({ error: message }, { status: 500 });
+    return json({ error: message }, { status: 500 });
   }
 }
