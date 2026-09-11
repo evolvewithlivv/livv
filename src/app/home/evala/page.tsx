@@ -11,6 +11,8 @@ import { feedback } from "@/lib/sensory";
 import { cn } from "@/lib/utils";
 import { PILLAR_DEFS } from "@/lib/evolve-data";
 import { buildEvalaEvidence } from "@/lib/evala-evidence";
+import { ensureAnonymousSession } from "@/lib/supabase/anon-session";
+import { getSupabaseBrowserClient, isSupabaseConfigured } from "@/lib/supabase/client";
 
 const PROMPTS = [
   "What is pulling my attention off course this week?",
@@ -67,6 +69,20 @@ export default function EvalaPage() {
     };
   };
 
+  const evalaAuthHeader = async (): Promise<Record<string, string>> => {
+    if (!isSupabaseConfigured()) return {};
+    try {
+      await ensureAnonymousSession();
+      const client = getSupabaseBrowserClient();
+      if (!client) return {};
+      const { data } = await client.auth.getSession();
+      const token = data.session?.access_token;
+      return token ? { Authorization: `Bearer ${token}` } : {};
+    } catch {
+      return {};
+    }
+  };
+
   const ask = async (question: string) => {
     const q = question.trim();
     if (!q || busy) return;
@@ -75,12 +91,21 @@ export default function EvalaPage() {
     setThread((t) => [...t, { role: "you", text: q }]);
     setBusy(true);
     try {
+      const authHeader = await evalaAuthHeader();
+      if (isSupabaseConfigured() && !authHeader.Authorization) {
+        setThread((t) => [...t, { role: "evala", text: "Your LIVV identity session is still loading. Try again in a second." }]);
+        return;
+      }
       const res = await fetch("/api/evala", {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", ...authHeader },
         body: JSON.stringify({ question: q, snapshot: snapshot() }),
       });
-      const data = (await res.json()) as { text?: string };
+      const data = (await res.json()) as { text?: string; error?: string };
+      if (!res.ok) {
+        setThread((t) => [...t, { role: "evala", text: data.error || data.text || "Evala could not answer that pass." }]);
+        return;
+      }
       setThread((t) => [...t, { role: "evala", text: data.text || "Say that again." }]);
     } catch {
       setThread((t) => [...t, { role: "evala", text: "I could not reach the live layer. Ask again in a second." }]);
