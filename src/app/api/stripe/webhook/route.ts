@@ -9,7 +9,7 @@ import {
   tierFromSubscription,
   upsertEntitlement,
 } from "@/lib/stripe-entitlements";
-import { isSupabaseAdminConfigured } from "@/lib/supabase/admin";
+import { getSupabaseAdmin, isSupabaseAdminConfigured } from "@/lib/supabase/admin";
 import type Stripe from "stripe";
 
 export const runtime = "nodejs";
@@ -42,7 +42,6 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: message }, { status: 400 });
   }
 
-  // Fulfillment requires service role + tables. Still ack signature-valid events.
   if (!isSupabaseAdminConfigured()) {
     console.error(
       "[stripe/webhook] SUPABASE_SERVICE_ROLE_KEY missing — event accepted but not stored"
@@ -51,9 +50,16 @@ export async function POST(req: NextRequest) {
   }
 
   try {
-    const firstTime = await recordWebhookEvent(event.id, event.type);
-    if (!firstTime) {
-      return NextResponse.json({ received: true, duplicate: true });
+    const admin = getSupabaseAdmin();
+    if (admin) {
+      const { data: existing } = await admin
+        .from("stripe_webhook_events")
+        .select("event_id")
+        .eq("event_id", event.id)
+        .maybeSingle();
+      if (existing?.event_id) {
+        return NextResponse.json({ received: true, duplicate: true });
+      }
     }
 
     switch (event.type) {
@@ -75,10 +81,11 @@ export async function POST(req: NextRequest) {
       default:
         break;
     }
+
+    // Record only after successful handling so Stripe retries still fulfill on failure.
+    await recordWebhookEvent(event.id, event.type);
   } catch (err) {
     console.error("[stripe/webhook] handler", err);
-    // Return 500 so Stripe retries; event row may already exist — on retry duplicate short-circuits.
-    // Prefer not leaving silent permanent skip on transient DB errors before insert succeeds.
     return NextResponse.json({ error: "Handler failed" }, { status: 500 });
   }
 
@@ -89,7 +96,6 @@ async function handleCheckoutCompleted(
   stripe: Stripe,
   session: Stripe.Checkout.Session
 ) {
-  // Packs / one-time payments are out of B1 scope.
   if (session.mode === "payment") {
     console.info("[stripe/webhook] skip pack/one-time", session.id);
     return;
@@ -132,14 +138,6 @@ async function handleCheckoutCompleted(
       periodEnd = sub.current_period_end
         ? new Date(sub.current_period_end * 1000).toISOString()
         : null;
-      // Prefer subscription metadata UUID if present and valid (should match).
-      const subUser = resolveLivvUserId({ metadata: sub.metadata });
-      if (subUser && subUser !== userId) {
-        console.info("[stripe/webhook] subscription metadata user mismatch", {
-          session: userId,
-          sub: subUser,
-        });
-      }
     } catch (e) {
       console.error("[stripe/webhook] retrieve subscription", e);
     }
@@ -150,13 +148,12 @@ async function handleCheckoutCompleted(
     return;
   }
 
-  const finalStatus = status;
-  const finalTier = effectiveTier(finalStatus, tier);
+  const finalTier = effectiveTier(status, tier);
 
   await upsertEntitlement({
     userId,
     tier: finalTier,
-    status: finalStatus,
+    status,
     stripeCustomerId: customerId,
     stripeSubscriptionId: subscriptionId,
     currentPeriodEnd: periodEnd,
@@ -165,7 +162,7 @@ async function handleCheckoutCompleted(
   console.info("[stripe/webhook] entitlement upserted", {
     userId,
     tier: finalTier,
-    status: finalStatus,
+    status,
     subscriptionId,
   });
 }
