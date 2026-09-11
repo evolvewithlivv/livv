@@ -1,14 +1,47 @@
 /**
- * Supabase client scaffold.
- * When NEXT_PUBLIC_SUPABASE_URL + ANON_KEY are set, wire @supabase/supabase-js.
- * Until then, all calls no-op and the app stays on localStorage.
+ * Supabase client foundation (A3-0).
+ *
+ * - Installs a real browser client via @supabase/supabase-js when env is set.
+ * - Does not sign in, link accounts, or touch product flows.
+ * - Without URL + anon key, isSupabaseConfigured() is false and helpers no-op.
  */
+
+import { createClient, type SupabaseClient } from "@supabase/supabase-js";
+
+function clean(value: string | undefined) {
+  return (value || "").trim().replace(/^['"]|['"]$/g, "");
+}
 
 export function isSupabaseConfigured() {
   return Boolean(
-    process.env.NEXT_PUBLIC_SUPABASE_URL &&
-      process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+    clean(process.env.NEXT_PUBLIC_SUPABASE_URL) &&
+      clean(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY)
   );
+}
+
+let browserClient: SupabaseClient | null = null;
+
+/**
+ * Browser Supabase client (singleton). Returns null when env is missing.
+ * Safe to call from client components; no auth calls are made here.
+ */
+export function getSupabaseBrowserClient(): SupabaseClient | null {
+  if (!isSupabaseConfigured()) return null;
+
+  if (!browserClient) {
+    const url = clean(process.env.NEXT_PUBLIC_SUPABASE_URL);
+    const anonKey = clean(process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY);
+    browserClient = createClient(url, anonKey, {
+      auth: {
+        persistSession: true,
+        autoRefreshToken: true,
+        detectSessionInUrl: true,
+        storageKey: "livv-supabase-auth",
+      },
+    });
+  }
+
+  return browserClient;
 }
 
 export type SyncPayload = {
@@ -19,16 +52,21 @@ export type SyncPayload = {
   updatedAt: string;
 };
 
-/** Placeholder — replace with supabase.from('profiles').upsert(...) */
-export async function syncProfileToCloud(_payload: SyncPayload): Promise<{ ok: boolean; error?: string }> {
+/** Placeholder — cloud profile sync is a later batch. */
+export async function syncProfileToCloud(
+  _payload: SyncPayload
+): Promise<{ ok: boolean; error?: string }> {
   if (!isSupabaseConfigured()) {
     return { ok: false, error: "supabase_not_configured" };
   }
-  // Real client lands when dependency + keys exist
-  return { ok: false, error: "supabase_client_not_installed" };
+  // Client exists; table sync not implemented in A3-0
+  return { ok: false, error: "supabase_sync_not_implemented" };
 }
 
-export async function pullProfileFromCloud(_userId: string): Promise<SyncPayload | null> {
+/** Placeholder — cloud profile pull is a later batch. */
+export async function pullProfileFromCloud(
+  _userId: string
+): Promise<SyncPayload | null> {
   if (!isSupabaseConfigured()) return null;
   return null;
 }
