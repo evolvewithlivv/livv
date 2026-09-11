@@ -14,6 +14,10 @@
 --   Trigger helpers are no longer callable through client RPC, and client
 --   profile writes are restricted to presentation fields.
 --
+-- Performance hardening:
+--   supabase/migrations/optimize_rls_auth_checks.sql
+--   RLS auth.uid() calls are statement-stable for scalable policy evaluation.
+--
 -- Deferred / product work:
 --   server-side pack ledger, refund fulfillment, progress sync.
 -- -----------------------------------------------------------------------------
