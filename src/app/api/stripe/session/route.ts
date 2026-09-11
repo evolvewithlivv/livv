@@ -9,7 +9,7 @@ function isUuid(value: string | null | undefined): value is string {
 }
 
 function sessionBelongsToUser(
-  session: { client_reference_id: string | null; metadata?: Stripe.Metadata },
+  session: { client_reference_id: string | null; metadata?: Record<string, string> | null },
   userId: string
 ) {
   const metadataUserId = session.metadata?.livv_user_id || null;
