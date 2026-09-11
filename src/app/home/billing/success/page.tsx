@@ -2,7 +2,11 @@
 
 import { useEffect, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { applyStripeEntitlement } from "@/lib/billing";
+import {
+  applyStripeEntitlement,
+  hydrateServerEntitlement,
+  invalidateServerEntitlementCache,
+} from "@/lib/billing";
 import type { LivvTier } from "@/lib/identity";
 import { grantPurchasedPack } from "@/lib/pack-shop";
 import type { PackGrade } from "@/lib/packs";
@@ -75,6 +79,8 @@ export default function BillingSuccessPage() {
           customerId: data.customerId,
           subscriptionId: data.subscriptionId,
         });
+        invalidateServerEntitlementCache();
+        void hydrateServerEntitlement();
         feedback("unlock");
 
         if (!cancelled) {
