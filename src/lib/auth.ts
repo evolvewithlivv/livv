@@ -4,7 +4,11 @@ import {
   type Identity,
   type Appearance,
 } from "./identity";
-import { ensureAnonymousSession } from "./supabase/anon-session";
+import {
+  ensureAnonymousSession,
+  getAnonSessionState,
+} from "./supabase/anon-session";
+import { isSupabaseConfigured } from "./supabase/client";
 
 export type AuthProvider = "google" | "apple" | "email" | "phone" | "x";
 
@@ -116,10 +120,62 @@ export function getSession(): Session | null {
   }
 }
 
-export function isSignedIn() {
+/** Device-local product session only (does not inspect Supabase). */
+export function isSignedInLocal() {
   const session = getSession();
   if (!session) return false;
   return Boolean(loadAccounts().find((a) => a.id === session.accountId));
+}
+
+/**
+ * Sync signed-in check.
+ * - Local product session always counts.
+ * - When Supabase is configured and anonymous/session is already ready, cloud identity counts
+ *   (anonymous included). Do not use alone for ENTER/auth routing — prefer isSignedInLocal there.
+ */
+export function isSignedIn() {
+  if (isSignedInLocal()) return true;
+  if (!isSupabaseConfigured()) return false;
+  const cloud = getAnonSessionState();
+  return cloud.status === "ready" && Boolean(cloud.userId);
+}
+
+/** Authoritative cloud user id when session is ready. */
+export function getCloudUserId(): string | null {
+  const cloud = getAnonSessionState();
+  if (cloud.status === "ready" && cloud.userId) return cloud.userId;
+  return null;
+}
+
+/**
+ * A3-3 home gate: resolve after ensuring anonymous session when configured.
+ * Never treats "pending" as signed-out — caller must await this before redirect.
+ */
+export async function resolveHomeAccess(): Promise<"ok" | "deny"> {
+  if (typeof window === "undefined") return "deny";
+
+  if (isSignedInLocal()) {
+    // Keep cloud identity warm; do not block home on failure.
+    try {
+      await ensureAnonymousSession();
+    } catch {
+      /* ignore */
+    }
+    return "ok";
+  }
+
+  if (!isSupabaseConfigured()) {
+    return "deny";
+  }
+
+  const cloud = await ensureAnonymousSession();
+  if (cloud.status === "ready" && cloud.userId) {
+    // Anonymous (or any) Supabase session is authoritative identity for /home.
+    return "ok";
+  }
+
+  // unavailable / error with no local session
+  return "deny";
 }
 
 export function getCurrentAccount(): Account | null {
@@ -153,7 +209,8 @@ function setSession(accountId: string) {
 
 export function signOut() {
   if (typeof window === "undefined") return;
-  // Local product session only. Supabase anonymous UUID stays on device (A3-2).
+  // Local product session only. Supabase anonymous UUID stays on device.
+  // Progress keys are never cleared here.
   window.localStorage.removeItem(SESSION_KEY);
   window.dispatchEvent(new Event("livv-auth"));
 }
@@ -272,8 +329,7 @@ export async function signUpWithProvider(input: {
 
 /**
  * Finish onboarding on this device: create or refresh a local session + identity.
- * Not OAuth. Session lives in localStorage. When Supabase is configured, also
- * ensures a stable anonymous auth.users id (A3-2) without blocking on failure.
+ * Ensures stable anonymous Supabase id when configured (non-blocking on failure).
  */
 export async function completeDeviceOnboarding(input: {
   displayName: string;
@@ -286,7 +342,7 @@ export async function completeDeviceOnboarding(input: {
   }
   const displayName = input.displayName.trim() || "Member";
 
-  if (isSignedIn()) {
+  if (isSignedInLocal()) {
     const existing = getCurrentAccount();
     if (existing) {
       const accounts = loadAccounts();
