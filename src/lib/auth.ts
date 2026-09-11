@@ -4,6 +4,7 @@ import {
   type Identity,
   type Appearance,
 } from "./identity";
+import { ensureAnonymousSession } from "./supabase/anon-session";
 
 export type AuthProvider = "google" | "apple" | "email" | "phone" | "x";
 
@@ -152,6 +153,7 @@ function setSession(accountId: string) {
 
 export function signOut() {
   if (typeof window === "undefined") return;
+  // Local product session only. Supabase anonymous UUID stays on device (A3-2).
   window.localStorage.removeItem(SESSION_KEY);
   window.dispatchEvent(new Event("livv-auth"));
 }
@@ -197,7 +199,6 @@ export function syncAccountFromIdentity(identity: Identity) {
     tier: identity.tier,
     theme: identity.theme,
     embers: identity.embers,
-    // username stays locked from account
     username: accounts[idx].usernameLocked
       ? accounts[idx].username
       : identity.username,
@@ -271,12 +272,18 @@ export async function signUpWithProvider(input: {
 
 /**
  * Finish onboarding on this device: create or refresh a local session + identity.
- * Not OAuth. Not cloud. Session lives in localStorage with the rest of LIVV.
+ * Not OAuth. Session lives in localStorage. When Supabase is configured, also
+ * ensures a stable anonymous auth.users id (A3-2) without blocking on failure.
  */
 export async function completeDeviceOnboarding(input: {
   displayName: string;
 }): Promise<{ account: Account; isNew: boolean }> {
   await delay(200);
+  try {
+    await ensureAnonymousSession();
+  } catch {
+    /* local onboarding must still succeed */
+  }
   const displayName = input.displayName.trim() || "Member";
 
   if (isSignedIn()) {
@@ -301,7 +308,6 @@ export async function completeDeviceOnboarding(input: {
   const account: Account = {
     id: `acc_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
     provider: "email",
-    // No email/password: device-local session only until the user adds credentials later.
     displayName,
     username,
     usernameLocked: true,
@@ -362,8 +368,6 @@ export async function continueWithSocial(
   opts?: { displayName?: string; xHandle?: string }
 ) {
   await delay(500);
-  // Local simulation of OAuth until provider keys are wired.
-  // Same device reuses the existing social account if present.
   const existing = loadAccounts().find((a) => a.provider === provider);
   if (existing) {
     existing.lastLoginAt = Date.now();
