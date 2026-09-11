@@ -66,6 +66,13 @@ export async function buyPack(grade: PackGrade): Promise<{ ok: boolean; error?: 
       return { ok: false, error: "Network error starting checkout" };
     }
   }
+
+  // Never silently create paid inventory in a production build when Stripe is unavailable.
+  if (process.env.NODE_ENV === "production") {
+    return { ok: false, error: "Pack billing is temporarily unavailable. Please try again later." };
+  }
+
+  // Local-only pack grants remain available for non-production development/QA.
   grantPurchasedPack(grade);
   return { ok: true, local: true };
 }
