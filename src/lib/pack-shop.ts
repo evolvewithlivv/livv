@@ -1,17 +1,30 @@
 import { loadIdentity } from "./identity";
+import { isStripeConfigured } from "./billing";
 import { ensureAnonymousSession } from "./supabase/anon-session";
 import { getSupabaseBrowserClient, isSupabaseConfigured } from "./supabase/client";
-import { GRADE_META, type PackGrade, loadPacks, savePacks, type OwnedPack } from "./packs";
+import { loadPacks, savePacks, type PackGrade, type PackState } from "./packs";
 
-export const PACK_SHOP: Record<
-  PackGrade,
-  { price: string; priceCents: number; value: string }
-> = {
-  1: { price: "$4", priceCents: 400, value: "Spark pull" },
-  2: { price: "$9", priceCents: 900, value: "Rise pull" },
-  3: { price: "$19", priceCents: 1900, value: "Signal pull" },
-  4: { price: "$39", priceCents: 3900, value: "Apex pull" },
+export const PACK_SHOP: Record<PackGrade, { priceCents: number; price: string; value: string }> = {
+  1: { priceCents: 249, price: "$2.49", value: "Optional. Vault seed. A small vote toward the first merch cut." },
+  2: { priceCents: 999, price: "$9.99", value: "Optional. Elevated floor. Helps a garment reach someone who already lives this." },
+  3: { priceCents: 4999, price: "$49.99", value: "Optional. Signal-weighted. A rare pull for people deep in the LIVV system." },
+  4: { priceCents: 9900, price: "$99.00", value: "Optional. Apex-weighted. The premium pull and the highest paid pack." },
 };
+
+export function grantPurchasedPack(grade: PackGrade, qty = 1): PackState {
+  const state = loadPacks();
+  const now = Date.now();
+  const n = Math.max(1, Math.min(10, qty));
+  for (let i = 0; i < n; i++) {
+    state.pending.push({
+      id: `buy_${grade}_${now}_${i}_${Math.random().toString(36).slice(2, 6)}`,
+      grade,
+      grantedAt: now,
+    });
+  }
+  savePacks(state);
+  return state;
+}
 
 async function checkoutAuthHeader(): Promise<Record<string, string>> {
   if (!isSupabaseConfigured()) return {};
@@ -28,33 +41,10 @@ async function checkoutAuthHeader(): Promise<Record<string, string>> {
   }
 }
 
-export function grantPurchasedPack(grade: PackGrade, qty = 1) {
-  const state = loadPacks();
-  const now = Date.now();
-  const added: OwnedPack[] = [];
-  for (let i = 0; i < qty; i++) {
-    added.push({
-      id: `pack_${now}_${grade}_${i}_${Math.random().toString(36).slice(2, 7)}`,
-      grade,
-      acquiredAt: now,
-      opened: false,
-      source: "purchase",
-    });
-  }
-  state.pending = [...added, ...state.pending];
-  savePacks(state);
-  return added;
-}
-
-/** Start Stripe Checkout for a pack grade, or grant locally if Stripe is offline. */
-export async function buyPack(
-  grade: PackGrade
-): Promise<{ ok: boolean; error?: string; local?: boolean }> {
+export async function buyPack(grade: PackGrade): Promise<{ ok: boolean; error?: string; local?: boolean }> {
+  if (typeof window === "undefined") return { ok: false, error: "client only" };
   const me = loadIdentity();
-  const publishable = Boolean(
-    typeof process !== "undefined" && process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
-  );
-  if (publishable) {
+  if (isStripeConfigured()) {
     try {
       const authHeader = await checkoutAuthHeader();
       if (isSupabaseConfigured() && !authHeader.Authorization) {
@@ -78,8 +68,4 @@ export async function buyPack(
   }
   grantPurchasedPack(grade);
   return { ok: true, local: true };
-}
-
-export function packShopLabel(grade: PackGrade) {
-  return GRADE_META[grade].name;
 }
