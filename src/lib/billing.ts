@@ -324,11 +324,9 @@ async function getAuthHeader(): Promise<Record<string, string>> {
 
 export async function openBillingPortal(): Promise<{ ok: boolean; error?: string }> {
   if (typeof window === "undefined") return { ok: false, error: "client only" };
-  const e = resolveEffectiveEntitlement();
-  if (!e.stripeCustomerId) {
-    return { ok: false, error: "No Stripe customer on this device yet." };
-  }
   try {
+    // Customer identity is now resolved server-side from auth.uid(). Do not gate
+    // the portal on a client-local customer id that may be stale or missing.
     const authHeader = await getAuthHeader();
     if (isSupabaseConfigured() && !authHeader.Authorization) {
       return { ok: false, error: "Identity session missing. Reload LIVV and try again." };
