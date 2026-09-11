@@ -1,5 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getStripe, tierFromPriceId, type PaidTier } from "@/lib/stripe-server";
+import { getVerifiedSupabaseUser, isSupabaseServerConfigured } from "@/lib/supabase/server-auth";
+import { isUuid } from "@/lib/stripe-entitlements";
 
 export const runtime = "nodejs";
 
@@ -15,6 +17,17 @@ export async function GET(req: NextRequest) {
       return NextResponse.json({ error: "Missing session_id" }, { status: 400 });
     }
 
+    // B3-1: when Supabase is configured, the Checkout session must belong to
+    // the currently authenticated LIVV user. Never let session_id alone grant access.
+    let verifiedUserId: string | null = null;
+    if (isSupabaseServerConfigured()) {
+      const verified = await getVerifiedSupabaseUser(req);
+      if (!verified) {
+        return NextResponse.json({ error: "Authenticated session required" }, { status: 401 });
+      }
+      verifiedUserId = verified.id;
+    }
+
     const session = await stripe.checkout.sessions.retrieve(sessionId, {
       expand: ["subscription", "line_items"],
     });
@@ -24,6 +37,13 @@ export async function GET(req: NextRequest) {
         { error: "Payment not complete", status: session.status },
         { status: 402 }
       );
+    }
+
+    if (verifiedUserId) {
+      const boundId = session.metadata?.livv_user_id || session.client_reference_id;
+      if (!isUuid(boundId) || boundId !== verifiedUserId) {
+        return NextResponse.json({ error: "Checkout session does not belong to this account" }, { status: 403 });
+      }
     }
 
     if (session.metadata?.livv_kind === "pack") {
