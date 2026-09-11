@@ -12,6 +12,8 @@ import { grantPurchasedPack } from "@/lib/pack-shop";
 import type { PackGrade } from "@/lib/packs";
 import { GRADE_META } from "@/lib/packs";
 import { feedback } from "@/lib/sensory";
+import { ensureAnonymousSession } from "@/lib/supabase/anon-session";
+import { getSupabaseBrowserClient, isSupabaseConfigured } from "@/lib/supabase/client";
 
 export default function BillingSuccessPage() {
   const router = useRouter();
@@ -31,7 +33,26 @@ export default function BillingSuccessPage() {
 
     (async () => {
       try {
-        const res = await fetch(`/api/stripe/session?session_id=${encodeURIComponent(sessionId)}`);
+        const headers: Record<string, string> = { "Content-Type": "application/json" };
+        if (isSupabaseConfigured()) {
+          await ensureAnonymousSession();
+          const client = getSupabaseBrowserClient();
+          const { data } = await client?.auth.getSession() ?? { data: { session: null } };
+          const token = data.session?.access_token;
+          if (!token) {
+            if (!cancelled) {
+              setStatus("error");
+              setMessage("Your LIVV identity session is still loading. Reload and try again.");
+            }
+            return;
+          }
+          headers.Authorization = `Bearer ${token}`;
+        }
+
+        const res = await fetch(
+          `/api/stripe/session?session_id=${encodeURIComponent(sessionId)}`,
+          { headers }
+        );
         const data = (await res.json()) as {
           kind?: string;
           grade?: number;
