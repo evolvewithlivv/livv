@@ -12,11 +12,21 @@ export const runtime = "nodejs";
 const PAID: PaidTier[] = ["rise", "apex", "circle"];
 const GRADES: PackGrade[] = [1, 2, 3, 4];
 
+function json(data: unknown, init?: ResponseInit) {
+  return NextResponse.json(data, {
+    ...init,
+    headers: {
+      "Cache-Control": "no-store",
+      ...(init?.headers || {}),
+    },
+  });
+}
+
 export async function POST(req: NextRequest) {
   try {
     const stripe = getStripe();
     if (!stripe) {
-      return NextResponse.json(
+      return json(
         { error: "Stripe is not configured. Add STRIPE_SECRET_KEY." },
         { status: 503 }
       );
@@ -25,11 +35,12 @@ export async function POST(req: NextRequest) {
     // B0: when Supabase is configured, require a verified Auth JWT (anon or linked).
     let livvUserId: string | null = null;
     let verifiedEmail: string | null = null;
+    const supabaseConfigured = isSupabaseServerConfigured();
 
-    if (isSupabaseServerConfigured()) {
+    if (supabaseConfigured) {
       const verified = await getVerifiedSupabaseUser(req);
       if (!verified) {
-        return NextResponse.json(
+        return json(
           {
             error:
               "Sign-in required for checkout. Open LIVV so your identity session can attach, then try again.",
@@ -52,19 +63,22 @@ export async function POST(req: NextRequest) {
 
     // Username is display-only metadata — never treated as proof of identity.
     const usernameMeta = (body.username || "").slice(0, 64);
-    // Prefer verified email; body.email is never authoritative for identity.
-    const customerEmail =
-      verifiedEmail ||
-      (typeof body.email === "string" && body.email.includes("@")
+
+    // When Supabase is active, only the verified Auth email may populate Stripe.
+    // Anonymous users intentionally produce no customer_email until they link an email.
+    // The body email fallback exists only for legacy/no-Supabase deployments.
+    const customerEmail = supabaseConfigured
+      ? verifiedEmail || undefined
+      : typeof body.email === "string" && body.email.includes("@")
         ? body.email.trim().toLowerCase()
-        : undefined);
+        : undefined;
 
     const base = appUrl();
 
     if (body.kind === "pack") {
       const grade = body.grade as PackGrade;
       if (!GRADES.includes(grade)) {
-        return NextResponse.json({ error: "Invalid pack" }, { status: 400 });
+        return json({ error: "Invalid pack" }, { status: 400 });
       }
       const qty = Math.max(1, Math.min(10, Number(body.qty) || 1));
       const shop = PACK_SHOP[grade];
@@ -85,7 +99,7 @@ export async function POST(req: NextRequest) {
         ],
         success_url: `${base}/home/billing/success?session_id={CHECKOUT_SESSION_ID}`,
         cancel_url: `${base}/home/shop?billing=cancel`,
-        customer_email: customerEmail || undefined,
+        customer_email: customerEmail,
         // Canonical purchaser identity when Supabase is configured.
         client_reference_id: livvUserId || usernameMeta || undefined,
         metadata: {
@@ -97,17 +111,17 @@ export async function POST(req: NextRequest) {
         },
         allow_promotion_codes: true,
       });
-      return NextResponse.json({ url: session.url, sessionId: session.id });
+      return json({ url: session.url, sessionId: session.id });
     }
 
     const tier = body.tier as PaidTier | undefined;
     if (!tier || !PAID.includes(tier)) {
-      return NextResponse.json({ error: "Invalid tier" }, { status: 400 });
+      return json({ error: "Invalid tier" }, { status: 400 });
     }
 
     const priceId = priceIdForTier(tier);
     if (!priceId) {
-      return NextResponse.json(
+      return json(
         { error: `Missing STRIPE_PRICE_${tier.toUpperCase()} env var` },
         { status: 503 }
       );
@@ -118,7 +132,7 @@ export async function POST(req: NextRequest) {
       line_items: [{ price: priceId, quantity: 1 }],
       success_url: `${base}/home/billing/success?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${base}/home/profile?billing=cancel`,
-      customer_email: customerEmail || undefined,
+      customer_email: customerEmail,
       client_reference_id: livvUserId || usernameMeta || undefined,
       metadata: {
         livv_kind: "tier",
@@ -136,10 +150,10 @@ export async function POST(req: NextRequest) {
       allow_promotion_codes: true,
     });
 
-    return NextResponse.json({ url: session.url, sessionId: session.id });
+    return json({ url: session.url, sessionId: session.id });
   } catch (err) {
     const message = err instanceof Error ? err.message : "Checkout failed";
     console.error("[stripe/checkout]", message);
-    return NextResponse.json({ error: message }, { status: 500 });
+    return json({ error: message }, { status: 500 });
   }
 }
