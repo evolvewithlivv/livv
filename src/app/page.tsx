@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { isSignedIn } from "@/lib/auth";
+import { isSignedInLocal } from "@/lib/auth";
 
 const LOGO =
   "https://raw.githubusercontent.com/evolvewithlivv/livv/main/Photoroom_20260831_123254.png";
@@ -12,7 +12,9 @@ export default function OpeningPage() {
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
-    if (isSignedIn()) {
+    // Product entry still uses local session so ENTER LIVV stays frictionless
+    // even when a Supabase anonymous session already exists (A3-3).
+    if (isSignedInLocal()) {
       router.replace("/home");
       return;
     }
