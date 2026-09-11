@@ -24,6 +24,42 @@ Voice: direct, short, specific. No corporate wellness. No fake hype. No em dashe
 Answer what they actually asked. Use the snapshot if it helps. If the snapshot is thin, say so and tell them the smallest next action in the app.
 2 to 6 sentences. End with one concrete move inside LIVV when it fits.`;
 
+function json(data: unknown, init?: ResponseInit) {
+  return NextResponse.json(data, {
+    ...init,
+    headers: {
+      "Cache-Control": "no-store",
+      ...(init?.headers || {}),
+    },
+  });
+}
+
+function text(value: unknown, max: number): string | undefined {
+  if (typeof value !== "string") return undefined;
+  const trimmed = value.trim();
+  return trimmed ? trimmed.slice(0, max) : undefined;
+}
+
+function boundedSnapshot(snapshot: Body["snapshot"]): Body["snapshot"] | undefined {
+  if (!snapshot || typeof snapshot !== "object") return undefined;
+  return {
+    name: text(snapshot.name, 80),
+    level: Number.isFinite(snapshot.level) ? Math.max(0, Math.min(999, Number(snapshot.level))) : undefined,
+    streak: Number.isFinite(snapshot.streak) ? Math.max(0, Math.min(99999, Number(snapshot.streak))) : undefined,
+    embers: Number.isFinite(snapshot.embers) ? Math.max(0, Math.min(999999, Number(snapshot.embers))) : undefined,
+    evo: text(snapshot.evo, 240),
+    strong: text(snapshot.strong, 360),
+    weak: text(snapshot.weak, 360),
+    open: Array.isArray(snapshot.open)
+      ? snapshot.open.filter((item): item is string => typeof item === "string").slice(0, 20).map((item) => item.slice(0, 240))
+      : [],
+    lastWorkout: text(snapshot.lastWorkout, 160) || null,
+    evidence: Array.isArray(snapshot.evidence)
+      ? snapshot.evidence.filter((item): item is string => typeof item === "string").slice(0, 20).map((item) => item.slice(0, 300))
+      : [],
+  };
+}
+
 function fallback(question: string, snapshot: Body["snapshot"]) {
   const q = question.toLowerCase();
   const open = snapshot?.open?.[0];
@@ -80,10 +116,10 @@ async function callModel(question: string, snapshot: Body["snapshot"]) {
     const err = await res.text();
     throw new Error(err.slice(0, 240));
   }
-  const json = (await res.json()) as {
+  const jsonBody = (await res.json()) as {
     choices?: { message?: { content?: string } }[];
   };
-  return json.choices?.[0]?.message?.content?.trim() || null;
+  return jsonBody.choices?.[0]?.message?.content?.trim() || null;
 }
 
 export async function POST(req: NextRequest) {
@@ -91,41 +127,33 @@ export async function POST(req: NextRequest) {
     if (isSupabaseServerConfigured()) {
       const verified = await getVerifiedSupabaseUser(req);
       if (!verified) {
-        return NextResponse.json({ error: "Authenticated session required" }, { status: 401 });
+        return json({ error: "Authenticated session required" }, { status: 401 });
       }
     }
 
     const body = (await req.json()) as Body;
-    const question = (body.question || "").trim();
+    const question = text(body.question, 2000) || "";
     if (question.length < 2) {
-      return NextResponse.json({ text: "Ask something real." }, { status: 400 });
+      return json({ text: "Ask something real." }, { status: 400 });
     }
-    if (question.length > 2000) {
-      return NextResponse.json({ text: "Keep the question under 2,000 characters." }, { status: 413 });
+    if (typeof body.question === "string" && body.question.trim().length > 2000) {
+      return json({ text: "Keep the question under 2,000 characters." }, { status: 413 });
     }
 
-    const snapshot = body.snapshot
-      ? {
-          ...body.snapshot,
-          open: Array.isArray(body.snapshot.open) ? body.snapshot.open.slice(0, 20) : [],
-          evidence: Array.isArray(body.snapshot.evidence)
-            ? body.snapshot.evidence.slice(0, 20)
-            : [],
-        }
-      : undefined;
+    const snapshot = boundedSnapshot(body.snapshot);
 
     try {
       const live = await callModel(question, snapshot);
-      if (live) return NextResponse.json({ text: live, live: true });
+      if (live) return json({ text: live, live: true });
     } catch {
       // fall through
     }
 
-    return NextResponse.json({
+    return json({
       text: fallback(question, snapshot),
       live: false,
     });
   } catch {
-    return NextResponse.json({ text: "Evala could not answer that pass. Try again." }, { status: 500 });
+    return json({ text: "Evala could not answer that pass. Try again." }, { status: 500 });
   }
 }
