@@ -16,7 +16,9 @@ LIVV is a personal evolution ecosystem built around daily action, training, refl
 
 - Opening experience + onboarding
 - Device-local identity and progression model
-- Supabase anonymous identity foundation, with optional email linking
+- Supabase anonymous identity foundation
+- Five real sign-in methods: Google, Apple, X, email, and phone/SMS
+- OAuth callback handling with account-safe identity materialization
 - Daily, Train, Mind, Evala, Connect, Profile, Settings, Progress, Shop, Packs, and Vault surfaces
 - Evolution Packs with local collection state and paid Stripe Checkout
 - Stripe subscription tiers: Spark, Rise, Apex, Inner Circle
@@ -28,6 +30,20 @@ LIVV is a personal evolution ecosystem built around daily action, training, refl
 - Production security headers and authenticated Evala API
 - Local JSON export/import and full device-data wipe
 - Installable PWA manifest and mobile-safe viewport metadata
+
+## Authentication
+
+LIVV uses Supabase Auth for real account creation and sign-in. The production entry screen exposes exactly five methods:
+
+1. Continue with Google
+2. Continue with Apple
+3. Continue with X
+4. Continue with email
+5. Continue with phone
+
+Email uses passwordless magic-link authentication. Phone uses SMS OTP verification. Google, Apple, and X use Supabase OAuth. Anonymous device identities are upgraded in place when a provider supports identity linking, preserving the same Supabase `auth.users.id` used by billing and entitlements.
+
+Provider credentials and redirect URLs are configured in the Supabase project; the application never treats a provider button as a fake/local-only sign-in.
 
 ## Billing architecture
 
@@ -81,6 +97,16 @@ npm run dev
 
 Open `http://localhost:3000`.
 
+## Verification
+
+```bash
+npm run typecheck
+npm run shipping:audit
+npm run build
+```
+
+`shipping:audit` is a dependency-free static guard for critical production invariants across authentication, billing ownership, server entitlements, pack safety, security headers, and Evala authentication. It runs in GitHub CI for Node 20 and Node 22 so future changes cannot silently remove these protections.
+
 ## Operations
 
 `GET /api/health` returns a minimal no-store health payload and the Vercel Git commit when available. It intentionally does not expose secrets or service configuration.
@@ -97,6 +123,7 @@ Before shipping a billing change, verify:
 4. The current Vercel deployment is Ready.
 5. The paid Checkout → webhook → entitlement → client hydration path is tested end-to-end.
 6. `/api/health` reports the expected production commit after deployment.
+7. The five authentication methods have each been smoke-tested in the production Supabase configuration.
 
 ## Explicitly deferred
 
