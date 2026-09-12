@@ -18,6 +18,9 @@ type Body = {
 };
 
 const MAX_BODY_BYTES = 32 * 1024;
+const MODEL_TIMEOUT_MS = 15_000;
+
+export const maxDuration = 20;
 
 const SYSTEM = `You are Evala, the intelligence layer inside LIVV.
 LIVV is a life-evolution app: Daily drop, Train, Mind wiki, Packs/Embers, Connect, streaks, levels, six pillars (Body, Mind, Career, Finance, Social, Life).
@@ -96,6 +99,7 @@ async function callModel(question: string, snapshot: Body["snapshot"]) {
 
   const res = await fetch(url, {
     method: "POST",
+    signal: AbortSignal.timeout(MODEL_TIMEOUT_MS),
     headers: {
       Authorization: `Bearer ${key}`,
       "Content-Type": "application/json",
