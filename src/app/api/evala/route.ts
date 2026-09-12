@@ -17,6 +17,8 @@ type Body = {
   };
 };
 
+const MAX_BODY_BYTES = 32 * 1024;
+
 const SYSTEM = `You are Evala, the intelligence layer inside LIVV.
 LIVV is a life-evolution app: Daily drop, Train, Mind wiki, Packs/Embers, Connect, streaks, levels, six pillars (Body, Mind, Career, Finance, Social, Life).
 
@@ -131,7 +133,23 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    const body = (await req.json()) as Body;
+    const contentLength = Number(req.headers.get("content-length") || 0);
+    if (contentLength > MAX_BODY_BYTES) {
+      return json({ error: "Request body too large" }, { status: 413 });
+    }
+
+    const rawBody = await req.text();
+    if (new TextEncoder().encode(rawBody).byteLength > MAX_BODY_BYTES) {
+      return json({ error: "Request body too large" }, { status: 413 });
+    }
+
+    let body: Body;
+    try {
+      body = JSON.parse(rawBody) as Body;
+    } catch {
+      return json({ error: "Invalid JSON" }, { status: 400 });
+    }
+
     const question = text(body.question, 2000) || "";
     if (question.length < 2) {
       return json({ text: "Ask something real." }, { status: 400 });
