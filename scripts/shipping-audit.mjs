@@ -24,6 +24,17 @@ const checks = [
     absentPatterns: ["AuthProvider = \"phone\"", "signInWithPhone", "phone?: string", "provider === \"phone\"", "phone number required"],
   },
   {
+    name: "member routes require a real LIVV account, not anonymous Supabase auth",
+    file: "src/lib/auth.ts",
+    patterns: ["export async function resolveHomeAccess", "isSignedInLocal() ? \"ok\" : \"deny\""],
+    absentPatterns: ["const cloud = await ensureAnonymousSession();", "cloud.status === \"ready\" && Boolean(cloud.userId) ? \"ok\" : \"deny\""],
+  },
+  {
+    name: "returning users skip onboarding after email verification",
+    file: "src/app/auth/page.tsx",
+    patterns: ["isOnboardingComplete", 'isOnboardingComplete() ? "/home" : "/onboarding"'],
+  },
+  {
     name: "opening flow requires authentication before onboarding",
     file: "src/app/page.tsx",
     patterns: ['router.push("/auth")'],
