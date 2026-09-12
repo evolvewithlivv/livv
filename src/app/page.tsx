@@ -9,17 +9,8 @@ const LOGO = "/livv-logo.png";
 export default function OpeningPage() {
   const router = useRouter();
   const [ready, setReady] = useState(false);
-
-  useEffect(() => {
-    if (isSignedInLocal()) {
-      router.replace("/home");
-      return;
-    }
-    setReady(true);
-  }, [router]);
-
+  useEffect(() => { if (isSignedInLocal()) router.replace("/home"); else setReady(true); }, [router]);
   if (!ready) return <main className="min-h-dvh bg-[#050505]" />;
-
   return (
     <main className="opening relative min-h-dvh overflow-hidden bg-[#050505] text-white">
       <div aria-hidden className="opening-atmosphere pointer-events-none absolute inset-0" />
@@ -32,10 +23,7 @@ export default function OpeningPage() {
         <p className="opening-line mt-5 max-w-[18rem] text-center text-[15px] leading-snug text-white/55">Train. Read. Check in. Build a better day.</p>
         <p className="opening-sub mt-3 text-[11px] uppercase tracking-[0.28em] text-white/25">Start simple. Stay consistent.</p>
         <div className="opening-cta mt-12 flex w-full max-w-xs flex-col items-center gap-4">
-          <button type="button" onClick={() => router.push("/onboarding")} className="group flex h-14 w-full items-center justify-center gap-2 rounded-full bg-white text-[15px] font-semibold text-black shadow-[0_12px_40px_rgba(0,0,0,0.45)]">
-            Enter LIVV
-            <span aria-hidden className="inline-block transition-transform duration-300 group-hover:translate-x-1">→</span>
-          </button>
+          <button type="button" onClick={() => router.push("/auth")} className="group flex h-14 w-full items-center justify-center gap-2 rounded-full bg-white text-[15px] font-semibold text-black shadow-[0_12px_40px_rgba(0,0,0,0.45)]">Enter LIVV <span aria-hidden className="inline-block transition-transform duration-300 group-hover:translate-x-1">→</span></button>
           <button type="button" onClick={() => router.push("/auth")} className="text-[13px] text-white/40">Sign in</button>
         </div>
       </div>
