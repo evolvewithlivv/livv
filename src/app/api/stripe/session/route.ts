@@ -26,6 +26,9 @@ export async function GET(req: NextRequest) {
     if (!sessionId) {
       return json({ error: "Missing session_id" }, { status: 400 });
     }
+    if (sessionId.length > 255 || !/^cs_[A-Za-z0-9_]+$/.test(sessionId)) {
+      return json({ error: "Invalid checkout session" }, { status: 400 });
+    }
 
     // B3-1: when Supabase is configured, the Checkout session must belong to
     // the currently authenticated LIVV user. Never let session_id alone grant access.
