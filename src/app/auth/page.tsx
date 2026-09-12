@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { startEmailAuth, startPhoneAuth, verifyEmailAuth, verifyPhoneAuth } from "@/lib/supabase/real-auth";
+import { startEmailAuth, startPhoneAuth, verifyPhoneAuth } from "@/lib/supabase/real-auth";
 import { isOnboardingComplete } from "@/lib/onboarding";
 
 const LOGO = "/livv-logo.png";
@@ -17,7 +17,6 @@ export default function AuthPage() {
   const [notice, setNotice] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
-  const [emailOtp, setEmailOtp] = useState("");
   const [phoneOtp, setPhoneOtp] = useState("");
   const [emailPending, setEmailPending] = useState(false);
   const [phonePending, setPhonePending] = useState(false);
@@ -35,12 +34,35 @@ export default function AuthPage() {
       return seconds - 1;
     }), 1000);
   };
-  const submitEmail = () => void run(async () => { await startEmailAuth(email); setEmailPending(true); setEmailOtp(""); setNotice("We sent a 6-digit code to your email."); startCooldown(); });
-  const submitPhone = () => void run(async () => { const result = await startPhoneAuth(phone); if (result.phone) setPhone(result.phone); setPhonePending(true); setPhoneOtp(""); setNotice("We sent a 6-digit code to your phone."); startCooldown(); });
-  const verifyEmail = () => void run(async () => { await verifyEmailAuth(email, emailOtp); router.replace(isOnboardingComplete() ? "/home" : "/onboarding"); });
-  const verifyPhone = () => void run(async () => { await verifyPhoneAuth(phone, phoneOtp); router.replace(isOnboardingComplete() ? "/home" : "/onboarding"); });
-  const resendEmail = () => void run(async () => { await startEmailAuth(email); setNotice("A new 6-digit code is on its way."); startCooldown(); });
-  const resendPhone = () => void run(async () => { const result = await startPhoneAuth(phone); if (result.phone) setPhone(result.phone); setNotice("A new 6-digit code is on its way."); startCooldown(); });
+  const submitEmail = () => void run(async () => {
+    await startEmailAuth(email);
+    setEmailPending(true);
+    setNotice("Check your email and tap the confirmation link to enter LIVV.");
+    startCooldown();
+  });
+  const submitPhone = () => void run(async () => {
+    const result = await startPhoneAuth(phone);
+    if (result.phone) setPhone(result.phone);
+    setPhonePending(true);
+    setPhoneOtp("");
+    setNotice("We sent a 6-digit code to your phone.");
+    startCooldown();
+  });
+  const verifyPhone = () => void run(async () => {
+    await verifyPhoneAuth(phone, phoneOtp);
+    router.replace(isOnboardingComplete() ? "/home" : "/onboarding");
+  });
+  const resendEmail = () => void run(async () => {
+    await startEmailAuth(email);
+    setNotice("A new confirmation email is on its way.");
+    startCooldown();
+  });
+  const resendPhone = () => void run(async () => {
+    const result = await startPhoneAuth(phone);
+    if (result.phone) setPhone(result.phone);
+    setNotice("A new 6-digit code is on its way.");
+    startCooldown();
+  });
 
   return (
     <main className="relative min-h-dvh overflow-hidden bg-[#050505] text-white">
@@ -57,7 +79,7 @@ export default function AuthPage() {
           <div className="space-y-3">
             <Button className="w-full" type="button" onClick={() => { setMode("email"); setError(""); setNotice(""); }}>Continue with email</Button>
             <Button className="w-full" variant="secondary" type="button" onClick={() => { setMode("phone"); setError(""); setNotice(""); }}>Continue with phone</Button>
-            <p className="pt-2 text-center text-[11px] leading-relaxed text-white/25">We only use email OTP and SMS OTP. Google, Apple, and other social providers are not used.</p>
+            <p className="pt-2 text-center text-[11px] leading-relaxed text-white/25">Email uses a secure confirmation link. Phone uses a 6-digit SMS code.</p>
           </div>
         )}
 
@@ -66,18 +88,17 @@ export default function AuthPage() {
             {!emailPending ? (
               <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); submitEmail(); }}>
                 <Field label="Email" value={email} onChange={setEmail} type="email" autoComplete="email" placeholder="you@example.com" />
-                <Button className="w-full" disabled={busy || !email.includes("@")} type="submit">{busy ? "Sending…" : "Send 6-digit code"}</Button>
+                <Button className="w-full" disabled={busy || !email.includes("@")} type="submit">{busy ? "Sending…" : "Send confirmation email"}</Button>
               </form>
             ) : (
-              <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); verifyEmail(); }}>
-                <Field label="6-digit code" value={emailOtp} onChange={(v) => setEmailOtp(v.replace(/\D/g, "").slice(0, 6))} inputMode="numeric" autoComplete="one-time-code" placeholder="000000" />
-                <p className="text-[12px] leading-5 text-white/35">Enter the code we sent to <span className="text-white/60">{email.trim().toLowerCase()}</span>.</p>
-                <Button className="w-full" disabled={busy || emailOtp.length !== 6} type="submit">{busy ? "Verifying…" : "Verify & enter LIVV"}</Button>
-                <div className="flex items-center justify-between gap-4">
-                  <button type="button" disabled={busy || resendSeconds > 0} onClick={resendEmail} className="text-[12px] text-white/45 disabled:opacity-30">{resendSeconds > 0 ? `Resend in ${resendSeconds}s` : "Resend code"}</button>
-                  <button type="button" disabled={busy} onClick={() => { setEmailPending(false); setEmailOtp(""); setNotice(""); setError(""); }} className="text-[12px] text-white/35 disabled:opacity-30">Change email</button>
+              <div className="space-y-4">
+                <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-5 text-center">
+                  <p className="text-[15px] font-medium text-white">Check your inbox</p>
+                  <p className="mt-2 text-[12px] leading-5 text-white/45">We sent a secure confirmation link to <span className="text-white/70">{email.trim().toLowerCase()}</span>. Tap the link to finish signing in.</p>
                 </div>
-              </form>
+                <Button className="w-full" disabled={busy || resendSeconds > 0} type="button" onClick={resendEmail}>{resendSeconds > 0 ? `Resend in ${resendSeconds}s` : "Resend email"}</Button>
+                <button type="button" disabled={busy} onClick={() => { setEmailPending(false); setNotice(""); setError(""); }} className="w-full py-2 text-center text-[12px] text-white/35 disabled:opacity-30">Change email</button>
+              </div>
             )}
             {notice && <Notice>{notice}</Notice>}
             {error && <ErrorMessage>{error}</ErrorMessage>}
