@@ -4,8 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { isSignedInLocal } from "@/lib/auth";
 
-const LOGO =
-  "https://raw.githubusercontent.com/evolvewithlivv/livv/main/Photoroom_20260831_123254.png";
+const LOGO = "/livv-logo.png";
 
 export default function OpeningPage() {
   const router = useRouter();

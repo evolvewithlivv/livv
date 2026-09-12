@@ -7,7 +7,6 @@ import { cn } from "@/lib/utils";
 import {
   continueWithSocial,
   isSignedInLocal,
-  isUsernameAvailable,
   normalizeUsername,
   signInWithEmail,
   signInWithPhone,
@@ -18,8 +17,7 @@ import {
 
 type Mode = "choose" | "email-in" | "email-up" | "phone-in" | "phone-up" | "x-up";
 
-const LOGO =
-  "https://raw.githubusercontent.com/evolvewithlivv/livv/main/Photoroom_20260831_123254.png";
+const LOGO = "/livv-logo.png";
 
 export default function AuthPage() {
   const router = useRouter();
