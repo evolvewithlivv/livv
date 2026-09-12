@@ -22,6 +22,8 @@ jobs:
     - run: npm install
     - name: Typecheck
       run: npm run typecheck
+    - name: Shipping readiness audit
+      run: npm run shipping:audit
     - name: Build
       id: build
       continue-on-error: true
