@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { startEmailAuth, verifyEmailAuth } from "@/lib/supabase/real-auth";
 import { isOnboardingComplete } from "@/lib/onboarding";
+import { isCloudOnboardingComplete, markCloudOnboardingComplete } from "@/lib/supabase/onboarding-state";
 
 const LOGO = "/livv-logo.png";
 
@@ -33,7 +34,16 @@ export default function AuthPage() {
 
   const verifyEmail = () => void run(async () => {
     await verifyEmailAuth(email, otp);
-    window.location.replace(isOnboardingComplete() ? "/home" : "/onboarding");
+    const localComplete = isOnboardingComplete();
+    if (localComplete) {
+      // Backfill the cloud completion marker for existing members who finished
+      // onboarding before cross-browser completion persistence existed.
+      await markCloudOnboardingComplete("");
+      window.location.replace("/home");
+      return;
+    }
+    const cloudComplete = await isCloudOnboardingComplete();
+    window.location.replace(cloudComplete ? "/home" : "/onboarding");
   });
 
   return (
