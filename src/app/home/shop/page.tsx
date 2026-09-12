@@ -21,7 +21,7 @@ import { buyPack, PACK_SHOP } from "@/lib/pack-shop";
 import { getEffectiveTier, isStripeConfigured } from "@/lib/billing";
 import { feedback } from "@/lib/sensory";
 
-a const SHOP_URL = "https://n8tv6p-pu.myshopify.com";
+const SHOP_URL = "https://n8tv6p-pu.myshopify.com";
 
 const PRODUCTS = [
   {
