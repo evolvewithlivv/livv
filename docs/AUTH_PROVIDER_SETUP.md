@@ -1,82 +1,69 @@
-# LIVV authentication provider setup
+# LIVV authentication setup
 
-LIVV's production sign-in surface has five real methods:
+LIVV intentionally keeps account access simple and does not use social/OAuth providers as identity providers.
 
-1. Google OAuth
-2. Apple OAuth
-3. X (Twitter) OAuth 2.0
-4. Email magic-link authentication
-5. Phone SMS OTP
+The production sign-in surface has exactly two methods:
 
-The app uses Supabase Auth. The browser never receives provider client secrets.
+1. Email magic-link authentication
+2. Phone SMS OTP authentication
 
-## Supabase callback URLs
+Google, Apple, X/Twitter, Snapchat, and other social/OAuth providers are not used for LIVV sign-in or sign-up.
 
-Provider OAuth callbacks terminate at Supabase:
+## Supabase
 
-`https://jnrfzmnxpdcqjmyrgyav.supabase.co/auth/v1/callback`
+LIVV uses Supabase Auth for real account creation and sign-in. The browser never receives server secrets.
 
-After Supabase completes the provider flow, LIVV receives the authenticated session at:
-
-`https://<LIVV-production-domain>/auth/callback`
-
-For local development, use the local LIVV origin for the app redirect, while the provider's Supabase callback remains the Supabase callback URL.
-
-## Google
-
-- Create a Google OAuth Web application.
-- Add the LIVV production origin to Authorized JavaScript origins.
-- Configure the Supabase Google provider with the Google Client ID and Client Secret.
-- Add the Supabase callback URL above to Google's authorized redirect URIs where required.
-
-## Apple
-
-- Create/configure the Apple App ID and Services ID for web authentication.
-- Configure the web return URL to the Supabase callback URL above.
-- Add the Services ID/client ID and generated Apple secret to Supabase.
-- Keep the production LIVV redirect in Supabase's redirect allow list.
-
-## X / Twitter
-
-- Use X OAuth 2.0.
-- Create the X project/app and obtain the Client ID and Client Secret.
-- Set the X callback/redirect URL to the Supabase callback URL above.
-- Enable X in Supabase Auth with those credentials.
-
-Supabase recommends the X OAuth 2.0 provider rather than the legacy Twitter OAuth 1.0a provider.
+The application may use an anonymous Supabase identity before a member chooses a permanent authentication method. Email and phone upgrade that same `auth.users.id`, preserving identity continuity for billing and entitlements.
 
 ## Email
 
-LIVV uses Supabase passwordless email authentication from `/auth`.
+LIVV uses passwordless email authentication from `/auth`.
 
-- Configure Supabase email provider settings and SMTP for production.
-- Ensure the production `/auth/callback` URL is in the Supabase redirect allow list.
-- The app creates/continues the Supabase identity through the real Auth API; it does not use the legacy local fake-auth path for this flow.
+- Enable the Supabase email provider.
+- Configure production email delivery/SMTP.
+- Keep the production LIVV `/auth/callback` URL in the Supabase redirect allow list.
+- Test both a new email address and an existing account.
+- Verify that the callback returns the member to `/home` with the same LIVV identity.
 
 ## Phone
 
 LIVV uses Supabase SMS OTP.
 
 - Enable the phone provider in Supabase Auth.
-- Configure a supported SMS provider (for example Twilio, Vonage, or MessageBird).
-- Test the production number verification flow and rate limits before launch.
+- Configure a supported SMS provider.
+- Test new-number account creation and returning-member sign-in.
+- Verify OTP rate limits and error handling before launch.
 
-## Anonymous identity and linking
+## Callback
 
-LIVV creates an anonymous Supabase user so a visitor can use the product before choosing a permanent sign-in method. Google, Apple, and X use `linkIdentity()` when an anonymous session exists; email and phone use `updateUser()`/OTP to upgrade the same `auth.users.id`.
+Email magic links return through the LIVV callback route:
 
-This identity continuity is important because B1 entitlements are keyed by `auth.users.id`.
+`https://<LIVV-production-domain>/auth/callback`
+
+The callback exchanges the Supabase authorization code for a session and materializes the authenticated user into the existing LIVV product session.
+
+No OAuth provider callback is required by the LIVV application.
+
+## Account continuity
+
+Email and phone are the only permanent authentication methods exposed by LIVV. When an anonymous session is upgraded, the app uses Supabase Auth account updates rather than creating a second identity, preserving the same `auth.users.id` used by server entitlements.
+
+## Social sharing is separate from authentication
+
+LIVV may eventually generate share cards that members can save to their device photo library and post to Instagram, X/Twitter, TikTok, Snapchat, Facebook, or other platforms.
+
+Those platforms are distribution channels, not LIVV identity providers. A person who discovers a LIVV share card should come back to LIVV and create/access their account with email or phone.
 
 ## Launch checklist
 
-- [ ] Google provider enabled and tested
-- [ ] Apple provider enabled and tested
-- [ ] X provider enabled and tested
-- [ ] Email provider + production SMTP tested
-- [ ] Phone provider + SMS delivery tested
-- [ ] Supabase redirect allow list contains production `/auth/callback`
-- [ ] Supabase manual identity linking is enabled if required by the project's OAuth linking policy
-- [ ] Production Vercel environment contains `NEXT_PUBLIC_SUPABASE_URL`
-- [ ] Production Vercel environment contains `NEXT_PUBLIC_SUPABASE_ANON_KEY`
-- [ ] Production Vercel environment contains server-only `SUPABASE_SERVICE_ROLE_KEY`
-- [ ] Test sign-out after every provider and confirm the next visitor does not inherit the prior cloud session
+- [ ] Email magic-link provider enabled and tested
+- [ ] Phone SMS OTP provider enabled and tested
+- [ ] Production `/auth/callback` redirect is allowed
+- [ ] New email creates a LIVV account
+- [ ] Existing email can sign back in
+- [ ] New phone number creates a LIVV account
+- [ ] Existing phone number can sign back in
+- [ ] Sign-out clears the local Supabase session
+- [ ] `NEXT_PUBLIC_SUPABASE_URL` is configured in Production
+- [ ] `NEXT_PUBLIC_SUPABASE_ANON_KEY` is configured in Production
+- [ ] Server-only `SUPABASE_SERVICE_ROLE_KEY` is configured in Production
