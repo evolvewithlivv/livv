@@ -86,8 +86,12 @@ export function savePacks(state: PackState) { if (typeof window === "undefined")
 export function nextGrantAt(tier?: LivvTier): number | null { const state = loadPacks(); if (!state.lastGrantAt) return Date.now(); const t = tier || loadIdentity().tier; return state.lastGrantAt + packEntitlement(t).intervalMs; }
 export function msUntilNextPack(tier?: LivvTier): number { const at = nextGrantAt(tier); return at === null ? 0 : Math.max(0, at - Date.now()); }
 export function canClaimPacks(tier?: LivvTier): boolean { return msUntilNextPack(tier) <= 0; }
-export function claimPacksIfDue(): PackState {
-  const identity = loadIdentity(); const state = loadPacks(); const { intervalMs, grants } = packEntitlement(identity.tier); const now = Date.now();
+export function claimPacksIfDue(tierOverride?: LivvTier): PackState {
+  const identity = loadIdentity();
+  const tier = tierOverride || identity.tier;
+  const state = loadPacks();
+  const { intervalMs, grants } = packEntitlement(tier);
+  const now = Date.now();
   if (state.lastGrantAt && now - state.lastGrantAt < intervalMs) return state;
   for (const grade of grants) state.pending.push({ id: `pack_${grade}_${now}_${Math.random().toString(36).slice(2, 6)}`, grade, grantedAt: now });
   state.lastGrantAt = now; savePacks(state); return state;
@@ -110,4 +114,4 @@ export function collectionStats() { const state = loadPacks(); const unique = ne
 export function formatCountdown(ms: number): string { if (ms <= 0) return "Ready"; const s = Math.floor(ms / 1000); const h = Math.floor(s / 3600); const m = Math.floor((s % 3600) / 60); const sec = s % 60; if (h > 0) return `${h}h ${String(m).padStart(2, "0")}m ${String(sec).padStart(2, "0")}s`; return `${m}m ${String(sec).padStart(2, "0")}s`; }
 export type PackKind = "daily" | "streak" | "pillar" | "apex";
 export const PACK_META = { daily: GRADE_META[1], streak: GRADE_META[2], pillar: GRADE_META[3], apex: GRADE_META[4] };
-export function tryGrantDailyPack() { return claimPacksIfDue(); }
+export function tryGrantDailyPack(tier?: LivvTier) { return claimPacksIfDue(tier); }
