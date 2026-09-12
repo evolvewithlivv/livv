@@ -11,8 +11,11 @@
 -- B3 security hardening:
 --   supabase/migrations/security_harden_function_privileges.sql
 --   supabase/migrations/security_harden_profile_privileges.sql
---   Trigger helpers are no longer callable through client RPC, and client
---   profile writes are restricted to presentation fields.
+--   supabase/migrations/harden_table_privileges.sql
+--   supabase/migrations/harden_profile_select_privilege.sql
+--   Trigger helpers are no longer callable through client RPC, client profile
+--   writes are restricted to presentation fields, and unnecessary client table
+--   privileges are revoked from billing/webhook tables.
 --
 -- Performance hardening:
 --   supabase/migrations/optimize_rls_auth_checks.sql
