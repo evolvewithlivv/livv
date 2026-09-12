@@ -17,8 +17,8 @@ LIVV is a personal evolution ecosystem built around daily action, training, refl
 - Opening experience + onboarding
 - Device-local identity and progression model
 - Supabase anonymous identity foundation
-- Two real sign-in methods: email and phone/SMS
-- Secure email magic-link callback handling
+- Email-only passwordless authentication with 8-digit OTP verification
+- Secure email confirmation callback handling
 - Daily, Train, Mind, Evala, Connect, Profile, Settings, Progress, Shop, Packs, and Vault surfaces
 - Evolution Packs with local collection state and paid Stripe Checkout
 - Stripe subscription tiers: Spark, Rise, Apex, Inner Circle
@@ -33,14 +33,17 @@ LIVV is a personal evolution ecosystem built around daily action, training, refl
 
 ## Authentication
 
-LIVV intentionally keeps authentication simple and independent of social login providers. The production entry screen exposes exactly two methods:
+LIVV V1 intentionally keeps authentication simple: **email only**.
 
-1. Continue with email
-2. Continue with phone
+Members can:
 
-Email uses passwordless magic-link authentication. Phone uses SMS OTP verification. New email addresses and phone numbers can create a LIVV account automatically through Supabase Auth. Existing users can return with the same verified method.
+1. Sign up with an email address.
+2. Sign in with an email address.
+3. Receive an 8-digit one-time verification code by email.
+4. Verify the code inside LIVV.
+5. Change their email through the verified email-authentication flow.
 
-LIVV does not use Google, Apple, X/Twitter, Snapchat, or other social/OAuth providers for sign-in or sign-up. Social platforms remain external sharing destinations for future LIVV share cards, not identity providers.
+LIVV does not use phone/SMS authentication or Apple, Google, X/Twitter, Snapchat, or other social/OAuth identity providers for sign-in or sign-up. Social platforms may be sharing destinations for future LIVV share cards, not identity providers.
 
 ## Billing architecture
 
@@ -120,7 +123,7 @@ Before shipping a billing change, verify:
 4. The current Vercel deployment is Ready.
 5. The paid Checkout → webhook → entitlement → client hydration path is tested end-to-end.
 6. `/api/health` reports the expected production commit after deployment.
-7. Email magic-link and phone SMS OTP have each been smoke-tested in the production Supabase configuration.
+7. Email OTP authentication has been smoke-tested in the production Supabase configuration.
 
 ## Explicitly deferred
 
