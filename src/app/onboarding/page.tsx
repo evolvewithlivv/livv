@@ -36,18 +36,28 @@ export default function OnboardingPage() {
   const [selectedInterests, setSelectedInterests] = useState<string[]>([]);
   const [displayName, setDisplayName] = useState("");
   const [busy, setBusy] = useState(false);
+  const [checkingAccess, setCheckingAccess] = useState(true);
   const [error, setError] = useState("");
 
   useEffect(() => {
+    // Onboarding is post-verification only. A visitor must have a real
+    // local LIVV member session created by the email OTP flow before this
+    // screen can create or update a product account.
+    if (!isSignedInLocal()) {
+      router.replace("/auth");
+      return;
+    }
+
     const draft = loadOnboardingDraft();
     if (draft.why) setWhy(draft.why);
     if (draft.goals.length) setSelectedGoals(draft.goals);
     if (draft.interests.length) setSelectedInterests(draft.interests);
     if (draft.displayName) setDisplayName(draft.displayName);
-    // Local product session only — cloud anon alone must not skip onboarding (A3-3).
-    if (isSignedInLocal() && draft.completedAt) {
+    if (draft.completedAt) {
       router.replace("/home");
+      return;
     }
+    setCheckingAccess(false);
   }, [router]);
 
   const persist = (partial: {
@@ -64,6 +74,14 @@ export default function OnboardingPage() {
   };
 
   const finish = async () => {
+    // Re-check immediately before creating the local account/session so a
+    // signed-out visitor cannot bypass email verification by reaching this
+    // route directly or racing the auth state.
+    if (!isSignedInLocal()) {
+      router.replace("/auth");
+      return;
+    }
+
     const name = displayName.trim();
     if (!name) {
       setError("Add a display name to continue.");
@@ -83,6 +101,14 @@ export default function OnboardingPage() {
       setBusy(false);
     }
   };
+
+  if (checkingAccess) {
+    return (
+      <main className="livv-page flex min-h-dvh items-center justify-center px-5 text-white">
+        <p className="text-sm text-white/45">Verifying your LIVV session…</p>
+      </main>
+    );
+  }
 
   return (
     <main className="livv-page relative min-h-dvh overflow-hidden pb-16 pt-10 text-white">
@@ -109,10 +135,7 @@ export default function OnboardingPage() {
               placeholder="One honest sentence."
               className="w-full rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-[15px] text-white outline-none placeholder:text-white/25 focus:border-white/25"
             />
-            <Button
-              className="mt-6 w-full"
-              onClick={() => setStep("goals")}
-            >
+            <Button className="mt-6 w-full" onClick={() => setStep("goals")}>
               Continue
             </Button>
           </div>
