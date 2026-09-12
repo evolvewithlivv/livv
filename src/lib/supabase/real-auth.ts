@@ -10,8 +10,6 @@ const USERNAMES_KEY = "livv-usernames-v1";
 const IDENTITY_KEY = "livv-identity-v1";
 const CLOUD_MAP_KEY = "livv-cloud-account-v1";
 
-export type SocialProvider = "google" | "apple" | "x";
-
 function redirectUrl() {
   return `${window.location.origin}/auth/callback`;
 }
@@ -60,7 +58,6 @@ function saveCloudMap(map: Record<string, string>) {
 
 function providerForUser(user: User, fallback?: AuthProvider): AuthProvider {
   const provider = user.app_metadata?.provider as string | undefined;
-  if (provider === "google" || provider === "apple" || provider === "x") return provider;
   if (provider === "phone") return "phone";
   if (provider === "email") return "email";
   return fallback || "email";
@@ -72,7 +69,6 @@ function metadataName(user: User) {
     metadata.full_name ||
     metadata.name ||
     metadata.display_name ||
-    metadata.user_name ||
     metadata.preferred_username ||
     (user.email ? user.email.split("@")[0] : "") ||
     user.phone ||
@@ -80,13 +76,11 @@ function metadataName(user: User) {
   ).toString().trim();
 }
 
-function metadataUsername(user: User, provider: AuthProvider) {
+function metadataUsername(user: User) {
   const metadata = user.user_metadata || {};
   return (
-    metadata.user_name ||
     metadata.preferred_username ||
     metadata.username ||
-    (provider === "x" ? metadata.user_name || metadata.screen_name : "") ||
     metadataName(user)
   ).toString();
 }
@@ -109,14 +103,16 @@ export async function materializeSupabaseUser(user: User, providerHint?: AuthPro
     : null;
 
   if (!account) {
-    const suggested = normalizeUsername(metadataUsername(user, provider));
-    const username = suggested.length >= 3 ? (suggestUsername(suggested, provider) === suggested ? suggested : suggestUsername(metadataName(user), provider)) : suggestUsername(metadataName(user), provider);
+    const suggested = normalizeUsername(metadataUsername(user));
+    const suggestedFromName = suggestUsername(metadataName(user), provider);
+    const username = suggested.length >= 3
+      ? (suggestUsername(suggested, provider) === suggested ? suggested : suggestedFromName)
+      : suggestedFromName;
     account = {
       id: `supabase_${user.id}`,
       provider,
       email: user.email?.toLowerCase(),
       phone: user.phone || undefined,
-      xHandle: provider === "x" ? normalizeUsername(metadataUsername(user, provider)) : undefined,
       displayName: metadataName(user),
       username,
       usernameLocked: true,
@@ -158,34 +154,6 @@ export async function getAuthenticatedUser() {
   const { data, error } = await client.auth.getUser();
   if (error) return null;
   return data.user;
-}
-
-/** Start one of LIVV's three real OAuth providers. Anonymous sessions are upgraded in-place. */
-export async function startSocialAuth(provider: SocialProvider) {
-  const client = getSupabaseBrowserClient();
-  if (!client) throw new Error("LIVV authentication is not configured");
-
-  const { data: current } = await client.auth.getUser();
-  if (current.user?.is_anonymous) {
-    const { error } = await client.auth.linkIdentity({
-      provider,
-      options: { redirectTo: redirectUrl() },
-    });
-    if (error) {
-      // Never silently fall back to a brand-new OAuth user here. That would
-      // split the anonymous user's auth.users.id and strand their entitlement.
-      throw new Error(
-        `Could not connect your ${provider === "x" ? "X" : provider} account to this LIVV identity. ${error.message}`
-      );
-    }
-    return;
-  }
-
-  const { error } = await client.auth.signInWithOAuth({
-    provider,
-    options: { redirectTo: redirectUrl() },
-  });
-  if (error) throw error;
 }
 
 /** Email is passwordless: anonymous users keep the same UUID while permanent users can sign in by link. */
