@@ -57,6 +57,11 @@ export async function GET(req: NextRequest) {
     }
 
     if (session.metadata?.livv_kind === "pack") {
+      // One-time packs require an actually paid Checkout Session. A completed
+      // session with unpaid/no-payment-required status is not a paid pack.
+      if (session.payment_status !== "paid") {
+        return json({ error: "Pack payment not complete" }, { status: 402 });
+      }
       return json({
         kind: "pack",
         grade: Number(session.metadata.livv_grade || 1),
@@ -65,6 +70,13 @@ export async function GET(req: NextRequest) {
           typeof session.customer === "string" ? session.customer : session.customer?.id,
         email: session.customer_details?.email || session.customer_email,
       });
+    }
+
+    if (session.subscription && typeof session.subscription !== "string") {
+      const invalidStatuses = new Set(["canceled", "unpaid", "incomplete", "incomplete_expired"]);
+      if (invalidStatuses.has(session.subscription.status)) {
+        return json({ error: "Subscription is not active" }, { status: 402 });
+      }
     }
 
     let tier = (session.metadata?.livv_tier as PaidTier | undefined) || null;
