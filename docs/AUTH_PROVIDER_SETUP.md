@@ -1,89 +1,74 @@
-# LIVV authentication setup (Email OTP + Phone SMS only)
+# LIVV authentication setup (Email OTP only)
 
-LIVV uses **only**:
+LIVV uses **one authentication method: email**.
 
-1. **Email OTP** — 6-digit code via Supabase `signInWithOtp` / `verifyOtp({ type: "email" })`
-2. **Phone SMS OTP** — 6-digit code via Supabase `signInWithOtp` / `verifyOtp({ type: "sms" })`
+- **Email OTP** — an 8-digit code delivered by email through Supabase Auth.
+- Sign up and sign in use the same passwordless flow.
+- Email changes are handled through verified email authentication.
 
-**Permanently out of scope:** Google, Apple, X/Twitter, Snapchat, Facebook, or any other social/OAuth identity provider.
+Phone/SMS authentication and social/OAuth identity providers are not part of LIVV V1.
 
 ---
 
-## Hard requirement: Magic Link template must show `{{ .Token }}`
+## Email OTP template
 
-Official Supabase docs (Passwordless email / Email OTP):
+Supabase Email OTP and Magic Link use the same Auth email template. The template must include `{{ .Token }}` as visible text so the member can enter the numeric code in LIVV.
 
-> Email OTPs share an implementation with Magic Links. To send an OTP instead of a Magic Link, alter the **Magic Link** email template. Modify the template to include the `{{ .Token }}` variable.
-
-There is **no** client API flag that forces a 6-digit email.  
-`signInWithOtp({ email })` always uses the same Auth path; **email body content is controlled only by the dashboard template**.
-
-| Template content | What the user receives | Can enter 6 digits in LIVV? |
-|------------------|------------------------|-----------------------------|
-| Only `{{ .ConfirmationURL }}` (default magic link) | A clickable link | **No** — no visible code |
-| Includes `{{ .Token }}` | Visible 6-digit code | **Yes** — `verifyOtp({ type: "email" })` |
-
-LIVV already calls:
+LIVV calls:
 
 ```ts
-await supabase.auth.signInWithOtp({ email, options: { shouldCreateUser: true } })
-await supabase.auth.verifyOtp({ email, token: "123456", type: "email" })
+await supabase.auth.signInWithOtp({
+  email,
+  options: { shouldCreateUser: true },
+})
+
+await supabase.auth.verifyOtp({
+  email,
+  token: "12345678",
+  type: "email",
+})
 ```
 
-That is the correct client path. It cannot invent a visible code if the template omits `{{ .Token }}`.
+### Supabase dashboard
 
-### Exact template to paste (Supabase Dashboard)
-
-1. Open **Authentication → Email Templates**
-2. Select **Magic link** (sometimes labeled **Magic link or OTP**)
-3. Replace the body with something equivalent to:
-
-```html
-<h2>Your LIVV sign-in code</h2>
-<p>Enter this 6-digit code in the LIVV app:</p>
-<p style="font-size:24px;letter-spacing:4px;font-weight:bold;">{{ .Token }}</p>
-<p>This code expires in about one hour. If you did not request it, ignore this email.</p>
-```
-
-You may keep a secondary link using `{{ .ConfirmationURL }}` if you want, but **`{{ .Token }}` must appear as visible text** for the in-app OTP flow.
-
+1. Open **Authentication → Email Templates**.
+2. Select **Magic link** (or **Magic link or OTP**, depending on dashboard wording).
+3. Make the email show `{{ .Token }}` as the sign-in code.
 4. Save the template.
-5. Send a new code from LIVV (old emails still reflect the old template).
+5. Request a new code from LIVV when testing. Existing emails use the template that was active when they were sent.
+
+The exact visual design can be customized in Supabase or through the configured email provider. The important requirement for LIVV is that `{{ .Token }}` is visible in the email body.
 
 Also ensure:
 
-- **Authentication → Providers → Email** is enabled
-- **URL configuration** Site URL is your production origin
-- Redirect allow-list includes `https://YOUR_DOMAIN/auth/callback` (legacy link only)
+- **Authentication → Providers → Email** is enabled.
+- Production Site URL is correct.
+- Production redirect configuration is correct for `/auth/callback` if the confirmation link is retained.
+- Production email delivery is configured and tested.
 
 ---
 
-## Application code (GitHub)
+## Application code
 
 | Piece | Role |
-|-------|------|
-| `src/lib/supabase/real-auth.ts` | `startEmailAuth` / `verifyEmailAuth` / phone OTP |
-| `src/app/auth/page.tsx` | Email + phone UI, 6-digit entry |
-| `src/app/auth/callback/page.tsx` | Legacy magic-link code exchange only |
-| `src/lib/supabase/client.ts` | `createClient(URL, ANON_KEY)` — URL must be origin only |
+|---|---|
+| `src/lib/supabase/real-auth.ts` | Email OTP send, verification, session materialization |
+| `src/app/auth/page.tsx` | Email entry + 8-digit code UI |
+| `src/app/auth/callback/page.tsx` | Legacy email confirmation-link exchange |
+| `src/lib/supabase/client.ts` | Supabase browser client |
+| `src/lib/auth.ts` | Local product account/session model; provider is email-only |
 
-Required **public** env (Vercel Production):
+Required public env in Vercel Production:
 
-- `NEXT_PUBLIC_SUPABASE_URL` = `https://<project-ref>.supabase.co` (no `/rest/v1` or `/auth/v1` suffix)
-- `NEXT_PUBLIC_SUPABASE_ANON_KEY` = anon or publishable key (not a URL)
+- `NEXT_PUBLIC_SUPABASE_URL` = `https://<project-ref>.supabase.co` (origin only)
+- `NEXT_PUBLIC_SUPABASE_ANON_KEY` = anon/public key, not a URL
 - `NEXT_PUBLIC_APP_URL` = production origin
 
 Server-only:
 
 - `SUPABASE_SERVICE_ROLE_KEY`
 
----
-
-## Phone SMS OTP
-
-1. **Authentication → Providers → Phone** enabled
-2. SMS provider (Twilio, etc.) connected and funded
-3. Numbers in E.164 (`+15551234567`)
+Never put server secrets in a `NEXT_PUBLIC_*` variable.
 
 ---
 
@@ -91,25 +76,30 @@ Server-only:
 
 ### Code / Vercel
 
-- [ ] URL and anon key correct (not swapped, URL has no path suffix)
-- [ ] Production deployment Ready
+- [ ] Production deployment is Ready.
+- [ ] Supabase URL is the bare project origin.
+- [ ] Public client key is the anon/public key.
+- [ ] No phone/SMS authentication path remains.
+- [ ] No social/OAuth sign-in path remains.
 
-### Supabase (required for visible email codes)
+### Supabase
 
-- [ ] Magic Link template includes **`{{ .Token }}` as visible text**
-- [ ] Email provider enabled
-- [ ] Custom SMTP recommended for production deliverability
-- [ ] Phone + SMS provider if using phone
+- [ ] Email provider enabled.
+- [ ] Email template visibly includes `{{ .Token }}`.
+- [ ] Production email delivery works.
+- [ ] Production redirect URL is correct if confirmation links are retained.
 
 ### User tests
 
-- [ ] Request email code → **email shows 6 digits** → verify in app → home/onboarding
-- [ ] Wrong code shows clear error
-- [ ] Resend works after cooldown
+- [ ] Fresh email → request code → receive 8-digit code → verify → onboarding/home.
+- [ ] Existing email → request code → verify → same account.
+- [ ] Wrong code shows a clear error.
+- [ ] Resend works.
+- [ ] Change email flow requires verification.
+- [ ] Sign out → sign back in with email.
 
 ---
 
-## What code cannot fix
+## Product rule
 
-A green Vercel deploy does **not** put `{{ .Token }}` into the Supabase email template.  
-Without that dashboard change, users receive a magic link only and cannot complete LIVV’s 6-digit entry path.
+LIVV V1 authentication is intentionally simple: **email only**. Do not reintroduce phone numbers, SMS authentication, Apple, Google, X/Twitter, Snapchat, or another identity provider without an explicit product decision and a new authentication architecture review.
