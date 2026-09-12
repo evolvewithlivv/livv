@@ -14,11 +14,11 @@ export default function AuthCallbackPage() {
     const finish = async () => {
       try {
         const params = new URLSearchParams(window.location.search);
-        const providerError = params.get("error");
-        const providerErrorDescription = params.get("error_description");
-        if (providerError) {
+        const authError = params.get("error");
+        const authErrorDescription = params.get("error_description");
+        if (authError) {
           throw new Error(
-            providerErrorDescription || `Authentication provider returned ${providerError}.`
+            authErrorDescription || `Authentication request returned ${authError}.`
           );
         }
 
