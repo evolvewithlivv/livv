@@ -18,11 +18,10 @@ import {
   type PendingPack,
 } from "@/lib/packs";
 import { buyPack, PACK_SHOP } from "@/lib/pack-shop";
-import { isStripeConfigured } from "@/lib/billing";
-import { loadIdentity } from "@/lib/identity";
+import { getEffectiveTier, isStripeConfigured } from "@/lib/billing";
 import { feedback } from "@/lib/sensory";
 
-const SHOP_URL = "https://n8tv6p-pu.myshopify.com";
+a const SHOP_URL = "https://n8tv6p-pu.myshopify.com";
 
 const PRODUCTS = [
   {
@@ -51,31 +50,33 @@ export default function ShopPage() {
   const [buying, setBuying] = useState<PackGrade | null>(null);
 
   const sync = () => {
-    const id = loadIdentity();
-    if (canClaimPacks(id.tier)) claimPacksIfDue();
+    const tier = getEffectiveTier();
+    if (canClaimPacks(tier)) claimPacksIfDue(tier);
     const state = loadPacks();
     setPending(state.pending);
     setStats(collectionStats());
-    setMsLeft(msUntilNextPack(id.tier));
+    setMsLeft(msUntilNextPack(tier));
   };
 
   useEffect(() => {
     sync();
     const timer = window.setInterval(() => {
-      const id = loadIdentity();
-      const left = msUntilNextPack(id.tier);
+      const tier = getEffectiveTier();
+      const left = msUntilNextPack(tier);
       setMsLeft(left);
-      if (left <= 0 && canClaimPacks(id.tier)) {
-        claimPacksIfDue();
+      if (left <= 0 && canClaimPacks(tier)) {
+        claimPacksIfDue(tier);
         sync();
       }
     }, 1000);
     window.addEventListener("livv-packs", sync);
     window.addEventListener("livv-identity", sync);
+    window.addEventListener("livv-billing", sync);
     return () => {
       window.clearInterval(timer);
       window.removeEventListener("livv-packs", sync);
       window.removeEventListener("livv-identity", sync);
+      window.removeEventListener("livv-billing", sync);
     };
   }, []);
 
