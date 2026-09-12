@@ -14,6 +14,14 @@ export default function AuthCallbackPage() {
     const finish = async () => {
       try {
         const params = new URLSearchParams(window.location.search);
+        const providerError = params.get("error");
+        const providerErrorDescription = params.get("error_description");
+        if (providerError) {
+          throw new Error(
+            providerErrorDescription || `Authentication provider returned ${providerError}.`
+          );
+        }
+
         const code = params.get("code") || undefined;
         await finishSupabaseCallback(code);
         if (active) router.replace("/home");
