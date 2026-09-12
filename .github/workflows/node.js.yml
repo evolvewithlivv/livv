@@ -20,6 +20,8 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
     - run: npm install
+    - name: Typecheck
+      run: npm run typecheck
     - name: Build
       id: build
       continue-on-error: true
