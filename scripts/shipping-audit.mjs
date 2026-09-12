@@ -6,23 +6,26 @@ const read = (file) => fs.readFileSync(path.join(root, file), "utf8");
 
 const checks = [
   {
-    name: "five real sign-in methods are surfaced",
+    name: "only email and phone sign-in methods are surfaced",
     file: "src/app/auth/page.tsx",
     patterns: [
-      "startSocialAuth",
       "startEmailAuth",
       "startPhoneAuth",
-      "Continue with Google",
-      "Continue with Apple",
-      "Continue with X",
       "Continue with email",
       "Continue with phone",
     ],
+    absentPatterns: [
+      "startSocialAuth",
+      "Continue with Google",
+      "Continue with Apple",
+      "Continue with X",
+    ],
   },
   {
-    name: "OAuth supports Google, Apple, and X",
+    name: "social OAuth authentication paths are absent",
     file: "src/lib/supabase/real-auth.ts",
-    patterns: ['SocialProvider = "google" | "apple" | "x"', "signInWithOAuth", "linkIdentity"],
+    patterns: ["startEmailAuth", "startPhoneAuth", "verifyPhoneAuth"],
+    absentPatterns: ["signInWithOAuth", "linkIdentity", "SocialProvider", 'provider === "google"', 'provider === "apple"', 'provider === "x"'],
   },
   {
     name: "email auth is real passwordless Supabase auth",
@@ -35,9 +38,10 @@ const checks = [
     patterns: ["phone: cleanPhone", "verifyOtp", 'type: linking ? "phone_change" : "sms"'],
   },
   {
-    name: "OAuth callback exchanges the server-issued code",
+    name: "email callback exchanges the server-issued code",
     file: "src/app/auth/callback/page.tsx",
-    patterns: ["finishSupabaseCallback", 'params.get("code")', "Authentication provider returned"],
+    patterns: ["finishSupabaseCallback", 'params.get("code")', "Authentication completed without a session"],
+    absentPatterns: ["Authentication provider returned"],
   },
   {
     name: "billing portal is authenticated and server-bound",
@@ -87,11 +91,13 @@ for (const check of checks) {
     continue;
   }
 
-  const missing = check.patterns.filter((pattern) => !source.includes(pattern));
-  if (missing.length) {
+  const missing = (check.patterns || []).filter((pattern) => !source.includes(pattern));
+  const forbidden = (check.absentPatterns || []).filter((pattern) => source.includes(pattern));
+  if (missing.length || forbidden.length) {
     failed += 1;
     console.error(`FAIL  ${check.name}`);
     for (const pattern of missing) console.error(`      missing: ${pattern}`);
+    for (const pattern of forbidden) console.error(`      forbidden: ${pattern}`);
   } else {
     console.log(`PASS  ${check.name}`);
   }
