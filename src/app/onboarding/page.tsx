@@ -10,6 +10,7 @@ import {
   markOnboardingComplete,
   saveOnboardingDraft,
 } from "@/lib/onboarding";
+import { markCloudOnboardingComplete } from "@/lib/supabase/onboarding-state";
 import { cn } from "@/lib/utils";
 
 const GOALS = [
@@ -90,6 +91,10 @@ export default function OnboardingPage() {
     setBusy(true);
     setError("");
     try {
+      // Cloud completion is the durable source used to recognize this member
+      // on another browser. Fail closed so a successful-looking local finish
+      // cannot leave the account in a perpetual first-run state elsewhere.
+      await markCloudOnboardingComplete(name);
       persist({ why, goals: selectedGoals, interests: selectedInterests, displayName: name });
       markOnboardingComplete();
       markFirstSessionPending();
