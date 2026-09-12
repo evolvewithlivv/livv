@@ -19,10 +19,36 @@ Run this on the current Production deployment after each release candidate. This
 
 ## 2. Anonymous identity
 
-- In Settings/Profile, confirm the account can exist without requiring an email.
+- In Settings/Profile, confirm the account can exist without requiring an email or phone before the member chooses a permanent sign-in method.
 - Refresh and navigate between pages.
 - Confirm the same local identity remains present.
 - Do not create a second identity accidentally by refreshing during bootstrap.
+
+## 2.5. Permanent authentication — exactly two methods
+
+### Email
+
+- From `/auth`, confirm the only permanent choices shown are **Continue with email** and **Continue with phone**.
+- Confirm there are no Google, Apple, X/Twitter, Snapchat, or other social/OAuth sign-in buttons.
+- Enter a fresh test email.
+- Confirm a secure LIVV email is delivered.
+- Follow the email link and confirm the session returns to `/home`.
+- Refresh and confirm the same account remains signed in.
+- Sign out and repeat with the same email to confirm it can sign back in.
+
+### Phone
+
+- Sign out and return to `/auth`.
+- Enter a test phone number in international format.
+- Confirm a 6-digit SMS code is delivered.
+- Enter the code and confirm the session returns to `/home`.
+- Refresh and confirm the same account remains signed in.
+- Sign out and repeat with the same number to confirm it can sign back in.
+
+### Social-login absence
+
+- Confirm LIVV never redirects to Google, Apple, X/Twitter, Snapchat, or another social identity provider.
+- Social platforms are sharing destinations only, not LIVV identity providers.
 
 ## 3. Daily / Train / progression
 
@@ -47,7 +73,7 @@ Run this on the current Production deployment after each release candidate. This
 - Confirm an export file is produced.
 - If using a disposable test profile, test import into a clean state.
 - Verify the delete-all-data control requires its intended confirmation and actually clears local data.
-- Sign out, then sign back in / re-enter as supported by the current auth flow.
+- Sign out, then sign back in using email magic link or phone SMS OTP.
 
 ## 6. Free billing behavior
 
@@ -110,6 +136,9 @@ Ship only when:
 - [ ] Daily/Train/progression persist.
 - [ ] Evala responds and recovers from failure.
 - [ ] Settings/data export/import/delete work.
+- [ ] Email magic-link authentication works end-to-end.
+- [ ] Phone SMS OTP authentication works end-to-end.
+- [ ] No social/OAuth sign-in or sign-up path is exposed.
 - [ ] Spark stays free and paid gates behave correctly.
 - [ ] Stripe test subscription completes and survives refresh.
 - [ ] Portal ownership works.
