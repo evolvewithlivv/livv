@@ -1,63 +1,63 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { cn } from "@/lib/utils";
 import {
-  continueWithSocial,
-  isSignedInLocal,
-  normalizeUsername,
-  signInWithEmail,
-  signInWithPhone,
-  signUpWithProvider,
-  suggestUsername,
-  type AuthProvider,
-} from "@/lib/auth";
-
-type Mode = "choose" | "email-in" | "email-up" | "phone-in" | "phone-up" | "x-up";
+  startEmailAuth,
+  startPhoneAuth,
+  startSocialAuth,
+  verifyPhoneAuth,
+} from "@/lib/supabase/real-auth";
 
 const LOGO = "/livv-logo.png";
+type Mode = "choose" | "email" | "phone";
 
 export default function AuthPage() {
   const router = useRouter();
   const [mode, setMode] = useState<Mode>("choose");
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState("");
-
+  const [notice, setNotice] = useState("");
   const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
   const [phone, setPhone] = useState("");
-  const [displayName, setDisplayName] = useState("");
-  const [username, setUsername] = useState("");
-  const [xHandle, setXHandle] = useState("");
-
-  useEffect(() => {
-    if (isSignedInLocal()) router.replace("/home");
-  }, [router]);
+  const [otp, setOtp] = useState("");
+  const [phoneLinking, setPhoneLinking] = useState(false);
 
   const run = async (fn: () => Promise<unknown>) => {
     setBusy(true);
     setError("");
+    setNotice("");
     try {
       await fn();
-      router.replace("/home");
     } catch (e) {
-      setError(e instanceof Error ? e.message : "Something went wrong");
+      setError(e instanceof Error ? e.message : "Something went wrong. Try again.");
     } finally {
       setBusy(false);
     }
   };
 
-  const social = (provider: "google" | "apple" | "x") =>
-    run(async () => {
-      const result = await continueWithSocial(provider, {
-        displayName: displayName || undefined,
-        xHandle: xHandle || undefined,
-      });
-      if (result.isNew && provider === "x" && !xHandle) {
-        /* ok */
-      }
+  const social = (provider: "google" | "apple" | "x") => {
+    void run(() => startSocialAuth(provider));
+  };
+
+  const submitEmail = () =>
+    void run(async () => {
+      await startEmailAuth(email);
+      setNotice("Check your email. Use the secure LIVV link to finish signing in.");
+    });
+
+  const submitPhone = () =>
+    void run(async () => {
+      const result = await startPhoneAuth(phone);
+      setPhoneLinking(result.linked);
+      setNotice("We sent a 6-digit code to your phone.");
+    });
+
+  const verifyPhone = () =>
+    void run(async () => {
+      await verifyPhoneAuth(phone, otp, phoneLinking);
+      router.replace("/home");
     });
 
   return (
@@ -66,30 +66,30 @@ export default function AuthPage() {
         <div className="flex flex-col items-center text-center">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={LOGO} alt="LIVV" className="h-14 w-14 object-contain" />
-          <h1 className="mt-5 text-[28px] font-semibold tracking-tight">Join LIVV</h1>
-          <p className="mt-2 text-[13px] text-white/40">Device-local account · progress stays on this browser</p>
+          <h1 className="mt-5 text-[28px] font-semibold tracking-tight">Enter LIVV</h1>
+          <p className="mt-2 max-w-xs text-[13px] leading-5 text-white/40">
+            Create or access your real LIVV account. Your authentication is handled securely by Supabase.
+          </p>
         </div>
 
         {mode === "choose" && (
           <div className="mt-10 space-y-3">
-            <Button className="w-full" onClick={() => setMode("email-up")}>
-              Continue with email
-            </Button>
-            <Button className="w-full" variant="secondary" onClick={() => setMode("email-in")}>
-              Sign in with email
-            </Button>
-            <Button className="w-full" variant="secondary" onClick={() => setMode("phone-up")}>
-              Continue with phone
-            </Button>
-            <Button className="w-full" variant="secondary" onClick={() => social("google")}>
+            <Button className="w-full" disabled={busy} onClick={() => social("google")}>
               Continue with Google
             </Button>
-            <Button className="w-full" variant="secondary" onClick={() => social("apple")}>
+            <Button className="w-full" variant="secondary" disabled={busy} onClick={() => social("apple")}>
               Continue with Apple
             </Button>
-            <Button className="w-full" variant="secondary" onClick={() => setMode("x-up")}>
+            <Button className="w-full" variant="secondary" disabled={busy} onClick={() => social("x")}>
               Continue with X
             </Button>
+            <Button className="w-full" variant="secondary" disabled={busy} onClick={() => setMode("email")}>
+              Continue with email
+            </Button>
+            <Button className="w-full" variant="secondary" disabled={busy} onClick={() => setMode("phone")}>
+              Continue with phone
+            </Button>
+
             <button
               type="button"
               className="mt-4 w-full text-center text-[13px] text-white/35"
@@ -100,114 +100,88 @@ export default function AuthPage() {
           </div>
         )}
 
-        {mode === "email-up" && (
+        {mode === "email" && (
           <form
-            className="mt-10 space-y-3"
-            onSubmit={(e) => {
-              e.preventDefault();
-              void run(() =>
-                signUpWithProvider({
-                  provider: "email",
-                  email,
-                  password,
-                  displayName: displayName || email.split("@")[0] || "Member",
-                  username: username || suggestUsername(displayName || email, "email"),
-                })
-              );
+            className="mt-10 space-y-4"
+            onSubmit={(event) => {
+              event.preventDefault();
+              submitEmail();
             }}
           >
-            <Field label="Display name" value={displayName} onChange={setDisplayName} />
-            <Field label="Username" value={username} onChange={(v) => setUsername(normalizeUsername(v))} />
-            <Field label="Email" value={email} onChange={setEmail} type="email" />
-            <Field label="Password" value={password} onChange={setPassword} type="password" />
-            <Button className="w-full" disabled={busy} type="submit">
-              Create account
+            <Field label="Email" value={email} onChange={setEmail} type="email" autoComplete="email" />
+            <p className="text-[12px] leading-5 text-white/35">
+              We&apos;ll email you a secure sign-in link. New emails create an account automatically.
+            </p>
+            <Button className="w-full" disabled={busy || !email} type="submit">
+              {busy ? "Sending…" : "Email me a sign-in link"}
             </Button>
             <Back onClick={() => setMode("choose")} />
           </form>
         )}
 
-        {mode === "email-in" && (
-          <form
-            className="mt-10 space-y-3"
-            onSubmit={(e) => {
-              e.preventDefault();
-              void run(() => signInWithEmail(email, password));
-            }}
-          >
-            <Field label="Email" value={email} onChange={setEmail} type="email" />
-            <Field label="Password" value={password} onChange={setPassword} type="password" />
-            <Button className="w-full" disabled={busy} type="submit">
-              Sign in
-            </Button>
+        {mode === "phone" && (
+          <div className="mt-10 space-y-4">
+            <form
+              className="space-y-4"
+              onSubmit={(event) => {
+                event.preventDefault();
+                submitPhone();
+              }}
+            >
+              <Field
+                label="Phone number"
+                value={phone}
+                onChange={setPhone}
+                type="tel"
+                autoComplete="tel"
+                placeholder="+1 555 123 4567"
+              />
+              <p className="text-[12px] leading-5 text-white/35">
+                We&apos;ll text you a one-time verification code. New numbers create an account automatically.
+              </p>
+              <Button className="w-full" disabled={busy || !phone} type="submit">
+                {busy ? "Sending…" : "Text me a code"}
+              </Button>
+            </form>
+
+            {notice && (
+              <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4 text-[12px] leading-5 text-white/60">
+                {notice}
+              </div>
+            )}
+
+            {notice && (
+              <form
+                className="space-y-3"
+                onSubmit={(event) => {
+                  event.preventDefault();
+                  verifyPhone();
+                }}
+              >
+                <Field
+                  label="6-digit code"
+                  value={otp}
+                  onChange={(value) => setOtp(value.replace(/\D/g, "").slice(0, 6))}
+                  inputMode="numeric"
+                  autoComplete="one-time-code"
+                />
+                <Button className="w-full" disabled={busy || otp.length !== 6} type="submit">
+                  {busy ? "Verifying…" : "Verify & enter LIVV"}
+                </Button>
+              </form>
+            )}
+
             <Back onClick={() => setMode("choose")} />
-          </form>
+          </div>
         )}
 
-        {mode === "phone-up" && (
-          <form
-            className="mt-10 space-y-3"
-            onSubmit={(e) => {
-              e.preventDefault();
-              void run(() =>
-                signUpWithProvider({
-                  provider: "phone",
-                  phone,
-                  displayName: displayName || "Member",
-                  username: username || suggestUsername(displayName || phone, "phone"),
-                })
-              );
-            }}
-          >
-            <Field label="Display name" value={displayName} onChange={setDisplayName} />
-            <Field label="Username" value={username} onChange={(v) => setUsername(normalizeUsername(v))} />
-            <Field label="Phone" value={phone} onChange={setPhone} type="tel" />
-            <Button className="w-full" disabled={busy} type="submit">
-              Create account
-            </Button>
-            <Back onClick={() => setMode("choose")} />
-          </form>
+        {(error || notice) && mode !== "phone" && (
+          <div className="mt-6 space-y-2 text-center">
+            {notice && <p className="text-[13px] text-emerald-300">{notice}</p>}
+            {error && <p className="text-[13px] text-red-400">{error}</p>}
+          </div>
         )}
-
-        {mode === "phone-in" && (
-          <form
-            className="mt-10 space-y-3"
-            onSubmit={(e) => {
-              e.preventDefault();
-              void run(() => signInWithPhone(phone));
-            }}
-          >
-            <Field label="Phone" value={phone} onChange={setPhone} type="tel" />
-            <Button className="w-full" disabled={busy} type="submit">
-              Sign in
-            </Button>
-            <Back onClick={() => setMode("choose")} />
-          </form>
-        )}
-
-        {mode === "x-up" && (
-          <form
-            className="mt-10 space-y-3"
-            onSubmit={(e) => {
-              e.preventDefault();
-              void run(async () => {
-                await continueWithSocial("x", {
-                  displayName: displayName || xHandle || "X Member",
-                  xHandle,
-                });
-              });
-            }}
-          >
-            <Field label="Display name" value={displayName} onChange={setDisplayName} />
-            <Field label="X handle" value={xHandle} onChange={setXHandle} />
-            <Button className="w-full" disabled={busy} type="submit">
-              Continue with X
-            </Button>
-            <Back onClick={() => setMode("choose")} />
-          </form>
-        )}
-
-        {error && <p className="mt-6 text-center text-[13px] text-red-400">{error}</p>}
+        {error && mode === "phone" && <p className="mt-5 text-center text-[13px] text-red-400">{error}</p>}
       </div>
     </main>
   );
@@ -218,11 +192,17 @@ function Field({
   value,
   onChange,
   type = "text",
+  autoComplete,
+  inputMode,
+  placeholder,
 }: {
   label: string;
   value: string;
-  onChange: (v: string) => void;
+  onChange: (value: string) => void;
   type?: string;
+  autoComplete?: string;
+  inputMode?: "numeric" | "tel" | "email" | "text";
+  placeholder?: string;
 }) {
   return (
     <label className="block">
@@ -230,8 +210,11 @@ function Field({
       <input
         type={type}
         value={value}
-        onChange={(e) => onChange(e.target.value)}
-        className="mt-1.5 w-full rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-[14px] text-white outline-none focus:border-white/25"
+        onChange={(event) => onChange(event.target.value)}
+        autoComplete={autoComplete}
+        inputMode={inputMode}
+        placeholder={placeholder}
+        className="mt-1.5 w-full rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-[14px] text-white outline-none placeholder:text-white/20 focus:border-white/25"
       />
     </label>
   );
