@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { finishSupabaseCallback } from "@/lib/supabase/real-auth";
+import { isOnboardingComplete } from "@/lib/onboarding";
 
 export default function AuthCallbackPage() {
   const router = useRouter();
@@ -24,7 +25,7 @@ export default function AuthCallbackPage() {
 
         const code = params.get("code") || undefined;
         await finishSupabaseCallback(code);
-        if (active) router.replace("/home");
+        if (active) router.replace(isOnboardingComplete() ? "/home" : "/onboarding");
       } catch (err) {
         if (active) {
           setError(err instanceof Error ? err.message : "Authentication could not be completed.");
@@ -45,7 +46,7 @@ export default function AuthCallbackPage() {
           <>
             <div className="mx-auto h-10 w-10 animate-pulse rounded-full border border-white/20" />
             <h1 className="mt-6 text-xl font-semibold">Finishing your LIVV sign-in…</h1>
-            <p className="mt-2 text-sm text-white/40">Securely connecting your account and restoring your LIVV session.</p>
+            <p className="mt-2 text-sm text-white/40">Securely confirming your email and restoring your LIVV session.</p>
           </>
         ) : (
           <>
