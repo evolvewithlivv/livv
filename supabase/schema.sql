@@ -1,29 +1,29 @@
 -- LIVV Supabase schema index
 -- -----------------------------------------------------------------------------
 -- A3-1 (identity):
---   supabase/migrations/a3_1_identity_profiles.sql
+--   supabase/migrations/20260911040855_a3_1_identity_profiles.sql
 --   profiles + anonymous bootstrap + RLS.
 --
 -- B1 (subscription entitlements):
---   supabase/migrations/b1_entitlements.sql
+--   supabase/migrations/20260911174348_b1_entitlements.sql
 --   Server-side subscription entitlements + Stripe webhook idempotency.
 --
 -- B3 security hardening:
---   supabase/migrations/security_harden_function_privileges.sql
---   supabase/migrations/security_harden_profile_privileges.sql
---   supabase/migrations/harden_table_privileges.sql
---   supabase/migrations/harden_profile_select_privilege.sql
+--   supabase/migrations/20260911235509_security_harden_function_privileges.sql
+--   supabase/migrations/20260911235540_security_harden_profile_privileges.sql
+--   supabase/migrations/20260912001121_harden_table_privileges.sql
+--   supabase/migrations/20260912001140_harden_profile_select_privilege.sql
 --   Trigger helpers are no longer callable through client RPC, client profile
 --   writes are restricted to presentation fields, and unnecessary client table
 --   privileges are revoked from billing/webhook tables.
 --
 -- Performance hardening:
---   supabase/migrations/optimize_rls_auth_checks.sql
+--   supabase/migrations/20260911235816_optimize_rls_auth_checks.sql
 --   RLS auth.uid() calls are statement-stable for scalable policy evaluation.
 --
 -- Deferred / product work:
 --   server-side pack ledger, refund fulfillment, progress sync.
 -- -----------------------------------------------------------------------------
 
--- Do not use psql \i here — the Supabase SQL Editor does not support it.
+-- Do not use psql \\i here — the Supabase SQL Editor does not support it.
 -- Copy/paste migration files to apply.

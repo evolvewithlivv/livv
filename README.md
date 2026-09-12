@@ -39,17 +39,17 @@ The Stripe Customer Portal and Checkout session confirmation require the authent
 
 ## Supabase
 
-Migration files live in `supabase/migrations/` and are applied in the LIVV Supabase project.
+Migration files live in `supabase/migrations/` and are applied in the LIVV Supabase project. The filenames below intentionally match the live Supabase migration history.
 
 Current migration families include:
 
-- `a3_1_identity_profiles.sql`
-- `b1_entitlements.sql`
-- `security_harden_function_privileges.sql`
-- `security_harden_profile_privileges.sql`
-- `optimize_rls_auth_checks.sql`
-- `harden_table_privileges.sql`
-- `harden_profile_select_privilege.sql`
+- `20260911040855_a3_1_identity_profiles.sql`
+- `20260911174348_b1_entitlements.sql`
+- `20260911235509_security_harden_function_privileges.sql`
+- `20260911235540_security_harden_profile_privileges.sql`
+- `20260911235816_optimize_rls_auth_checks.sql`
+- `20260912001121_harden_table_privileges.sql`
+- `20260912001140_harden_profile_select_privilege.sql`
 
 Client access is protected by RLS. Server-owned billing and webhook tables have no client write path. Billing/webhook table privileges are also explicitly revoked from `anon` and unnecessary client operations are removed from profiles.
 
