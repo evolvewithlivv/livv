@@ -8,7 +8,10 @@ import {
   ensureAnonymousSession,
   getAnonSessionState,
 } from "./supabase/anon-session";
-import { isSupabaseConfigured } from "./supabase/client";
+import {
+  getSupabaseBrowserClient,
+  isSupabaseConfigured,
+} from "./supabase/client";
 
 export type AuthProvider = "google" | "apple" | "email" | "phone" | "x";
 
@@ -206,8 +209,19 @@ function setSession(accountId: string) {
 
 export function signOut() {
   if (typeof window === "undefined") return;
-  // Local product session only. Supabase anonymous UUID stays on device.
-  // Progress keys are never cleared here.
+
+  // End the real Supabase session as well as the local product session. This
+  // prevents a permanent Google/Apple/X/email/phone identity from silently
+  // surviving a LIVV sign-out and being reused by the next browser visitor.
+  if (isSupabaseConfigured()) {
+    const client = getSupabaseBrowserClient();
+    if (client) {
+      void client.auth.signOut({ scope: "local" }).catch((error: unknown) => {
+        console.warn("[auth] Supabase sign-out failed", error);
+      });
+    }
+  }
+
   window.localStorage.removeItem(SESSION_KEY);
   window.dispatchEvent(new Event("livv-auth"));
 }
