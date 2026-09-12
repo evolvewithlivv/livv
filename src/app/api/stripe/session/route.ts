@@ -73,7 +73,13 @@ export async function GET(req: NextRequest) {
     }
 
     if (session.subscription && typeof session.subscription !== "string") {
-      const invalidStatuses = new Set(["canceled", "unpaid", "incomplete", "incomplete_expired"]);
+      const invalidStatuses = new Set([
+        "canceled",
+        "unpaid",
+        "incomplete",
+        "incomplete_expired",
+        "paused",
+      ]);
       if (invalidStatuses.has(session.subscription.status)) {
         return json({ error: "Subscription is not active" }, { status: 402 });
       }
