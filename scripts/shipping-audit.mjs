@@ -40,7 +40,7 @@ const checks = [
   {
     name: "email callback exchanges the server-issued code",
     file: "src/app/auth/callback/page.tsx",
-    patterns: ["finishSupabaseCallback", 'params.get("code")', "Authentication completed without a session"],
+    patterns: ["finishSupabaseCallback", 'params.get("code")', "Authentication could not be completed"],
     absentPatterns: ["Authentication provider returned"],
   },
   {
