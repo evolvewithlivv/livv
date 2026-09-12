@@ -166,13 +166,19 @@ export async function startSocialAuth(provider: SocialProvider) {
   if (!client) throw new Error("LIVV authentication is not configured");
 
   const { data: current } = await client.auth.getUser();
-  if (current.user) {
+  if (current.user?.is_anonymous) {
     const { error } = await client.auth.linkIdentity({
       provider,
       options: { redirectTo: redirectUrl() },
     });
-    if (!error) return;
-    // If the identity already belongs to another account, fall through to normal OAuth sign-in.
+    if (error) {
+      // Never silently fall back to a brand-new OAuth user here. That would
+      // split the anonymous user's auth.users.id and strand their entitlement.
+      throw new Error(
+        `Could not connect your ${provider === "x" ? "X" : provider} account to this LIVV identity. ${error.message}`
+      );
+    }
+    return;
   }
 
   const { error } = await client.auth.signInWithOAuth({
