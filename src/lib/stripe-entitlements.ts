@@ -52,7 +52,9 @@ export function mapSubscriptionStatus(status: Stripe.Subscription.Status): Entit
     case "incomplete_expired":
       return "incomplete";
     case "paused":
-      return "past_due";
+      // A fully paused subscription stops service delivery. Do not treat it
+      // like a payment-retry window such as past_due.
+      return "unpaid";
     default:
       return "none";
   }
