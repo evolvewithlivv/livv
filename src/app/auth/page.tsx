@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { startEmailAuth, verifyEmailAuth } from "@/lib/supabase/real-auth";
+import { isOnboardingComplete } from "@/lib/onboarding";
 
 const LOGO = "/livv-logo.png";
 
@@ -32,7 +33,7 @@ export default function AuthPage() {
 
   const verifyEmail = () => void run(async () => {
     await verifyEmailAuth(email, otp);
-    window.location.replace("/onboarding");
+    window.location.replace(isOnboardingComplete() ? "/home" : "/onboarding");
   });
 
   return (
