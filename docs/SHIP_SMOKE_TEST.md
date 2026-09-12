@@ -17,38 +17,34 @@ Run this on the current Production deployment after each release candidate. This
 - Navigate Home → Daily → Train → Mind → Evala → Connect → Profile → Settings → Shop/Packs.
 - Confirm every primary route loads and the bottom navigation remains usable on a phone-sized viewport.
 
-## 2. Anonymous identity
+## 2. Identity/session bootstrap
 
-- In Settings/Profile, confirm the account can exist without requiring an email or phone before the member chooses a permanent sign-in method.
+- Confirm the app does not create duplicate local identities during refresh/bootstrap.
 - Refresh and navigate between pages.
-- Confirm the same local identity remains present.
-- Do not create a second identity accidentally by refreshing during bootstrap.
+- Confirm the same local identity remains present while signed in.
+- Confirm protected app routes do not become usable after signing out.
 
-## 2.5. Permanent authentication — exactly two methods
+## 2.5. Permanent authentication — email only
 
 ### Email
 
-- From `/auth`, confirm the only permanent choices shown are **Continue with email** and **Continue with phone**.
-- Confirm there are no Google, Apple, X/Twitter, Snapchat, or other social/OAuth sign-in buttons.
+- From `/auth`, confirm the only authentication method shown is **Continue with email**.
+- Confirm there are no phone, SMS, Google, Apple, X/Twitter, Snapchat, or other social/OAuth sign-in controls.
 - Enter a fresh test email.
-- Confirm a secure LIVV email is delivered.
-- Follow the email link and confirm the session returns to `/home`.
+- Confirm the configured LIVV email is delivered with the 8-digit code.
+- Enter the 8-digit code in LIVV and confirm verification succeeds.
+- Confirm the user reaches onboarding/home as intended.
 - Refresh and confirm the same account remains signed in.
 - Sign out and repeat with the same email to confirm it can sign back in.
+- Enter a wrong code and confirm the UI shows a clear recoverable error.
+- Request a resend and confirm a new code can be used.
+- Test the Change email control and confirm a new email requires verification before becoming the account email.
 
-### Phone
+### Authentication safety
 
-- Sign out and return to `/auth`.
-- Enter a test phone number in international format.
-- Confirm a 6-digit SMS code is delivered.
-- Enter the code and confirm the session returns to `/home`.
-- Refresh and confirm the same account remains signed in.
-- Sign out and repeat with the same number to confirm it can sign back in.
-
-### Social-login absence
-
-- Confirm LIVV never redirects to Google, Apple, X/Twitter, Snapchat, or another social identity provider.
-- Social platforms are sharing destinations only, not LIVV identity providers.
+- Open `/home` while signed out and confirm access is denied/redirected.
+- Refresh during authentication and confirm the flow does not silently create a duplicate local account.
+- Confirm the session is not treated as authenticated merely because stale local UI state exists.
 
 ## 3. Daily / Train / progression
 
@@ -68,12 +64,12 @@ Run this on the current Production deployment after each release candidate. This
 
 - Toggle sound/haptics and appearance.
 - Test an allowed accent color on the appropriate tier.
-- Open the email-linking flow but do not complete it unless desired.
+- Test the email account-management flow without introducing a second account.
 - Export LIVV data.
 - Confirm an export file is produced.
 - If using a disposable test profile, test import into a clean state.
 - Verify the delete-all-data control requires its intended confirmation and actually clears local data.
-- Sign out, then sign back in using email magic link or phone SMS OTP.
+- Sign out, then sign back in using email OTP.
 
 ## 6. Free billing behavior
 
@@ -136,8 +132,9 @@ Ship only when:
 - [ ] Daily/Train/progression persist.
 - [ ] Evala responds and recovers from failure.
 - [ ] Settings/data export/import/delete work.
-- [ ] Email magic-link authentication works end-to-end.
-- [ ] Phone SMS OTP authentication works end-to-end.
+- [ ] Email OTP authentication works end-to-end.
+- [ ] Email account change requires verification.
+- [ ] No phone/SMS authentication path is exposed.
 - [ ] No social/OAuth sign-in or sign-up path is exposed.
 - [ ] Spark stays free and paid gates behave correctly.
 - [ ] Stripe test subscription completes and survives refresh.
