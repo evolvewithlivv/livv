@@ -18,7 +18,7 @@ export async function isCloudOnboardingComplete(): Promise<boolean> {
   return Boolean(data?.onboarding_completed_at);
 }
 
-export async function markCloudOnboardingComplete(displayName: string): Promise<void> {
+export async function markCloudOnboardingComplete(displayName?: string): Promise<void> {
   const client = getSupabaseBrowserClient();
   if (!client) throw new Error("LIVV account sync is unavailable. Please try again.");
 
@@ -28,12 +28,15 @@ export async function markCloudOnboardingComplete(displayName: string): Promise<
     throw new Error("Your email session could not be verified. Please sign in again.");
   }
 
+  const updates: { onboarding_completed_at: string; display_name?: string } = {
+    onboarding_completed_at: new Date().toISOString(),
+  };
+  const cleanName = displayName?.trim();
+  if (cleanName) updates.display_name = cleanName;
+
   const { error } = await client
     .from("profiles")
-    .update({
-      display_name: displayName.trim() || "Member",
-      onboarding_completed_at: new Date().toISOString(),
-    })
+    .update(updates)
     .eq("id", user.id);
 
   if (error) throw new Error("Could not save your LIVV account. Please try again.");
