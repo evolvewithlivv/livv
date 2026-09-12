@@ -6,7 +6,6 @@ import { Button } from "@/components/ui/button";
 import {
   startEmailAuth,
   startPhoneAuth,
-  startSocialAuth,
   verifyPhoneAuth,
 } from "@/lib/supabase/real-auth";
 
@@ -35,10 +34,6 @@ export default function AuthPage() {
     } finally {
       setBusy(false);
     }
-  };
-
-  const social = (provider: "google" | "apple" | "x") => {
-    void run(() => startSocialAuth(provider));
   };
 
   const submitEmail = () =>
@@ -74,25 +69,20 @@ export default function AuthPage() {
 
         {mode === "choose" && (
           <div className="mt-10 space-y-3">
-            <Button className="w-full" disabled={busy} onClick={() => social("google")}>
-              Continue with Google
-            </Button>
-            <Button className="w-full" variant="secondary" disabled={busy} onClick={() => social("apple")}>
-              Continue with Apple
-            </Button>
-            <Button className="w-full" variant="secondary" disabled={busy} onClick={() => social("x")}>
-              Continue with X
-            </Button>
-            <Button className="w-full" variant="secondary" disabled={busy} onClick={() => setMode("email")}>
+            <Button className="w-full" disabled={busy} onClick={() => setMode("email")}>
               Continue with email
             </Button>
             <Button className="w-full" variant="secondary" disabled={busy} onClick={() => setMode("phone")}>
               Continue with phone
             </Button>
 
+            <p className="pt-3 text-center text-[11px] leading-5 text-white/25">
+              LIVV keeps sign-in simple. Use an email address or phone number you control.
+            </p>
+
             <button
               type="button"
-              className="mt-4 w-full text-center text-[13px] text-white/35"
+              className="mt-2 w-full text-center text-[13px] text-white/35"
               onClick={() => router.push("/onboarding")}
             >
               Back to Enter LIVV
