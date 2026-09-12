@@ -13,14 +13,13 @@ import {
   isSupabaseConfigured,
 } from "./supabase/client";
 
-export type AuthProvider = "google" | "apple" | "email" | "phone" | "x";
+export type AuthProvider = "email" | "phone";
 
 export type Account = {
   id: string;
   provider: AuthProvider;
   email?: string;
   phone?: string;
-  xHandle?: string;
   passwordHash?: string;
   displayName: string;
   username: string;
@@ -99,10 +98,8 @@ export function normalizeUsername(raw: string) {
     .slice(0, 24);
 }
 
-export function suggestUsername(displayName: string, provider: AuthProvider) {
-  const base =
-    normalizeUsername(displayName) ||
-    (provider === "x" ? "livv" : "member");
+export function suggestUsername(displayName: string, _provider: AuthProvider) {
+  const base = normalizeUsername(displayName) || "member";
   let candidate = base.slice(0, 18) || "member";
   if (isUsernameAvailable(candidate)) return candidate;
   for (let i = 1; i < 99; i++) {
@@ -210,9 +207,7 @@ function setSession(accountId: string) {
 export function signOut() {
   if (typeof window === "undefined") return;
 
-  // End the real Supabase session as well as the local product session. This
-  // prevents a permanent Google/Apple/X/email/phone identity from silently
-  // surviving a LIVV sign-out and being reused by the next browser visitor.
+  // End the real Supabase session as well as the local product session.
   if (isSupabaseConfigured()) {
     const client = getSupabaseBrowserClient();
     if (client) {
@@ -290,6 +285,10 @@ export function syncAccountFromIdentity(identity: Identity) {
   saveAccounts(accounts);
 }
 
+/**
+ * Legacy local account creation helper retained for non-cloud compatibility.
+ * Production sign-in uses Supabase email magic links or phone OTP.
+ */
 export async function signUpWithProvider(input: {
   provider: AuthProvider;
   displayName: string;
@@ -297,7 +296,6 @@ export async function signUpWithProvider(input: {
   email?: string;
   phone?: string;
   password?: string;
-  xHandle?: string;
 }) {
   await delay(400);
   const username = normalizeUsername(input.username);
@@ -325,7 +323,6 @@ export async function signUpWithProvider(input: {
     provider: input.provider,
     email: input.email?.toLowerCase(),
     phone: input.phone,
-    xHandle: input.xHandle?.replace(/^@/, ""),
     passwordHash: input.password ? hash(input.password) : undefined,
     displayName: input.displayName.trim() || "Member",
     username,
@@ -440,42 +437,6 @@ export async function signInWithPhone(phone: string) {
   setSession(account.id);
   writeIdentityFromAccount(account);
   return account;
-}
-
-export async function continueWithSocial(
-  provider: "google" | "apple" | "x",
-  opts?: { displayName?: string; xHandle?: string }
-) {
-  await delay(500);
-  const existing = loadAccounts().find((a) => a.provider === provider);
-  if (existing) {
-    existing.lastLoginAt = Date.now();
-    const accounts = loadAccounts().map((a) => (a.id === existing.id ? existing : a));
-    saveAccounts(accounts);
-    setSession(existing.id);
-    writeIdentityFromAccount(existing);
-    return { account: existing, isNew: false };
-  }
-
-  const displayName =
-    opts?.displayName ||
-    (provider === "google"
-      ? "Google Member"
-      : provider === "apple"
-        ? "Apple Member"
-        : opts?.xHandle || "X Member");
-  const username = suggestUsername(
-    provider === "x" ? opts?.xHandle || displayName : displayName,
-    provider
-  );
-
-  const account = await signUpWithProvider({
-    provider,
-    displayName,
-    username,
-    xHandle: opts?.xHandle,
-  });
-  return { account, isNew: true };
 }
 
 function delay(ms: number) {
