@@ -4,22 +4,15 @@ import {
   type Identity,
   type Appearance,
 } from "./identity";
-import {
-  ensureAnonymousSession,
-  getAnonSessionState,
-} from "./supabase/anon-session";
-import {
-  getSupabaseBrowserClient,
-  isSupabaseConfigured,
-} from "./supabase/client";
+import { ensureAnonymousSession, getAnonSessionState } from "./supabase/anon-session";
+import { getSupabaseBrowserClient, isSupabaseConfigured } from "./supabase/client";
 
-export type AuthProvider = "email" | "phone";
+export type AuthProvider = "email";
 
 export type Account = {
   id: string;
   provider: AuthProvider;
   email?: string;
-  phone?: string;
   passwordHash?: string;
   displayName: string;
   username: string;
@@ -35,10 +28,7 @@ export type Account = {
   lastLoginAt: number;
 };
 
-export type Session = {
-  accountId: string;
-  signedInAt: number;
-};
+export type Session = { accountId: string; signedInAt: number };
 
 const ACCOUNTS_KEY = "livv-accounts-v1";
 const SESSION_KEY = "livv-session-v1";
@@ -84,23 +74,17 @@ function saveUsernameMap(map: Record<string, string>) {
 export function isUsernameAvailable(username: string, exceptAccountId?: string) {
   const clean = normalizeUsername(username);
   if (clean.length < 3) return false;
-  const map = loadUsernameMap();
-  const owner = map[clean];
-  if (!owner) return true;
-  return owner === exceptAccountId;
+  const owner = loadUsernameMap()[clean];
+  return !owner || owner === exceptAccountId;
 }
 
 export function normalizeUsername(raw: string) {
-  return raw
-    .toLowerCase()
-    .replace(/^@/, "")
-    .replace(/[^a-z0-9_]/g, "")
-    .slice(0, 24);
+  return raw.toLowerCase().replace(/^@/, "").replace(/[^a-z0-9_]/g, "").slice(0, 24);
 }
 
-export function suggestUsername(displayName: string, _provider: AuthProvider) {
+export function suggestUsername(displayName: string, _provider: AuthProvider = "email") {
   const base = normalizeUsername(displayName) || "member";
-  let candidate = base.slice(0, 18) || "member";
+  const candidate = base.slice(0, 18) || "member";
   if (isUsernameAvailable(candidate)) return candidate;
   for (let i = 1; i < 99; i++) {
     const next = `${candidate}${i}`;
@@ -120,19 +104,11 @@ export function getSession(): Session | null {
   }
 }
 
-/** Device-local product session only (does not inspect Supabase). */
 export function isSignedInLocal() {
   const session = getSession();
-  if (!session) return false;
-  return Boolean(loadAccounts().find((a) => a.id === session.accountId));
+  return Boolean(session && loadAccounts().find((a) => a.id === session.accountId));
 }
 
-/**
- * Sync signed-in check.
- * - Local product session always counts.
- * - When Supabase is configured and anonymous/session is already ready, cloud identity counts
- *   (anonymous included). Do not use alone for ENTER/auth routing — prefer isSignedInLocal there.
- */
 export function isSignedIn() {
   if (isSignedInLocal()) return true;
   if (!isSupabaseConfigured()) return false;
@@ -140,39 +116,20 @@ export function isSignedIn() {
   return cloud.status === "ready" && Boolean(cloud.userId);
 }
 
-/** Authoritative cloud user id when session is ready. */
 export function getCloudUserId(): string | null {
   const cloud = getAnonSessionState();
-  if (cloud.status === "ready" && cloud.userId) return cloud.userId;
-  return null;
+  return cloud.status === "ready" && cloud.userId ? cloud.userId : null;
 }
 
-/**
- * A3-3 home gate: resolve after ensuring anonymous session when configured.
- * Never treats "pending" as signed-out — caller must await this before redirect.
- */
 export async function resolveHomeAccess(): Promise<"ok" | "deny"> {
   if (typeof window === "undefined") return "deny";
-
   if (isSignedInLocal()) {
-    try {
-      await ensureAnonymousSession();
-    } catch {
-      /* ignore */
-    }
+    try { await ensureAnonymousSession(); } catch { /* local session remains usable */ }
     return "ok";
   }
-
-  if (!isSupabaseConfigured()) {
-    return "deny";
-  }
-
+  if (!isSupabaseConfigured()) return "deny";
   const cloud = await ensureAnonymousSession();
-  if (cloud.status === "ready" && cloud.userId) {
-    return "ok";
-  }
-
-  return "deny";
+  return cloud.status === "ready" && Boolean(cloud.userId) ? "ok" : "deny";
 }
 
 export function getCurrentAccount(): Account | null {
@@ -187,10 +144,10 @@ function writeIdentityFromAccount(account: Account) {
     username: account.username,
     bio: account.bio,
     photo: account.photo,
-    accent: account.accent,
     tier: account.tier,
     theme: account.theme,
     appearance: account.appearance,
+    accent: account.accent,
     embers: account.embers,
   };
   window.localStorage.setItem(IDENTITY_KEY, JSON.stringify(identity));
@@ -199,29 +156,20 @@ function writeIdentityFromAccount(account: Account) {
 }
 
 function setSession(accountId: string) {
-  const session: Session = { accountId, signedInAt: Date.now() };
-  window.localStorage.setItem(SESSION_KEY, JSON.stringify(session));
+  window.localStorage.setItem(SESSION_KEY, JSON.stringify({ accountId, signedInAt: Date.now() }));
   window.dispatchEvent(new Event("livv-auth"));
 }
 
 export function signOut() {
   if (typeof window === "undefined") return;
-
-  // End the real Supabase session as well as the local product session.
   if (isSupabaseConfigured()) {
     const client = getSupabaseBrowserClient();
-    if (client) {
-      void client.auth.signOut({ scope: "local" }).catch((error: unknown) => {
-        console.warn("[auth] Supabase sign-out failed", error);
-      });
-    }
+    if (client) void client.auth.signOut({ scope: "local" }).catch((error: unknown) => console.warn("[auth] Supabase sign-out failed", error));
   }
-
   window.localStorage.removeItem(SESSION_KEY);
   window.dispatchEvent(new Event("livv-auth"));
 }
 
-/** A3-4: set email metadata on the current local account only. Does not change acc_* id. */
 export function setCurrentAccountEmail(email: string) {
   if (typeof window === "undefined") return;
   const session = getSession();
@@ -229,10 +177,7 @@ export function setCurrentAccountEmail(email: string) {
   const accounts = loadAccounts();
   const idx = accounts.findIndex((a) => a.id === session.accountId);
   if (idx < 0) return;
-  accounts[idx] = {
-    ...accounts[idx],
-    email: email.trim().toLowerCase() || undefined,
-  };
+  accounts[idx] = { ...accounts[idx], email: email.trim().toLowerCase() || undefined };
   saveAccounts(accounts);
   window.dispatchEvent(new Event("livv-auth"));
 }
@@ -241,22 +186,15 @@ export function claimUsername(accountId: string, username: string) {
   const clean = normalizeUsername(username);
   if (clean.length < 3) throw new Error("Username must be at least 3 characters");
   if (!isUsernameAvailable(clean, accountId)) throw new Error("Username is taken");
-
   const accounts = loadAccounts();
   const idx = accounts.findIndex((a) => a.id === accountId);
   if (idx < 0) throw new Error("Account not found");
   if (accounts[idx].usernameLocked) throw new Error("Username is locked");
-
   const map = loadUsernameMap();
   if (accounts[idx].username) delete map[accounts[idx].username];
   map[clean] = accountId;
   saveUsernameMap(map);
-
-  accounts[idx] = {
-    ...accounts[idx],
-    username: clean,
-    usernameLocked: true,
-  };
+  accounts[idx] = { ...accounts[idx], username: clean, usernameLocked: true };
   saveAccounts(accounts);
   writeIdentityFromAccount(accounts[idx]);
   return accounts[idx];
@@ -278,51 +216,31 @@ export function syncAccountFromIdentity(identity: Identity) {
     tier: identity.tier,
     theme: identity.theme,
     embers: identity.embers,
-    username: accounts[idx].usernameLocked
-      ? accounts[idx].username
-      : identity.username,
+    username: accounts[idx].usernameLocked ? accounts[idx].username : identity.username,
   };
   saveAccounts(accounts);
 }
 
-/**
- * Legacy local account creation helper retained for non-cloud compatibility.
- * Production sign-in uses Supabase email magic links or phone OTP.
- */
+/** Legacy local helper retained for offline/dev compatibility. Production auth is email OTP. */
 export async function signUpWithProvider(input: {
   provider: AuthProvider;
   displayName: string;
   username: string;
   email?: string;
-  phone?: string;
   password?: string;
 }) {
   await delay(400);
   const username = normalizeUsername(input.username);
-  if (!isUsernameAvailable(username)) {
-    throw new Error("That username is taken");
-  }
+  if (!isUsernameAvailable(username)) throw new Error("That username is taken");
   if (username.length < 3) throw new Error("Username must be at least 3 characters");
-
-  if (input.provider === "email") {
-    if (!input.email || !input.password) throw new Error("Email and password required");
-    if (input.password.length < 6) throw new Error("Password must be 6+ characters");
-    const exists = loadAccounts().some(
-      (a) => a.provider === "email" && a.email === input.email?.toLowerCase()
-    );
-    if (exists) throw new Error("An account with this email already exists. Sign in instead.");
-  }
-  if (input.provider === "phone") {
-    if (!input.phone) throw new Error("Phone number required");
-    const exists = loadAccounts().some((a) => a.provider === "phone" && a.phone === input.phone);
-    if (exists) throw new Error("An account with this phone already exists. Sign in instead.");
-  }
+  if (!input.email) throw new Error("Email required");
+  const exists = loadAccounts().some((a) => a.provider === "email" && a.email === input.email?.toLowerCase());
+  if (exists) throw new Error("An account with this email already exists. Sign in instead.");
 
   const account: Account = {
     id: `acc_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`,
-    provider: input.provider,
-    email: input.email?.toLowerCase(),
-    phone: input.phone,
+    provider: "email",
+    email: input.email.toLowerCase(),
     passwordHash: input.password ? hash(input.password) : undefined,
     displayName: input.displayName.trim() || "Member",
     username,
@@ -337,29 +255,20 @@ export async function signUpWithProvider(input: {
     createdAt: Date.now(),
     lastLoginAt: Date.now(),
   };
-
   const accounts = loadAccounts();
   accounts.push(account);
   saveAccounts(accounts);
-
   const map = loadUsernameMap();
   map[username] = account.id;
   saveUsernameMap(map);
-
   setSession(account.id);
   writeIdentityFromAccount(account);
   return account;
 }
 
-export async function completeDeviceOnboarding(input: {
-  displayName: string;
-}): Promise<{ account: Account; isNew: boolean }> {
+export async function completeDeviceOnboarding(input: { displayName: string }): Promise<{ account: Account; isNew: boolean }> {
   await delay(200);
-  try {
-    await ensureAnonymousSession();
-  } catch {
-    /* local onboarding must still succeed */
-  }
+  try { await ensureAnonymousSession(); } catch { /* local onboarding must still succeed */ }
   const displayName = input.displayName.trim() || "Member";
 
   if (isSignedInLocal()) {
@@ -368,11 +277,7 @@ export async function completeDeviceOnboarding(input: {
       const accounts = loadAccounts();
       const idx = accounts.findIndex((a) => a.id === existing.id);
       if (idx >= 0) {
-        accounts[idx] = {
-          ...accounts[idx],
-          displayName,
-          lastLoginAt: Date.now(),
-        };
+        accounts[idx] = { ...accounts[idx], displayName, lastLoginAt: Date.now() };
         saveAccounts(accounts);
         writeIdentityFromAccount(accounts[idx]);
         return { account: accounts[idx], isNew: false };
@@ -397,15 +302,12 @@ export async function completeDeviceOnboarding(input: {
     createdAt: Date.now(),
     lastLoginAt: Date.now(),
   };
-
   const accounts = loadAccounts();
   accounts.push(account);
   saveAccounts(accounts);
-
   const map = loadUsernameMap();
   map[username] = account.id;
   saveUsernameMap(map);
-
   setSession(account.id);
   writeIdentityFromAccount(account);
   return { account, isNew: true };
@@ -413,27 +315,10 @@ export async function completeDeviceOnboarding(input: {
 
 export async function signInWithEmail(email: string, password: string) {
   await delay(350);
-  const account = loadAccounts().find(
-    (a) => a.provider === "email" && a.email === email.toLowerCase()
-  );
-  if (!account || account.passwordHash !== hash(password)) {
-    throw new Error("Email or password is wrong");
-  }
+  const account = loadAccounts().find((a) => a.provider === "email" && a.email === email.toLowerCase());
+  if (!account || account.passwordHash !== hash(password)) throw new Error("Email or password is wrong");
   account.lastLoginAt = Date.now();
-  const accounts = loadAccounts().map((a) => (a.id === account.id ? account : a));
-  saveAccounts(accounts);
-  setSession(account.id);
-  writeIdentityFromAccount(account);
-  return account;
-}
-
-export async function signInWithPhone(phone: string) {
-  await delay(350);
-  const account = loadAccounts().find((a) => a.provider === "phone" && a.phone === phone);
-  if (!account) throw new Error("No account with that number. Create one first.");
-  account.lastLoginAt = Date.now();
-  const accounts = loadAccounts().map((a) => (a.id === account.id ? account : a));
-  saveAccounts(accounts);
+  saveAccounts(loadAccounts().map((a) => (a.id === account.id ? account : a)));
   setSession(account.id);
   writeIdentityFromAccount(account);
   return account;
