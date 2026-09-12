@@ -110,10 +110,7 @@ export function isSignedInLocal() {
 }
 
 export function isSignedIn() {
-  if (isSignedInLocal()) return true;
-  if (!isSupabaseConfigured()) return false;
-  const cloud = getAnonSessionState();
-  return cloud.status === "ready" && Boolean(cloud.userId);
+  return isSignedInLocal();
 }
 
 export function getCloudUserId(): string | null {
@@ -121,15 +118,14 @@ export function getCloudUserId(): string | null {
   return cloud.status === "ready" && cloud.userId ? cloud.userId : null;
 }
 
+/**
+ * Home access is intentionally based on a real LIVV account session.
+ * Anonymous Supabase sessions are infrastructure only and never grant
+ * authenticated access to the product.
+ */
 export async function resolveHomeAccess(): Promise<"ok" | "deny"> {
   if (typeof window === "undefined") return "deny";
-  if (isSignedInLocal()) {
-    try { await ensureAnonymousSession(); } catch { /* local session remains usable */ }
-    return "ok";
-  }
-  if (!isSupabaseConfigured()) return "deny";
-  const cloud = await ensureAnonymousSession();
-  return cloud.status === "ready" && Boolean(cloud.userId) ? "ok" : "deny";
+  return isSignedInLocal() ? "ok" : "deny";
 }
 
 export function getCurrentAccount(): Account | null {
