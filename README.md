@@ -17,8 +17,8 @@ LIVV is a personal evolution ecosystem built around daily action, training, refl
 - Opening experience + onboarding
 - Device-local identity and progression model
 - Supabase anonymous identity foundation
-- Five real sign-in methods: Google, Apple, X, email, and phone/SMS
-- OAuth callback handling with account-safe identity materialization
+- Two real sign-in methods: email and phone/SMS
+- Secure email magic-link callback handling
 - Daily, Train, Mind, Evala, Connect, Profile, Settings, Progress, Shop, Packs, and Vault surfaces
 - Evolution Packs with local collection state and paid Stripe Checkout
 - Stripe subscription tiers: Spark, Rise, Apex, Inner Circle
@@ -33,17 +33,14 @@ LIVV is a personal evolution ecosystem built around daily action, training, refl
 
 ## Authentication
 
-LIVV uses Supabase Auth for real account creation and sign-in. The production entry screen exposes exactly five methods:
+LIVV intentionally keeps authentication simple and independent of social login providers. The production entry screen exposes exactly two methods:
 
-1. Continue with Google
-2. Continue with Apple
-3. Continue with X
-4. Continue with email
-5. Continue with phone
+1. Continue with email
+2. Continue with phone
 
-Email uses passwordless magic-link authentication. Phone uses SMS OTP verification. Google, Apple, and X use Supabase OAuth. Anonymous device identities are upgraded in place when a provider supports identity linking, preserving the same Supabase `auth.users.id` used by billing and entitlements.
+Email uses passwordless magic-link authentication. Phone uses SMS OTP verification. New email addresses and phone numbers can create a LIVV account automatically through Supabase Auth. Existing users can return with the same verified method.
 
-Provider credentials and redirect URLs are configured in the Supabase project; the application never treats a provider button as a fake/local-only sign-in.
+LIVV does not use Google, Apple, X/Twitter, Snapchat, or other social/OAuth providers for sign-in or sign-up. Social platforms remain external sharing destinations for future LIVV share cards, not identity providers.
 
 ## Billing architecture
 
@@ -123,7 +120,7 @@ Before shipping a billing change, verify:
 4. The current Vercel deployment is Ready.
 5. The paid Checkout → webhook → entitlement → client hydration path is tested end-to-end.
 6. `/api/health` reports the expected production commit after deployment.
-7. The five authentication methods have each been smoke-tested in the production Supabase configuration.
+7. Email magic-link and phone SMS OTP have each been smoke-tested in the production Supabase configuration.
 
 ## Explicitly deferred
 
