@@ -5,8 +5,8 @@
  * - Does not sign in, link accounts, or touch product flows.
  * - Without URL + anon key, isSupabaseConfigured() is false and helpers no-op.
  *
- * Auth callback handling is explicit in /auth/callback. Keep URL detection off
- * here so the callback never races a second PKCE code exchange.
+ * Email authentication uses the PKCE flow so Supabase confirmation/magic-link
+ * emails redirect back with a one-time `code` that /auth/callback exchanges.
  */
 
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
@@ -38,6 +38,7 @@ export function getSupabaseBrowserClient(): SupabaseClient | null {
       auth: {
         persistSession: true,
         autoRefreshToken: true,
+        flowType: "pkce",
         // /auth/callback explicitly exchanges the PKCE code. Automatic URL
         // detection here would race that exchange and can consume the code first.
         detectSessionInUrl: false,
