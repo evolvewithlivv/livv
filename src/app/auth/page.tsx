@@ -3,15 +3,8 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { startEmailAuth, verifyEmailAuth } from "@/lib/supabase/real-auth";
-import { signInWithSocial, type SocialProvider } from "@/lib/supabase/oauth";
 
 const LOGO = "/livv-logo.png";
-
-const SOCIALS: Array<{ provider: SocialProvider; label: string; icon: string }> = [
-  { provider: "apple", label: "Continue with Apple", icon: "" },
-  { provider: "google", label: "Continue with Google", icon: "G" },
-  { provider: "twitter", label: "Continue with X", icon: "𝕏" },
-];
 
 export default function AuthPage() {
   const [email, setEmail] = useState("");
@@ -25,13 +18,9 @@ export default function AuthPage() {
     setBusy(true);
     setError("");
     setNotice("");
-    try {
-      await fn();
-    } catch (e) {
-      setError(e instanceof Error ? e.message : "Something went wrong. Try again.");
-    } finally {
-      setBusy(false);
-    }
+    try { await fn(); }
+    catch (e) { setError(e instanceof Error ? e.message : "Something went wrong. Try again."); }
+    finally { setBusy(false); }
   };
 
   const sendEmail = () => void run(async () => {
@@ -46,8 +35,6 @@ export default function AuthPage() {
     window.location.replace("/onboarding");
   });
 
-  const social = (provider: SocialProvider) => void run(() => signInWithSocial(provider));
-
   return (
     <main className="relative min-h-dvh overflow-hidden bg-[#050505] text-white">
       <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgb(var(--livv-accent)/0.12),transparent_55%)]" />
@@ -56,30 +43,10 @@ export default function AuthPage() {
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={LOGO} alt="LIVV" className="h-14 w-14 object-contain" />
           <h1 className="mt-5 text-center text-[28px] font-semibold tracking-tight">Enter LIVV</h1>
-          <p className="mt-2 text-center text-[13px] text-white/40">Sign in or create your account.</p>
+          <p className="mt-2 text-center text-[13px] text-white/40">Sign in or create your account with email.</p>
         </div>
 
-        <div className="space-y-3">
-          {SOCIALS.map(({ provider, label, icon }) => (
-            <Button
-              key={provider}
-              className="w-full"
-              variant="secondary"
-              type="button"
-              disabled={busy}
-              onClick={() => social(provider)}
-            >
-              <span className="mr-3 w-5 text-center text-base">{icon}</span>
-              {busy ? "Connecting…" : label}
-            </Button>
-          ))}
-
-          <div className="flex items-center gap-3 py-3">
-            <div className="h-px flex-1 bg-white/10" />
-            <span className="text-[10px] uppercase tracking-[0.2em] text-white/25">or email</span>
-            <div className="h-px flex-1 bg-white/10" />
-          </div>
-
+        <div className="space-y-4">
           {!pending ? (
             <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); sendEmail(); }}>
               <Field label="Email" value={email} onChange={setEmail} type="email" autoComplete="email" placeholder="you@example.com" />
@@ -89,17 +56,8 @@ export default function AuthPage() {
             </form>
           ) : (
             <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); verifyEmail(); }}>
-              <Field
-                label="8-digit code"
-                value={otp}
-                onChange={(v) => setOtp(v.replace(/\D/g, "").slice(0, 8))}
-                inputMode="numeric"
-                autoComplete="one-time-code"
-                placeholder="00000000"
-              />
-              <p className="text-[12px] leading-5 text-white/35">
-                Enter the code sent to <span className="text-white/60">{email.trim().toLowerCase()}</span>.
-              </p>
+              <Field label="8-digit code" value={otp} onChange={(v) => setOtp(v.replace(/\D/g, "").slice(0, 8))} inputMode="numeric" autoComplete="one-time-code" placeholder="00000000" />
+              <p className="text-[12px] leading-5 text-white/35">Enter the code sent to <span className="text-white/60">{email.trim().toLowerCase()}</span>.</p>
               <Button className="w-full" disabled={busy || otp.length !== 8} type="submit">
                 {busy ? "Verifying…" : "Verify & enter LIVV"}
               </Button>
@@ -109,7 +67,6 @@ export default function AuthPage() {
               </div>
             </form>
           )}
-
           {notice && <Notice>{notice}</Notice>}
           {error && <ErrorMessage>{error}</ErrorMessage>}
         </div>
@@ -119,12 +76,7 @@ export default function AuthPage() {
 }
 
 function Field({ label, value, onChange, type = "text", autoComplete, inputMode, placeholder }: { label: string; value: string; onChange: (value: string) => void; type?: string; autoComplete?: string; inputMode?: "numeric" | "tel" | "email" | "text"; placeholder?: string; }) {
-  return (
-    <label className="block">
-      <span className="text-[10px] uppercase tracking-[0.2em] text-white/30">{label}</span>
-      <input type={type} value={value} onChange={(e) => onChange(e.target.value)} autoComplete={autoComplete} inputMode={inputMode} placeholder={placeholder} className="mt-1.5 w-full rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-[14px] text-white outline-none placeholder:text-white/20 focus:border-white/25" />
-    </label>
-  );
+  return <label className="block"><span className="text-[10px] uppercase tracking-[0.2em] text-white/30">{label}</span><input type={type} value={value} onChange={(e) => onChange(e.target.value)} autoComplete={autoComplete} inputMode={inputMode} placeholder={placeholder} className="mt-1.5 w-full rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-[14px] text-white outline-none placeholder:text-white/20 focus:border-white/25" /></label>;
 }
 function Notice({ children }: { children: string }) { return <div className="rounded-2xl border border-white/10 bg-white/[0.04] p-4 text-[12px] leading-5 text-white/60">{children}</div>; }
 function ErrorMessage({ children }: { children: string }) { return <p className="text-center text-[13px] text-red-400">{children}</p>; }
