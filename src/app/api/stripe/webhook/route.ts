@@ -15,7 +15,7 @@ import type Stripe from "stripe";
 export const runtime = "nodejs";
 
 /**
- * Stripe webhook — B1: signature-verified, idempotent subscription entitlement upsert.
+ * Stripe webhook — B1/B3: signature-verified, idempotent subscription entitlement upsert.
  * Does not touch client localStorage, packs, or profiles.tier.
  */
 export async function POST(req: NextRequest) {
@@ -68,7 +68,10 @@ export async function POST(req: NextRequest) {
         await handleCheckoutCompleted(stripe, session);
         break;
       }
-      case "customer.subscription.updated": {
+      case "customer.subscription.created":
+      case "customer.subscription.updated":
+      case "customer.subscription.paused":
+      case "customer.subscription.resumed": {
         const sub = event.data.object as Stripe.Subscription;
         await handleSubscriptionUpdated(sub);
         break;
@@ -173,7 +176,7 @@ async function handleSubscriptionUpdated(sub: Stripe.Subscription) {
     userId = await findUserIdBySubscriptionId(sub.id);
   }
   if (!userId) {
-    console.info("[stripe/webhook] subscription.updated without user", sub.id);
+    console.info("[stripe/webhook] subscription event without user", sub.id);
     return;
   }
 
