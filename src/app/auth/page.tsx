@@ -101,7 +101,7 @@ export default function AuthPage() {
           </form> : <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); verifyEmail(); }}>
             <Field label="8-digit code" value={emailOtp} onChange={(v) => setEmailOtp(v.replace(/\D/g, "").slice(0, 8))} inputMode="numeric" autoComplete="one-time-code" placeholder="00000000" />
             <p className="text-[12px] leading-5 text-white/35">Enter the code sent to <span className="text-white/60">{email.trim().toLowerCase()}</span>.</p>
-            <Button className="w-full" disabled={busy || emailOtp.length !== 8} type="submit">{busy ? "Verifying…" : "Verify & enter LIVV"}</Button>
+            <Button className="w-full" disabled={busy || emailOtp.length !== 8} type="submit">{busy ? "Verifying…" : "Verify 8-digit code & enter LIVV"}</Button>
             <div className="flex items-center justify-between gap-4">
               <button type="button" disabled={busy || resendSeconds > 0} onClick={resendEmail} className="text-[12px] text-white/45 disabled:opacity-30">{resendSeconds > 0 ? `Resend in ${resendSeconds}s` : "Resend code"}</button>
               <button type="button" disabled={busy} onClick={() => { setEmailPending(false); setEmailOtp(""); setNotice(""); setError(""); }} className="text-[12px] text-white/35 disabled:opacity-30">Change email</button>
@@ -119,7 +119,7 @@ export default function AuthPage() {
           </form> : <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); verifyPhone(); }}>
             <Field label="8-digit code" value={phoneOtp} onChange={(v) => setPhoneOtp(v.replace(/\D/g, "").slice(0, 8))} inputMode="numeric" autoComplete="one-time-code" placeholder="00000000" />
             <p className="text-[12px] leading-5 text-white/35">Enter the code we sent to <span className="text-white/60">{phone.trim()}</span>.</p>
-            <Button className="w-full" disabled={busy || phoneOtp.length !== 8} type="submit">{busy ? "Verifying…" : "Verify & enter LIVV"}</Button>
+            <Button className="w-full" disabled={busy || phoneOtp.length !== 8} type="submit">{busy ? "Verifying…" : "Verify 8-digit code & enter LIVV"}</Button>
             <div className="flex items-center justify-between gap-4">
               <button type="button" disabled={busy || resendSeconds > 0} onClick={resendPhone} className="text-[12px] text-white/45 disabled:opacity-30">{resendSeconds > 0 ? `Resend in ${resendSeconds}s` : "Resend code"}</button>
               <button type="button" disabled={busy} onClick={() => { setPhonePending(false); setPhoneOtp(""); setNotice(""); setError(""); }} className="text-[12px] text-white/35 disabled:opacity-30">Change number</button>
