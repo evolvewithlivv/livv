@@ -11,6 +11,7 @@ export const runtime = "nodejs";
 
 const PAID: PaidTier[] = ["rise", "apex", "circle"];
 const GRADES: PackGrade[] = [1, 2, 3, 4];
+const MAX_BODY_BYTES = 16 * 1024;
 
 function json(data: unknown, init?: ResponseInit) {
   return NextResponse.json(data, {
@@ -52,7 +53,17 @@ export async function POST(req: NextRequest) {
       verifiedEmail = verified.email;
     }
 
-    const body = (await req.json()) as {
+    const contentLength = Number(req.headers.get("content-length") || 0);
+    if (contentLength > MAX_BODY_BYTES) {
+      return json({ error: "Checkout request too large" }, { status: 413 });
+    }
+
+    const rawBody = await req.text();
+    if (new TextEncoder().encode(rawBody).byteLength > MAX_BODY_BYTES) {
+      return json({ error: "Checkout request too large" }, { status: 413 });
+    }
+
+    let body: {
       kind?: string;
       grade?: number;
       qty?: number;
@@ -60,6 +71,11 @@ export async function POST(req: NextRequest) {
       email?: string;
       username?: string;
     };
+    try {
+      body = JSON.parse(rawBody) as typeof body;
+    } catch {
+      return json({ error: "Invalid JSON" }, { status: 400 });
+    }
 
     // Username is display-only metadata — never treated as proof of identity.
     const usernameMeta = (body.username || "").slice(0, 64);
@@ -100,7 +116,6 @@ export async function POST(req: NextRequest) {
         success_url: `${base}/home/billing/success?session_id={CHECKOUT_SESSION_ID}`,
         cancel_url: `${base}/home/shop?billing=cancel`,
         customer_email: customerEmail,
-        // Canonical purchaser identity when Supabase is configured.
         client_reference_id: livvUserId || usernameMeta || undefined,
         metadata: {
           livv_kind: "pack",
