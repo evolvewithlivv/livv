@@ -48,9 +48,10 @@ Current migration families include:
 - `security_harden_function_privileges.sql`
 - `security_harden_profile_privileges.sql`
 - `optimize_rls_auth_checks.sql`
-- billing/table privilege hardening migrations
+- `harden_table_privileges.sql`
+- `harden_profile_select_privilege.sql`
 
-Client access is protected by RLS. Server-owned billing and webhook tables have no client write path.
+Client access is protected by RLS. Server-owned billing and webhook tables have no client write path. Billing/webhook table privileges are also explicitly revoked from `anon` and unnecessary client operations are removed from profiles.
 
 ## Environment
 
@@ -80,6 +81,10 @@ npm run dev
 
 Open `http://localhost:3000`.
 
+## Operations
+
+`GET /api/health` returns a minimal no-store health payload and the Vercel Git commit when available. It intentionally does not expose secrets or service configuration.
+
 ## Production
 
 The `main` branch deploys through Vercel. GitHub CI builds against Node 20 and Node 22.
@@ -91,6 +96,7 @@ Before shipping a billing change, verify:
 3. Stripe webhook delivery is configured for the production URL.
 4. The current Vercel deployment is Ready.
 5. The paid Checkout → webhook → entitlement → client hydration path is tested end-to-end.
+6. `/api/health` reports the expected production commit after deployment.
 
 ## Explicitly deferred
 
