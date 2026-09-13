@@ -4,6 +4,8 @@ import { useEffect } from "react";
 import { applyAppearance, loadIdentity } from "@/lib/identity";
 import { hydrateServerEntitlement } from "@/lib/billing";
 import { ensureAnonymousSession } from "@/lib/supabase/anon-session";
+import { startCloudMemberStateSync } from "@/lib/supabase/cloud-state";
+import { ensureCloudAuthForCurrentBrowser } from "@/lib/supabase/real-auth";
 
 export function ThemeShell({ children }: { children: React.ReactNode }) {
   useEffect(() => {
@@ -25,11 +27,17 @@ export function ThemeShell({ children }: { children: React.ReactNode }) {
     };
     apply();
 
-    // A3-2: restore or create anonymous Supabase session (no-op if env unset).
-    // B2: after session, dual-read public.entitlements (soft-fail → local).
+    let stopCloudSync = () => {};
+
     void (async () => {
+      // A3-2: restore or create anonymous Supabase session when signed out.
       await ensureAnonymousSession();
       await hydrateServerEntitlement();
+
+      // A verified member gets their cloud identity/state back on any browser.
+      // Anonymous sessions never start the member-state sync.
+      await ensureCloudAuthForCurrentBrowser();
+      stopCloudSync = startCloudMemberStateSync();
     })();
 
     const mq = window.matchMedia("(prefers-color-scheme: light)");
@@ -40,6 +48,7 @@ export function ThemeShell({ children }: { children: React.ReactNode }) {
     window.addEventListener("livv-identity", apply);
     window.addEventListener("storage", apply);
     return () => {
+      stopCloudSync();
       mq.removeEventListener("change", onScheme);
       window.removeEventListener("livv-identity", apply);
       window.removeEventListener("storage", apply);
