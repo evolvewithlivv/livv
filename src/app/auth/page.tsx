@@ -1,20 +1,28 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { startEmailAuth, verifyEmailAuth } from "@/lib/supabase/real-auth";
 import { isOnboardingComplete } from "@/lib/onboarding";
 import { isCloudOnboardingComplete, markCloudOnboardingComplete } from "@/lib/supabase/onboarding-state";
 
 const LOGO = "/livv-logo.png";
+const RESEND_SECONDS = 30;
 
 export default function AuthPage() {
   const [email, setEmail] = useState("");
   const [otp, setOtp] = useState("");
   const [pending, setPending] = useState(false);
   const [busy, setBusy] = useState(false);
+  const [resendIn, setResendIn] = useState(0);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
+
+  useEffect(() => {
+    if (resendIn <= 0) return;
+    const timer = window.setInterval(() => setResendIn((value) => Math.max(0, value - 1)), 1000);
+    return () => window.clearInterval(timer);
+  }, [resendIn]);
 
   const run = async (fn: () => Promise<unknown>) => {
     setBusy(true);
@@ -25,10 +33,12 @@ export default function AuthPage() {
     finally { setBusy(false); }
   };
 
-  const sendEmail = () => void run(async () => {
+  const sendEmail = (resend = false) => void run(async () => {
+    if (resend && resendIn > 0) return;
     await startEmailAuth(email);
     setPending(true);
     setOtp("");
+    setResendIn(RESEND_SECONDS);
     setNotice("Enter the 8-digit code from your email.");
   });
 
@@ -36,8 +46,6 @@ export default function AuthPage() {
     await verifyEmailAuth(email, otp);
     const localComplete = isOnboardingComplete();
     if (localComplete) {
-      // Backfill the cloud completion marker for existing members who finished
-      // onboarding before cross-browser completion persistence existed.
       await markCloudOnboardingComplete("");
       window.location.replace("/home");
       return;
@@ -73,8 +81,10 @@ export default function AuthPage() {
                 {busy ? "Verifying…" : "Verify & enter LIVV"}
               </Button>
               <div className="flex items-center justify-between gap-4">
-                <button type="button" disabled={busy} onClick={sendEmail} className="text-[12px] text-white/45 disabled:opacity-30">Resend code</button>
-                <button type="button" disabled={busy} onClick={() => { setPending(false); setOtp(""); setError(""); setNotice(""); }} className="text-[12px] text-white/35 disabled:opacity-30">Change email</button>
+                <button type="button" disabled={busy || resendIn > 0} onClick={() => sendEmail(true)} className="text-[12px] text-white/45 disabled:opacity-30">
+                  {resendIn > 0 ? `Resend in ${resendIn}s` : "Resend code"}
+                </button>
+                <button type="button" disabled={busy} onClick={() => { setPending(false); setOtp(""); setError(""); setNotice(""); setResendIn(0); }} className="text-[12px] text-white/35 disabled:opacity-30">Change email</button>
               </div>
             </form>
           )}
