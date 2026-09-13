@@ -16,12 +16,11 @@ export default function BillingSuccessPage() {
     (async()=>{try{const client=isSupabaseConfigured()?getSupabaseBrowserClient():null; const {data:sd}=await client?.auth.getSession()??{data:{session:null}}; const token=sd.session?.access_token;
       if(isSupabaseConfigured()&&!token){setStatus("error");setMessage("Your LIVV identity session is still loading. Reload and try again.");return;}
       const headers:Record<string,string>={"Content-Type":"application/json"}; if(token)headers.Authorization=`Bearer ${token}`;
-      const res=await fetch(`/api/stripe/session?session_id=${encodeURIComponent(sessionId)}`,{headers}); const data=await res.json() as {kind?:string;grade?:number;qty?:number;tier?:LivvTier;customerId?:string;subscriptionId?:string;error?:string};
+      const res=await fetch(`/api/stripe/session?session_id=${encodeURIComponent(sessionId)}`,{headers,cache:"no-store"}); const data=await res.json() as {kind?:string;grade?:number;qty?:number;tier?:LivvTier;customerId?:string;subscriptionId?:string;error?:string};
       if(!res.ok){setStatus("error");setMessage(data.error||"Could not confirm payment.");return;}
       if(data.kind==="pack"&&data.grade){
-        const {data:purchase,error}=await client?.from("pack_purchases").select("stripe_session_id,grade,quantity,status").eq("stripe_session_id",sessionId).maybeSingle()??{data:null,error:null};
-        if(error||!purchase||purchase.status!=="paid"||purchase.grade!==data.grade){setStatus("error");setMessage("Payment was received, but LIVV is still confirming your pack. Please reload in a moment.");return;}
-        const key=`livv-pack-session-${sessionId}`; if(!window.localStorage.getItem(key)){const {grantPurchasedPack}=await import("@/lib/pack-shop"); grantPurchasedPack(data.grade as PackGrade,purchase.quantity||data.qty||1); window.localStorage.setItem(key,"1");}
+        const key=`livv-pack-session-${sessionId}`;
+        if(!window.localStorage.getItem(key)){const {grantPurchasedPack}=await import("@/lib/pack-shop"); grantPurchasedPack(data.grade as PackGrade,data.qty||1); window.localStorage.setItem(key,"1");}
         await syncCloudMemberState().catch(()=>undefined);
         feedback("unlock"); if(!cancelled){const name=GRADE_META[data.grade as PackGrade]?.name||"Pack";setStatus("ok");setMessage(`${name} is in your chamber.`);window.setTimeout(()=>router.replace("/home/shop"),1400);} return;
       }
