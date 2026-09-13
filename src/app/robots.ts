@@ -5,7 +5,7 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: "*",
       allow: "/",
-      disallow: ["/home/", "/auth", "/onboarding", "/api/"],
+      disallow: ["/home", "/auth", "/onboarding", "/api", "/_next/"],
     },
     sitemap: "https://evolvewithlivv.com/sitemap.xml",
   };
