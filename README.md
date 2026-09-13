@@ -15,10 +15,12 @@ LIVV is a personal evolution ecosystem built around daily action, training, refl
 ## Current product
 
 - Opening experience + onboarding
-- Device-local identity and progression model
+- Device-local UX cache backed by durable cloud member state
 - Supabase anonymous identity foundation
 - Email-only passwordless authentication with 8-digit OTP verification
 - Secure email confirmation callback handling
+- Returning-account profile hydration across browsers/devices
+- Cross-device synchronization for member-owned LIVV local state
 - Daily, Train, Mind, Evala, Connect, Profile, Settings, Progress, Shop, Packs, and Vault surfaces
 - Evolution Packs with local collection state and paid Stripe Checkout
 - Stripe subscription tiers: Spark, Rise, Apex, Inner Circle
@@ -41,9 +43,16 @@ Members can:
 2. Sign in with an email address.
 3. Receive an 8-digit one-time verification code by email.
 4. Verify the code inside LIVV.
-5. Change their email through the verified email-authentication flow.
+5. Return later from another browser or device and recover the same cloud-backed account and member state.
+6. Change their email through the verified email-authentication flow.
 
 LIVV does not use phone/SMS authentication or Apple, Google, X/Twitter, Snapchat, or other social/OAuth identity providers for sign-in or sign-up. Social platforms may be sharing destinations for future LIVV share cards, not identity providers.
+
+## Member data architecture
+
+Supabase Auth is the durable identity layer. `public.profiles` stores the authenticated member's profile and onboarding completion state. `public.member_state` stores member-owned application state that must survive browser/device loss.
+
+The browser still maintains local state for fast UX and offline behavior, but authenticated member state is synchronized to `public.member_state` and hydrated again after verified login. Anonymous Supabase sessions are explicitly excluded from member-state storage by RLS.
 
 ## Billing architecture
 
@@ -55,19 +64,9 @@ The Stripe Customer Portal and Checkout session confirmation require the authent
 
 ## Supabase
 
-Migration files live in `supabase/migrations/` and are applied in the LIVV Supabase project. The filenames below intentionally match the live Supabase migration history.
+Migration files live in `supabase/migrations/` and are applied in the LIVV Supabase project. Current migration families include the identity/profile, billing/security, onboarding persistence, and member-state cloud-sync migrations.
 
-Current migration families include:
-
-- `20260911040855_a3_1_identity_profiles.sql`
-- `20260911174348_b1_entitlements.sql`
-- `20260911235509_security_harden_function_privileges.sql`
-- `20260911235540_security_harden_profile_privileges.sql`
-- `20260911235816_optimize_rls_auth_checks.sql`
-- `20260912001121_harden_table_privileges.sql`
-- `20260912001140_harden_profile_select_privilege.sql`
-
-Client access is protected by RLS. Server-owned billing and webhook tables have no client write path. Billing/webhook table privileges are also explicitly revoked from `anon` and unnecessary client operations are removed from profiles.
+Client access is protected by RLS. Server-owned billing and webhook tables have no client write path. Billing/webhook table privileges are also explicitly revoked from `anon` and unnecessary client operations are removed from profiles. Member state is restricted to permanent authenticated users rather than anonymous sessions.
 
 ## Environment
 
@@ -124,12 +123,11 @@ Before shipping a billing change, verify:
 5. The paid Checkout → webhook → entitlement → client hydration path is tested end-to-end.
 6. `/api/health` reports the expected production commit after deployment.
 7. Email OTP authentication has been smoke-tested in the production Supabase configuration.
+8. Cross-device account recovery has been smoke-tested with a clean browser profile.
 
 ## Explicitly deferred
 
 - Server-side pack inventory/ledger
-- Full cloud progress synchronization
 - Refund fulfillment for one-time packs
-- Broader multi-device account migration
 
-Those are product batches, not prerequisites for the current V1 billing/security foundation.
+These are product batches, not prerequisites for the current V1 account, billing, and cloud-state foundation.
