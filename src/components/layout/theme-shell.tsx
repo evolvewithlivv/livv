@@ -28,16 +28,20 @@ export function ThemeShell({ children }: { children: React.ReactNode }) {
     apply();
 
     let stopCloudSync = () => {};
+    let cancelled = false;
 
     void (async () => {
-      // A3-2: restore or create anonymous Supabase session when signed out.
-      await ensureAnonymousSession();
-      await hydrateServerEntitlement();
-
-      // A verified member gets their cloud identity/state back on any browser.
-      // Anonymous sessions never start the member-state sync.
-      await ensureCloudAuthForCurrentBrowser();
-      stopCloudSync = startCloudMemberStateSync();
+      try {
+        // Keep startup resilient: a transient Supabase failure must not blank the app.
+        await ensureAnonymousSession();
+        await hydrateServerEntitlement();
+        if (cancelled) return;
+        await ensureCloudAuthForCurrentBrowser();
+        if (cancelled) return;
+        stopCloudSync = startCloudMemberStateSync();
+      } catch (error) {
+        console.warn("[LIVV startup] cloud services deferred", error);
+      }
     })();
 
     const mq = window.matchMedia("(prefers-color-scheme: light)");
@@ -48,6 +52,7 @@ export function ThemeShell({ children }: { children: React.ReactNode }) {
     window.addEventListener("livv-identity", apply);
     window.addEventListener("storage", apply);
     return () => {
+      cancelled = true;
       stopCloudSync();
       mq.removeEventListener("change", onScheme);
       window.removeEventListener("livv-identity", apply);
