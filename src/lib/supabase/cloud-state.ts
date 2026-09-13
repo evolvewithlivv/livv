@@ -32,6 +32,16 @@ function writeLocalState(state: Record<string, string>) {
   }
 }
 
+function notifyStateHydrated() {
+  // Pages such as Home mount before the async cloud bootstrap completes.
+  // Notify every local state consumer after restoration so it re-reads the
+  // cloud-backed values instead of remaining on its initial EMPTY_* defaults.
+  window.dispatchEvent(new Event("livv-record"));
+  window.dispatchEvent(new Event("livv-daily"));
+  window.dispatchEvent(new Event("livv-identity"));
+  window.dispatchEvent(new Event("livv-billing"));
+}
+
 function clearLocalStateExceptAuth() {
   const keys: string[] = [];
   for (let i = 0; i < window.localStorage.length; i += 1) {
@@ -123,23 +133,26 @@ export async function bootstrapCloudMemberState() {
   if (!Object.keys(local).length) {
     writeLocalState(cloud.state || {});
     saveShadow(cloud.state || {});
+    notifyStateHydrated();
     return;
   }
 
   if (localHasChanges) {
-    // Existing device changes win only for keys that were changed locally;
-    // cloud-only keys are preserved. This prevents a migration from erasing
-    // progress already stored on another device.
+    // A new browser can contain freshly-created identity/UI state before its
+    // first cloud bootstrap. Merge it over the cloud snapshot so we preserve
+    // cloud progress while retaining legitimate device-local settings.
     const merged = { ...(cloud.state || {}), ...local };
     await writeCloud(userId, merged);
     writeLocalState(merged);
     saveShadow(merged);
+    notifyStateHydrated();
     return;
   }
 
   clearLocalStateExceptAuth();
   writeLocalState(cloud.state || {});
   saveShadow(cloud.state || {});
+  notifyStateHydrated();
 }
 
 export async function syncCloudMemberState() {
