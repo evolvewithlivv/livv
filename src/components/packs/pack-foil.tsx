@@ -17,11 +17,11 @@ export function PackFoil({
     size === "lg"
       ? "h-[300px] w-[188px]"
       : size === "sm"
-        ? "h-[104px] w-[66px]"
-        : "h-[176px] w-[110px]";
+        ? "h-[112px] w-[72px]"
+        : "h-[184px] w-[116px]";
 
   return (
-    <div className={`relative ${dims} ${pulse ? "pack-pulse" : ""}`}>
+    <div className={`relative shrink-0 overflow-visible ${dims} ${pulse ? "pack-pulse" : ""}`}>
       <div className="absolute inset-0 overflow-hidden rounded-[16px] bg-black shadow-[0_18px_40px_rgba(0,0,0,0.55)]">
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
