@@ -2,129 +2,26 @@
 
 import { useMemo, useState } from "react";
 import Link from "next/link";
+import { Bookmark, Headphones, Search, Sparkles } from "lucide-react";
 import { PageHero } from "@/components/layout/page-hero";
 import { DESKS, WIKI, type WikiDesk } from "@/lib/wiki";
 
-const ARTICLE_COLORS = ["#60a5fa", "#c084fc", "#34d399", "#fbbf24", "#fb7185", "#22d3ee", "#f472b6", "#a3e635"];
+const COLORS = ["#60A5FA","#C084FC","#34D399","#FBBF24","#FB7185","#22D3EE","#F472B6","#A3E635"];
+function colorFor(slug:string){let n=0;for(const ch of slug)n=(n*31+ch.charCodeAt(0))>>>0;return COLORS[n%COLORS.length];}
 
-function articleColor(slug: string) {
-  let n = 0;
-  for (let i = 0; i < slug.length; i++) n = (n * 31 + slug.charCodeAt(i)) >>> 0;
-  return ARTICLE_COLORS[n % ARTICLE_COLORS.length];
-}
-
-export default function MindWikiPage() {
-  const [desk, setDesk] = useState<WikiDesk | "all">("all");
-  const [showAll, setShowAll] = useState(false);
-  const list = useMemo(() => (desk === "all" ? WIKI : WIKI.filter((a) => a.desk === desk)), [desk]);
-  const featured = list[0];
-  const quick = list.slice(1, 4);
-  const explore = showAll ? list : list.slice(0, 6);
-
-  return (
-    <main className="livv-page relative min-h-full overflow-hidden pb-16">
-      <div className="relative z-10 mx-auto max-w-lg px-5 pt-5">
-        <PageHero
-          eyebrow="Read"
-          title="Ideas"
-          subtitle="Short reads. Save what sticks."
-          accent="#b28cff"
-          right={<span className="text-[9px] uppercase tracking-[0.22em] text-white/20">{list.length} notes</span>}
-        />
-
-        <div className="mt-6 flex gap-2 overflow-x-auto pb-1 scrollbar-none">
-          <DeskChip active={desk === "all"} onClick={() => { setDesk("all"); setShowAll(false); }} label="All" />
-          {DESKS.map((d) => <DeskChip key={d.id} active={desk === d.id} onClick={() => { setDesk(d.id); setShowAll(false); }} label={d.label} />)}
-        </div>
-
-        {featured && (
-          <Link href={`/home/mind/${featured.slug}`} className="group relative mt-7 block overflow-hidden rounded-[30px] border p-5 active:scale-[0.985]" style={{ borderColor: `${articleColor(featured.slug)}55`, background: `linear-gradient(135deg, ${articleColor(featured.slug)}18, rgba(255,255,255,.035) 60%)`, boxShadow: `0 18px 55px ${articleColor(featured.slug)}0b` }}>
-            <div className="absolute right-[-45px] top-[-55px] h-40 w-40 rounded-full blur-3xl" style={{ background: articleColor(featured.slug), opacity: .16 }} />
-            <div className="relative flex items-start justify-between gap-4">
-              <div>
-                <p className="text-[9px] font-semibold uppercase tracking-[0.28em]" style={{ color: articleColor(featured.slug) }}>Featured</p>
-                <p className="font-display mt-3 max-w-[18ch] text-[28px] font-semibold leading-[0.98] tracking-tight">{featured.title}</p>
-                <p className="mt-3 max-w-[34ch] text-[13px] leading-relaxed text-white/45">{featured.hook}</p>
-                <p className="mt-4 text-[11px] text-white/30">{featured.desk} · {featured.readMins} min</p>
-              </div>
-              <span className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-white text-black">→</span>
-            </div>
-          </Link>
-        )}
-
-        {quick.length > 0 && (
-          <section className="mt-8">
-            <p className="text-[9px] uppercase tracking-[0.28em] text-white/25">Quick picks</p>
-            <div className="mt-3 space-y-2">
-              {quick.map((a) => {
-                const c = articleColor(a.slug);
-                return (
-                  <Link key={a.slug} href={`/home/mind/${a.slug}`} className="flex items-center gap-3 rounded-[20px] border border-white/[0.07] bg-white/[0.025] p-3.5 active:scale-[0.99]">
-                    <span className="h-2.5 w-2.5 rounded-full" style={{ background: c, boxShadow: `0 0 12px ${c}` }} />
-                    <span className="min-w-0 flex-1">
-                      <span className="block text-[14px] font-semibold">{a.title}</span>
-                      <span className="text-[11px] text-white/35">{a.desk} · {a.readMins} min</span>
-                    </span>
-                    <span className="text-white/25">→</span>
-                  </Link>
-                );
-              })}
-            </div>
-          </section>
-        )}
-
-        <section className="mt-9">
-          <div className="flex items-end justify-between">
-            <p className="text-[9px] uppercase tracking-[0.28em] text-white/25">All notes</p>
-            <span className="text-[10px] uppercase tracking-[0.18em] text-white/15">{list.length} available</span>
-          </div>
-          <div className="mt-4 space-y-2.5">
-            {explore.map((a, index) => {
-              const c = articleColor(a.slug);
-              return (
-                <Link key={a.slug} href={`/home/mind/${a.slug}`} className="group flex items-center gap-3 rounded-[22px] border bg-white/[.025] p-3.5 active:scale-[.985]" style={{ borderColor: `${c}30`, boxShadow: `inset 0 0 28px ${c}06` }}>
-                  <div className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl" style={{ background: `${c}12`, color: c }}>
-                    <span className="text-[10px] font-bold tabular-nums">{String(index + 1).padStart(2, "0")}</span>
-                  </div>
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-2">
-                      <span className="text-[9px] font-semibold uppercase tracking-[.16em]" style={{ color: c }}>{a.desk}</span>
-                      <span className="text-[9px] uppercase tracking-[.14em] text-white/20">{a.readMins} min</span>
-                    </div>
-                    <p className="mt-1 text-[15px] font-semibold leading-snug">{a.title}</p>
-                  </div>
-                  <span className="text-lg text-white/20 transition group-hover:translate-x-0.5" style={{ color: `${c}bb` }}>→</span>
-                </Link>
-              );
-            })}
-          </div>
-          {list.length > 6 && (
-            <button type="button" onClick={() => setShowAll((v) => !v)} className="mt-4 w-full rounded-full border border-white/10 bg-white/[.025] py-3 text-[10px] font-semibold uppercase tracking-[.2em] text-white/45 active:scale-[.99]">
-              {showAll ? "Show less" : `Show all ${list.length} notes`}
-            </button>
-          )}
-        </section>
-
-        <Link href="/home/evala" className="mt-9 flex items-center justify-between rounded-[24px] border border-white/[.08] bg-white/[.025] p-4 active:scale-[.985]">
-          <div>
-            <p className="text-[9px] uppercase tracking-[.24em] text-white/25">Next step</p>
-            <p className="mt-1 text-[16px] font-semibold">Ask Evala about an idea.</p>
-          </div>
-          <span className="grid h-10 w-10 place-items-center rounded-full bg-white text-black">→</span>
-        </Link>
-      </div>
-    </main>
-  );
-}
-
-function DeskChip({ label, active, onClick }: { label: string; active: boolean; onClick: () => void }) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={active ? "shrink-0 rounded-full bg-white px-3 py-1.5 text-[11px] font-semibold text-black" : "shrink-0 rounded-full border border-white/10 bg-white/[.02] px-3 py-1.5 text-[11px] text-white/45"}
-    >
-      {label}
-    </button>
-  );
+export default function MindPage(){
+  const [desk,setDesk]=useState<WikiDesk|"all">("all");
+  const [query,setQuery]=useState("");
+  const [saved,setSaved]=useState<string[]>([]);
+  const list=useMemo(()=>{const q=query.trim().toLowerCase();return WIKI.filter(a=>(desk==="all"||a.desk===desk)&&(!q||a.title.toLowerCase().includes(q)||a.hook.toLowerCase().includes(q)));},[desk,query]);
+  const featured=list[0]||WIKI[0];
+  const save=(slug:string)=>setSaved((v)=>v.includes(slug)?v.filter(x=>x!==slug):[...v,slug]);
+  return <main className="livv-page relative min-h-full overflow-hidden pb-16 text-white"><div className="relative z-10 mx-auto max-w-xl px-5 pt-5">
+    <PageHero eyebrow="Mind" title="The Field" subtitle="Original LIVV reads for clearer thinking, better habits, and a life you can actually use." accent="#B28CFF" right={<Headphones size={20} className="text-[#B28CFF]"/>}/>
+    <section className="mt-6 rounded-[30px] border border-[#B28CFF]/25 bg-gradient-to-br from-[#B28CFF]/10 to-white/[0.02] p-5"><div className="flex items-center gap-3"><div className="grid h-11 w-11 place-items-center rounded-2xl bg-[#B28CFF]/10 text-[#B28CFF]"><Sparkles size={18}/></div><div><p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#B28CFF]">LIVV reading room</p><p className="mt-1 text-[13px] text-white/65">Read one idea. Sit with it. Then use it.</p></div></div><div className="relative mt-5"><Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-white/40"/><input value={query} onChange={(e)=>setQuery(e.target.value)} placeholder="Search LIVV articles" className="w-full rounded-2xl border border-white/10 bg-black/15 py-3 pl-10 pr-4 text-[13px] text-white outline-none placeholder:text-white/35 focus:border-[#B28CFF]/45"/></div></section>
+    <div className="mt-5 flex gap-2 overflow-x-auto pb-1 scrollbar-none"><button type="button" onClick={()=>setDesk("all")} className={`shrink-0 rounded-full px-3 py-2 text-[11px] font-semibold ${desk==="all"?"bg-white text-black":"border border-white/10 bg-white/[0.03] text-white/55"}`}>All</button>{DESKS.map(d=><button key={d.id} type="button" onClick={()=>setDesk(d.id)} className={`shrink-0 rounded-full px-3 py-2 text-[11px] font-semibold ${desk===d.id?"text-black":"border border-white/10 bg-white/[0.03] text-white/55"}`} style={desk===d.id?{background:d.hex}:{}}>{d.label}</button>)}</div>
+    <Link href={`/home/mind/${featured.slug}`} className="group relative mt-7 block overflow-hidden rounded-[32px] border p-6 active:scale-[0.985]" style={{borderColor:`${colorFor(featured.slug)}55`,background:`linear-gradient(145deg,${colorFor(featured.slug)}18,rgba(255,255,255,.025))`}}><div className="absolute -right-16 -top-16 h-48 w-48 rounded-full blur-3xl" style={{background:colorFor(featured.slug),opacity:.16}}/><div className="relative"><div className="flex items-center justify-between"><span className="text-[10px] font-semibold uppercase tracking-[0.2em]" style={{color:colorFor(featured.slug)}}>Continue reading</span><span className="text-[10px] uppercase tracking-[0.16em] text-white/45">{featured.readMins} min</span></div><h2 className="font-display mt-5 max-w-[15ch] text-[31px] font-semibold leading-[1.02] tracking-tight">{featured.title}</h2><p className="mt-3 max-w-[35ch] text-[14px] leading-relaxed text-white/65">{featured.hook}</p><div className="mt-6 flex items-center gap-3"><span className="grid h-11 w-11 place-items-center rounded-full bg-white text-black">→</span><span className="text-[11px] font-semibold text-white/60">Open the article</span></div></div></Link>
+    <section className="mt-9"><div className="flex items-end justify-between"><div><p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/45">For you</p><h2 className="font-display mt-1 text-[25px] font-semibold">Keep going.</h2></div><span className="text-[10px] text-white/40">{list.length} reads</span></div><div className="mt-4 space-y-3">{list.slice(1).map((a,i)=>{const c=colorFor(a.slug);const isSaved=saved.includes(a.slug);return <article key={a.slug} className="rounded-[25px] border border-white/10 bg-white/[0.025] p-4" style={{boxShadow:`inset 2px 0 0 ${c}`}}><div className="flex items-start gap-3"><div className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl" style={{background:`${c}12`,color:c}}><span className="text-[10px] font-bold">{String(i+2).padStart(2,"0")}</span></div><div className="min-w-0 flex-1"><div className="flex items-center gap-2"><span className="text-[9px] font-semibold uppercase tracking-[0.16em]" style={{color:c}}>{a.desk}</span><span className="text-[9px] text-white/40">{a.readMins} min</span></div><Link href={`/home/mind/${a.slug}`} className="mt-1 block text-[16px] font-semibold leading-snug">{a.title}</Link><p className="mt-1 text-[11px] leading-relaxed text-white/50">{a.hook}</p></div><button type="button" onClick={()=>save(a.slug)} aria-label={isSaved?"Remove bookmark":"Save article"} className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-white/10 text-white/45"> <Bookmark size={15} fill={isSaved?"currentColor":"none"}/> </button></div></article>})}</div></section>
+    <section className="mt-9 rounded-[28px] border border-white/10 bg-white/[0.025] p-5"><p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[#B28CFF]">How to use this</p><p className="mt-2 text-[13px] leading-relaxed text-white/65">Do not race through the Field. Read the idea, take the useful part, and put it into motion. The goal is a better decision after the article, not a higher article count.</p></section>
+  </div></main>;
 }

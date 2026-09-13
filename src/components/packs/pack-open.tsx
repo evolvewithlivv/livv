@@ -1,85 +1,13 @@
 "use client";
 
 import { useState } from "react";
-import { openPack, GRADE_META, type CardDef, type PackGrade } from "@/lib/packs";
+import { GRADE_META, openPack, rewardProgress, type CardDef, type PackGrade } from "@/lib/packs";
 import { feedback } from "@/lib/sensory";
 import { PackFoil } from "./pack-foil";
 import { CardFace } from "./card-face";
 
-export function PackOpenModal({
-  packId,
-  grade,
-  onClose,
-  onOpened,
-}: {
-  packId: string;
-  grade: PackGrade;
-  onClose: () => void;
-  onOpened?: (card: CardDef) => void;
-}) {
-  const [phase, setPhase] = useState<"idle" | "ripping" | "reveal">("idle");
-  const [card, setCard] = useState<CardDef | null>(null);
-  const meta = GRADE_META[grade];
-
-  const rip = () => {
-    if (phase !== "idle") return;
-    setPhase("ripping");
-    feedback("complete");
-    window.setTimeout(() => {
-      const result = openPack(packId);
-      if (result) {
-        setCard(result.card);
-        setPhase("reveal");
-        onOpened?.(result.card);
-        if (result.card.rarity === "apex" || result.card.rarity === "rare") {
-          feedback("unlock");
-        }
-      } else {
-        onClose();
-      }
-    }, 1100);
-  };
-
-  return (
-    <div className="fixed inset-0 z-[80] flex flex-col items-center justify-center bg-black/90 backdrop-blur-md">
-      <button
-        type="button"
-        onClick={onClose}
-        className="absolute right-5 top-12 text-[13px] text-white/40"
-      >
-        Close
-      </button>
-
-      {phase !== "reveal" && (
-        <>
-          <p className="text-[10px] uppercase tracking-[0.32em] text-white/35">{meta.subtitle}</p>
-          <p className="font-display mt-2 text-[22px] font-semibold">{meta.name}</p>
-          <button type="button" onClick={rip} className="mt-10" disabled={phase === "ripping"}>
-            <div className={phase === "ripping" ? "scale-95 animate-pulse transition" : ""}>
-              <PackFoil grade={grade} size="lg" pulse={phase === "idle"} />
-            </div>
-          </button>
-          <p className="mt-10 text-[13px] text-white/40">
-            {phase === "idle" ? "Tap pack to open" : "Opening…"}
-          </p>
-        </>
-      )}
-
-      {phase === "reveal" && card && (
-        <>
-          <p className="text-[10px] uppercase tracking-[0.32em] text-livv-accent-soft">Pulled</p>
-          <div className="mt-6">
-            <CardFace card={card} size="lg" reveal />
-          </div>
-          <button
-            type="button"
-            onClick={onClose}
-            className="mt-10 rounded-full bg-white px-8 py-3 text-[14px] font-semibold text-black"
-          >
-            Add to Vault
-          </button>
-        </>
-      )}
-    </div>
-  );
+export function PackOpenModal({packId,grade,onClose,onOpened}:{packId:string;grade:PackGrade;onClose:()=>void;onOpened?:(card:CardDef)=>void}){
+ const [phase,setPhase]=useState<"idle"|"opening"|"reveal">("idle");const [result,setResult]=useState<ReturnType<typeof openPack>>(null);const meta=GRADE_META[grade];
+ const open=()=>{if(phase!=="idle")return;setPhase("opening");feedback("complete");window.setTimeout(()=>{const out=openPack(packId);if(!out){onClose();return;}setResult(out);onOpened?.(out.card);setPhase("reveal");if(out.card.rarity==="apex"||out.card.rarity==="rare")feedback("unlock");},800);};
+ return <div className="fixed inset-0 z-[90] flex flex-col items-center justify-center bg-black/90 px-5 backdrop-blur-xl"><button type="button" onClick={onClose} className="absolute right-5 top-12 text-[12px] font-semibold text-white/60">Close</button>{phase!=="reveal"?<><p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-white/55">{meta.name}</p><p className="mt-2 text-[13px] text-white/65">Open it to collect fragments.</p><button type="button" onClick={open} disabled={phase!=="idle"} className={`mt-8 ${phase==="opening"?"scale-95 opacity-80":""}`}><PackFoil grade={grade} size="lg" pulse={phase==="idle"}/></button><p className="mt-7 text-[13px] text-white/60">{phase==="idle"?"Tap the pack to open":"Opening your pack..."}</p></>:result?<><p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-livv-accent-soft">You pulled a card</p><div className="mt-5"><CardFace card={result.card} size="lg" reveal/></div><div className="mt-6 w-full max-w-sm rounded-[24px] border border-white/10 bg-white/[0.05] p-4 text-center"><p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-white/50">Reward progress</p><p className="font-display mt-2 text-[24px] font-semibold">+{result.fragments} fragment{result.fragments===1?"":"s"}</p><p className="mt-1 text-[13px] text-white/70">{result.reward.name}</p><div className="mt-3 h-2 overflow-hidden rounded-full bg-white/10"><div className="h-full rounded-full bg-livv-accent transition-all duration-700" style={{width:`${Math.round((rewardProgress(result.reward.id)/result.reward.target)*100)}%`}}/></div><p className="mt-2 text-[11px] text-white/55">{rewardProgress(result.reward.id)} / {result.reward.target} fragments</p>{result.unlocked&&<p className="mt-3 font-semibold text-livv-accent-soft">Reward unlocked.</p>}</div><button type="button" onClick={onClose} className="mt-7 rounded-full bg-white px-8 py-3 text-[13px] font-semibold text-black">Add to Vault</button></>:null}</div>;
 }
