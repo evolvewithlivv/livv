@@ -10,7 +10,7 @@ const NAV_ITEMS = [
   { href: "/home/train", label: "Train", color: "#ff6b91", match: (p: string) => p.startsWith("/home/train"), Icon: Dumbbell },
   { href: "/home/mind", label: "Mind", color: "#b28cff", match: (p: string) => p.startsWith("/home/mind") || p.startsWith("/home/canon") || p.startsWith("/home/lab") || p.startsWith("/home/evala"), Icon: Brain },
   { href: "/home/shop", label: "Shop", color: "#ff9f43", match: (p: string) => p.startsWith("/home/shop") || p.startsWith("/home/packs") || p.startsWith("/home/vault"), Icon: Store },
-  { href: "/home/connect", label: "Community", color: "#3ddc97", match: (p: string) => p.startsWith("/home/connect") || p.startsWith("/home/share") || p.startsWith("/home/messages"), Icon: Users },
+  { href: "/home/connect", label: "Social", color: "#3ddc97", match: (p: string) => p.startsWith("/home/connect") || p.startsWith("/home/share") || p.startsWith("/home/messages"), Icon: Users },
   { href: "/home/profile", label: "You", color: "#ff72c9", match: (p: string) => p.startsWith("/home/profile") || p.startsWith("/home/settings") || p.startsWith("/home/progress"), Icon: UserRound },
 ] as const;
 
@@ -21,7 +21,7 @@ export function BottomNav() {
     <nav
       className="livv-tabbar fixed inset-x-0 bottom-0 z-[80] shrink-0 px-2"
       style={{ paddingBottom: "max(0.55rem, env(safe-area-inset-bottom))" }}
-      aria-label="Primary"
+      aria-label="Primary navigation"
     >
       <div className="livv-tabbar-dock mx-auto flex max-w-xl items-center justify-between gap-0 rounded-[24px] px-1.5 py-2">
         {NAV_ITEMS.map((item) => {
