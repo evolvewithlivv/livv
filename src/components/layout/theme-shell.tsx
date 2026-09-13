@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { applyAppearance, loadIdentity } from "@/lib/identity";
 import { hydrateServerEntitlement } from "@/lib/billing";
 import { ensureAnonymousSession } from "@/lib/supabase/anon-session";
@@ -8,6 +8,8 @@ import { startCloudMemberStateSync } from "@/lib/supabase/cloud-state";
 import { ensureCloudAuthForCurrentBrowser } from "@/lib/supabase/real-auth";
 
 export function ThemeShell({ children }: { children: React.ReactNode }) {
+  const [offline, setOffline] = useState(false);
+
   useEffect(() => {
     const apply = () => {
       const me = loadIdentity();
@@ -16,6 +18,10 @@ export function ThemeShell({ children }: { children: React.ReactNode }) {
       document.querySelector('meta[name="theme-color"]')?.setAttribute("content", mode === "light" ? "#f2f3f6" : "#030405");
     };
     apply();
+    const updateConnection = () => setOffline(!navigator.onLine);
+    updateConnection();
+    window.addEventListener("online", updateConnection);
+    window.addEventListener("offline", updateConnection);
 
     if ("serviceWorker" in navigator && window.isSecureContext) {
       void navigator.serviceWorker.register("/sw.js", { scope: "/" }).catch((error) => {
@@ -25,7 +31,6 @@ export function ThemeShell({ children }: { children: React.ReactNode }) {
 
     let stopCloudSync = () => {};
     let cancelled = false;
-
     void (async () => {
       try {
         await ensureAnonymousSession();
@@ -52,8 +57,19 @@ export function ThemeShell({ children }: { children: React.ReactNode }) {
       mq.removeEventListener("change", onScheme);
       window.removeEventListener("livv-identity", apply);
       window.removeEventListener("storage", apply);
+      window.removeEventListener("online", updateConnection);
+      window.removeEventListener("offline", updateConnection);
     };
   }, []);
 
-  return <>{children}</>;
+  return (
+    <>
+      {offline && (
+        <div role="status" className="fixed inset-x-0 top-0 z-[100] border-b border-white/10 bg-black/90 px-4 py-2 text-center text-[11px] font-medium tracking-wide text-white/70 backdrop-blur-xl">
+          You’re offline. LIVV will sync your progress when you’re back online.
+        </div>
+      )}
+      {children}
+    </>
+  );
 }
