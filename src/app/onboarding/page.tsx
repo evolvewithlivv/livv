@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
-import { completeDeviceOnboarding, isSignedInLocal } from "@/lib/auth";
+import { completeDeviceOnboarding } from "@/lib/auth";
 import {
   loadOnboardingDraft,
   markFirstSessionPending,
@@ -11,6 +11,7 @@ import {
   saveOnboardingDraft,
 } from "@/lib/onboarding";
 import { markCloudOnboardingComplete } from "@/lib/supabase/onboarding-state";
+import { getSupabaseBrowserClient, isSupabaseConfigured } from "@/lib/supabase/client";
 import { cn } from "@/lib/utils";
 
 const GOALS = [
@@ -41,24 +42,44 @@ export default function OnboardingPage() {
   const [error, setError] = useState("");
 
   useEffect(() => {
-    // Onboarding is post-verification only. A visitor must have a real
-    // local LIVV member session created by the email OTP flow before this
-    // screen can create or update a product account.
-    if (!isSignedInLocal()) {
-      router.replace("/auth");
-      return;
-    }
+    let cancelled = false;
 
-    const draft = loadOnboardingDraft();
-    if (draft.why) setWhy(draft.why);
-    if (draft.goals.length) setSelectedGoals(draft.goals);
-    if (draft.interests.length) setSelectedInterests(draft.interests);
-    if (draft.displayName) setDisplayName(draft.displayName);
-    if (draft.completedAt) {
-      router.replace("/home");
-      return;
-    }
-    setCheckingAccess(false);
+    const verifyAccess = async () => {
+      // localStorage is cache only. A real Supabase Auth user is required
+      // before onboarding may create/update a LIVV product account.
+      if (!isSupabaseConfigured()) {
+        if (!cancelled) {
+          setError("LIVV account verification is unavailable. Please try again.");
+          setCheckingAccess(false);
+        }
+        return;
+      }
+      const client = getSupabaseBrowserClient();
+      const { data, error: authError } = client
+        ? await client.auth.getUser()
+        : { data: { user: null }, error: new Error("Supabase client unavailable") };
+      const user = data?.user;
+
+      if (cancelled) return;
+      if (authError || !user || user.is_anonymous || !user.email) {
+        router.replace("/auth");
+        return;
+      }
+
+      const draft = loadOnboardingDraft();
+      if (draft.why) setWhy(draft.why);
+      if (draft.goals.length) setSelectedGoals(draft.goals);
+      if (draft.interests.length) setSelectedInterests(draft.interests);
+      if (draft.displayName) setDisplayName(draft.displayName);
+      if (draft.completedAt) {
+        router.replace("/home");
+        return;
+      }
+      setCheckingAccess(false);
+    };
+
+    void verifyAccess();
+    return () => { cancelled = true; };
   }, [router]);
 
   const persist = (partial: {
@@ -75,10 +96,16 @@ export default function OnboardingPage() {
   };
 
   const finish = async () => {
-    // Re-check immediately before creating the local account/session so a
-    // signed-out visitor cannot bypass email verification by reaching this
-    // route directly or racing the auth state.
-    if (!isSignedInLocal()) {
+    const client = getSupabaseBrowserClient();
+    if (!client) {
+      router.replace("/auth");
+      return;
+    }
+    // Re-check the real Auth session immediately before completion. A forged
+    // local LIVV session must never be enough to create a member.
+    const { data, error: authError } = await client.auth.getUser();
+    const user = data?.user;
+    if (authError || !user || user.is_anonymous || !user.email) {
       router.replace("/auth");
       return;
     }
@@ -91,9 +118,6 @@ export default function OnboardingPage() {
     setBusy(true);
     setError("");
     try {
-      // Cloud completion is the durable source used to recognize this member
-      // on another browser. Fail closed so a successful-looking local finish
-      // cannot leave the account in a perpetual first-run state elsewhere.
       await markCloudOnboardingComplete(name);
       persist({ why, goals: selectedGoals, interests: selectedInterests, displayName: name });
       markOnboardingComplete();
@@ -111,6 +135,14 @@ export default function OnboardingPage() {
     return (
       <main className="livv-page flex min-h-dvh items-center justify-center px-5 text-white">
         <p className="text-sm text-white/45">Verifying your LIVV session…</p>
+      </main>
+    );
+  }
+
+  if (error && !displayName && !busy) {
+    return (
+      <main className="livv-page flex min-h-dvh items-center justify-center px-5 text-white">
+        <p className="text-sm text-red-400">{error}</p>
       </main>
     );
   }
