@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, type ReactNode } from "react";
 import { Download, Share, X } from "lucide-react";
 
 type DeferredPrompt = Event & {
@@ -96,7 +96,7 @@ export function InstallApp() {
   );
 }
 
-function Step({ number, title, text, icon }: { number: string; title: string; text: string; icon?: React.ReactNode }) {
+function Step({ number, title, text, icon }: { number: string; title: string; text: string; icon?: ReactNode }) {
   return (
     <div className="flex gap-3 rounded-2xl border border-livv-border bg-livv-bg p-3.5">
       <span className="grid h-8 w-8 shrink-0 place-items-center rounded-xl border border-livv-border text-[11px] font-semibold text-livv-fg">{icon ?? number}</span>
