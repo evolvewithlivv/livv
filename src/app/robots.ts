@@ -7,5 +7,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: "/",
       disallow: ["/home/", "/auth", "/onboarding", "/api/"],
     },
+    sitemap: "https://evolvewithlivv.com/sitemap.xml",
   };
 }
