@@ -71,6 +71,55 @@ function photoForUser(user: User) {
   return typeof value === "string" && value.startsWith("http") ? value : null;
 }
 
+async function hydrateCloudProfile(user: User, account: Account): Promise<Account> {
+  const client = getSupabaseBrowserClient();
+  if (!client) return account;
+
+  const { data: profile, error } = await client
+    .from("profiles")
+    .select("username, display_name, bio, photo_url, accent, appearance, tier, embers, onboarding_completed_at")
+    .eq("id", user.id)
+    .maybeSingle();
+
+  if (error || !profile) {
+    if (error) console.warn("[LIVV profile] cloud read deferred", error);
+    return account;
+  }
+
+  const isPlaceholder = typeof profile.username === "string" && profile.username.startsWith("anon_");
+  const hydrated: Account = {
+    ...account,
+    username: isPlaceholder ? account.username : profile.username || account.username,
+    displayName: profile.display_name || account.displayName,
+    bio: profile.bio || account.bio,
+    photo: profile.photo_url || account.photo,
+    accent: profile.accent || account.accent,
+    appearance: profile.appearance === "light" || profile.appearance === "system" ? profile.appearance : account.appearance,
+    tier: profile.tier || account.tier,
+    embers: typeof profile.embers === "number" ? profile.embers : account.embers,
+  };
+
+  // A newly-created Auth user gets a placeholder profile from the DB trigger.
+  // Replace that placeholder with the member's real identity without touching
+  // server-owned tier/embers fields.
+  if (isPlaceholder) {
+    const { error: updateError } = await client
+      .from("profiles")
+      .update({
+        username: hydrated.username,
+        display_name: hydrated.displayName,
+        bio: hydrated.bio,
+        photo_url: hydrated.photo,
+        accent: hydrated.accent,
+        appearance: hydrated.appearance,
+      })
+      .eq("id", user.id);
+    if (updateError) console.warn("[LIVV profile] cloud identity write deferred", updateError);
+  }
+
+  return hydrated;
+}
+
 export function mapSupabaseAuthError(error: unknown): Error {
   if (!(error instanceof Error) && typeof error !== "object") return new Error("Authentication failed. Try again.");
   const err = error as AuthError & { message?: string; status?: number; code?: string };
@@ -139,7 +188,16 @@ export async function materializeSupabaseUser(user: User, providerHint: AuthProv
     if (index >= 0) accounts[index] = account;
   }
 
-  saveAccounts(accounts);
+  // Supabase Auth is the durable account identity. Hydrate the presentation
+  // profile from the row keyed by auth.users.id before writing local cache.
+  account = await hydrateCloudProfile(user, account);
+
+  const finalAccounts = loadAccounts();
+  const existingIndex = finalAccounts.findIndex((item) => item.id === account!.id);
+  if (existingIndex >= 0) finalAccounts[existingIndex] = account;
+  else finalAccounts.push(account);
+  saveAccounts(finalAccounts);
+
   map[user.id] = account.id;
   saveCloudMap(map);
   saveSession(account.id);
