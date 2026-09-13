@@ -21,6 +21,11 @@ const checks=[
 {name:"cloud sync is serialized to prevent stale concurrent writes",file:"src/lib/supabase/cloud-state.ts",patterns:["syncInFlight","return syncInFlight"]},
 {name:"cloud sync stops during sign-out",file:"src/lib/supabase/cloud-state.ts",patterns:["SIGNING_OUT_KEY","canSync","clearLocalCloudSyncedState"]},
 {name:"sign-out clears device member state without deleting cloud data",file:"src/lib/auth.ts",patterns:["clearLocalCloudSyncedState","client.auth.signOut"]},
+{name:"public health endpoint is no-store and non-indexable",file:"src/app/api/health/route.ts",patterns:["force-dynamic","Cache-Control","no-store","X-Robots-Tag","noindex"]},
+{name:"PWA manifest is standalone and scoped",file:"src/app/manifest.ts",patterns:["display:\"standalone\"","scope:\"/\"","prefer_related_applications:false","192x192","512x512"]},
+{name:"PWA service worker avoids authenticated and API caching",file:"public/sw.js",patterns:["serviceWorker","CACHE","/auth","/manifest.webmanifest","/api/","/home"]},
+{name:"root registers the service worker",file:"src/app/layout.tsx",patterns:["serviceWorker","navigator.serviceWorker.register","/sw.js"]},
+{name:"private routes are excluded from robots",file:"src/app/robots.ts",patterns:["/home","/auth","/onboarding","/api","sitemap.xml"]},
 ];
 const normalized=(source)=>source.replace(/\s+/g," ").replace(/(['\"])([^'\"]+)\1/g,"$2");
 let failed=0;for(const check of checks){let source;try{source=read(check.file);}catch{failed++;console.error(`FAIL  ${check.name} — missing ${check.file}`);continue;}const normalizedSource=normalized(source);const missing=(check.patterns||[]).filter(p=>!normalizedSource.includes(normalized(p)));const forbidden=(check.absentPatterns||[]).filter(p=>normalizedSource.includes(normalized(p)));if(missing.length||forbidden.length){failed++;console.error(`FAIL  ${check.name}`);for(const p of missing)console.error(`      missing: ${p}`);for(const p of forbidden)console.error(`      forbidden: ${p}`);}else console.log(`PASS  ${check.name}`);}if(failed){console.error(`\nShipping audit failed: ${failed} check(s).`);process.exit(1);}console.log(`\nShipping audit passed: ${checks.length}/${checks.length} invariants.`);
