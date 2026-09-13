@@ -43,10 +43,7 @@ export default function OnboardingPage() {
 
   useEffect(() => {
     let cancelled = false;
-
     const verifyAccess = async () => {
-      // localStorage is cache only. A real Supabase Auth user is required
-      // before onboarding may create/update a LIVV product account.
       if (!isSupabaseConfigured()) {
         if (!cancelled) {
           setError("LIVV account verification is unavailable. Please try again.");
@@ -59,13 +56,11 @@ export default function OnboardingPage() {
         ? await client.auth.getUser()
         : { data: { user: null }, error: new Error("Supabase client unavailable") };
       const user = data?.user;
-
       if (cancelled) return;
       if (authError || !user || user.is_anonymous || !user.email) {
         router.replace("/auth");
         return;
       }
-
       const draft = loadOnboardingDraft();
       if (draft.why) setWhy(draft.why);
       if (draft.goals.length) setSelectedGoals(draft.goals);
@@ -77,52 +72,32 @@ export default function OnboardingPage() {
       }
       setCheckingAccess(false);
     };
-
     void verifyAccess();
     return () => { cancelled = true; };
   }, [router]);
 
-  const persist = (partial: {
-    why?: string;
-    goals?: string[];
-    interests?: string[];
-    displayName?: string;
-  }) => {
+  const persist = (partial: { why?: string; goals?: string[]; interests?: string[]; displayName?: string }) => {
     saveOnboardingDraft(partial);
-  };
-
-  const toggle = (list: string[], id: string, set: (v: string[]) => void) => {
-    set(list.includes(id) ? list.filter((x) => x !== id) : [...list, id]);
   };
 
   const finish = async () => {
     const client = getSupabaseBrowserClient();
-    if (!client) {
-      router.replace("/auth");
-      return;
-    }
-    // Re-check the real Auth session immediately before completion. A forged
-    // local LIVV session must never be enough to create a member.
+    if (!client) { router.replace("/auth"); return; }
     const { data, error: authError } = await client.auth.getUser();
     const user = data?.user;
-    if (authError || !user || user.is_anonymous || !user.email) {
-      router.replace("/auth");
-      return;
-    }
-
+    if (authError || !user || user.is_anonymous || !user.email) { router.replace("/auth"); return; }
     const name = displayName.trim();
-    if (!name) {
-      setError("Add a display name to continue.");
-      return;
-    }
+    if (!name) { setError("Add a display name to continue."); return; }
     setBusy(true);
     setError("");
     try {
+      // Cloud onboarding is the durable gate. Only mark the local wizard complete
+      // after the server confirms the member profile update succeeded.
       await markCloudOnboardingComplete(name);
+      await completeDeviceOnboarding({ displayName: name });
       persist({ why, goals: selectedGoals, interests: selectedInterests, displayName: name });
       markOnboardingComplete();
       markFirstSessionPending();
-      await completeDeviceOnboarding({ displayName: name });
       router.replace("/home");
     } catch (e) {
       setError(e instanceof Error ? e.message : "Could not finish onboarding");
@@ -131,145 +106,20 @@ export default function OnboardingPage() {
     }
   };
 
-  if (checkingAccess) {
-    return (
-      <main className="livv-page flex min-h-dvh items-center justify-center px-5 text-white">
-        <p className="text-sm text-white/45">Verifying your LIVV session…</p>
-      </main>
-    );
-  }
-
-  if (error && !displayName && !busy) {
-    return (
-      <main className="livv-page flex min-h-dvh items-center justify-center px-5 text-white">
-        <p className="text-sm text-red-400">{error}</p>
-      </main>
-    );
-  }
+  if (checkingAccess) return <main className="livv-page flex min-h-dvh items-center justify-center px-5 text-white"><p className="text-sm text-white/45">Verifying your LIVV session…</p></main>;
+  if (error && !displayName && !busy) return <main className="livv-page flex min-h-dvh items-center justify-center px-5 text-white"><p className="text-sm text-red-400">{error}</p></main>;
 
   return (
     <main className="livv-page relative min-h-dvh overflow-hidden pb-16 pt-10 text-white">
       <div className="relative z-10 mx-auto max-w-md px-5">
-        <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-livv-accent-soft">
-          Onboarding
-        </p>
+        <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-livv-accent-soft">Onboarding</p>
         <h1 className="font-display mt-2 text-3xl font-semibold tracking-tight">
-          {step === "why" && "Why are you here?"}
-          {step === "goals" && "What are you building?"}
-          {step === "interests" && "What pulls you in?"}
-          {step === "profile" && "What should we call you?"}
+          {step === "why" && "Why are you here?"}{step === "goals" && "What are you building?"}{step === "interests" && "What pulls you in?"}{step === "profile" && "What should we call you?"}
         </h1>
-
-        {step === "why" && (
-          <div className="mt-8">
-            <textarea
-              value={why}
-              onChange={(e) => {
-                setWhy(e.target.value);
-                persist({ why: e.target.value });
-              }}
-              rows={5}
-              placeholder="One honest sentence."
-              className="w-full rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-[15px] text-white outline-none placeholder:text-white/25 focus:border-white/25"
-            />
-            <Button className="mt-6 w-full" onClick={() => setStep("goals")}>
-              Continue
-            </Button>
-          </div>
-        )}
-
-        {step === "goals" && (
-          <div className="mt-8 space-y-2">
-            {GOALS.map((g) => (
-              <button
-                key={g.id}
-                type="button"
-                onClick={() => {
-                  const next = selectedGoals.includes(g.id)
-                    ? selectedGoals.filter((x) => x !== g.id)
-                    : [...selectedGoals, g.id];
-                  setSelectedGoals(next);
-                  persist({ goals: next });
-                }}
-                className={cn(
-                  "flex w-full items-center rounded-2xl border px-4 py-3.5 text-left text-[14px] transition",
-                  selectedGoals.includes(g.id)
-                    ? "border-livv-accent/50 bg-livv-accent/10 text-white"
-                    : "border-white/10 bg-white/[0.03] text-white/70"
-                )}
-              >
-                {g.label}
-              </button>
-            ))}
-            <div className="flex gap-2 pt-4">
-              <Button variant="ghost" className="flex-1" onClick={() => setStep("why")}>
-                Back
-              </Button>
-              <Button className="flex-1" onClick={() => setStep("interests")}>
-                Continue
-              </Button>
-            </div>
-          </div>
-        )}
-
-        {step === "interests" && (
-          <div className="mt-8">
-            <div className="flex flex-wrap gap-2">
-              {INTERESTS.map((label) => (
-                <button
-                  key={label}
-                  type="button"
-                  onClick={() => {
-                    const next = selectedInterests.includes(label)
-                      ? selectedInterests.filter((x) => x !== label)
-                      : [...selectedInterests, label];
-                    setSelectedInterests(next);
-                    persist({ interests: next });
-                  }}
-                  className={cn(
-                    "rounded-full border px-3.5 py-2 text-[12px] font-medium transition",
-                    selectedInterests.includes(label)
-                      ? "border-white/30 bg-white text-black"
-                      : "border-white/10 bg-white/[0.03] text-white/60"
-                  )}
-                >
-                  {label}
-                </button>
-              ))}
-            </div>
-            <div className="mt-6 flex gap-2">
-              <Button variant="ghost" className="flex-1" onClick={() => setStep("goals")}>
-                Back
-              </Button>
-              <Button className="flex-1" onClick={() => setStep("profile")}>
-                Continue
-              </Button>
-            </div>
-          </div>
-        )}
-
-        {step === "profile" && (
-          <div className="mt-8">
-            <input
-              value={displayName}
-              onChange={(e) => {
-                setDisplayName(e.target.value);
-                persist({ displayName: e.target.value });
-              }}
-              placeholder="Display name"
-              className="w-full rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3.5 text-[15px] text-white outline-none placeholder:text-white/25 focus:border-white/25"
-            />
-            {error && <p className="mt-3 text-[13px] text-red-400">{error}</p>}
-            <div className="mt-6 flex gap-2">
-              <Button variant="ghost" className="flex-1" onClick={() => setStep("interests")}>
-                Back
-              </Button>
-              <Button className="flex-1" disabled={busy} onClick={() => void finish()}>
-                {busy ? "Entering…" : "Enter LIVV"}
-              </Button>
-            </div>
-          </div>
-        )}
+        {step === "why" && <div className="mt-8"><textarea value={why} onChange={e => {setWhy(e.target.value);persist({why:e.target.value});}} rows={5} placeholder="One honest sentence." className="w-full rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-[15px] text-white outline-none placeholder:text-white/25 focus:border-white/25"/><Button className="mt-6 w-full" onClick={() => setStep("goals")}>Continue</Button></div>}
+        {step === "goals" && <div className="mt-8 space-y-2">{GOALS.map(g => <button key={g.id} type="button" onClick={() => {const next=selectedGoals.includes(g.id)?selectedGoals.filter(x=>x!==g.id):[...selectedGoals,g.id];setSelectedGoals(next);persist({goals:next});}} className={cn("flex w-full items-center rounded-2xl border px-4 py-3.5 text-left text-[14px] transition",selectedGoals.includes(g.id)?"border-livv-accent/50 bg-livv-accent/10 text-white":"border-white/10 bg-white/[0.03] text-white/70")}>{g.label}</button>)}<div className="flex gap-2 pt-4"><Button variant="ghost" className="flex-1" onClick={() => setStep("why")}>Back</Button><Button className="flex-1" onClick={() => setStep("interests")}>Continue</Button></div></div>}
+        {step === "interests" && <div className="mt-8"><div className="flex flex-wrap gap-2">{INTERESTS.map(label => <button key={label} type="button" onClick={() => {const next=selectedInterests.includes(label)?selectedInterests.filter(x=>x!==label):[...selectedInterests,label];setSelectedInterests(next);persist({interests:next});}} className={cn("rounded-full border px-3.5 py-2 text-[12px] font-medium transition",selectedInterests.includes(label)?"border-white/30 bg-white text-black":"border-white/10 bg-white/[0.03] text-white/60")}>{label}</button>)}</div><div className="mt-6 flex gap-2"><Button variant="ghost" className="flex-1" onClick={() => setStep("goals")}>Back</Button><Button className="flex-1" onClick={() => setStep("profile")}>Continue</Button></div></div>}
+        {step === "profile" && <div className="mt-8"><input value={displayName} onChange={e => {setDisplayName(e.target.value);persist({displayName:e.target.value});}} placeholder="Display name" className="w-full rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3.5 text-[15px] text-white outline-none placeholder:text-white/25 focus:border-white/25"/>{error&&<p className="mt-3 text-[13px] text-red-400">{error}</p>}<div className="mt-6 flex gap-2"><Button variant="ghost" className="flex-1" onClick={() => setStep("interests")}>Back</Button><Button className="flex-1" disabled={busy} onClick={() => void finish()}>{busy?"Entering…":"Enter LIVV"}</Button></div></div>}
       </div>
     </main>
   );
