@@ -8,7 +8,7 @@ type PageHeroProps = {
   right?: ReactNode;
 };
 
-/** Shared page title block so every screen opens the same way under the app header. */
+/** Shared page title block so every screen opens with a clear, readable destination. */
 export function PageHero({
   eyebrow,
   title,
@@ -20,7 +20,7 @@ export function PageHero({
     <header className="livv-page-hero flex items-end justify-between gap-4">
       <div className="min-w-0">
         <p
-          className="text-[9px] font-semibold uppercase tracking-[0.34em]"
+          className="text-[10px] font-semibold uppercase tracking-[0.28em]"
           style={{ color: accent }}
         >
           {eyebrow}
@@ -29,7 +29,7 @@ export function PageHero({
           {title}
         </h1>
         {subtitle ? (
-          <p className="mt-2 max-w-[36ch] text-[13px] leading-relaxed text-white/40">
+          <p className="mt-2 max-w-[36ch] text-[14px] leading-[1.5] text-livv-muted">
             {subtitle}
           </p>
         ) : null}
