@@ -53,21 +53,21 @@ export function InstallApp() {
       <button
         type="button"
         onClick={() => void install()}
-        className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-livv-border bg-livv-surface px-2.5 py-1.5 text-[9px] font-semibold uppercase tracking-[0.12em] text-livv-fg transition active:scale-[0.97]"
+        className="inline-flex min-h-8 shrink-0 items-center gap-1.5 rounded-full border border-livv-border bg-livv-surface px-3 py-1.5 text-[9px] font-semibold uppercase tracking-[0.1em] text-livv-fg transition active:scale-[0.97]"
         aria-label="Install LIVV as an app"
       >
         <Download size={12} strokeWidth={2} />
-        Install
+        Install app
       </button>
 
       {open && (
         <div className="fixed inset-0 z-[120] flex items-end justify-center bg-black/60 p-3 backdrop-blur-sm" role="dialog" aria-modal="true" aria-labelledby="install-title">
-          <div className="w-full max-w-md rounded-[30px] border border-white/15 bg-[rgb(var(--livv-surface))] p-5 shadow-2xl">
+          <div className="livv-install-card w-full max-w-md rounded-[30px] bg-[rgb(var(--livv-surface))] p-5 shadow-2xl">
             <div className="flex items-start justify-between gap-4">
               <div>
                 <p className="text-[9px] font-semibold uppercase tracking-[0.28em] text-livv-accent">LIVV app</p>
-                <h2 id="install-title" className="font-display mt-2 text-[25px] font-semibold tracking-tight text-livv-fg">Put LIVV on your home screen.</h2>
-                <p className="mt-2 text-[13px] leading-relaxed text-livv-muted">Open LIVV like a normal app, without typing the website every time.</p>
+                <h2 id="install-title" className="font-display mt-2 text-[25px] font-semibold tracking-tight text-livv-fg">Add LIVV to your home screen.</h2>
+                <p className="mt-2 text-[13px] leading-relaxed text-livv-muted">Then you can open LIVV like a normal app without typing the website again.</p>
               </div>
               <button type="button" onClick={() => setOpen(false)} className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-livv-border text-livv-muted" aria-label="Close install instructions">
                 <X size={17} />
@@ -77,18 +77,18 @@ export function InstallApp() {
             {ios ? (
               <div className="mt-5 space-y-3">
                 <Step number="1" title="Tap Share" text="In Safari, tap the Share button at the bottom of the screen." icon={<Share size={17} />} />
-                <Step number="2" title="Choose Add to Home Screen" text="Scroll the Share menu if you need to find it, then tap Add to Home Screen." />
-                <Step number="3" title="Tap Add" text="Keep the name LIVV, then tap Add. LIVV will appear beside your other apps." />
+                <Step number="2" title="Tap Add to Home Screen" text="Scroll the Share menu if needed, then choose Add to Home Screen." />
+                <Step number="3" title="Tap Add" text="Keep the name LIVV, then tap Add. The LIVV icon will appear on your home screen." />
               </div>
             ) : (
               <div className="mt-5 space-y-3">
-                <Step number="1" title="Open your browser menu" text="Use the browser menu or install icon near the address bar." icon={<Download size={17} />} />
+                <Step number="1" title="Open your browser menu" text="Use the browser menu or the install icon near the address bar." icon={<Download size={17} />} />
                 <Step number="2" title="Choose Install app" text="Select Install LIVV or Add to Home screen." />
-                <Step number="3" title="Confirm" text="Accept the prompt. LIVV will open from your home screen like an app." />
+                <Step number="3" title="Confirm the install" text="Accept the prompt. LIVV will open from your home screen like an app." />
               </div>
             )}
 
-            <button type="button" onClick={() => setOpen(false)} className="mt-5 w-full rounded-full bg-livv-accent py-3 text-[11px] font-semibold uppercase tracking-[0.14em] text-white">Got it</button>
+            <button type="button" onClick={() => setOpen(false)} className="mt-5 w-full rounded-full bg-livv-accent py-3 text-[11px] font-semibold uppercase tracking-[0.14em] text-white">Done</button>
           </div>
         </div>
       )}

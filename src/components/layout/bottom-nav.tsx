@@ -32,24 +32,25 @@ export function BottomNav() {
               key={item.href}
               href={item.href}
               aria-current={active ? "page" : undefined}
-              className="livv-tab relative flex min-w-0 flex-1 flex-col items-center justify-center gap-0.5 rounded-2xl py-1"
+              aria-label={`Open ${item.label}`}
+              className={`livv-tab relative flex min-w-0 flex-1 flex-col items-center justify-center gap-0.5 rounded-2xl px-0.5 py-1.5 ${active ? "bg-black/[0.035]" : ""}`}
               style={{ color: item.color }}
             >
               <Icon
-                size={20}
-                strokeWidth={active ? 2.35 : 1.7}
+                size={22}
+                strokeWidth={active ? 2.4 : 1.8}
                 absoluteStrokeWidth={false}
                 style={{
                   color: item.color,
-                  opacity: active ? 1 : 0.5,
+                  opacity: active ? 1 : 0.72,
                   filter: active ? `drop-shadow(0 0 10px ${item.color})` : "none",
                 }}
               />
               <span
-                className="max-w-full truncate text-[8px] font-semibold tracking-[0.04em]"
+                className="livv-social-nav-label max-w-full truncate text-[9px] font-semibold tracking-[0.02em]"
                 style={{
                   color: item.color,
-                  opacity: active ? 1 : 0.5,
+                  opacity: active ? 1 : 0.78,
                   textShadow: active ? `0 0 14px ${item.color}` : "none",
                 }}
               >
@@ -57,7 +58,7 @@ export function BottomNav() {
               </span>
               {active && (
                 <span
-                  className="absolute -bottom-0.5 h-0.5 w-3 rounded-full"
+                  className="absolute -bottom-0.5 h-0.5 w-4 rounded-full"
                   style={{ background: item.color, boxShadow: `0 0 8px ${item.color}` }}
                   aria-hidden
                 />
