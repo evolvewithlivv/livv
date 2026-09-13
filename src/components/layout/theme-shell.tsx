@@ -23,12 +23,6 @@ export function ThemeShell({ children }: { children: React.ReactNode }) {
     window.addEventListener("online", updateConnection);
     window.addEventListener("offline", updateConnection);
 
-    if ("serviceWorker" in navigator && window.isSecureContext) {
-      void navigator.serviceWorker.register("/sw.js", { scope: "/" }).catch((error) => {
-        console.warn("[LIVV PWA] service worker registration deferred", error);
-      });
-    }
-
     let stopCloudSync = () => {};
     let cancelled = false;
     void (async () => {
