@@ -111,7 +111,6 @@ export default function ShopPage() {
           right={<ShoppingBag className="text-[#ff9f43]" size={22} strokeWidth={1.7} />}
         />
 
-        {/* PACKS — primary, first on the page */}
         <section id="packs" className="mt-8">
           <div className="livv-glass overflow-hidden rounded-[32px] p-5">
             <div className="flex items-start justify-between gap-4">
@@ -153,7 +152,7 @@ export default function ShopPage() {
                 />
               </div>
               {ready && (
-                <div className="mt-5 flex gap-4 overflow-x-auto pb-1 scrollbar-none">
+                <div className="-my-1 flex gap-4 overflow-x-auto px-1 py-3 scrollbar-none">
                   {pending.map((pack) => (
                     <button
                       key={pack.id}
@@ -162,10 +161,10 @@ export default function ShopPage() {
                         feedback("tick");
                         setOpening(pack);
                       }}
-                      className="shrink-0 text-center"
+                      className="shrink-0 rounded-2xl p-1 text-center transition active:scale-[0.98]"
                     >
                       <PackFoil grade={pack.grade} size="sm" pulse />
-                      <p className="mt-2 text-[9px] uppercase tracking-[0.16em] text-white/40">
+                      <p className="mt-2 text-[9px] font-medium uppercase tracking-[0.16em] text-white/40">
                         {GRADE_META[pack.grade].name.replace(" Pack", "")}
                       </p>
                     </button>
@@ -227,7 +226,6 @@ export default function ShopPage() {
           <ArrowUpRight size={18} className="text-[#ff9f43]" />
         </Link>
 
-        {/* MERCH — secondary */}
         <section className="mt-10">
           <div className="mb-4 flex items-end justify-between px-1">
             <div>
@@ -251,7 +249,7 @@ export default function ShopPage() {
                   {/* eslint-disable-next-line @next/next/no-img-element */}
                   <img
                     src={product.image}
-                    alt={`${product.name} — ${product.subtitle}`}
+                    alt={`${product.name} / ${product.subtitle}`}
                     className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
                   />
                   <div className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-t from-[#030405] to-transparent" />
