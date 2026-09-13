@@ -14,7 +14,12 @@ export async function GET(req: NextRequest) {
     if(!sessionId)return json({error:"Missing session_id"},{status:400});
     if(sessionId.length>255||!/^cs_[A-Za-z0-9_]+$/.test(sessionId))return json({error:"Invalid checkout session"},{status:400});
     let verifiedUserId:string|null=null;
-    if(isSupabaseServerConfigured()){const verified=await getVerifiedSupabaseUser(req);if(!verified)return json({error:"Authenticated session required"},{status:401});verifiedUserId=verified.id;}
+    if(isSupabaseServerConfigured()){
+      const verified=await getVerifiedSupabaseUser(req);
+      if(!verified)return json({error:"Authenticated session required"},{status:401});
+      if(verified.isAnonymous)return json({error:"Verify your email before confirming payment"},{status:403});
+      verifiedUserId=verified.id;
+    }
     const session=await stripe.checkout.sessions.retrieve(sessionId,{expand:["subscription","line_items"]});
     if(session.payment_status!=="paid"&&session.status!=="complete")return json({error:"Payment not complete",status:session.status},{status:402});
     if(verifiedUserId){const boundId=session.metadata?.livv_user_id||session.client_reference_id;if(!isUuid(boundId)||boundId!==verifiedUserId)return json({error:"Checkout session does not belong to this account"},{status:403});}
