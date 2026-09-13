@@ -32,7 +32,7 @@ const checks = [
   {
     name: "returning users skip onboarding after email verification",
     file: "src/app/auth/page.tsx",
-    patterns: ["isOnboardingComplete", 'isOnboardingComplete() ? "/home" : "/onboarding"'],
+    patterns: ["isOnboardingComplete", "isCloudOnboardingComplete", "cloudComplete ? \"/home\" : \"/onboarding\""],
   },
   {
     name: "opening flow requires authentication before onboarding",
