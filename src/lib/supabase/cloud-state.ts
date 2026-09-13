@@ -18,7 +18,6 @@ function readLocalState(): Record<string, string> {
   for (let i = 0; i < window.localStorage.length; i += 1) {
     const key = window.localStorage.key(i);
     if (!key || !key.startsWith("livv-") || EXCLUDED_KEYS.has(key)) continue;
-    // Never copy credentials/tokens/password material into product state.
     if (/(token|password|secret|credential|auth)/i.test(key)) continue;
     const value = window.localStorage.getItem(key);
     if (value !== null) state[key] = value;
@@ -33,9 +32,6 @@ function writeLocalState(state: Record<string, string>) {
 }
 
 function notifyStateHydrated() {
-  // Pages such as Home mount before the async cloud bootstrap completes.
-  // Notify every local state consumer after restoration so it re-reads the
-  // cloud-backed values instead of remaining on its initial EMPTY_* defaults.
   window.dispatchEvent(new Event("livv-record"));
   window.dispatchEvent(new Event("livv-daily"));
   window.dispatchEvent(new Event("livv-identity"));
@@ -51,6 +47,19 @@ function clearLocalStateExceptAuth() {
     }
   }
   for (const key of keys) window.localStorage.removeItem(key);
+}
+
+/** Clear user-owned synced state when signing out so another person using the same device cannot see it. */
+export function clearLocalCloudSyncedState() {
+  if (typeof window === "undefined") return;
+  clearLocalStateExceptAuth();
+  window.localStorage.removeItem("livv-cloud-state-shadow-v1");
+  window.localStorage.removeItem("livv-cloud-account-v1");
+  window.localStorage.removeItem("livv-session-v1");
+  window.localStorage.removeItem("livv-accounts-v1");
+  window.localStorage.removeItem("livv-usernames-v1");
+  window.localStorage.removeItem("livv-identity-v1");
+  notifyStateHydrated();
 }
 
 function snapshot(state: Record<string, string>) {
@@ -103,12 +112,6 @@ async function writeCloud(userId: string, state: Record<string, string>) {
   return true;
 }
 
-/**
- * First login on a browser:
- * - restore the cloud account state when this browser has no local state;
- * - otherwise merge local state into cloud so existing device progress is not lost;
- * - establish a shadow used to detect future local changes.
- */
 export async function bootstrapCloudMemberState() {
   if (!canSync()) return;
   const userId = await currentUserId();
@@ -138,9 +141,6 @@ export async function bootstrapCloudMemberState() {
   }
 
   if (localHasChanges) {
-    // A new browser can contain freshly-created identity/UI state before its
-    // first cloud bootstrap. Merge it over the cloud snapshot so we preserve
-    // cloud progress while retaining legitimate device-local settings.
     const merged = { ...(cloud.state || {}), ...local };
     await writeCloud(userId, merged);
     writeLocalState(merged);
@@ -173,26 +173,15 @@ export function startCloudMemberStateSync() {
 
   let stopped = false;
   let timer: number | null = null;
-
   const tick = async () => {
     if (stopped) return;
-    try {
-      await syncCloudMemberState();
-    } catch (error) {
-      console.warn("[LIVV cloud state] sync deferred", error);
-    }
+    try { await syncCloudMemberState(); }
+    catch (error) { console.warn("[LIVV cloud state] sync deferred", error); }
   };
-
-  void bootstrapCloudMemberState().catch((error) => {
-    console.warn("[LIVV cloud state] bootstrap deferred", error);
-  });
-
+  void bootstrapCloudMemberState().catch((error) => console.warn("[LIVV cloud state] bootstrap deferred", error));
   timer = window.setInterval(() => void tick(), 3000);
-  const onVisibility = () => {
-    if (document.visibilityState === "visible") void tick();
-  };
+  const onVisibility = () => { if (document.visibilityState === "visible") void tick(); };
   window.addEventListener("visibilitychange", onVisibility);
-
   return () => {
     stopped = true;
     if (timer !== null) window.clearInterval(timer);
