@@ -1,22 +1,18 @@
 /**
- * LIVV data portability — local-only export / import / wipe.
- * No backend. Values are raw localStorage strings for exact restore.
+ * LIVV data portability — user progress backup / import / wipe.
+ * Authentication and browser session state are intentionally excluded.
+ * The authenticated Supabase account is the durable identity; backups must
+ * never become a way to export or restore session credentials/password hashes.
  */
 
-export const LIVV_BACKUP_VERSION = 1 as const;
+export const LIVV_BACKUP_VERSION = 2 as const;
 export const LIVV_BACKUP_APP = "livv" as const;
 
 /**
- * Known product keys. Import only writes allowlisted keys (plus
- * dynamic livv-pack-session-* markers collected at export time).
- * Excludes livv-demo-unlock (QA flag, not user progress).
+ * Product data that is safe to move between browsers. Identity/session
+ * credentials are deliberately not portable.
  */
 export const MANAGED_KEYS = [
-  // Identity & auth (device-local)
-  "livv-identity-v1",
-  "livv-accounts-v1",
-  "livv-session-v1",
-  "livv-usernames-v1",
   // Progression
   "livv-record-v1",
   "livv-daily-v1",
@@ -28,7 +24,7 @@ export const MANAGED_KEYS = [
   "livv-weekly-clear-v1",
   "livv-season-v1",
   "livv-fasting-v1",
-  // Packs / entitlements (client-side state)
+  // Packs / local entitlement cache (server entitlements remain authoritative)
   "livv-packs-v2",
   "livv-packs-v1",
   "livv-entitlements-v1",
@@ -50,7 +46,6 @@ export type LivvBackupFile = {
   app: typeof LIVV_BACKUP_APP;
   version: typeof LIVV_BACKUP_VERSION;
   exportedAt: string;
-  /** Raw localStorage string values */
   data: Record<string, string>;
 };
 
@@ -63,17 +58,16 @@ function isBrowser() {
 function collectDynamicKeys(): string[] {
   if (!isBrowser()) return [];
   const out: string[] = [];
-  for (let i = 0; i < window.localStorage.length; i++) {
-    const k = window.localStorage.key(i);
-    if (!k) continue;
-    if (DYNAMIC_PREFIXES.some((p) => k.startsWith(p))) out.push(k);
+  for (let i = 0; i < window.localStorage.length; i += 1) {
+    const key = window.localStorage.key(i);
+    if (!key) continue;
+    if (DYNAMIC_PREFIXES.some((p) => key.startsWith(p))) out.push(key);
   }
   return out;
 }
 
 function allExportKeys(): string[] {
-  const set = new Set<string>([...MANAGED_KEYS, ...collectDynamicKeys()]);
-  return [...set];
+  return [...new Set([...MANAGED_KEYS, ...collectDynamicKeys()])];
 }
 
 export function buildBackup(): LivvBackupFile {
@@ -94,9 +88,7 @@ export function buildBackup(): LivvBackupFile {
 
 export function downloadBackup(): LivvBackupFile {
   const backup = buildBackup();
-  const blob = new Blob([JSON.stringify(backup, null, 2)], {
-    type: "application/json",
-  });
+  const blob = new Blob([JSON.stringify(backup, null, 2)], { type: "application/json" });
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   const day = backup.exportedAt.slice(0, 10);
@@ -119,7 +111,6 @@ function isAllowlistedKey(key: string): boolean {
   return DYNAMIC_PREFIXES.some((p) => key.startsWith(p));
 }
 
-/** Parse + validate without writing. */
 export function validateBackupPayload(raw: unknown): ImportValidation {
   if (raw === null || typeof raw !== "object" || Array.isArray(raw)) {
     return { ok: false, error: "File is not a LIVV backup object." };
@@ -142,26 +133,24 @@ export function validateBackupPayload(raw: unknown): ImportValidation {
   }
   const dataIn = obj.data as Record<string, unknown>;
   const data: Record<string, string> = {};
-  for (const [k, v] of Object.entries(dataIn)) {
-    if (!isAllowlistedKey(k)) continue; // skip unknown keys silently
-    if (typeof v !== "string") {
-      return { ok: false, error: `Key “${k}” must be a string (raw storage value).` };
+  for (const [key, value] of Object.entries(dataIn)) {
+    if (!isAllowlistedKey(key)) continue;
+    if (typeof value !== "string") {
+      return { ok: false, error: `Key “${key}” must be a string (raw storage value).` };
     }
-    // Soft JSON check for known structured keys — must parse if non-empty
-    if (v.length > 0) {
+    if (value.length > 0) {
       try {
-        JSON.parse(v);
+        JSON.parse(value);
       } catch {
-        // allow non-JSON strings for rare flags; pack-session markers are "1"
-        if (v !== "1" && !k.startsWith("livv-pack-session-")) {
-          return { ok: false, error: `Key “${k}” is not valid JSON.` };
+        if (value !== "1" && !key.startsWith("livv-pack-session-")) {
+          return { ok: false, error: `Key “${key}” is not valid JSON.` };
         }
       }
     }
-    data[k] = v;
+    data[key] = value;
   }
   if (Object.keys(data).length === 0) {
-    return { ok: false, error: "Backup contains no recognized LIVV keys." };
+    return { ok: false, error: "Backup contains no recognized LIVV progress keys." };
   }
   return {
     ok: true,
@@ -176,12 +165,8 @@ export function validateBackupPayload(raw: unknown): ImportValidation {
 }
 
 export async function parseBackupFile(file: File): Promise<ImportValidation> {
-  if (!file || file.size === 0) {
-    return { ok: false, error: "Empty file." };
-  }
-  if (file.size > 8 * 1024 * 1024) {
-    return { ok: false, error: "File too large (max 8 MB)." };
-  }
+  if (!file || file.size === 0) return { ok: false, error: "Empty file." };
+  if (file.size > 8 * 1024 * 1024) return { ok: false, error: "File too large (max 8 MB)." };
   let text: string;
   try {
     text = await file.text();
@@ -199,12 +184,8 @@ export async function parseBackupFile(file: File): Promise<ImportValidation> {
 
 function clearManagedStorage() {
   if (!isBrowser()) return;
-  for (const key of MANAGED_KEYS) {
-    window.localStorage.removeItem(key);
-  }
-  for (const key of collectDynamicKeys()) {
-    window.localStorage.removeItem(key);
-  }
+  for (const key of MANAGED_KEYS) window.localStorage.removeItem(key);
+  for (const key of collectDynamicKeys()) window.localStorage.removeItem(key);
   try {
     window.sessionStorage.removeItem("livv-first-session-v1");
   } catch {
@@ -214,47 +195,33 @@ function clearManagedStorage() {
 
 function notifyStateRefresh() {
   if (!isBrowser()) return;
-  const events = [
-    "livv-identity",
-    "livv-auth",
+  for (const name of [
     "livv-record",
     "livv-prefs",
     "livv-packs",
     "livv-billing",
     "livv-daily",
     "livv-social",
-  ];
-  for (const name of events) {
-    window.dispatchEvent(new Event(name));
-  }
+  ]) window.dispatchEvent(new Event(name));
 }
 
-/**
- * Replace strategy: clear all managed keys, then write keys from backup.
- * Prevents stale keys from mixing with an older snapshot.
- */
 export function importBackup(backup: LivvBackupFile): { ok: true } | { ok: false; error: string } {
   if (!isBrowser()) return { ok: false, error: "Not in browser." };
   const check = validateBackupPayload(backup);
   if (!check.ok) return check;
-
   try {
     clearManagedStorage();
     for (const [key, value] of Object.entries(check.backup.data)) {
-      if (!isAllowlistedKey(key)) continue;
-      window.localStorage.setItem(key, value);
+      if (isAllowlistedKey(key)) window.localStorage.setItem(key, value);
     }
     notifyStateRefresh();
     return { ok: true };
-  } catch (e) {
-    return {
-      ok: false,
-      error: e instanceof Error ? e.message : "Import failed while writing storage.",
-    };
+  } catch (error) {
+    return { ok: false, error: error instanceof Error ? error.message : "Import failed while writing storage." };
   }
 }
 
-/** Wipe all managed LIVV local data on this device. */
+/** Wipe portable LIVV data on this device. Account deletion is separate. */
 export function deleteAllLivvData(): void {
   clearManagedStorage();
   notifyStateRefresh();
@@ -262,9 +229,9 @@ export function deleteAllLivvData(): void {
 
 export function countManagedKeysPresent(): number {
   if (!isBrowser()) return 0;
-  let n = 0;
+  let count = 0;
   for (const key of allExportKeys()) {
-    if (window.localStorage.getItem(key) !== null) n++;
+    if (window.localStorage.getItem(key) !== null) count += 1;
   }
-  return n;
+  return count;
 }
