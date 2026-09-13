@@ -12,27 +12,22 @@ export function ThemeShell({ children }: { children: React.ReactNode }) {
     const apply = () => {
       const me = loadIdentity();
       applyAppearance(me.appearance, me.accent);
-      const mode =
-        me.appearance === "light"
-          ? "light"
-          : me.appearance === "system"
-            ? window.matchMedia("(prefers-color-scheme: light)").matches
-              ? "light"
-              : "dark"
-            : "dark";
-      document.querySelector('meta[name="theme-color"]')?.setAttribute(
-        "content",
-        mode === "light" ? "#f2f3f6" : "#030405"
-      );
+      const mode = me.appearance === "light" ? "light" : me.appearance === "system" ? (window.matchMedia("(prefers-color-scheme: light)").matches ? "light" : "dark") : "dark";
+      document.querySelector('meta[name="theme-color"]')?.setAttribute("content", mode === "light" ? "#f2f3f6" : "#030405");
     };
     apply();
+
+    if ("serviceWorker" in navigator && window.isSecureContext) {
+      void navigator.serviceWorker.register("/sw.js", { scope: "/" }).catch((error) => {
+        console.warn("[LIVV PWA] service worker registration deferred", error);
+      });
+    }
 
     let stopCloudSync = () => {};
     let cancelled = false;
 
     void (async () => {
       try {
-        // Keep startup resilient: a transient Supabase failure must not blank the app.
         await ensureAnonymousSession();
         await hydrateServerEntitlement();
         if (cancelled) return;
