@@ -20,13 +20,24 @@ export type SplitDef = {
   color: string;
 };
 
+// LIVV accent palette. Keep every UI accent inside these seven exact colors.
+export const LIVV_COLORS = {
+  blue: "#0F7FFF",
+  yellow: "#FCF927",
+  red: "#F93827",
+  pink: "#F61981",
+  purple: "#9A00FF",
+  green: "#4DFF00",
+  orange: "#FF9D23",
+} as const;
+
 export const SPLITS: SplitDef[] = [
   {
     id: "ppl",
     name: "6-Day Push / Pull / Legs",
     line: "The week is the system. Push, pull, legs. Repeat. Sunday off.",
     detail: "Split = what gets trained. Workout = how you train it.",
-    color: "#FF4D6D",
+    color: LIVV_COLORS.red,
     days: [
       { id: "ppl-mon", day: "MON", label: "Push", focus: "Push", muscles: "Chest + shoulders + triceps" },
       { id: "ppl-tue", day: "TUE", label: "Pull", focus: "Pull", muscles: "Back + biceps" },
@@ -42,7 +53,7 @@ export const SPLITS: SplitDef[] = [
     name: "Upper / Lower",
     line: "Upper. Lower. Rest. Upper. Lower. Then rest again.",
     detail: "Four training days. The split decides the half of the body. The workout fills the day.",
-    color: "#4C8DFF",
+    color: LIVV_COLORS.blue,
     days: [
       { id: "ul-mon", day: "MON", label: "Upper", focus: "Upper Body", muscles: "Chest + back + shoulders + arms" },
       { id: "ul-tue", day: "TUE", label: "Lower", focus: "Lower Body", muscles: "Quads + hamstrings + glutes + calves" },
@@ -58,7 +69,7 @@ export const SPLITS: SplitDef[] = [
     name: "Bro Split",
     line: "One muscle group owns the day. Five days. Weekend off.",
     detail: "Monday chest is not Tuesday back. Each day gets its own workout.",
-    color: "#F5C542",
+    color: LIVV_COLORS.yellow,
     days: [
       { id: "bro-mon", day: "MON", label: "Chest", focus: "Chest", muscles: "Chest" },
       { id: "bro-tue", day: "TUE", label: "Back", focus: "Back", muscles: "Back" },
@@ -74,7 +85,7 @@ export const SPLITS: SplitDef[] = [
     name: "Full Body",
     line: "Three full-body days. The whole body every session.",
     detail: "No muscle group is parked on a different day. Recovery sits between sessions.",
-    color: "#3DDC97",
+    color: LIVV_COLORS.green,
     days: [
       { id: "full-mon", day: "MON", label: "Full Body", focus: "Full Body", muscles: "Whole body" },
       { id: "full-tue", day: "TUE", label: "Rest", focus: null, muscles: "Off.", rest: true },
@@ -90,7 +101,7 @@ export const SPLITS: SplitDef[] = [
     name: "Hybrid",
     line: "Strength. Engine. Trunk. Then repeat.",
     detail: "The week mixes lift days and conditioning days on purpose.",
-    color: "#B45CFF",
+    color: LIVV_COLORS.purple,
     days: [
       { id: "hyb-mon", day: "MON", label: "Strength", focus: "Full Body", muscles: "Whole-body strength" },
       { id: "hyb-tue", day: "TUE", label: "Engine", focus: "Cardio", muscles: "Conditioning" },
@@ -104,32 +115,32 @@ export const SPLITS: SplitDef[] = [
 ];
 
 export const FOCUS_COLOR: Record<Focus, string> = {
-  "Full Body": "#1EC8A5",
-  "Upper Body": "#9B7CFF",
-  "Lower Body": "#D4A017",
-  Push: "#FF7A1A",
-  Pull: "#5B8CFF",
-  Legs: "#C8F542",
-  Core: "#86E35A",
-  Cardio: "#FF3B6B",
-  Chest: "#FF8C42",
-  Back: "#3D7EFF",
-  Shoulders: "#D46BFF",
-  Arms: "#FF5CA8",
+  "Full Body": LIVV_COLORS.blue,
+  "Upper Body": LIVV_COLORS.purple,
+  "Lower Body": LIVV_COLORS.orange,
+  Push: LIVV_COLORS.red,
+  Pull: LIVV_COLORS.blue,
+  Legs: LIVV_COLORS.green,
+  Core: LIVV_COLORS.pink,
+  Cardio: LIVV_COLORS.yellow,
+  Chest: LIVV_COLORS.red,
+  Back: LIVV_COLORS.blue,
+  Shoulders: LIVV_COLORS.purple,
+  Arms: LIVV_COLORS.pink,
 };
 
 export const LOCATION_COLOR: Record<Location, string> = {
-  Home: "#7EB6FF",
-  Gym: "#E85D04",
-  Anywhere: "#2EE0C0",
+  Home: LIVV_COLORS.blue,
+  Gym: LIVV_COLORS.orange,
+  Anywhere: LIVV_COLORS.green,
 };
 
 export const DURATION_COLOR: Record<Duration, string> = {
-  "10": "#A8FF60",
-  "20": "#00C2A8",
-  "30": "#7C6BFF",
-  "45": "#FF8AB4",
-  "60+": "#FF6B35",
+  "10": LIVV_COLORS.green,
+  "20": LIVV_COLORS.blue,
+  "30": LIVV_COLORS.purple,
+  "45": LIVV_COLORS.pink,
+  "60+": LIVV_COLORS.orange,
 };
 
 const SPLIT_KEY = "livv-active-split";
