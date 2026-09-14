@@ -31,11 +31,11 @@ export function MilestoneCeremony() {
   if (!m) return null;
 
   return (
-    <div className="fixed inset-0 z-[90] flex flex-col items-center justify-center bg-black/[0.96] px-6 backdrop-blur-xl">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_38%,rgba(15,127,255,.10),transparent_34%)]" />
+    <div className="fixed inset-0 z-[90] flex flex-col items-center justify-center bg-black/[0.97] px-6 backdrop-blur-xl">
+      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_38%,rgba(255,255,255,.045),transparent_34%)]" />
       <div className="relative flex max-w-md flex-col items-center text-center">
         <div className="h-px w-16 bg-white/20" />
-        <p className="mt-7 text-[10px] uppercase tracking-[0.36em] text-white/45">Milestone</p>
+        <p className="mt-7 text-[10px] uppercase tracking-[0.36em] text-white/45">Progress</p>
         <h2 className="font-display mt-5 max-w-[16ch] text-[36px] font-semibold leading-[1.02] tracking-[-0.045em]">
           {m.title}
         </h2>
