@@ -18,8 +18,8 @@ body::after {
   overflow: hidden;
   background:
     radial-gradient(ellipse at 50% -12%, rgb(var(--livv-accent) / .105), transparent 40%),
-    radial-gradient(ellipse at 8% 72%, rgba(255, 100, 50, .028), transparent 34%),
-    radial-gradient(ellipse at 92% 78%, rgba(100, 120, 255, .032), transparent 38%);
+    radial-gradient(ellipse at 8% 72%, rgb(77 255 0 / .028), transparent 34%),
+    radial-gradient(ellipse at 92% 78%, rgb(154 0 255 / .032), transparent 38%);
 }
 
 .livv-ambient-backdrop::before,
@@ -45,7 +45,7 @@ body::after {
 .livv-ambient-backdrop::after {
   right: -16vw;
   bottom: 8%;
-  background: rgba(255, 105, 60, .10);
+  background: rgb(249 56 39 / .10);
   animation-delay: -8s;
   animation-direction: alternate-reverse;
 }
