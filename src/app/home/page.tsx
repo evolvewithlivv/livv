@@ -28,9 +28,24 @@ type Action = (typeof ACTIONS)[number];
 
 function ActionCard({ action, complete, onOpen }: { action: Action; complete: boolean; onOpen: () => void }) {
   return (
-    <button type="button" onClick={onOpen} className={`${complete ? "" : "animate-pulse"} relative min-h-[126px] overflow-hidden rounded-[24px] border p-4 text-left transition active:scale-[0.98]`} style={{ borderColor: `${action.color}${complete ? "CC" : "70"}`, background: `linear-gradient(145deg, ${action.color}${complete ? "26" : "13"}, rgba(255,255,255,.02))`, boxShadow: complete ? `0 0 30px ${action.color}45, inset 0 0 22px ${action.color}18` : `0 0 12px ${action.color}12` }}>
-      <span className="absolute right-4 top-4 h-2.5 w-2.5 rounded-full" style={{ background: action.color, boxShadow: `0 0 14px ${action.color}` }} />
-      <p className="text-[10px] font-semibold uppercase tracking-[0.22em]" style={{ color: action.color }}>{action.label}</p>
+    <button
+      type="button"
+      onClick={onOpen}
+      className="livv-action-card relative min-h-[126px] overflow-hidden rounded-[24px] border p-4 text-left transition hover:border-white/20 active:scale-[0.98]"
+      style={{
+        borderColor: complete ? `${action.color}55` : "rgba(255,255,255,.10)",
+        background: complete
+          ? `linear-gradient(145deg, ${action.color}0A, rgba(11,13,16,.94))`
+          : "linear-gradient(145deg, rgba(17,19,24,.92), rgba(8,10,13,.96))",
+      }}
+    >
+      <span
+        className="absolute right-4 top-4 h-2 w-2 rounded-full"
+        style={{ background: action.color }}
+      />
+      <p className="text-[10px] font-semibold uppercase tracking-[0.22em]" style={{ color: action.color }}>
+        {action.label}
+      </p>
       <p className="mt-6 text-[16px] font-semibold text-white/90">{complete ? "Complete" : "Open"}</p>
       <p className="mt-1 text-[11px] leading-relaxed text-white/55">{complete ? "Logged today." : action.help}</p>
       {complete && <span className="absolute bottom-3 right-4 text-[18px]" style={{ color: action.color }}>✓</span>}
