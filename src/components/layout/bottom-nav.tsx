@@ -20,30 +20,40 @@ function useKeyboardVisible() {
 
   useEffect(() => {
     const viewport = window.visualViewport;
-    if (!viewport) return;
+    const isMobile = window.matchMedia("(pointer: coarse)").matches || navigator.maxTouchPoints > 0;
+    if (!isMobile) return;
 
-    const isEditableFocused = () => {
-      const active = document.activeElement;
-      return active instanceof HTMLInputElement || active instanceof HTMLTextAreaElement || active instanceof HTMLSelectElement || active?.getAttribute("contenteditable") === "true";
+    const isEditable = (element: Element | null) => {
+      return element instanceof HTMLInputElement ||
+        element instanceof HTMLTextAreaElement ||
+        element instanceof HTMLSelectElement ||
+        element?.getAttribute("contenteditable") === "true";
     };
 
     const update = () => {
-      const viewportGap = window.innerHeight - viewport.height;
-      setKeyboardVisible(viewportGap > 120 && isEditableFocused());
+      const active = document.activeElement;
+      const focusedEditable = isEditable(active);
+      const viewportGap = viewport ? window.innerHeight - viewport.height : 0;
+
+      // On iOS, VisualViewport is not guaranteed to shrink consistently while the
+      // keyboard is animating. Hide immediately on editable focus, then restore on blur.
+      setKeyboardVisible(focusedEditable && (viewportGap > 80 || document.hasFocus()));
     };
 
-    const onFocusIn = () => update();
-    const onFocusOut = () => window.setTimeout(update, 50);
+    const onFocusIn = (event: FocusEvent) => {
+      if (isEditable(event.target as Element | null)) setKeyboardVisible(true);
+    };
+    const onFocusOut = () => window.setTimeout(update, 80);
 
-    viewport.addEventListener("resize", update);
-    viewport.addEventListener("scroll", update);
+    viewport?.addEventListener("resize", update);
+    viewport?.addEventListener("scroll", update);
     document.addEventListener("focusin", onFocusIn);
     document.addEventListener("focusout", onFocusOut);
     update();
 
     return () => {
-      viewport.removeEventListener("resize", update);
-      viewport.removeEventListener("scroll", update);
+      viewport?.removeEventListener("resize", update);
+      viewport?.removeEventListener("scroll", update);
       document.removeEventListener("focusin", onFocusIn);
       document.removeEventListener("focusout", onFocusOut);
     };
