@@ -14,7 +14,7 @@ export default function HomeLayout({
       <div className="livv-app-shell relative min-h-[100dvh] overflow-hidden bg-livv-bg">
         <div className="pointer-events-none fixed inset-0 z-0 overflow-hidden">
           <div className="absolute inset-0 bg-livv-bg" />
-          <AmbientField intensity="strong" />
+          <AmbientField intensity="normal" />
           <div className="livv-grain opacity-[0.04]" />
         </div>
         <div className="relative z-10 min-h-[100dvh] overflow-y-auto overscroll-y-contain pb-28 [-webkit-overflow-scrolling:touch]">
