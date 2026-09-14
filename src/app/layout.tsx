@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Plus_Jakarta_Sans, Syne } from "next/font/google";
 import "./globals.css";
 import "./livv-background.css";
+import "./livv-final-pass.css";
 import { ThemeShell } from "@/components/layout/theme-shell";
 
 const body=Plus_Jakarta_Sans({subsets:["latin"],variable:"--font-body",display:"swap"});
