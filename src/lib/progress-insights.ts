@@ -1,228 +1,25 @@
-/**
- * Progress Intelligence v1 — derived, explainable insights from LivvRecord only.
- * Local-first. No invented psychology, dopamine, or causal claims.
- * Every field is computable from days / pillarXp / counters already on the record.
- */
-
+/** Explainable progress intelligence derived only from the user's recorded LIVV activity. */
 import { dayKey } from "./dates";
 import type { DayLog, LivvRecord } from "./record";
 import { PILLAR_DEFS } from "./evolve-data";
-
-export type InsightEvidence = {
-  /** Short human label for the metric */
-  label: string;
-  /** Concrete numbers / facts from the record */
-  facts: string[];
-};
-
-export type PillarInsight = {
-  id: string;
-  name: string;
-  xp: number;
-  /** Share of total pillar XP (0–100), or 0 if total is 0 */
-  sharePct: number;
-};
-
-export type ProgressInsights = {
-  /** How many calendar days we scanned */
-  windowDays: number;
-  daysWithActivity: number;
-  /** daysWithActivity / windowDays * 100 */
-  consistencyPct: number;
-  checkInDays: number;
-  workoutDays: number;
-  workoutsInWindow: number;
-  objectivesCompletedInWindow: number;
-  /** Longest consecutive active-day run found in stored day logs */
-  longestActiveRun: number;
-  /** Current streak from record (not recomputed) */
-  currentStreak: number;
-  workoutsAllTime: number;
-  goalsAllTime: number;
-  level: number;
-  currentXp: number;
-  xpToNext: number;
-  pillars: PillarInsight[];
-  strongest: PillarInsight | null;
-  weakest: PillarInsight | null;
-  /** One-line summaries with evidence — safe to show in UI */
-  bullets: { title: string; detail: string; evidence: InsightEvidence }[];
-  empty: boolean;
-};
-
-function isActive(log: DayLog | undefined): boolean {
-  if (!log) return false;
-  return Boolean(
-    log.checkIn ||
-      log.workout ||
-      (log.objectives && log.objectives.length > 0) ||
-      (log.custom && log.custom.length > 0)
-  );
-}
-
-function pastDayKeys(n: number, end = new Date()): string[] {
-  const keys: string[] = [];
-  for (let i = n - 1; i >= 0; i--) {
-    const d = new Date(end);
-    d.setHours(12, 0, 0, 0);
-    d.setDate(d.getDate() - i);
-    keys.push(dayKey(d));
-  }
-  return keys;
-}
-
-/** Longest consecutive run of active days among keys present in rec.days (sorted). */
-export function longestActiveRun(rec: LivvRecord): number {
-  const keys = Object.keys(rec.days || {}).filter((k) => isActive(rec.days[k])).sort();
-  if (keys.length === 0) return 0;
-  let best = 1;
-  let run = 1;
-  for (let i = 1; i < keys.length; i++) {
-    const prev = new Date(keys[i - 1] + "T12:00:00");
-    const cur = new Date(keys[i] + "T12:00:00");
-    const diffDays = Math.round((cur.getTime() - prev.getTime()) / 86400000);
-    if (diffDays === 1) {
-      run += 1;
-      if (run > best) best = run;
-    } else {
-      run = 1;
-    }
-  }
-  return best;
-}
-
-export function buildProgressInsights(rec: LivvRecord, windowDays = 14): ProgressInsights {
-  const window = Math.max(1, Math.min(90, windowDays));
-  const keys = pastDayKeys(window);
-  let daysWithActivity = 0;
-  let checkInDays = 0;
-  let workoutDays = 0;
-  let objectivesCompletedInWindow = 0;
-
-  for (const k of keys) {
-    const log = rec.days[k];
-    if (!log) continue;
-    if (isActive(log)) daysWithActivity += 1;
-    if (log.checkIn) checkInDays += 1;
-    if (log.workout) workoutDays += 1;
-    objectivesCompletedInWindow += (log.objectives?.length || 0) + (log.custom?.length || 0);
-  }
-
-  const consistencyPct = Math.round((daysWithActivity / window) * 100);
-  const pillarXp = rec.pillarXp || {};
-  const totalPillarXp = PILLAR_DEFS.reduce((s, p) => s + (pillarXp[p.id] || 0), 0);
-
-  const pillars: PillarInsight[] = PILLAR_DEFS.map((p) => {
-    const xp = pillarXp[p.id] || 0;
-    return {
-      id: p.id,
-      name: p.name,
-      xp,
-      sharePct: totalPillarXp > 0 ? Math.round((xp / totalPillarXp) * 100) : 0,
-    };
-  }).sort((a, b) => b.xp - a.xp);
-
-  const strongest = pillars[0] && pillars[0].xp > 0 ? pillars[0] : null;
-  const weakest =
-    pillars.length > 0
-      ? [...pillars].sort((a, b) => a.xp - b.xp)[0]
-      : null;
-
-  const longest = longestActiveRun(rec);
-  const empty =
-    daysWithActivity === 0 &&
-    rec.workoutsCompleted === 0 &&
-    rec.goalsCompleted === 0 &&
-    totalPillarXp === 0;
-
-  const bullets: ProgressInsights["bullets"] = [];
-
-  bullets.push({
-    title: `${window}-day consistency`,
-    detail: empty
-      ? "No activity logged in this window yet."
-      : `${daysWithActivity} of ${window} days had a recorded action (${consistencyPct}%).`,
-    evidence: {
-      label: "Day logs",
-      facts: [
-        `Window: last ${window} calendar days`,
-        `Active days: ${daysWithActivity}`,
-        `Check-in days: ${checkInDays}`,
-        `Workout days: ${workoutDays}`,
-        `Objectives completed in window: ${objectivesCompletedInWindow}`,
-      ],
-    },
-  });
-
-  bullets.push({
-    title: "Streak",
-    detail: `Current chain ${rec.streak} day${rec.streak === 1 ? "" : "s"}. Longest consecutive active run in stored logs: ${longest}.`,
-    evidence: {
-      label: "Record counters + day map",
-      facts: [
-        `record.streak = ${rec.streak}`,
-        `Longest run from sorted active day keys = ${longest}`,
-        `lastActiveDay = ${rec.lastActiveDay ?? "none"}`,
-      ],
-    },
-  });
-
-  bullets.push({
-    title: "Training volume",
-    detail: `${rec.workoutsCompleted} session${rec.workoutsCompleted === 1 ? "" : "s"} all-time. ${workoutDays} day${workoutDays === 1 ? "" : "s"} with a workout in the last ${window}.`,
-    evidence: {
-      label: "Workouts",
-      facts: [
-        `workoutsCompleted = ${rec.workoutsCompleted}`,
-        `Workout-flagged days in window = ${workoutDays}`,
-        rec.lastWorkout
-          ? `Last workout: ${rec.lastWorkout.name} (${rec.lastWorkout.focus})`
-          : "No last workout stored",
-      ],
-    },
-  });
-
-  if (strongest) {
-    bullets.push({
-      title: "Leading pillar",
-      detail: `${strongest.name} leads with ${strongest.xp} XP (${strongest.sharePct}% of pillar XP).`,
-      evidence: {
-        label: "pillarXp",
-        facts: pillars.map((p) => `${p.name}: ${p.xp} XP (${p.sharePct}%)`),
-      },
-    });
-  }
-
-  if (weakest && totalPillarXp > 0) {
-    bullets.push({
-      title: "Lowest pillar XP",
-      detail: `${weakest.name} has the least logged XP (${weakest.xp}). This is a count of recorded XP, not a judgment.`,
-      evidence: {
-        label: "pillarXp ranking",
-        facts: [`Lowest: ${weakest.name} = ${weakest.xp} XP`, `Total pillar XP = ${totalPillarXp}`],
-      },
-    });
-  }
-
-  return {
-    windowDays: window,
-    daysWithActivity,
-    consistencyPct,
-    checkInDays,
-    workoutDays,
-    workoutsInWindow: workoutDays,
-    objectivesCompletedInWindow,
-    longestActiveRun: longest,
-    currentStreak: rec.streak,
-    workoutsAllTime: rec.workoutsCompleted,
-    goalsAllTime: rec.goalsCompleted,
-    level: rec.level,
-    currentXp: rec.currentXp,
-    xpToNext: rec.xpToNext,
-    pillars,
-    strongest,
-    weakest: totalPillarXp > 0 ? weakest : null,
-    bullets,
-    empty,
-  };
+export type InsightEvidence={label:string;facts:string[]};
+export type PillarInsight={id:string;name:string;xp:number;sharePct:number;recentXp:number;recentSharePct:number};
+export type ProgressInsights={windowDays:number;daysWithActivity:number;consistencyPct:number;checkInDays:number;workoutDays:number;workoutsInWindow:number;objectivesCompletedInWindow:number;longestActiveRun:number;currentStreak:number;workoutsAllTime:number;goalsAllTime:number;level:number;currentXp:number;xpToNext:number;pillars:PillarInsight[];strongest:PillarInsight|null;weakest:PillarInsight|null;momentum:"building"|"steady"|"slipping"|"starting";balancePct:number;bullets:{title:string;detail:string;evidence:InsightEvidence}[];empty:boolean};
+function active(log:DayLog|undefined){return Boolean(log&&(log.checkIn||log.workout||log.objectives?.length||log.custom?.length));}
+function keys(n:number,end=new Date()){const out:string[]=[];for(let i=n-1;i>=0;i--){const d=new Date(end);d.setHours(12,0,0,0);d.setDate(d.getDate()-i);out.push(dayKey(d));}return out;}
+export function longestActiveRun(rec:LivvRecord){const ks=Object.keys(rec.days||{}).filter(k=>active(rec.days[k])).sort();let best=0,run=0;let prev="";for(const k of ks){const d=new Date(k+"T12:00:00");const p=prev?new Date(prev+"T12:00:00"):null;run=p&&Math.round((d.getTime()-p.getTime())/86400000)===1?run+1:1;best=Math.max(best,run);prev=k;}return best;}
+export function buildProgressInsights(rec:LivvRecord,windowDays=14):ProgressInsights{
+ const window=Math.max(1,Math.min(90,windowDays)), ks=keys(window), recentCut=Math.floor(window/2);let days=0,check=0,work=0,obj=0,recentDays=0;
+ for(let i=0;i<ks.length;i++){const l=rec.days[ks[i]];if(active(l)){days++;if(i>=recentCut)recentDays++;}if(!l)continue;check+=l.checkIn?1:0;work+=l.workout?1:0;obj+=(l.objectives?.length||0)+(l.custom?.length||0);}
+ const px=rec.pillarXp||{},total=PILLAR_DEFS.reduce((s,p)=>s+(px[p.id]||0),0),recentKeys=ks.slice(recentCut),recentXp=PILLAR_DEFS.map(p=>({id:p.id,xp:recentKeys.reduce((s,k)=>s+(rec.days[k]?.custom||[]).filter(x=>x.pillar.toLowerCase()===p.id).reduce((a,x)=>a+x.xp,0),0)+(recentKeys.reduce((s,k)=>s+(rec.days[k]?.objectives||[]).length*0,0))}));
+ const pillars=PILLAR_DEFS.map(p=>{const xp=px[p.id]||0,r=recentXp.find(x=>x.id===p.id)?.xp||0;return{id:p.id,name:p.name,xp,sharePct:total?Math.round(xp/total*100):0,recentXp:r,recentSharePct:recentKeys.length?Math.round(r/Math.max(1,recentXp.reduce((s,x)=>s+x.xp,0))*100):0};}).sort((a,b)=>b.xp-a.xp);
+ const strongest=pillars[0]?.xp?pillars[0]:null,weakest=total?[...pillars].sort((a,b)=>a.xp-b.xp)[0]:null,first=Math.max(1,Math.floor(window/2)),recentRate=recentDays/first,oldDays=days-recentDays,oldRate=oldDays/Math.max(1,window-first),momentum=days===0?"starting":recentRate>oldRate+.15?"building":recentRate<oldRate-.15?"slipping":"steady",nonzero=pillars.filter(p=>p.xp>0).length,balancePct=Math.round(nonzero/PILLAR_DEFS.length*100),empty=days===0&&rec.workoutsCompleted===0&&rec.goalsCompleted===0&&total===0;
+ const bullets:ProgressInsights["bullets"]=[
+  {title:`${window}-day consistency`,detail:empty?"No activity logged in this window yet.":`${days} of ${window} days had a recorded action (${Math.round(days/window*100)}%).`,evidence:{label:"Day logs",facts:[`Active days: ${days}`,`Check-ins: ${check}`,`Workout days: ${work}`,`Recorded actions: ${obj}`]}},
+  {title:"Momentum",detail:`Your recent activity is ${momentum}. This describes the record, not your motivation or character.`,evidence:{label:"Recent vs earlier half",facts:[`Recent active days: ${recentDays}/${first}`,`Earlier active days: ${oldDays}/${Math.max(1,window-first)}`]}},
+  {title:"Training volume",detail:`${rec.workoutsCompleted} session${rec.workoutsCompleted===1?"":"s"} all-time, with ${work} workout day${work===1?"":"s"} in the window.`,evidence:{label:"Workout record",facts:[`All-time: ${rec.workoutsCompleted}`,`Window: ${work}`,rec.lastWorkout?`Last: ${rec.lastWorkout.name}`:"No workout stored"]}},
+ ];
+ if(strongest)bullets.push({title:"Leading pillar",detail:`${strongest.name} leads with ${strongest.xp} XP (${strongest.sharePct}% of pillar XP).`,evidence:{label:"pillarXp",facts:pillars.map(p=>`${p.name}: ${p.xp} XP`)}});
+ if(weakest)bullets.push({title:"Balance",detail:`${nonzero} of ${PILLAR_DEFS.length} life areas have recorded XP.`,evidence:{label:"Pillar coverage",facts:[`Areas with activity: ${nonzero}/${PILLAR_DEFS.length}`,`Lowest recorded XP: ${weakest.name} (${weakest.xp})`]}});
+ return{windowDays:window,daysWithActivity:days,consistencyPct:Math.round(days/window*100),checkInDays:check,workoutDays:work,workoutsInWindow:work,objectivesCompletedInWindow:obj,longestActiveRun:longestActiveRun(rec),currentStreak:rec.streak,workoutsAllTime:rec.workoutsCompleted,goalsAllTime:rec.goalsCompleted,level:rec.level,currentXp:rec.currentXp,xpToNext:rec.xpToNext,pillars,strongest,weakest,momentum,balancePct,bullets,empty};
 }
