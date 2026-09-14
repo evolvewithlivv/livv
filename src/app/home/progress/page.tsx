@@ -1,97 +1,27 @@
 "use client";
-
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { PageHero } from "@/components/layout/page-hero";
 import { livePillars, loadRecord, weekBars, weekHitCount, type LivvRecord } from "@/lib/record";
 import { evolutionTitle } from "@/lib/levels";
 import { needsAttention, strongestPillar } from "@/lib/command";
-import { feedback } from "@/lib/sensory";
-import { advanceSeason, claimSeasonComplete, seasonProgress } from "@/lib/seasons";
-import { claimWeeklyClear, setWeeklyTarget, weeklyClearStatus } from "@/lib/weekly-clear";
-import { applyStreakRepair, getRepairOffer } from "@/lib/streak-repair";
-import { setProgress as vaultSetProgress } from "@/lib/vault-sets";
-import { clearPair, loadPair, setPair, type PairChain } from "@/lib/pair-chain";
-import { addEmbers } from "@/lib/identity";
 import { buildProgressInsights } from "@/lib/progress-insights";
 
-export default function ProgressPage() {
-  const [rec, setRec] = useState<LivvRecord | null>(null);
-  const [season, setSeason] = useState<any>(null);
-  const [weekly, setWeekly] = useState<any>(null);
-  const [repair, setRepair] = useState<any>(null);
-  const [sets, setSets] = useState<any[]>([]);
-  const [pair, setPairState] = useState<PairChain | null>(null);
-  const [pairName, setPairName] = useState("");
-
-  const sync = () => {
-    setRec(loadRecord()); setSeason(seasonProgress()); setWeekly(weeklyClearStatus());
-    setRepair(getRepairOffer()); setSets(vaultSetProgress()); setPairState(loadPair());
-  };
-  useEffect(() => {
-    sync();
-    const events = ["livv-record", "livv-season", "livv-weekly", "livv-packs", "livv-pair"];
-    events.forEach((e) => window.addEventListener(e, sync));
-    return () => events.forEach((e) => window.removeEventListener(e, sync));
-  }, []);
-
-  if (!rec || !season || !weekly) return <main className="min-h-dvh" />;
-  const week = weekBars(rec), hits = weekHitCount(rec), pillars = livePillars(rec);
-  const evo = evolutionTitle(rec.level), strong = strongestPillar(rec), weak = needsAttention(rec);
-  const insights = buildProgressInsights(rec, 14);
-
-  return (
-    <main className="livv-page relative min-h-full overflow-hidden pb-14">
-      <div className="relative z-10 mx-auto max-w-lg px-5 pt-5">
-        <PageHero eyebrow="Stats" title="Progress" subtitle="Streak, level, and this week's activity." accent="#67d8ff" />
-        <section className="livv-glass mt-8 rounded-[28px] p-5">
-          <div className="flex items-start justify-between"><div><p className="text-[10px] uppercase tracking-[.26em] text-white/30">Current state</p><p className="font-display mt-2 text-[27px]">{evo.name}</p></div><div className="text-right"><p className="text-[9px] uppercase tracking-[.2em] text-white/25">Level</p><p className="font-display text-[30px] text-livv-accent-soft">{rec.level}</p></div></div>
-          <div className="mt-6 grid grid-cols-3 gap-2"><Stat value={`${rec.streak}d`} label="Chain" /><Stat value={`${rec.workoutsCompleted}`} label="Sessions" /><Stat value={`${rec.goalsCompleted}`} label="Actions" /></div>
-          <div className="mt-5"><div className="mb-1.5 flex justify-between text-[10px] text-white/30"><span>XP</span><span>{rec.currentXp}/{rec.xpToNext}</span></div><div className="h-1.5 overflow-hidden rounded-full bg-white/[.08]"><div className="h-full rounded-full bg-livv-accent" style={{ width: `${Math.min(100, (rec.currentXp / Math.max(1, rec.xpToNext)) * 100)}%` }} /></div></div>
-        </section>
-        {repair && <section className="mt-7 rounded-[24px] border border-livv-accent/25 bg-livv-accent/[.07] p-5"><p className="text-[10px] uppercase tracking-[.24em] text-livv-accent-soft">Chain recovery</p><p className="mt-2 text-[17px] font-semibold">Restore {repair.restored} of your {repair.previous}-day chain.</p><p className="mt-1 text-[12px] text-white/35">Half returns. The rest gets earned again.</p><button type="button" onClick={() => { applyStreakRepair(); feedback("unlock"); sync(); }} className="mt-4 rounded-full bg-white px-4 py-2 text-[12px] font-semibold text-black">Repair chain</button></section>}
-        <section className="mt-10">
-          <div className="mb-3 flex items-end justify-between"><p className="text-[10px] uppercase tracking-[.28em] text-white/30">This week</p><p className="text-[11px] text-white/25">{hits}/7 active</p></div>
-          <div className="flex items-end gap-1.5">{week.map((d: any) => <div key={d.key} className="flex flex-1 flex-col items-center gap-2"><div className="w-full rounded-full bg-white/[.06]" style={{ height: 56 }}><div className="w-full rounded-full bg-livv-accent/80" style={{ height: `${Math.max(8, d.v)}%`, marginTop: `${100 - Math.max(8, d.v)}%` }} /></div><span className="text-[9px] text-white/25">{d.d}</span></div>)}</div>
-        </section>
-        <section className="mt-11 rounded-[26px] border border-white/[.07] bg-white/[.025] p-5">
-          <div className="flex items-start justify-between gap-3"><div><p className="text-[10px] uppercase tracking-[.24em] text-white/30">Season {season.index}</p><p className="mt-1 text-[16px] font-semibold">{season.name}</p><p className="mt-1 text-[12px] text-white/35">{season.line}</p></div><p className="text-[12px] text-livv-accent-soft">{season.daysLeft}d left</p></div>
-          <div className="mt-4 h-1.5 overflow-hidden rounded-full bg-white/[.08]"><div className="h-full rounded-full bg-livv-accent" style={{ width: `${season.progress}%` }} /></div>
-          <div className="mt-4 flex gap-2"><button type="button" onClick={() => { claimSeasonComplete(); addEmbers(25); feedback("complete"); sync(); }} className="rounded-full bg-white px-4 py-2 text-[11px] font-semibold text-black">Claim season</button><button type="button" onClick={() => { advanceSeason(); feedback("tick"); sync(); }} className="rounded-full border border-white/15 px-4 py-2 text-[11px] text-white/55">Next season</button></div>
-        </section>
-        <section className="mt-11"><p className="text-[10px] uppercase tracking-[.28em] text-white/30">Energy map</p><div className="mt-4 grid grid-cols-2 gap-2">{pillars.map((p: any) => <div key={p.id} className="rounded-2xl border border-white/[.06] bg-white/[.02] p-4"><div className="flex items-center justify-between"><span className="text-[12px] text-white/55">{p.name}</span><span className="text-[11px] text-livv-accent-soft">Lv {p.level}</span></div><div className="mt-4 h-1 overflow-hidden rounded-full bg-white/[.07]"><div className="h-full rounded-full bg-livv-accent" style={{ width: `${p.progress}%` }} /></div><p className="mt-2 text-[10px] text-white/20">{typeof p.xp === "number" ? p.xp : 0} XP · {p.progress}%</p></div>)}</div></section>
-        <section className="mt-11">
-          <p className="text-[10px] uppercase tracking-[.28em] text-white/30">Intelligence</p>
-          <p className="mt-1 text-[12px] text-white/30">Derived from your local day logs and counters only — not cloud sync.</p>
-          <div className="mt-4 grid grid-cols-3 gap-2">
-            <Stat value={`${insights.consistencyPct}%`} label={`${insights.windowDays}d active`} />
-            <Stat value={`${insights.longestActiveRun}d`} label="Best run" />
-            <Stat value={`${insights.objectivesCompletedInWindow}`} label="Actions 14d" />
-          </div>
-          <div className="mt-3 space-y-2">
-            {insights.bullets.slice(0, 4).map((b) => (
-              <div key={b.title} className="rounded-[22px] border border-white/[.07] bg-white/[.025] p-4">
-                <p className="text-[9px] uppercase tracking-[.2em] text-white/25">{b.title}</p>
-                <p className="mt-2 text-[14px] font-medium leading-snug text-white/85">{b.detail}</p>
-                <p className="mt-2 text-[10px] leading-relaxed text-white/30">{b.evidence.facts.slice(0, 3).join(" · ")}</p>
-              </div>
-            ))}
-          </div>
-        </section>
-        <section className="mt-11 grid grid-cols-2 gap-2"><Insight title="Leading" value={strong.name} sub={`Level ${strong.level}`} /><Insight title="Needs work" value={weak.name} sub={`Level ${weak.level}`} /></section>
-        <section className="mt-11 rounded-[26px] border border-white/[.07] bg-white/[.025] p-5">
-          <p className="text-[10px] uppercase tracking-[.24em] text-white/30">Weekly clear</p>
-          <p className="mt-2 text-[15px] font-semibold">{weekly.done}/{weekly.target} actions</p>
-          <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-white/[.08]"><div className="h-full rounded-full bg-livv-accent" style={{ width: `${Math.min(100, (weekly.done / Math.max(1, weekly.target)) * 100)}%` }} /></div>
-          <div className="mt-4 flex flex-wrap gap-2"><button type="button" onClick={() => { setWeeklyTarget(Math.max(3, weekly.target - 1)); sync(); }} className="rounded-full border border-white/10 px-3 py-1.5 text-[11px] text-white/45">− target</button><button type="button" onClick={() => { setWeeklyTarget(weekly.target + 1); sync(); }} className="rounded-full border border-white/10 px-3 py-1.5 text-[11px] text-white/45">+ target</button><button type="button" onClick={() => { claimWeeklyClear(); feedback("complete"); sync(); }} className="rounded-full bg-white px-3 py-1.5 text-[11px] font-semibold text-black">Claim clear</button></div>
-        </section>
-        <section className="mt-11"><div className="mb-3 flex items-center justify-between"><p className="text-[10px] uppercase tracking-[.28em] text-white/30">Vault sets</p><Link href="/home/vault" className="text-[12px] text-livv-accent-soft">Open vault →</Link></div><div className="mt-4 space-y-2">{sets.map((s) => <div key={s.id} className="flex items-center justify-between rounded-xl px-3 py-2.5 ring-1 ring-white/[.05]"><span className={s.complete ? "text-[12px] text-livv-accent-soft" : "text-[12px] text-white/45"}>{s.name}</span><span className="text-[11px] text-white/25">{s.have}/{s.total}</span></div>)}</div></section>
-        <section className="mt-11"><p className="text-[10px] uppercase tracking-[.28em] text-white/30">Pair chain</p><p className="mt-1 text-[12px] text-white/25">Private accountability, one person, one shared pillar.</p>{pair ? <div className="mt-4 rounded-2xl border border-white/[.07] bg-white/[.025] p-4"><p className="text-[15px] font-semibold">{pair.partnerName}</p><p className="mt-1 text-[12px] text-white/35">{pair.pillar} · {pair.sharedDays} shared days</p><button onClick={() => { clearPair(); sync(); }} className="mt-3 text-[11px] text-white/25">End pair</button></div> : <div className="mt-4 flex gap-2"><input value={pairName} onChange={(e) => setPairName(e.target.value)} placeholder="Partner name" className="h-11 min-w-0 flex-1 rounded-xl bg-white/[.035] px-3 text-sm outline-none ring-1 ring-white/10" /><button onClick={() => { if(pairName.trim().length<2)return; setPair({partnerName:pairName.trim(),partnerUsername:pairName.trim().toLowerCase().replace(/\s/g,""),pillar:"Body"}); feedback("tick"); setPairName(""); sync(); }} className="rounded-xl bg-white px-4 text-xs font-semibold text-black">Link</button></div>}</section>
-        <p className="mt-12 text-center text-[10px] tracking-[.18em] text-white/15">KEEP GOING</p>
-      </div>
-    </main>
-  );
+const COLORS: Record<string,string> = { Body:"#F93827", Mind:"#F61981", Career:"#FF9D23", Finance:"#9A00FF", Social:"#4DFF00", Life:"#FCF927" };
+export default function ProgressPage(){
+ const [rec,setRec]=useState<LivvRecord|null>(null); const sync=()=>setRec(loadRecord());
+ useEffect(()=>{sync();const events=["livv-record","livv-daily","livv-billing","livv-identity"];events.forEach(e=>window.addEventListener(e,sync));return()=>events.forEach(e=>window.removeEventListener(e,sync));},[]);
+ const insights=useMemo(()=>rec?buildProgressInsights(rec,14):null,[rec]);
+ if(!rec||!insights)return <main className="min-h-dvh"/>;
+ const week=weekBars(rec), hits=weekHitCount(rec), pillars=livePillars(rec), evo=evolutionTitle(rec.level), strong=strongestPillar(rec), weak=needsAttention(rec), pct=Math.min(100,Math.round(rec.currentXp/Math.max(1,rec.xpToNext)*100));
+ return <main className="livv-page relative min-h-full overflow-hidden pb-14 text-white"><div className="relative z-10 mx-auto max-w-xl px-5 pt-5"><PageHero eyebrow="Progress" title="Is your life getting better?" subtitle="Progress is what your recorded actions say, not what a badge says." accent="#0F7FFF"/>
+  <section className="livv-glass mt-7 rounded-[30px] p-6"><div className="flex items-end justify-between"><div><p className="text-[10px] uppercase tracking-[.25em] text-white/45">Current evolution</p><h2 className="font-display mt-2 text-[28px]">{evo.name}</h2></div><div className="text-right"><p className="text-[9px] uppercase tracking-[.2em] text-white/40">Level</p><p className="font-display text-[30px] text-[#0F7FFF]">{rec.level}</p></div></div><p className="mt-2 text-[12px] leading-relaxed text-white/60">{evo.line}</p><div className="mt-6 h-2 overflow-hidden rounded-full bg-white/[.08]"><div className="h-full rounded-full bg-[#0F7FFF]" style={{width:`${pct}%`}}/></div><p className="mt-2 text-right text-[10px] text-white/40">{rec.currentXp} / {rec.xpToNext} XP</p></section>
+  <section className="mt-7 grid grid-cols-3 gap-2"><Stat value={`${insights.consistencyPct}%`} label="14d active"/><Stat value={`${insights.longestActiveRun}d`} label="best run"/><Stat value={`${insights.objectivesCompletedInWindow}`} label="actions"/></section>
+  <section className="mt-9"><div className="flex items-end justify-between"><div><p className="text-[10px] uppercase tracking-[.25em] text-white/40">This week</p><h2 className="font-display mt-1 text-[23px]">Consistency</h2></div><span className="text-[11px] text-white/45">{hits}/7 active</span></div><div className="mt-5 flex items-end gap-2">{week.map((d:any)=><div key={d.key} className="flex flex-1 flex-col items-center gap-2"><div className="relative h-20 w-full overflow-hidden rounded-xl bg-white/[.05]"><div className="absolute bottom-0 w-full rounded-xl bg-[#0F7FFF]/75" style={{height:`${Math.max(8,d.v)}%`}}/></div><span className="text-[9px] text-white/40">{d.d}</span></div>)}</div></section>
+  <section className="mt-10"><div className="flex items-end justify-between"><div><p className="text-[10px] uppercase tracking-[.25em] text-white/40">Six areas</p><h2 className="font-display mt-1 text-[23px]">Where your life is moving.</h2></div></div><div className="mt-4 space-y-3">{pillars.map((p:any)=><div key={p.id} className="rounded-[24px] border border-white/10 bg-white/[.025] p-4"><div className="flex items-center justify-between"><div><p className="text-[14px] font-semibold">{p.name}</p><p className="mt-1 text-[10px] text-white/40">Level {p.level} · {p.xp} XP</p></div><span className="h-2.5 w-2.5 rounded-full" style={{background:COLORS[p.name]||"#0F7FFF"}}/></div><div className="mt-4 h-1.5 overflow-hidden rounded-full bg-white/[.08]"><div className="h-full rounded-full" style={{width:`${p.progress}%`,background:COLORS[p.name]||"#0F7FFF"}}/></div></div>)}</div></section>
+  <section className="mt-10"><p className="text-[10px] uppercase tracking-[.25em] text-white/40">What the evidence says</p><div className="mt-4 space-y-3">{insights.bullets.slice(0,4).map((b)=><div key={b.title} className="rounded-[24px] border border-white/10 bg-white/[.025] p-5"><p className="text-[9px] uppercase tracking-[.2em] text-white/40">{b.title}</p><p className="mt-2 text-[15px] font-medium leading-snug text-white/85">{b.detail}</p><p className="mt-2 text-[10px] leading-relaxed text-white/40">{b.evidence.facts.slice(0,3).join(" · ")}</p></div>)}</div></section>
+  <section className="mt-10 grid grid-cols-2 gap-3"><div className="rounded-[24px] border border-white/10 bg-white/[.025] p-4"><p className="text-[9px] uppercase tracking-[.2em] text-white/40">Leading area</p><p className="mt-3 text-[18px] font-semibold">{strong.name}</p><p className="mt-1 text-[11px] text-white/40">Level {strong.level}</p></div><div className="rounded-[24px] border border-white/10 bg-white/[.025] p-4"><p className="text-[9px] uppercase tracking-[.2em] text-white/40">Needs attention</p><p className="mt-3 text-[18px] font-semibold">{weak.name}</p><p className="mt-1 text-[11px] text-white/40">Level {weak.level}</p></div></section>
+  <Link href="/home/evala" className="mt-10 flex items-center justify-between rounded-[24px] border border-white/10 bg-white/[.025] p-5"><div><p className="text-[10px] uppercase tracking-[.2em] text-[#0F7FFF]">Next step</p><p className="mt-1 text-[15px] font-semibold">Ask Evala what to improve next.</p></div><span className="text-white/45">→</span></Link>
+ </div></main>;
 }
-
-function Stat({ value, label }: { value: string; label: string }) { return <div className="rounded-2xl bg-black/20 px-3 py-3 ring-1 ring-white/[.06]"><p className="font-display text-[18px]">{value}</p><p className="mt-1 text-[9px] uppercase tracking-[.16em] text-white/25">{label}</p></div>; }
-function Insight({ title, value, sub }: { title: string; value: string; sub: string }) { return <div className="rounded-[22px] border border-white/[.07] bg-white/[.025] p-4"><p className="text-[9px] uppercase tracking-[.2em] text-white/25">{title}</p><p className="mt-3 text-[18px] font-semibold">{value}</p><p className="mt-1 text-[11px] text-white/25">{sub}</p></div>; }
+function Stat({value,label}:{value:string;label:string}){return <div className="rounded-[22px] border border-white/10 bg-white/[.025] p-4"><p className="font-display text-[20px]">{value}</p><p className="mt-1 text-[9px] uppercase tracking-[.16em] text-white/45">{label}</p></div>}
