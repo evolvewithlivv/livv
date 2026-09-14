@@ -5,13 +5,13 @@ import { usePathname } from "next/navigation";
 import { Brain, Dumbbell, Home, UserRound, Clock3, Store, Users } from "lucide-react";
 
 const NAV_ITEMS = [
-  { href: "/home", label: "Home", color: "#00FFF0", match: (p: string) => p === "/home", Icon: Home },
-  { href: "/home/daily", label: "Daily", color: "#70F007", match: (p: string) => p.startsWith("/home/daily"), Icon: Clock3 },
-  { href: "/home/train", label: "Train", color: "#D20A2E", match: (p: string) => p.startsWith("/home/train"), Icon: Dumbbell },
-  { href: "/home/mind", label: "Mind", color: "#CCFF00", match: (p: string) => p.startsWith("/home/mind") || p.startsWith("/home/canon") || p.startsWith("/home/lab") || p.startsWith("/home/evala"), Icon: Brain },
-  { href: "/home/shop", label: "Shop", color: "#0BDA51", match: (p: string) => p.startsWith("/home/shop") || p.startsWith("/home/packs") || p.startsWith("/home/vault"), Icon: Store },
-  { href: "/home/connect", label: "Social", color: "#FFF700", match: (p: string) => p.startsWith("/home/connect") || p.startsWith("/home/share") || p.startsWith("/home/messages"), Icon: Users },
-  { href: "/home/profile", label: "You", color: "#FF5C00", match: (p: string) => p.startsWith("/home/profile") || p.startsWith("/home/settings") || p.startsWith("/home/progress"), Icon: UserRound },
+  { href: "/home", label: "Home", color: "#0F7FFF", match: (p: string) => p === "/home", Icon: Home },
+  { href: "/home/daily", label: "Daily", color: "#FCF927", match: (p: string) => p.startsWith("/home/daily"), Icon: Clock3 },
+  { href: "/home/train", label: "Train", color: "#F93827", match: (p: string) => p.startsWith("/home/train"), Icon: Dumbbell },
+  { href: "/home/mind", label: "Mind", color: "#F61981", match: (p: string) => p.startsWith("/home/mind") || p.startsWith("/home/canon") || p.startsWith("/home/lab") || p.startsWith("/home/evala"), Icon: Brain },
+  { href: "/home/shop", label: "Shop", color: "#9A00FF", match: (p: string) => p.startsWith("/home/shop") || p.startsWith("/home/packs") || p.startsWith("/home/vault"), Icon: Store },
+  { href: "/home/connect", label: "Social", color: "#4DFF00", match: (p: string) => p.startsWith("/home/connect") || p.startsWith("/home/share") || p.startsWith("/home/messages"), Icon: Users },
+  { href: "/home/profile", label: "Profile", color: "#FF9D23", match: (p: string) => p.startsWith("/home/profile") || p.startsWith("/home/settings") || p.startsWith("/home/progress"), Icon: UserRound },
 ] as const;
 
 export function BottomNav() {
