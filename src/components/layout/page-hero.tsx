@@ -13,7 +13,7 @@ export function PageHero({
   eyebrow,
   title,
   subtitle,
-  accent = "#67d8ff",
+  accent = "#0F7FFF",
   right,
 }: PageHeroProps) {
   return (
