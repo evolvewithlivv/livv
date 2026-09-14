@@ -1,58 +1,46 @@
 /* LIVV final product pass. The seven accent colors are signals, not decoration. */
-:root {
-  --livv-blue: #0F7FFF;
-  --livv-yellow: #FCF927;
-  --livv-red: #F93827;
-  --livv-pink: #F61981;
-  --livv-purple: #9A00FF;
-  --livv-green: #4DFF00;
-  --livv-orange: #FF9D23;
-}
+:root { --livv-blue:#0F7FFF; --livv-yellow:#FCF927; --livv-red:#F93827; --livv-pink:#F61981; --livv-purple:#9A00FF; --livv-green:#4DFF00; --livv-orange:#FF9D23; }
 
-/* Consistent keyboard visibility and touch targets. */
-:where(button, a, input, textarea, select):focus-visible {
-  outline: 2px solid #0F7FFF;
-  outline-offset: 3px;
-}
-:where(button, [role="button"]) { min-height: 44px; }
-:where(a) { min-height: 44px; }
+:where(button,a,input,textarea,select):focus-visible { outline:2px solid #0F7FFF; outline-offset:3px; }
+:where(button,[role="button"]) { min-height:44px; }
+:where(a) { min-height:44px; }
+:where(button:disabled,[aria-disabled="true"]) { cursor:not-allowed; }
 
-/* Do not let old accent utilities introduce a new visual language. */
-[class*="text-blue-"], [class*="text-sky-"], [class*="text-cyan-"] { color: #0F7FFF !important; }
-[class*="text-yellow-"], [class*="text-amber-"] { color: #FCF927 !important; }
-[class*="text-red-"] { color: #F93827 !important; }
-[class*="text-pink-"] { color: #F61981 !important; }
-[class*="text-purple-"], [class*="text-violet-"], [class*="text-fuchsia-"] { color: #9A00FF !important; }
-[class*="text-green-"], [class*="text-emerald-"], [class*="text-teal-"], [class*="text-lime-"] { color: #4DFF00 !important; }
+[class*="text-blue-"],[class*="text-sky-"],[class*="text-cyan-"] { color:#0F7FFF !important; }
+[class*="text-yellow-"],[class*="text-amber-"] { color:#FCF927 !important; }
+[class*="text-red-"] { color:#F93827 !important; }
+[class*="text-pink-"] { color:#F61981 !important; }
+[class*="text-purple-"],[class*="text-violet-"],[class*="text-fuchsia-"] { color:#9A00FF !important; }
+[class*="text-green-"],[class*="text-emerald-"],[class*="text-teal-"],[class*="text-lime-"] { color:#4DFF00 !important; }
+[style*="#B28CFF"],[style*="#b28cff"] { color:#F61981 !important; border-color:rgb(246 25 129 / .35) !important; }
 
-/* Legacy Mind / Evala lavender becomes LIVV pink/purple without touching the tab bar. */
-[style*="#B28CFF"], [style*="#b28cff"] { color: #F61981 !important; border-color: rgb(246 25 129 / .35) !important; }
+html[data-theme="light"] :where(.text-white,[class*="text-white/"]) { color:#111114 !important; }
+html[data-theme="light"] :where(.text-white\/45,.text-white\/50,.text-white\/55,.text-white\/60,.text-white\/65,.text-white\/70,.text-white\/75,.text-white\/80,.text-white\/85,.text-white\/90,.text-white\/95) { color:#2D3038 !important; }
+html[data-theme="light"] :where(.bg-black\/10,.bg-black\/15,.bg-black\/20,.bg-black\/70) { background-color:rgb(17 17 20 / .045) !important; }
+html[data-theme="light"] :where(.border-white\/10,.border-white\/15,.border-white\/20) { border-color:rgb(17 17 20 / .22) !important; }
+html[data-theme="light"] :where(.placeholder\:text-white\/30,.placeholder\:text-white\/35,.placeholder\:text-white\/40) { color:#5C606A !important; }
+html[data-theme="light"] :where(.bg-white\/\[0\.025\],.bg-white\/\[0\.04\],.bg-white\/\[0\.05\]) { background-color:rgb(17 17 20 / .045) !important; }
 
-/* Light mode: never render white as body text. */
-html[data-theme="light"] :where(.text-white, [class*="text-white/"]) { color: #111114 !important; }
-html[data-theme="light"] :where(.text-white\/45, .text-white\/50, .text-white\/55, .text-white\/60, .text-white\/65, .text-white\/70, .text-white\/75, .text-white\/80, .text-white\/85, .text-white\/90, .text-white\/95) { color: #2D3038 !important; }
-html[data-theme="light"] :where(.bg-black\/10, .bg-black\/15, .bg-black\/20, .bg-black\/70) { background-color: rgb(17 17 20 / .045) !important; }
-html[data-theme="light"] :where(.border-white\/10, .border-white\/15, .border-white\/20) { border-color: rgb(17 17 20 / .22) !important; }
+.livv-page { padding-bottom:calc(6.5rem + env(safe-area-inset-bottom)); }
+.livv-social-page { padding-bottom:calc(1rem + env(safe-area-inset-bottom)); }
+.livv-page img,.livv-page video,.livv-social-page img,.livv-social-page video { max-width:100%; }
+input,textarea,select,button { font:inherit; }
+textarea { line-height:1.55; }
 
-/* Better mobile composition and safe-area behavior. */
-.livv-page { padding-bottom: calc(6.5rem + env(safe-area-inset-bottom)); }
-.livv-social-page { padding-bottom: env(safe-area-inset-bottom); }
+/* Mobile usability: prevent iOS zoom on focused fields and keep controls clear of the home indicator. */
+@media (max-width:767px) { input,textarea,select { font-size:16px !important; } }
 
-/* Avoid expensive blur and motion when the device/user asks for less. */
-@media (prefers-reduced-motion: reduce) {
-  *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
-}
-@media (max-width: 380px) {
-  .livv-page { padding-inline: .1rem; }
-}
+/* Motion is optional. */
+@media (prefers-reduced-motion:reduce) { *,*::before,*::after { scroll-behavior:auto !important; animation-duration:.01ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important; } }
+@media (max-width:380px) { .livv-page { padding-inline:.1rem; } }
 
-/* Empty, loading, and error surfaces should look intentional. */
-.livv-skeleton { min-height: 1rem; border-radius: 999px; background: rgb(255 255 255 / .07); animation: livv-skeleton 1.4s ease-in-out infinite; }
-@keyframes livv-skeleton { 50% { opacity: .45; } }
+.livv-skeleton { min-height:1rem; border-radius:999px; background:rgb(255 255 255 / .07); animation:livv-skeleton 1.4s ease-in-out infinite; }
+@keyframes livv-skeleton { 50% { opacity:.45; } }
 
-/* Media should never escape its card or create horizontal scrolling. */
-.livv-page img, .livv-page video, .livv-social-page img, .livv-social-page video { max-width: 100%; }
+/* Selection, scrolling and tap behavior stay quiet and native. */
+::selection { background:rgb(15 127 255 / .22); }
+button,a { -webkit-tap-highlight-color:transparent; }
 
-/* Keep typography readable at browser zoom and avoid clipped controls. */
-input, textarea, select, button { font: inherit; }
-textarea { line-height: 1.55; }
+/* Prevent accidental horizontal overflow from long user content. */
+.livv-page,.livv-social-page { overflow-x:hidden; }
+.livv-page :where(p,h1,h2,h3,span,a,button) { overflow-wrap:anywhere; }
