@@ -44,7 +44,7 @@ export function AppHeader() {
           </Link>
           {me ? (
             <Link href="/home/profile" aria-label="Profile" className="shrink-0">
-              <Avatar identity={me} size={34} showTierRing />
+              <Avatar identity={me} size={34} />
             </Link>
           ) : null}
         </div>
