@@ -16,12 +16,12 @@ import { quoteForSession, type Quote } from "@/lib/quotes";
 import { dailySummary } from "@/lib/daily";
 
 const ACTIONS = [
-  { id: "body", label: "Body", color: "#FF6B6B", href: "/home/train", help: "Train or move your body." },
-  { id: "mind", label: "Mind", color: "#9B7CFF", href: "/home/mind", help: "Read, reflect, or clear your head." },
-  { id: "career", label: "Career", color: "#4C8DFF", href: "/home/evala", help: "Move important work forward." },
-  { id: "finance", label: "Finance", color: "#F5C542", href: "/home/evala", help: "Make one useful money move." },
-  { id: "social", label: "Social", color: "#FF5C8A", href: "/home/connect", help: "Talk to someone who matters." },
-  { id: "life", label: "Life", color: "#2EE0C0", href: "/home/daily", help: "Handle something that improves your life." },
+  { id: "body", label: "Body", color: "#F93827", href: "/home/train", help: "Train or move your body." },
+  { id: "mind", label: "Mind", color: "#F61981", href: "/home/mind", help: "Read, reflect, or clear your head." },
+  { id: "career", label: "Career", color: "#FF9D23", href: "/home/evala", help: "Move important work forward." },
+  { id: "finance", label: "Finance", color: "#9A00FF", href: "/home/evala", help: "Make one useful money move." },
+  { id: "social", label: "Social", color: "#4DFF00", href: "/home/connect", help: "Talk to someone who matters." },
+  { id: "life", label: "Life", color: "#FCF927", href: "/home/daily", help: "Handle something that improves your life." },
 ] as const;
 
 type Action = (typeof ACTIONS)[number];
