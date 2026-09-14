@@ -5,9 +5,16 @@
 
 :root,
 html[data-theme="dark"] {
-  --livv-accent: 76 141 255;
-  --livv-accent-soft: 163 196 255;
-  --livv-accent-hex: #4c8dff;
+  --livv-accent: 15 127 255;
+  --livv-accent-soft: 252 249 39;
+  --livv-accent-hex: #0F7FFF;
+  --livv-blue: #0F7FFF;
+  --livv-yellow: #FCF927;
+  --livv-red: #F93827;
+  --livv-pink: #F61981;
+  --livv-purple: #9A00FF;
+  --livv-green: #4DFF00;
+  --livv-orange: #FF9D23;
   --livv-bg: #030405;
   --livv-nav: transparent;
   --livv-surface: 15 17 22;
@@ -34,7 +41,7 @@ html[data-theme="light"] {
   --livv-glass-a: 0.045;
   --livv-line: 17 17 20;
   --livv-line-a: 0.2;
-  --livv-accent-soft: 37 88 175;
+  --livv-accent-soft: 252 249 39;
   --livv-shadow: 0 18px 40px rgba(17, 17, 20, 0.08);
   color-scheme: light;
 }
@@ -114,7 +121,7 @@ html[data-theme="light"] .livv-glass {
 .livv-grain { position: absolute; inset: 0; pointer-events: none; opacity: 0.04; background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.55'/%3E%3C/svg%3E"); }
 .livv-page-hero { padding-top: 0.35rem; }
 .livv-ambient-watermark { display: none !important; }
-.livv-ambient-aurora { position: absolute; inset: -18% -25%; background: radial-gradient(ellipse at 22% 32%, rgba(76,141,255,.075), transparent 28%), radial-gradient(ellipse at 76% 58%, rgba(180,92,255,.045), transparent 26%), radial-gradient(ellipse at 48% 92%, rgba(255,77,109,.025), transparent 24%); filter: blur(46px); animation: livv-aurora-drift 24s ease-in-out infinite alternate; }
+.livv-ambient-aurora { position: absolute; inset: -18% -25%; background: radial-gradient(ellipse at 22% 32%, rgb(15 127 255 / .075), transparent 28%), radial-gradient(ellipse at 76% 58%, rgb(154 0 255 / .045), transparent 26%), radial-gradient(ellipse at 48% 92%, rgb(246 25 129 / .025), transparent 24%); filter: blur(46px); animation: livv-aurora-drift 24s ease-in-out infinite alternate; }
 @keyframes livv-aurora-drift { from { transform: translate3d(-1.5%,-1%,0) scale(1); } to { transform: translate3d(1.5%,1.5%,0) scale(1.045); } }
 @media (prefers-reduced-motion: reduce) { .livv-ambient-aurora { animation: none; } }
 
@@ -189,3 +196,101 @@ html[data-theme="light"] .livv-install-card { border-color: rgb(17 17 20 / .24);
 .livv-pack-frame { position: relative; width: 100%; height: 100%; overflow: hidden; border-radius: 16px; }
 .livv-pack-frame img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center; }
 .livv-pack-fallback { position: absolute; inset: 0; display: grid; place-items: center; background: radial-gradient(circle at 50% 28%, rgba(255,255,255,.16), transparent 42%), linear-gradient(160deg, #171a22, #050505); }
+
+/* Accent enforcement: non-neutral UI accents use only the seven LIVV colors. */
+html:not(.livv-nav-exempt) [class*="text-blue-"],
+html:not(.livv-nav-exempt) [class*="text-sky-"],
+html:not(.livv-nav-exempt) [class*="text-cyan-"] { color: #0F7FFF !important; }
+html:not(.livv-nav-exempt) [class*="text-yellow-"],
+html:not(.livv-nav-exempt) [class*="text-amber-"] { color: #FCF927 !important; }
+html:not(.livv-nav-exempt) [class*="text-red-"] { color: #F93827 !important; }
+html:not(.livv-nav-exempt) [class*="text-pink-"] { color: #F61981 !important; }
+html:not(.livv-nav-exempt) [class*="text-purple-"],
+html:not(.livv-nav-exempt) [class*="text-violet-"],
+html:not(.livv-nav-exempt) [class*="text-fuchsia-"] { color: #9A00FF !important; }
+html:not(.livv-nav-exempt) [class*="text-green-"],
+html:not(.livv-nav-exempt) [class*="text-emerald-"],
+html:not(.livv-nav-exempt) [class*="text-teal-"],
+html:not(.livv-nav-exempt) [class*="text-lime-"] { color: #4DFF00 !important; }
+html:not(.livv-nav-exempt) [class*="text-orange-"],
+html:not(.livv-nav-exempt) [class*="text-red-orange-"] { color: #FF9D23 !important; }
+
+html:not(.livv-nav-exempt) [class*="bg-blue-"],
+html:not(.livv-nav-exempt) [class*="bg-sky-"],
+html:not(.livv-nav-exempt) [class*="bg-cyan-"] { background-color: #0F7FFF !important; }
+html:not(.livv-nav-exempt) [class*="bg-yellow-"],
+html:not(.livv-nav-exempt) [class*="bg-amber-"] { background-color: #FCF927 !important; }
+html:not(.livv-nav-exempt) [class*="bg-red-"] { background-color: #F93827 !important; }
+html:not(.livv-nav-exempt) [class*="bg-pink-"] { background-color: #F61981 !important; }
+html:not(.livv-nav-exempt) [class*="bg-purple-"],
+html:not(.livv-nav-exempt) [class*="bg-violet-"],
+html:not(.livv-nav-exempt) [class*="bg-fuchsia-"] { background-color: #9A00FF !important; }
+html:not(.livv-nav-exempt) [class*="bg-green-"],
+html:not(.livv-nav-exempt) [class*="bg-emerald-"],
+html:not(.livv-nav-exempt) [class*="bg-teal-"],
+html:not(.livv-nav-exempt) [class*="bg-lime-"] { background-color: #4DFF00 !important; }
+html:not(.livv-nav-exempt) [class*="bg-orange-"] { background-color: #FF9D23 !important; }
+
+html:not(.livv-nav-exempt) [class*="border-blue-"],
+html:not(.livv-nav-exempt) [class*="border-sky-"],
+html:not(.livv-nav-exempt) [class*="border-cyan-"] { border-color: #0F7FFF !important; }
+html:not(.livv-nav-exempt) [class*="border-yellow-"],
+html:not(.livv-nav-exempt) [class*="border-amber-"] { border-color: #FCF927 !important; }
+html:not(.livv-nav-exempt) [class*="border-red-"] { border-color: #F93827 !important; }
+html:not(.livv-nav-exempt) [class*="border-pink-"] { border-color: #F61981 !important; }
+html:not(.livv-nav-exempt) [class*="border-purple-"],
+html:not(.livv-nav-exempt) [class*="border-violet-"],
+html:not(.livv-nav-exempt) [class*="border-fuchsia-"] { border-color: #9A00FF !important; }
+html:not(.livv-nav-exempt) [class*="border-green-"],
+html:not(.livv-nav-exempt) [class*="border-emerald-"],
+html:not(.livv-nav-exempt) [class*="border-teal-"],
+html:not(.livv-nav-exempt) [class*="border-lime-"] { border-color: #4DFF00 !important; }
+html:not(.livv-nav-exempt) [class*="border-orange-"] { border-color: #FF9D23 !important; }
+
+/* Gradient accents follow the same seven-color mapping. */
+html:not(.livv-nav-exempt) [class*="from-blue-"],
+html:not(.livv-nav-exempt) [class*="from-sky-"],
+html:not(.livv-nav-exempt) [class*="from-cyan-"] { --tw-gradient-from: #0F7FFF var(--tw-gradient-from-position); }
+html:not(.livv-nav-exempt) [class*="from-yellow-"],
+html:not(.livv-nav-exempt) [class*="from-amber-"] { --tw-gradient-from: #FCF927 var(--tw-gradient-from-position); }
+html:not(.livv-nav-exempt) [class*="from-red-"] { --tw-gradient-from: #F93827 var(--tw-gradient-from-position); }
+html:not(.livv-nav-exempt) [class*="from-pink-"] { --tw-gradient-from: #F61981 var(--tw-gradient-from-position); }
+html:not(.livv-nav-exempt) [class*="from-purple-"],
+html:not(.livv-nav-exempt) [class*="from-violet-"],
+html:not(.livv-nav-exempt) [class*="from-fuchsia-"] { --tw-gradient-from: #9A00FF var(--tw-gradient-from-position); }
+html:not(.livv-nav-exempt) [class*="from-green-"],
+html:not(.livv-nav-exempt) [class*="from-emerald-"],
+html:not(.livv-nav-exempt) [class*="from-teal-"],
+html:not(.livv-nav-exempt) [class*="from-lime-"] { --tw-gradient-from: #4DFF00 var(--tw-gradient-from-position); }
+html:not(.livv-nav-exempt) [class*="from-orange-"] { --tw-gradient-from: #FF9D23 var(--tw-gradient-from-position); }
+
+/* The bottom navigation is deliberately excluded from this enforcement block. */
+.livv-tabbar [class*="text-blue-"],
+.livv-tabbar [class*="text-sky-"],
+.livv-tabbar [class*="text-cyan-"],
+.livv-tabbar [class*="text-yellow-"],
+.livv-tabbar [class*="text-amber-"],
+.livv-tabbar [class*="text-red-"],
+.livv-tabbar [class*="text-pink-"],
+.livv-tabbar [class*="text-purple-"],
+.livv-tabbar [class*="text-violet-"],
+.livv-tabbar [class*="text-fuchsia-"],
+.livv-tabbar [class*="text-green-"],
+.livv-tabbar [class*="text-emerald-"],
+.livv-tabbar [class*="text-teal-"],
+.livv-tabbar [class*="text-lime-"],
+.livv-tabbar [class*="text-orange-"],
+.livv-tabbar [class*="bg-blue-"],
+.livv-tabbar [class*="bg-yellow-"],
+.livv-tabbar [class*="bg-red-"],
+.livv-tabbar [class*="bg-pink-"],
+.livv-tabbar [class*="bg-purple-"],
+.livv-tabbar [class*="bg-green-"],
+.livv-tabbar [class*="bg-orange-"],
+.livv-tabbar [class*="border-blue-"],
+.livv-tabbar [class*="border-yellow-"],
+.livv-tabbar [class*="border-red-"],
+.livv-tabbar [class*="border-pink-"],
+.livv-tabbar [class*="border-purple-"],
+.livv-tabbar [class*="border-green-"],
+.livv-tabbar [class*="border-orange-"] { color: inherit; background-color: revert; border-color: revert; }
