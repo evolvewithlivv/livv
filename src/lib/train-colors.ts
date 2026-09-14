@@ -161,9 +161,9 @@ export function saveActiveSplit(id: SplitId) {
 
 export function chipStyle(hex: string, on: boolean) {
   return {
-    borderColor: on ? hex : `${hex}55`,
-    background: on ? `${hex}2E` : `${hex}14`,
-    boxShadow: on ? `0 0 22px ${hex}55` : undefined,
-    color: on ? "#fff" : "rgba(255,255,255,0.86)",
+    borderColor: on ? hex : "rgba(255,255,255,0.10)",
+    background: on ? `${hex}12` : "rgba(255,255,255,0.025)",
+    boxShadow: "none",
+    color: on ? "rgba(255,255,255,0.96)" : "rgba(255,255,255,0.78)",
   } as const;
 }
