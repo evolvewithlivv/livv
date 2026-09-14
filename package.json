@@ -8,7 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
-    "shipping:audit": "node scripts/shipping-audit.mjs"
+    "shipping:audit": "node scripts/shipping-audit.mjs",
+    "source:audit": "node scripts/livv-source-audit.mjs"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.116.0",
