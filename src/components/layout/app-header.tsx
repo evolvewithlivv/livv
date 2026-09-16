@@ -32,13 +32,13 @@ export function AppHeader() {
         <Link href="/home" aria-label="LIVV home" className="group flex min-w-0 items-center gap-2">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={LOGO} alt="LIVV" className="h-8 w-8 shrink-0 object-contain transition group-active:scale-95" />
-          <span className="text-[10px] font-semibold tracking-[0.32em] text-white/35">LIVV</span>
+          <span className="text-[10px] font-semibold leading-none tracking-[0.32em] text-white/35">LIVV</span>
         </Link>
         <div className="flex min-w-0 items-center gap-2">
           <InstallApp />
           <Link
             href="/home/messages"
-            className="shrink-0 px-1 py-1 text-[10px] font-medium uppercase tracking-[0.18em] text-white/45 transition hover:text-white/70"
+            className="shrink-0 self-center px-1 py-1 text-[10px] font-medium uppercase leading-none tracking-[0.18em] text-white/45 transition hover:text-white/70"
           >
             Inbox
           </Link>
