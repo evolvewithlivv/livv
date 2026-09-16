@@ -1,120 +1,404 @@
-import { loadIdentity, type Identity } from "./identity";
+/**
+ * LIVV Social Foundation — production source of truth is Supabase.
+ * Ownership is always auth.uid(). Client display fields are presentation only.
+ */
+
+import { getSupabaseBrowserClient, isSupabaseConfigured } from "@/lib/supabase/client";
+
+export type SocialPostKind = "text" | "proof" | "photo" | "video";
+
+export type SocialProof = {
+  source: "train" | "daily";
+  title: string;
+  summary: string;
+  meta?: Record<string, string | number | boolean | null>;
+};
 
 export type SocialAuthor = {
+  id: string;
   displayName: string;
   username: string;
   photo: string | null;
   accent: string;
 };
 
-export type Track = { id: string; title: string; artist: string; url: string };
-export type Reply = { id: string; author: SocialAuthor; text: string; createdAt: number };
-
-export type Post = {
+export type SocialReply = {
   id: string;
-  createdAt: number;
-  editedAt?: number;
+  postId: string;
   author: SocialAuthor;
   text: string;
-  photo: string | null;
-  video: string | null;
-  kind: "text" | "photo" | "video" | "proof";
-  track: Track | null;
-  allowReplies: boolean;
-  likes: number;
-  likedByMe: boolean;
-  replies: Reply[];
+  createdAt: number;
 };
 
-const POSTS_KEY = "livv-social-posts-v4";
-export const EDIT_WINDOW_MS = 60_000;
+export type SocialPost = {
+  id: string;
+  author: SocialAuthor;
+  text: string;
+  kind: SocialPostKind;
+  proof: SocialProof | null;
+  allowReplies: boolean;
+  createdAt: number;
+  editedAt: number | null;
+  likes: number;
+  likedByMe: boolean;
+  replies: SocialReply[];
+  replyCount: number;
+};
 
-export const SOUND_LIBRARY: Track[] = [
-  { id: "helix-1", title: "First Light", artist: "LIVV Sound", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-1.mp3" },
-  { id: "helix-2", title: "No Audience", artist: "LIVV Sound", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-2.mp3" },
-  { id: "helix-3", title: "Slow Burn", artist: "LIVV Sound", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-3.mp3" },
-  { id: "helix-8", title: "After Hours", artist: "LIVV Sound", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-8.mp3" },
-  { id: "helix-9", title: "Keep the Line", artist: "LIVV Sound", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-9.mp3" },
-  { id: "helix-16", title: "Quiet Work", artist: "LIVV Sound", url: "https://www.soundhelix.com/examples/mp3/SoundHelix-Song-16.mp3" },
-];
+export type FeedPage = {
+  posts: SocialPost[];
+  nextCursor: string | null;
+};
 
-export function authorFromIdentity(me: Identity): SocialAuthor { return { displayName: me.displayName, username: me.username, photo: me.photo, accent: me.accent }; }
-export function canEditPost(post: Post, now = Date.now()) { return now - post.createdAt < EDIT_WINDOW_MS; }
-export function editSecondsLeft(post: Post, now = Date.now()) { return Math.max(0, Math.ceil((EDIT_WINDOW_MS - (now - post.createdAt)) / 1000)); }
-export function formatSocialTime(timestamp: number, now = Date.now()) {
-  const diff = Math.max(0, now - timestamp); const minutes = Math.floor(diff / 60000);
-  if (minutes < 1) return "now"; if (minutes < 60) return `${minutes}m`;
-  const hours = Math.floor(minutes / 60); if (hours < 24) return `${hours}h`;
-  const days = Math.floor(hours / 24); if (days < 7) return `${days}d`;
-  const d = new Date(timestamp); return `${d.getMonth() + 1}/${d.getDate()}/${String(d.getFullYear()).slice(-2)}`;
-}
+const FEED_PAGE_SIZE = 20;
+const EDIT_WINDOW_MS = 60_000;
 
-export function fileToPostPhoto(file: File): Promise<string> {
-  return new Promise((resolve, reject) => {
-    const img = new Image(); const url = URL.createObjectURL(file);
-    img.onload = () => { const max = 1080; const scale = Math.min(1, max / Math.max(img.width, img.height)); const canvas = document.createElement("canvas"); canvas.width = Math.round(img.width * scale); canvas.height = Math.round(img.height * scale); const ctx = canvas.getContext("2d"); if (!ctx) { URL.revokeObjectURL(url); reject(new Error("canvas")); return; } ctx.drawImage(img, 0, 0, canvas.width, canvas.height); URL.revokeObjectURL(url); resolve(canvas.toDataURL("image/jpeg", 0.78)); };
-    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error("image")); }; img.src = url;
-  });
-}
+type ProfileRow = {
+  id: string;
+  username: string | null;
+  display_name: string | null;
+  photo_url: string | null;
+  accent: string | null;
+};
 
-/** Small local MVP video importer. Production should move media to object storage. */
-export function fileToPostVideo(file: File): Promise<string> {
-  if (!file.type.startsWith("video/")) return Promise.reject(new Error("video-type"));
-  if (file.size > 6 * 1024 * 1024) return Promise.reject(new Error("video-too-large"));
-  return new Promise((resolve, reject) => {
-    const reader = new FileReader();
-    reader.onload = () => typeof reader.result === "string" ? resolve(reader.result) : reject(new Error("video-read"));
-    reader.onerror = () => reject(new Error("video-read"));
-    reader.readAsDataURL(file);
-  });
-}
+type PostRow = {
+  id: string;
+  author_id: string;
+  kind: string;
+  body: string;
+  proof: SocialProof | null;
+  allow_replies: boolean;
+  created_at: string;
+  edited_at: string | null;
+};
 
-function withDefaults(p: Partial<Post> & Pick<Post, "id" | "createdAt" | "author" | "text">): Post {
-  const photo = p.photo ?? null;
-  const video = p.video ?? null;
-  const kind = p.kind ?? (photo ? "photo" : video ? "video" : "text");
+type ReplyRow = {
+  id: string;
+  post_id: string;
+  author_id: string;
+  body: string;
+  created_at: string;
+};
+
+function authorFromProfile(row: ProfileRow | null | undefined, fallbackId: string): SocialAuthor {
   return {
-    track: null,
-    allowReplies: true,
-    likes: 0,
-    likedByMe: false,
-    replies: [],
-    ...p,
-    photo,
-    video,
-    kind,
+    id: row?.id || fallbackId,
+    displayName: (row?.display_name || "").trim() || "LIVV member",
+    username: (row?.username || "").trim() || "member",
+    photo: row?.photo_url || null,
+    accent: row?.accent || "#4DFF00",
   };
 }
 
-function seedPosts(): Post[] {
-  const now = Date.now();
-  return [
-    withDefaults({ id: "seed-a", createdAt: now - 1000 * 60 * 12, author: { displayName: "Maya Chen", username: "mayatrains", photo: null, accent: "#3DDC97" }, text: "Did the work before my phone unlocked. That version of me is the one I trust.", track: SOUND_LIBRARY[1], likes: 47, replies: [{ id: "r1", createdAt: now - 1000 * 60 * 8, author: { displayName: "Jules", username: "julesmoves", photo: null, accent: "#7C9CFF" }, text: "This is the standard." }, { id: "r1b", createdAt: now - 1000 * 60 * 5, author: { displayName: "Nia", username: "nia.runs", photo: null, accent: "#F5C542" }, text: "Saving this for tomorrow morning." }] }),
-    withDefaults({ id: "seed-b", createdAt: now - 1000 * 60 * 55, author: { displayName: "Andre V", username: "andrev", photo: null, accent: "#FF5C8A" }, text: "Nobody needs to see the session for it to count. Logging it anyway.", likes: 89 }),
-    withDefaults({ id: "seed-c", createdAt: now - 1000 * 60 * 60 * 3, author: { displayName: "Nia", username: "nia.runs", photo: null, accent: "#F5C542" }, text: "Week 3. Still here. Still boring on purpose.", track: SOUND_LIBRARY[0], likes: 62, replies: [{ id: "r2", createdAt: now - 1000 * 60 * 60 * 2, author: { displayName: "Cole", username: "colebuilt", photo: null, accent: "#A78BFA" }, text: "Boring is the whole game." }] }),
-    withDefaults({ id: "seed-d", createdAt: now - 1000 * 60 * 60 * 9, author: { displayName: "Jules", username: "julesmoves", photo: null, accent: "#7C9CFF" }, text: "If you only train when you feel like it, you are training your feelings.", track: SOUND_LIBRARY[4], likes: 134 }),
-    withDefaults({ id: "seed-e", createdAt: now - 1000 * 60 * 60 * 26, author: { displayName: "Cole", username: "colebuilt", photo: null, accent: "#A78BFA" }, text: "Put it on the record or it did not happen.", allowReplies: false, likes: 41 }),
-  ];
+function mapPost(
+  row: PostRow,
+  profile: ProfileRow | null | undefined,
+  likes: number,
+  likedByMe: boolean,
+  replyCount: number,
+  replies: SocialReply[] = []
+): SocialPost {
+  return {
+    id: row.id,
+    author: authorFromProfile(profile, row.author_id),
+    text: row.body || "",
+    kind: (row.kind as SocialPostKind) || "text",
+    proof: row.proof || null,
+    allowReplies: row.allow_replies !== false,
+    createdAt: new Date(row.created_at).getTime(),
+    editedAt: row.edited_at ? new Date(row.edited_at).getTime() : null,
+    likes,
+    likedByMe,
+    replies,
+    replyCount,
+  };
 }
 
-export function loadPosts(): Post[] {
-  if (typeof window === "undefined") return [];
-  try { const raw = window.localStorage.getItem(POSTS_KEY); if (!raw) { const seeded = seedPosts(); window.localStorage.setItem(POSTS_KEY, JSON.stringify(seeded)); return seeded; } const parsed = JSON.parse(raw) as Post[]; if (!Array.isArray(parsed)) return seedPosts(); return parsed.map((p) => withDefaults(p)); } catch { return seedPosts(); }
+export function isSocialBackendReady() {
+  return isSupabaseConfigured();
 }
 
-export function savePosts(posts: Post[]) {
+export async function getSocialUserId(): Promise<string | null> {
+  const client = getSupabaseBrowserClient();
+  if (!client) return null;
+  const { data, error } = await client.auth.getUser();
+  if (error || !data.user) return null;
+  return data.user.id;
+}
+
+export function formatSocialTime(timestamp: number, now = Date.now()) {
+  const diff = Math.max(0, now - timestamp);
+  const minutes = Math.floor(diff / 60000);
+  if (minutes < 1) return "now";
+  if (minutes < 60) return `${minutes}m`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours}h`;
+  const days = Math.floor(hours / 24);
+  if (days < 7) return `${days}d`;
+  const d = new Date(timestamp);
+  return `${d.getMonth() + 1}/${d.getDate()}/${String(d.getFullYear()).slice(-2)}`;
+}
+
+export function canEditPost(post: SocialPost, now = Date.now()) {
+  return now - post.createdAt < EDIT_WINDOW_MS;
+}
+
+async function loadProfiles(ids: string[]): Promise<Map<string, ProfileRow>> {
+  const map = new Map<string, ProfileRow>();
+  if (!ids.length) return map;
+  const client = getSupabaseBrowserClient();
+  if (!client) return map;
+  const unique = Array.from(new Set(ids));
+  const { data, error } = await client
+    .from("profiles")
+    .select("id, username, display_name, photo_url, accent")
+    .in("id", unique);
+  if (error || !data) return map;
+  for (const row of data as ProfileRow[]) map.set(row.id, row);
+  return map;
+}
+
+export async function fetchFeedPage(options?: {
+  cursor?: string | null;
+  mineOnly?: boolean;
+  userId?: string | null;
+}): Promise<FeedPage> {
+  const client = getSupabaseBrowserClient();
+  if (!client) throw new Error("Social is not available right now.");
+
+  const userId = options?.userId ?? (await getSocialUserId());
+  let query = client
+    .from("social_posts")
+    .select("id, author_id, kind, body, proof, allow_replies, created_at, edited_at")
+    .order("created_at", { ascending: false })
+    .limit(FEED_PAGE_SIZE);
+
+  if (options?.mineOnly && userId) {
+    query = query.eq("author_id", userId);
+  }
+  if (options?.cursor) {
+    query = query.lt("created_at", options.cursor);
+  }
+
+  const { data, error } = await query;
+  if (error) throw new Error(error.message || "Could not load the community feed.");
+  const rows = (data || []) as PostRow[];
+  if (!rows.length) return { posts: [], nextCursor: null };
+
+  const postIds = rows.map((r) => r.id);
+  const authorIds = rows.map((r) => r.author_id);
+  const profiles = await loadProfiles(authorIds);
+
+  const [{ data: reactionRows }, { data: replyCountRows }, { data: myReactions }] = await Promise.all([
+    client.from("social_reactions").select("post_id").in("post_id", postIds),
+    client.from("social_replies").select("post_id").in("post_id", postIds),
+    userId
+      ? client.from("social_reactions").select("post_id").eq("user_id", userId).in("post_id", postIds)
+      : Promise.resolve({ data: [] as { post_id: string }[] }),
+  ]);
+
+  const likeCounts = new Map<string, number>();
+  for (const r of reactionRows || []) {
+    likeCounts.set(r.post_id, (likeCounts.get(r.post_id) || 0) + 1);
+  }
+  const replyCounts = new Map<string, number>();
+  for (const r of replyCountRows || []) {
+    replyCounts.set(r.post_id, (replyCounts.get(r.post_id) || 0) + 1);
+  }
+  const likedSet = new Set((myReactions || []).map((r) => r.post_id));
+
+  const posts = rows.map((row) =>
+    mapPost(
+      row,
+      profiles.get(row.author_id),
+      likeCounts.get(row.id) || 0,
+      likedSet.has(row.id),
+      replyCounts.get(row.id) || 0
+    )
+  );
+
+  const last = rows[rows.length - 1];
+  const nextCursor = rows.length === FEED_PAGE_SIZE ? last.created_at : null;
+  return { posts, nextCursor };
+}
+
+export async function fetchReplies(postId: string): Promise<SocialReply[]> {
+  const client = getSupabaseBrowserClient();
+  if (!client) throw new Error("Social is not available right now.");
+
+  const { data, error } = await client
+    .from("social_replies")
+    .select("id, post_id, author_id, body, created_at")
+    .eq("post_id", postId)
+    .order("created_at", { ascending: true })
+    .limit(100);
+
+  if (error) throw new Error(error.message || "Could not load replies.");
+  const rows = (data || []) as ReplyRow[];
+  const profiles = await loadProfiles(rows.map((r) => r.author_id));
+
+  return rows.map((row) => ({
+    id: row.id,
+    postId: row.post_id,
+    author: authorFromProfile(profiles.get(row.author_id), row.author_id),
+    text: row.body,
+    createdAt: new Date(row.created_at).getTime(),
+  }));
+}
+
+export async function createSocialPost(input: {
+  text: string;
+  kind?: SocialPostKind;
+  proof?: SocialProof | null;
+  allowReplies?: boolean;
+}): Promise<SocialPost> {
+  const client = getSupabaseBrowserClient();
+  if (!client) throw new Error("Social is not available right now.");
+  const userId = await getSocialUserId();
+  if (!userId) throw new Error("Sign in to share with the community.");
+
+  const body = input.text.trim();
+  if (!body && !input.proof) throw new Error("Write something before posting.");
+
+  const kind: SocialPostKind = input.kind || (input.proof ? "proof" : "text");
+  const { data, error } = await client
+    .from("social_posts")
+    .insert({
+      author_id: userId,
+      kind,
+      body,
+      proof: input.proof || null,
+      allow_replies: input.allowReplies !== false,
+    })
+    .select("id, author_id, kind, body, proof, allow_replies, created_at, edited_at")
+    .single();
+
+  if (error || !data) throw new Error(error?.message || "Could not create your post.");
+  const profiles = await loadProfiles([userId]);
+  return mapPost(data as PostRow, profiles.get(userId), 0, false, 0);
+}
+
+export async function updateSocialPost(
+  postId: string,
+  patch: { text?: string; allowReplies?: boolean }
+): Promise<void> {
+  const client = getSupabaseBrowserClient();
+  if (!client) throw new Error("Social is not available right now.");
+  const userId = await getSocialUserId();
+  if (!userId) throw new Error("Sign in to edit.");
+
+  const updates: Record<string, unknown> = { edited_at: new Date().toISOString() };
+  if (typeof patch.text === "string") updates.body = patch.text.trim();
+  if (typeof patch.allowReplies === "boolean") updates.allow_replies = patch.allowReplies;
+
+  const { error } = await client
+    .from("social_posts")
+    .update(updates)
+    .eq("id", postId)
+    .eq("author_id", userId);
+
+  if (error) throw new Error(error.message || "Could not update post.");
+}
+
+export async function deleteSocialPost(postId: string): Promise<void> {
+  const client = getSupabaseBrowserClient();
+  if (!client) throw new Error("Social is not available right now.");
+  const userId = await getSocialUserId();
+  if (!userId) throw new Error("Sign in to delete.");
+
+  const { error } = await client.from("social_posts").delete().eq("id", postId).eq("author_id", userId);
+  if (error) throw new Error(error.message || "Could not delete post.");
+}
+
+export async function createSocialReply(postId: string, text: string): Promise<SocialReply> {
+  const client = getSupabaseBrowserClient();
+  if (!client) throw new Error("Social is not available right now.");
+  const userId = await getSocialUserId();
+  if (!userId) throw new Error("Sign in to reply.");
+
+  const body = text.trim();
+  if (!body) throw new Error("Write a reply first.");
+
+  const { data, error } = await client
+    .from("social_replies")
+    .insert({ post_id: postId, author_id: userId, body })
+    .select("id, post_id, author_id, body, created_at")
+    .single();
+
+  if (error || !data) throw new Error(error?.message || "Could not post reply.");
+  const profiles = await loadProfiles([userId]);
+  const row = data as ReplyRow;
+  return {
+    id: row.id,
+    postId: row.post_id,
+    author: authorFromProfile(profiles.get(userId), userId),
+    text: row.body,
+    createdAt: new Date(row.created_at).getTime(),
+  };
+}
+
+export async function deleteSocialReply(replyId: string): Promise<void> {
+  const client = getSupabaseBrowserClient();
+  if (!client) throw new Error("Social is not available right now.");
+  const userId = await getSocialUserId();
+  if (!userId) throw new Error("Sign in to delete.");
+
+  const { error } = await client.from("social_replies").delete().eq("id", replyId).eq("author_id", userId);
+  if (error) throw new Error(error.message || "Could not delete reply.");
+}
+
+export async function toggleReaction(postId: string, currentlyLiked: boolean): Promise<boolean> {
+  const client = getSupabaseBrowserClient();
+  if (!client) throw new Error("Social is not available right now.");
+  const userId = await getSocialUserId();
+  if (!userId) throw new Error("Sign in to acknowledge.");
+
+  if (currentlyLiked) {
+    const { error } = await client
+      .from("social_reactions")
+      .delete()
+      .eq("post_id", postId)
+      .eq("user_id", userId);
+    if (error) throw new Error(error.message || "Could not remove acknowledgment.");
+    return false;
+  }
+
+  const { error } = await client.from("social_reactions").insert({ post_id: postId, user_id: userId });
+  if (error) throw new Error(error.message || "Could not acknowledge.");
+  return true;
+}
+
+/** Pending proof draft for optional share after Train/Daily (sessionStorage). */
+const PROOF_DRAFT_KEY = "livv-social-proof-draft-v1";
+
+export function stashProofDraft(proof: SocialProof, suggestedText?: string) {
   if (typeof window === "undefined") return;
-  try { window.localStorage.setItem(POSTS_KEY, JSON.stringify(posts.slice(0, 40))); }
-  catch { const slim = posts.slice(0, 20).map((p, i) => (i > 8 ? { ...p, photo: null, video: null } : p)); try { window.localStorage.setItem(POSTS_KEY, JSON.stringify(slim)); } catch {} }
+  try {
+    sessionStorage.setItem(
+      PROOF_DRAFT_KEY,
+      JSON.stringify({ proof, suggestedText: suggestedText || "", at: Date.now() })
+    );
+  } catch {
+    // ignore
+  }
 }
 
-export function createPost(input: { text: string; photo: string | null; video?: string | null; track: Track | null; allowReplies: boolean; kind?: Post["kind"] }): Post {
-  const kind = input.kind || (input.video ? "video" : input.photo ? "photo" : "text");
-  const post: Post = { id: `p_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`, createdAt: Date.now(), author: authorFromIdentity(loadIdentity()), text: input.text.trim(), photo: input.photo, video: input.video || null, kind, track: input.track, allowReplies: input.allowReplies, likes: 0, likedByMe: false, replies: [] };
-  savePosts([post, ...loadPosts()]); return post;
+export function consumeProofDraft(): { proof: SocialProof; suggestedText: string } | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = sessionStorage.getItem(PROOF_DRAFT_KEY);
+    if (!raw) return null;
+    sessionStorage.removeItem(PROOF_DRAFT_KEY);
+    const parsed = JSON.parse(raw) as { proof: SocialProof; suggestedText?: string; at?: number };
+    if (!parsed?.proof?.source || !parsed.proof.title) return null;
+    if (parsed.at && Date.now() - parsed.at > 30 * 60 * 1000) return null;
+    return { proof: parsed.proof, suggestedText: parsed.suggestedText || "" };
+  } catch {
+    return null;
+  }
 }
 
-export function updatePost(id: string, patch: Partial<Pick<Post, "text" | "photo" | "video" | "track" | "allowReplies" | "kind">>) {
-  const posts = loadPosts(); const next = posts.map((p) => p.id !== id ? p : canEditPost(p) ? { ...p, ...patch, editedAt: Date.now() } : p); savePosts(next); return next;
+export function proofSharePath(proof: SocialProof, suggestedText?: string) {
+  stashProofDraft(proof, suggestedText);
+  return "/home/connect?compose=1&proof=1";
 }
-export function deletePost(id: string) { const next = loadPosts().filter((p) => p.id !== id); savePosts(next); return next; }
