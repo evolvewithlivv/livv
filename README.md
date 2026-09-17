@@ -11,6 +11,7 @@ LIVV is a personal evolution ecosystem built around daily action, training, refl
 - Stripe Checkout + Customer Portal + webhooks
 - Vercel
 - Shopify storefront integration
+- **Capacitor** native shell (iOS / Android) for App Store & Google Play
 
 ## Current product
 
@@ -32,6 +33,7 @@ LIVV is a personal evolution ecosystem built around daily action, training, refl
 - Production security headers and authenticated Evala API
 - Local JSON export/import and full device-data wipe
 - Installable PWA manifest and mobile-safe viewport metadata
+- Native App Store / Play Store packaging via Capacitor live-server shell
 
 ## Authentication
 
@@ -61,6 +63,22 @@ The browser is still responsible for local UX state, but paid subscription autho
 Stripe webhook events are signature-verified and recorded in `public.stripe_webhook_events` only after successful handling. Client access uses the server entitlement when available and falls back to the local entitlement cache when the network is unavailable.
 
 The Stripe Customer Portal and Checkout session confirmation require the authenticated Supabase user and do not trust a client-supplied Stripe customer id as ownership proof.
+
+## Native App Store path
+
+LIVV ships as a **Capacitor live-server shell**. The native iOS/Android containers load the production site (`https://evolvewithlivv.com`). This preserves every server feature (Auth OTP, Stripe ownership, entitlements, Evala, API routes) while giving a true App Store binary.
+
+See **[docs/APP_STORE.md](docs/APP_STORE.md)** for the full checklist, Xcode/Android Studio steps, and App Store Connect requirements.
+
+Quick start after cloning:
+
+```bash
+npm install
+npx cap add ios      # once
+npx cap add android  # once
+npx cap sync
+npm run cap:ios      # or cap:android
+```
 
 ## Supabase
 
