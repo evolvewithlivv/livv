@@ -1,21 +1,21 @@
-/* LIVV Professional — presentation reset. Product logic and data remain untouched. */
-:root { --livv-pro-bg:#f7f7f5; --livv-pro-surface:#fff; --livv-pro-ink:#111214; --livv-pro-muted:#6f737b; --livv-pro-line:#e4e5e8; --livv-pro-accent:#1769ff; --livv-pro-accent-soft:rgba(23,105,255,.08); }
-html[data-theme="dark"] { --livv-pro-bg:#090a0c; --livv-pro-surface:#111316; --livv-pro-ink:#f5f5f2; --livv-pro-muted:#969aa3; --livv-pro-line:#272a30; --livv-pro-accent:#5d8fff; --livv-pro-accent-soft:rgba(93,143,255,.11); }
-html,body{background:var(--livv-pro-bg)!important;color:var(--livv-pro-ink)} body{letter-spacing:-.012em} body::before{display:none!important}.livv-app-shell{background:var(--livv-pro-bg)!important}
-.livv-app-header{background:color-mix(in srgb,var(--livv-pro-bg) 92%,transparent);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-bottom:1px solid var(--livv-pro-line)}
-.livv-wordmark{font-family:var(--font-display),sans-serif;font-size:18px;font-weight:700;letter-spacing:-.055em;color:var(--livv-pro-ink)}
+/* LIVV Professional System — global product reset. Presentation only; product/data logic stays intact. */
+:root{--livv-pro-bg:#f7f7f5;--livv-pro-surface:#fff;--livv-pro-surface-2:#f1f2f4;--livv-pro-ink:#111214;--livv-pro-muted:#6b7078;--livv-pro-line:#e1e3e7;--livv-pro-accent:#1769ff;--livv-pro-accent-soft:rgba(23,105,255,.08)}
+html[data-theme="dark"]{--livv-pro-bg:#090a0c;--livv-pro-surface:#111316;--livv-pro-surface-2:#181a1f;--livv-pro-ink:#f5f5f2;--livv-pro-muted:#969aa3;--livv-pro-line:#292c32;--livv-pro-accent:#6b98ff;--livv-pro-accent-soft:rgba(107,152,255,.12)}
+html,body{background:var(--livv-pro-bg)!important;color:var(--livv-pro-ink)}body{letter-spacing:-.012em}body::before{display:none!important}.livv-app-shell{background:var(--livv-pro-bg)!important}
+.livv-app-header{background:color-mix(in srgb,var(--livv-pro-bg) 94%,transparent)!important;border-bottom:1px solid var(--livv-pro-line)!important;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
+.livv-wordmark{font-family:var(--font-display),sans-serif;font-size:18px;font-weight:700;letter-spacing:-.06em;color:var(--livv-pro-ink)}
 .livv-icon-button{display:grid;place-items:center;width:38px;height:38px;border-radius:12px;color:var(--livv-pro-muted)}.livv-icon-button:hover{background:var(--livv-pro-accent-soft);color:var(--livv-pro-ink)}
-.livv-tabbar-dock{background:color-mix(in srgb,var(--livv-pro-surface) 94%,transparent)!important;border-color:var(--livv-pro-line)!important;box-shadow:0 10px 30px rgba(0,0,0,.10)!important;backdrop-filter:blur(22px);-webkit-backdrop-filter:blur(22px)}
-.livv-tab{color:var(--livv-pro-muted)!important;text-shadow:none!important}.livv-tab.is-active{color:var(--livv-pro-ink)!important;background:var(--livv-pro-accent-soft)}.livv-tab.is-active svg{color:var(--livv-pro-accent)!important}.livv-tabbar .livv-tab span{color:inherit!important}
+.livv-tabbar-dock{background:color-mix(in srgb,var(--livv-pro-surface) 97%,transparent)!important;border:1px solid var(--livv-pro-line)!important;box-shadow:0 12px 34px rgba(0,0,0,.10)!important;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
+.livv-tab{color:var(--livv-pro-muted)!important;text-shadow:none!important}.livv-tab.is-active{color:var(--livv-pro-ink)!important;background:var(--livv-pro-accent-soft)!important}.livv-tab.is-active svg{color:var(--livv-pro-accent)!important}.livv-tabbar .livv-tab span{color:inherit!important}
+.livv-ambient-aurora,.livv-ambient-watermark,.livv-grain{opacity:0!important;display:none!important}.livv-page,.livv-social-page{background:none!important}
+.livv-page section[class*="rounded-["],.livv-social-page article{box-shadow:none!important}
 .livv-glass,.livv-panel,.livv-product-surface,.livv-product-control{background:var(--livv-pro-surface)!important;border-color:var(--livv-pro-line)!important;box-shadow:0 1px 2px rgba(0,0,0,.025)!important;backdrop-filter:none!important}.livv-panel,.livv-glass{border-radius:16px!important}
-/* Legacy utility cards become quiet product surfaces. */
-[class*="bg-white/["],[class*="bg-black/["],[class*="bg-white/0"],[class*="bg-black/0"]{background:var(--livv-pro-surface)!important}
-[class*="border-white/"],[class*="border-black/"]{border-color:var(--livv-pro-line)!important}
-[class*="text-white/"]{color:var(--livv-pro-muted)!important}
-/* Rainbow accents collapse to one restrained action color. */
-html [style*="#F93827"],html [style*="#F61981"],html [style*="#9A00FF"],html [style*="#4DFF00"],html [style*="#FCF927"],html [style*="#FF9D23"]{color:var(--livv-pro-accent)!important;border-color:color-mix(in srgb,var(--livv-pro-accent) 35%,transparent)!important}
+[class*="bg-white/["],[class*="bg-black/["],[class*="bg-white/0"],[class*="bg-black/0"]{background:var(--livv-pro-surface)!important}[class*="border-white/"],[class*="border-black/"]{border-color:var(--livv-pro-line)!important}
+html [style*="#F93827"],html [style*="#F61981"],html [style*="#9A00FF"],html [style*="#4DFF00"],html [style*="#FCF927"],html [style*="#FF9D23"]{color:var(--livv-pro-accent)!important;border-color:color-mix(in srgb,var(--livv-pro-accent) 30%,transparent)!important}
 html [class*="bg-[#F93827]"],html [class*="bg-[#F61981]"],html [class*="bg-[#9A00FF]"],html [class*="bg-[#4DFF00]"],html [class*="bg-[#FCF927]"],html [class*="bg-[#FF9D23]"]{background:var(--livv-pro-accent)!important}
-.livv-page,main,.livv-social-page{box-sizing:border-box}main>.livv-page-hero,.livv-page>div:first-child,.livv-social-page{width:min(100%,42rem);margin-inline:auto}.livv-page{padding-bottom:7rem!important}
-.livv-ambient-aurora,.livv-ambient-watermark,.livv-grain{opacity:0!important}h1,h2,h3,.font-display{color:var(--livv-pro-ink)!important}.text-livv-muted{color:var(--livv-pro-muted)!important}
-button,a{-webkit-tap-highlight-color:transparent}button:hover,a:hover{filter:none}
-@media(min-width:768px){.livv-tabbar-dock{max-width:38rem}}
+html [class*="text-red-"],html [class*="text-pink-"],html [class*="text-purple-"],html [class*="text-green-"],html [class*="text-yellow-"],html [class*="text-orange-"]{color:var(--livv-pro-accent)!important}
+h1,h2,h3,.font-display{color:var(--livv-pro-ink)!important}.text-livv-muted{color:var(--livv-pro-muted)!important}.livv-page{padding-bottom:7rem!important;box-sizing:border-box}main>.livv-page-hero,.livv-page>div:first-child,.livv-social-page{width:min(100%,42rem);margin-inline:auto;box-sizing:border-box}.livv-social-page{max-width:42rem!important}
+button,a{-webkit-tap-highlight-color:transparent}button:hover,a:hover{filter:none!important}input,textarea,select{border-radius:12px}
+.livv-social-page .sticky{background:color-mix(in srgb,var(--livv-pro-bg) 94%,transparent)!important;border-color:var(--livv-pro-line)!important;backdrop-filter:blur(18px)}.livv-social-page article{border-color:var(--livv-pro-line)!important}
+@media(min-width:768px){.livv-tabbar-dock{max-width:38rem}.livv-app-header>div{max-width:42rem!important}}
+html[data-theme="light"] [class~="text-white"],html[data-theme="light"] [class*="text-white/"]{color:var(--livv-pro-ink)!important}html[data-theme="light"] [class*="bg-[#030405]"],html[data-theme="light"] [class*="bg-[#101116]"],html[data-theme="light"] [class*="bg-[#0a0c11]"]{background:var(--livv-pro-surface)!important}html[data-theme="light"] [class*="border-white/"]{border-color:var(--livv-pro-line)!important}
