@@ -38,3 +38,37 @@ html[data-theme="light"] [class~="text-white"],html[data-theme="light"] [class*=
 .livv-app-header{box-shadow:0 1px 0 rgba(17,18,20,.025)}
 @media(max-width:767px){.livv-page-hero{padding-left:1.25rem!important;padding-right:1.25rem!important}.livv-page{padding-bottom:6rem!important}.livv-social-page{width:100%!important}.livv-social-page article{padding-left:1.25rem!important;padding-right:1.25rem!important}.livv-tabbar-dock{padding-left:.5rem!important;padding-right:.5rem!important}}
 @media(min-width:768px){.livv-page-hero{padding-top:2.5rem!important}.livv-social-page article{padding-left:1.5rem!important;padding-right:1.5rem!important}}
+
+/* App Store polish pass — content first, consistent rhythm, platform-sized controls. */
+.livv-page,.livv-social-page{font-feature-settings:"kern" 1,"liga" 1}
+.livv-page section,.livv-page article{scroll-margin-top:5rem}
+.livv-page [class*="rounded-[28px]"],.livv-page [class*="rounded-[30px]"],.livv-page [class*="rounded-[32px]"],.livv-page [class*="rounded-3xl"],.livv-page [class*="rounded-2xl"]{border-radius:18px!important}
+.livv-page [class*="shadow-"]{box-shadow:none!important}
+.livv-page [class*="backdrop-blur"]{backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+.livv-page input,.livv-page textarea,.livv-page select{min-height:44px;border:1px solid var(--livv-pro-line);background:var(--livv-pro-surface);color:var(--livv-pro-ink);box-shadow:none!important;outline:none}
+.livv-page input:focus,.livv-page textarea:focus,.livv-page select:focus{border-color:color-mix(in srgb,var(--livv-pro-accent) 55%,var(--livv-pro-line));box-shadow:0 0 0 3px var(--livv-pro-accent-soft)!important}
+.livv-page button,.livv-page a[role="button"]{min-height:44px}
+.livv-page button.rounded-full,.livv-page a.rounded-full{border-radius:14px}
+.livv-page button[aria-label],.livv-page a[aria-label]{-webkit-user-select:none;user-select:none}
+.livv-page section[class*="border"],.livv-page article[class*="border"]{border-color:var(--livv-pro-line)!important}
+.livv-page [class*="divide-"]>*+*{border-color:var(--livv-pro-line)!important}
+.livv-page .text-[10px]{font-size:11px!important}
+.livv-page .text-[11px]{line-height:1.35}
+.livv-page .text-[12px]{line-height:1.45}
+.livv-page h1,.livv-page h2,.livv-page h3{max-width:100%;text-wrap:balance}
+.livv-page p{max-width:68ch}
+.livv-tabbar{background:color-mix(in srgb,var(--livv-pro-surface) 92%,transparent)!important;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);box-shadow:0 -1px 0 var(--livv-pro-line)!important}
+.livv-tabbar .livv-tab{min-height:56px;padding-top:7px;padding-bottom:7px}
+.livv-tabbar .livv-tab-icon{height:25px;width:42px}
+.livv-tabbar .livv-tab span:last-child{font-size:10px;line-height:1.1;letter-spacing:-.005em}
+.livv-app-header .livv-icon-button{width:40px;height:40px}
+.livv-app-header a:active,.livv-tabbar a:active{transform:scale(.97)}
+.livv-app-header a:hover,.livv-tabbar a:hover{background:transparent}
+@media(max-width:767px){
+  .livv-page>.mx-auto,.livv-page>main>.mx-auto{max-width:42rem!important;padding-left:1rem!important;padding-right:1rem!important}
+  .livv-page-hero{padding-top:1.5rem!important;padding-bottom:1rem!important}
+  .livv-page section{scroll-margin-top:4.5rem}
+}
+@media(min-width:768px){
+  .livv-page>.mx-auto,.livv-page>main>.mx-auto{max-width:42rem!important}
+}
