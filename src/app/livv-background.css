@@ -1,61 +1,17 @@
-/* LIVV's shared atmosphere. Quiet, cinematic, and intentionally restrained. */
-:root,
-html[data-theme="dark"],
-html[data-theme="light"] {
-  --livv-bg-art-opacity: 0;
-}
+/* LIVV atmosphere: depth without the usual neon dashboard look. */
+:root,html[data-theme="dark"],html[data-theme="light"] { --livv-bg-art-opacity:0; }
 
-/* No decorative rings, dots, or secondary logo layers. */
-body::after {
-  content: none;
-}
+body::after { content:""; position:fixed; inset:0; pointer-events:none; z-index:0; opacity:.22; background-image:linear-gradient(rgba(255,255,255,.018) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.014) 1px,transparent 1px); background-size:64px 64px; mask-image:linear-gradient(to bottom,rgba(0,0,0,.7),transparent 72%); }
 
-.livv-ambient-backdrop {
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 0;
-  overflow: hidden;
-  background:
-    radial-gradient(ellipse at 50% -18%, rgb(var(--livv-accent) / .055), transparent 42%),
-    radial-gradient(ellipse at 12% 78%, rgb(77 255 0 / .012), transparent 30%),
-    radial-gradient(ellipse at 90% 82%, rgb(154 0 255 / .014), transparent 34%);
-}
+.livv-ambient-backdrop { position:fixed; inset:0; pointer-events:none; z-index:0; overflow:hidden; background:radial-gradient(ellipse at 50% -18%,rgb(var(--livv-accent)/.075),transparent 42%),radial-gradient(ellipse at 8% 68%,rgb(77 255 0/.014),transparent 30%),radial-gradient(ellipse at 92% 76%,rgb(154 0 255/.018),transparent 34%); }
 
-.livv-ambient-backdrop::before,
-.livv-ambient-backdrop::after {
-  content: "";
-  position: absolute;
-  width: min(42vw, 420px);
-  height: min(42vw, 420px);
-  min-width: 240px;
-  min-height: 240px;
-  border-radius: 50%;
-  filter: blur(120px);
-  opacity: .08;
-  animation: livv-drift 30s ease-in-out infinite alternate;
-}
+.livv-ambient-backdrop::before,.livv-ambient-backdrop::after { content:""; position:absolute; width:min(46vw,460px); height:min(46vw,460px); min-width:240px; min-height:240px; border-radius:50%; filter:blur(130px); opacity:.09; animation:livv-drift 34s ease-in-out infinite alternate; }
 
-.livv-ambient-backdrop::before {
-  left: -16vw;
-  top: 22%;
-  background: rgb(var(--livv-accent) / .12);
-}
+.livv-ambient-backdrop::before { left:-18vw; top:18%; background:rgb(var(--livv-accent)/.13); }
+.livv-ambient-backdrop::after { right:-20vw; bottom:6%; background:rgb(249 56 39/.07); animation-delay:-13s; animation-direction:alternate-reverse; }
 
-.livv-ambient-backdrop::after {
-  right: -18vw;
-  bottom: 10%;
-  background: rgb(249 56 39 / .06);
-  animation-delay: -11s;
-  animation-direction: alternate-reverse;
-}
+@keyframes livv-drift { 0% { transform:translate3d(0,0,0) scale(1); } 100% { transform:translate3d(4vw,-2vh,0) scale(1.055); } }
 
-@keyframes livv-drift {
-  0% { transform: translate3d(0, 0, 0) scale(1); }
-  100% { transform: translate3d(3vw, -2vh, 0) scale(1.04); }
-}
+html[data-theme="light"] body::after { opacity:.08; background-image:linear-gradient(rgba(17,17,20,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(17,17,20,.028) 1px,transparent 1px); }
 
-@media (prefers-reduced-motion: reduce) {
-  .livv-ambient-backdrop::before,
-  .livv-ambient-backdrop::after { animation: none; }
-}
+@media (prefers-reduced-motion:reduce) { .livv-ambient-backdrop::before,.livv-ambient-backdrop::after { animation:none; } }

@@ -27,58 +27,39 @@ html[data-theme="light"] :where(.bg-white\/\[0\.025\],.bg-white\/\[0\.04\],.bg-w
 input,textarea,select,button { font:inherit; }
 textarea { line-height:1.55; }
 
-/* Editorial surface language: fewer floating cards, sharper edges, stronger separation. */
-.livv-page [class*="rounded-[30px]"],
-.livv-page [class*="rounded-[32px]"],
-.livv-page [class*="rounded-[28px]"],
-.livv-page [class*="rounded-[26px]"],
-.livv-page [class*="rounded-[25px]"],
-.livv-page [class*="rounded-[24px]"],
-.livv-page [class*="rounded-[23px]"],
-.livv-page [class*="rounded-[22px]"] { border-radius:20px !important; }
+/* Editorial surface language across every primary destination. */
+.livv-page [class*="rounded-[30px]"],.livv-page [class*="rounded-[32px]"],.livv-page [class*="rounded-[28px]"],.livv-page [class*="rounded-[26px]"],.livv-page [class*="rounded-[25px]"],.livv-page [class*="rounded-[24px]"],.livv-page [class*="rounded-[23px]"],.livv-page [class*="rounded-[22px]"],.livv-social-page [class*="rounded-[30px]"],.livv-social-page [class*="rounded-[28px]"],.livv-social-page [class*="rounded-[26px]"],.livv-social-page [class*="rounded-[25px]"],.livv-social-page [class*="rounded-[24px]"] { border-radius:20px !important; }
+.livv-page [class*="rounded-[30px]"],.livv-page [class*="rounded-[32px]"],.livv-page [class*="rounded-[28px]"],.livv-page [class*="rounded-[26px]"],.livv-page [class*="rounded-[25px]"],.livv-page [class*="rounded-[24px]"],.livv-page [class*="rounded-[23px]"],.livv-page [class*="rounded-[22px]"],.livv-social-page [class*="rounded-[30px]"],.livv-social-page [class*="rounded-[28px]"],.livv-social-page [class*="rounded-[26px]"],.livv-social-page [class*="rounded-[25px]"],.livv-social-page [class*="rounded-[24px]"] { box-shadow:none !important; }
 
-.livv-page [class*="rounded-[30px]"],
-.livv-page [class*="rounded-[32px]"],
-.livv-page [class*="rounded-[28px]"],
-.livv-page [class*="rounded-[26px]"],
-.livv-page [class*="rounded-[25px]"],
-.livv-page [class*="rounded-[24px]"],
-.livv-page [class*="rounded-[23px]"],
-.livv-page [class*="rounded-[22px]"] { box-shadow:none !important; }
-
-/* Keep the visual hierarchy in the content instead of making every section look like a modal. */
 .livv-page > div > section { position:relative; }
 .livv-page > div > section + section { margin-top:2.25rem; }
 .livv-page > div > section[class*="bg-white"] { background:linear-gradient(135deg,rgba(255,255,255,.035),rgba(255,255,255,.012)) !important; }
+.livv-social-page > section + section { margin-top:1.5rem; }
+.livv-social-page > section[class*="bg-white"],.livv-social-page article[class*="bg-white"] { background:linear-gradient(135deg,rgba(255,255,255,.035),rgba(255,255,255,.012)) !important; }
 
-/* Make common secondary controls feel designed rather than default Tailwind pills. */
-.livv-page button[class*="rounded-2xl"],
-.livv-page button[class*="rounded-[24px]"],
-.livv-page button[class*="rounded-[23px]"],
-.livv-page button[class*="rounded-[22px]"] { border-color:rgba(255,255,255,.14); }
+.livv-page button[class*="rounded-2xl"],.livv-page button[class*="rounded-[24px]"],.livv-page button[class*="rounded-[23px]"],.livv-page button[class*="rounded-[22px]"],.livv-social-page button[class*="rounded-[24px]"] { border-color:rgba(255,255,255,.14); }
 
-/* Page rhythm */
 .livv-page > div { max-width:35rem; }
 .livv-page-hero { padding-top:.65rem !important; padding-bottom:1.15rem !important; }
 .livv-page-hero h1 { font-size:clamp(2.35rem,10vw,3.65rem) !important; line-height:.88 !important; }
 .livv-page-hero p { letter-spacing:.22em; }
 
-/* Mobile usability: prevent iOS zoom on focused fields and keep controls clear of the home indicator. */
-@media (max-width:767px) { input,textarea,select { font-size:16px !important; } }
+/* Give primary buttons a single visual language. */
+.livv-page button[class*="bg-white"],.livv-social-page button[class*="bg-white"] { border:1px solid rgba(255,255,255,.75); }
+.livv-page button[class*="bg-white"]:not([disabled]):hover,.livv-social-page button[class*="bg-white"]:not([disabled]):hover { transform:translateY(-1px); box-shadow:0 10px 28px rgba(255,255,255,.08); }
 
-/* Motion is optional. */
+/* Mobile usability. */
+@media (max-width:767px) { input,textarea,select { font-size:16px !important; } }
 @media (prefers-reduced-motion:reduce) { *,*::before,*::after { scroll-behavior:auto !important; animation-duration:.01ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important; } }
 @media (max-width:380px) { .livv-page { padding-inline:.1rem; } }
 
 .livv-skeleton { min-height:1rem; border-radius:999px; background:rgb(255 255 255 / .07); animation:livv-skeleton 1.4s ease-in-out infinite; }
 @keyframes livv-skeleton { 50% { opacity:.45; } }
-
 ::selection { background:rgb(15 127 255 / .22); }
 button,a { -webkit-tap-highlight-color:transparent; }
 .livv-page,.livv-social-page { overflow-x:hidden; }
 .livv-page :where(p,h1,h2,h3,span,a,button) { overflow-wrap:anywhere; }
 
-/* Light mode keeps the same structure while making all neutral text dark. */
-html[data-theme="light"] .livv-page [class*="bg-white"] { background-color:rgb(17 17 20 / .035) !important; }
-html[data-theme="light"] .livv-page [class*="border-white"] { border-color:rgb(17 17 20 / .2) !important; }
-html[data-theme="light"] .livv-page [class*="shadow-"] { box-shadow:0 12px 30px rgba(17,17,20,.06) !important; }
+html[data-theme="light"] .livv-page [class*="bg-white"],html[data-theme="light"] .livv-social-page [class*="bg-white"] { background-color:rgb(17 17 20 / .035) !important; }
+html[data-theme="light"] .livv-page [class*="border-white"],html[data-theme="light"] .livv-social-page [class*="border-white"] { border-color:rgb(17 17 20 / .2) !important; }
+html[data-theme="light"] .livv-page [class*="shadow-"],html[data-theme="light"] .livv-social-page [class*="shadow-"] { box-shadow:0 12px 30px rgba(17,17,20,.06) !important; }
