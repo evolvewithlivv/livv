@@ -1,6 +1,8 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
+import { ArrowLeft, Download, Share2 } from "lucide-react";
+import Link from "next/link";
 import { Container } from "@/components/ui/container";
 import { Avatar } from "@/components/identity/avatar";
 import { loadIdentity, DEFAULT_IDENTITY, type Identity } from "@/lib/identity";
@@ -18,37 +20,55 @@ export default function SharePage() {
   const [mode, setMode] = useState<Mode>("profile");
   const [busy, setBusy] = useState(false);
   const [message, setMessage] = useState("");
-
   useEffect(() => { setMe(loadIdentity()); setRec(loadRecord()); }, []);
   const tier = me ? getTier(me.tier) : getTier("spark");
-  const color = me ? tierColor(me.tier).hex : "#8B93A7";
+  const accent = me ? tierColor(me.tier).hex : "#1769ff";
   const badges = rec ? liveAchievements(rec).filter((a) => a.unlocked).map((a) => ({ icon: a.icon, title: a.title })) : [];
   const workout = rec?.lastWorkout;
-  const previewStats = useMemo(() => ({ level: rec?.level || 1, streak: rec?.streak || 0 }), [rec]);
-
+  const stats = useMemo(() => ({ level: rec?.level || 1, streak: rec?.streak || 0, sessions: rec?.workoutsCompleted || 0 }), [rec]);
   const share = async () => {
     if (!me || !rec || busy) return;
     setBusy(true); setMessage("");
     try {
       const blob = mode === "profile"
-        ? await renderProfileShareCard({ displayName: me.displayName || "LIVV member", username: me.username || "livv", level: rec.level, evolutionName: evolutionTitle(rec.level).name, streak: rec.streak, tierLabel: tier.name, tierColor: color, embers: me.embers, badges, workoutsCompleted: rec.workoutsCompleted })
+        ? await renderProfileShareCard({ displayName: me.displayName || "LIVV member", username: me.username || "livv", level: rec.level, evolutionName: evolutionTitle(rec.level).name, streak: rec.streak, tierLabel: tier.name, tierColor: accent, embers: me.embers, badges, workoutsCompleted: rec.workoutsCompleted })
         : await renderWorkoutShareCard({ displayName: me.displayName || "LIVV member", workoutName: workout?.name || "LIVV workout", focus: workout?.focus || "Training", location: "LIVV", duration: workout?.duration || "Session", exerciseCount: workout?.exercises || 0, level: rec.level, streak: rec.streak });
-      const result = await shareOrDownloadBlob(blob, mode === "profile" ? "livv-profile.png" : "livv-workout.png", mode === "profile" ? "My LIVV profile" : "My LIVV workout");
-      setMessage(result === "shared" ? "Ready to post." : "Card saved to your device.");
+      const result = await shareOrDownloadBlob(blob, mode === "profile" ? "livv-profile.png" : "livv-workout.png", mode === "profile" ? "My LIVV evolution" : "My LIVV workout");
+      setMessage(result === "shared" ? "Ready to post." : "Saved to your device.");
     } catch { setMessage("Couldn’t create the card. Try again."); }
     finally { setBusy(false); }
   };
+  const meta = mode === "profile" ? `${stats.sessions} sessions · ${stats.streak} day streak` : `${workout?.focus || "Training"} · ${workout?.duration || "Session"}`;
 
-  return <main className="livv-page min-h-full pb-10 pt-5"><Container>
-    <div className="flex items-center gap-4"><Avatar identity={me ?? DEFAULT_IDENTITY} size={56} /><div><p className="text-[10px] uppercase tracking-[0.25em] text-white/30">Share your evolution</p><h1 className="mt-1 text-3xl font-semibold tracking-tight">Make it postable.</h1></div></div>
-    <div className="mt-7 grid grid-cols-2 gap-2.5">{(["profile", "workout"] as Mode[]).map((m) => <button key={m} onClick={() => setMode(m)} className={`rounded-2xl border px-4 py-3 text-sm font-semibold ${mode === m ? "border-white/30 bg-white/10" : "border-white/10 bg-white/[0.035] text-white/45"}`}>{m === "profile" ? "Profile card" : "Workout card"}</button>)}</div>
+  return <main className="livv-page min-h-full pb-28 pt-3"><Container>
+    <div className="flex items-center justify-between gap-3 py-2"><Link href="/home/profile" aria-label="Back to profile" className="share-back"><ArrowLeft size={18} /></Link><div className="text-center"><p className="share-eyebrow">LIVV SHARE</p><h1 className="share-title">Your proof, made postable.</h1></div><span className="w-10" /></div>
+    <div className="mt-6 grid grid-cols-2 rounded-[14px] border border-livv-border p-1 bg-livv-surface">{(["profile", "workout"] as Mode[]).map((m) => <button key={m} onClick={() => setMode(m)} className={`share-mode ${mode === m ? "is-selected" : ""}`}>{m === "profile" ? "Evolution" : "Workout"}</button>)}</div>
 
-    <div className="mt-5 overflow-hidden rounded-[30px] border border-white/10 bg-white/[0.045] p-5 shadow-2xl">
-      <div className="aspect-[4/5] overflow-hidden rounded-[24px] border border-white/10 bg-[#080a0f] p-5">
-        {mode === "profile" ? <><p className="text-xs font-semibold text-white/50">LIVV</p><p className="mt-12 text-4xl font-bold">{me?.displayName || "LIVV member"}</p><p className="mt-1 text-sm text-white/35">@{me?.username || "livv"}</p><div className="mt-8 grid grid-cols-3 gap-2">{[["LEVEL", previewStats.level], ["STREAK", `${previewStats.streak}d`], ["SESSIONS", rec?.workoutsCompleted || 0]].map(([label, value]) => <div key={String(label)} className="rounded-2xl border border-white/10 bg-white/[0.04] p-3"><p className="text-[8px] text-white/30">{label}</p><p className="mt-2 text-xl font-bold">{value}</p></div>)}</div><p className="mt-8 text-[9px] uppercase tracking-[0.2em]" style={{ color }}> {tier.name} · {evolutionTitle(previewStats.level).name}</p><p className="mt-8 text-xs text-white/25">{badges.length ? `${badges.length} badge${badges.length === 1 ? "" : "s"} unlocked` : "Your next badge starts with your next action."}</p></> : <><p className="text-xs font-semibold text-white/50">LIVV · WORKOUT</p><p className="mt-12 text-4xl font-bold">{workout?.name || "Your next workout"}</p><div className="mt-6 flex flex-wrap gap-2">{[workout?.focus || "Training", workout?.duration || "Session", "Logged"].map((x) => <span key={x} className="rounded-full border border-white/10 bg-white/[0.05] px-3 py-2 text-[9px] uppercase tracking-[0.15em] text-white/45">{x}</span>)}</div><div className="mt-10 grid grid-cols-3 gap-2">{[["MOVES", workout?.exercises || 0], ["LEVEL", previewStats.level], ["STREAK", `${previewStats.streak}d`]].map(([label, value]) => <div key={String(label)} className="rounded-2xl border border-white/10 bg-white/[0.04] p-3"><p className="text-[8px] text-white/30">{label}</p><p className="mt-2 text-xl font-bold">{value}</p></div>)}</div><p className="mt-8 text-xs text-white/25">Turn the session into proof.</p></>}
+    <section className="share-stage mt-5" aria-label="Share card preview">
+      <div className="share-card" style={{ "--share-accent": accent } as React.CSSProperties}>
+        <div className="share-card-grid" />
+        <div className="share-card-orb" />
+        <div className="relative z-10 flex h-full flex-col p-6 sm:p-8">
+          <div className="flex items-center justify-between"><span className="share-brand">LIVV</span><span className="share-number">{mode === "profile" ? "01" : "02"} / 02</span></div>
+          {mode === "profile" ? <>
+            <div className="mt-auto"><p className="share-label">EVOLUTION</p><div className="share-level"><span>{stats.level}</span></div><p className="share-evolution">{evolutionTitle(stats.level).name}</p><p className="share-name">{me?.displayName || "LIVV member"}</p><p className="share-handle">@{me?.username || "livv"}</p></div>
+            <div className="share-rule" />
+            <div className="grid grid-cols-3 gap-4"><ShareMetric label="STREAK" value={`${stats.streak}d`} /><ShareMetric label="SESSIONS" value={String(stats.sessions)} /><ShareMetric label="EMBERS" value={String(me?.embers || 0)} /></div>
+            <div className="mt-6 flex items-center justify-between"><span className="share-tier" style={{ color: accent }}>{tier.name.toUpperCase()}</span><span className="share-footer">{badges.length ? `${badges.length} badges earned` : "Keep evolving"}</span></div>
+          </> : <>
+            <div className="mt-auto"><p className="share-label">SESSION COMPLETE</p><p className="share-workout">{workout?.name || "LIVV workout"}</p><p className="share-meta">{meta}</p></div>
+            <div className="share-rule" />
+            <div className="grid grid-cols-3 gap-4"><ShareMetric label="MOVES" value={String(workout?.exercises || 0)} /><ShareMetric label="LEVEL" value={String(stats.level)} /><ShareMetric label="STREAK" value={`${stats.streak}d`} /></div>
+            <div className="mt-6 flex items-center justify-between"><span className="share-tier" style={{ color: accent }}>LIVV TRAIN</span><span className="share-footer">{me?.displayName || "LIVV member"}</span></div>
+          </>}
+        </div>
       </div>
-    </div>
-    <button onClick={share} disabled={busy} className="mt-5 w-full rounded-full bg-white py-4 text-sm font-semibold text-black disabled:opacity-40">{busy ? "Creating card…" : mode === "profile" ? "Share profile card" : "Share workout card"}</button>
-    {message && <p className="mt-3 text-center text-xs text-white/45">{message}</p>}
+    </section>
+
+    <div className="mt-5 flex gap-2"><button onClick={share} disabled={busy} className="share-primary flex-1">{busy ? "Creating…" : <><Share2 size={17} /> Share card</>}</button><button onClick={share} disabled={busy} aria-label="Save card" className="share-secondary"><Download size={17} /></button></div>
+    {message && <p className="mt-3 text-center text-xs text-livv-muted">{message}</p>}
+    <p className="mt-5 text-center text-[10px] leading-relaxed text-livv-muted">1080 × 1350 · optimized for social sharing</p>
   </Container></main>;
 }
+
+function ShareMetric({ label, value }: { label: string; value: string }) { return <div><p className="share-metric-label">{label}</p><p className="share-metric-value">{value}</p></div>; }
