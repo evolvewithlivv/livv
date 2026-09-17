@@ -5,27 +5,18 @@ type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   size?: "sm" | "md" | "lg";
 };
 
-export function Button({
-  className,
-  variant = "primary",
-  size = "md",
-  ...props
-}: ButtonProps) {
+export function Button({ className, variant = "primary", size = "md", ...props }: ButtonProps) {
   return (
     <button
       className={cn(
-        "inline-flex items-center justify-center rounded-full font-medium tracking-wide transition-all duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-livv-accent/60 disabled:pointer-events-none disabled:opacity-50 active:scale-[0.98]",
-        variant === "primary" &&
-          "bg-white text-livv-black hover:bg-neutral-100",
-        variant === "accent" &&
-          "bg-livv-accent text-white hover:opacity-90 shadow-lg shadow-livv-accent/20",
-        variant === "secondary" &&
-          "bg-livv-surface text-white border border-livv-border hover:bg-livv-border",
-        variant === "ghost" &&
-          "bg-transparent text-white/80 hover:bg-white/5 hover:text-white",
-        size === "sm" && "h-9 px-4 text-sm",
+        "inline-flex items-center justify-center rounded-xl font-medium tracking-[-.01em] transition-[background-color,border-color,color,opacity,transform] duration-150 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--livv-pro-accent)]/35 disabled:pointer-events-none disabled:opacity-40 active:scale-[.985]",
+        variant === "primary" && "bg-[var(--livv-pro-ink)] text-[var(--livv-pro-bg)] hover:opacity-90",
+        variant === "accent" && "bg-[var(--livv-pro-accent)] text-white hover:opacity-90",
+        variant === "secondary" && "border border-[var(--livv-pro-line)] bg-[var(--livv-pro-surface)] text-[var(--livv-pro-ink)] hover:bg-[var(--livv-pro-surface-2)]",
+        variant === "ghost" && "bg-transparent text-[var(--livv-pro-muted)] hover:bg-[var(--livv-pro-surface-2)] hover:text-[var(--livv-pro-ink)]",
+        size === "sm" && "h-9 px-3.5 text-xs",
         size === "md" && "h-11 px-5 text-sm",
-        size === "lg" && "h-12 px-8 text-base",
+        size === "lg" && "h-12 px-7 text-base",
         className
       )}
       {...props}
