@@ -1,7 +1,5 @@
 "use client";
 
-import type { CSSProperties } from "react";
-
 type OrbitItem = {
   id: string;
   label: string;
@@ -42,7 +40,7 @@ export function CapabilityOrbit({ items, onSelect }: CapabilityOrbitProps) {
       </div>
 
       <div className="relative mx-auto mt-4 h-[310px] w-full max-w-[340px]">
-        <div className="absolute left-1/2 top-1/2 h-[238px] w-[238px] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-55" style={{ background: "conic-gradient(from -18deg, #F93827, #F61981, #9A00FF, #4DFF00, #FCF927, #FF9D23, #0F7FFF, #F93827)" }} />
+        <div className="motion-safe:animate-[livv-orbit-spin_32s_linear_infinite] absolute left-1/2 top-1/2 h-[238px] w-[238px] -translate-x-1/2 -translate-y-1/2 rounded-full opacity-55" style={{ background: "conic-gradient(from -18deg, #F93827, #F61981, #9A00FF, #4DFF00, #FCF927, #FF9D23, #0F7FFF, #F93827)" }} />
         <div className="absolute left-1/2 top-1/2 h-[232px] w-[232px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[rgb(var(--livv-bg))]" />
         <div className="absolute left-1/2 top-1/2 h-[190px] w-[190px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/10" />
         <div className="absolute left-1/2 top-1/2 h-[148px] w-[148px] -translate-x-1/2 -translate-y-1/2 rounded-full border border-white/5" />
@@ -71,7 +69,7 @@ export function CapabilityOrbit({ items, onSelect }: CapabilityOrbitProps) {
 
         <div className="pointer-events-none absolute inset-0 opacity-30" aria-hidden="true">
           {items.slice(0, 6).map((item, index) => (
-            <span key={`${item.id}-line`} className={`absolute h-px origin-left bg-gradient-to-r from-transparent to-[var(--orbit-color)] ${index % 2 === 0 ? "left-1/2 top-1/2 w-[112px]" : "left-1/2 top-1/2 w-[96px]"}`} style={{ transform: `rotate(${index * 60 - 90}deg)`, "--orbit-color": item.color } as CSSProperties} />
+            <span key={`${item.id}-line`} className="absolute left-1/2 top-1/2 h-px origin-left" style={{ width: index % 2 === 0 ? 112 : 96, transform: `rotate(${index * 60 - 90}deg)`, background: `linear-gradient(90deg, transparent, ${item.color})` }} />
           ))}
         </div>
       </div>
@@ -89,9 +87,12 @@ export function CapabilityOrbit({ items, onSelect }: CapabilityOrbitProps) {
       </div>
 
       <style jsx>{`
-        @keyframes livv-orbit-breathe {
-          0%, 100% { transform: translate(-50%, -50%) rotate(0deg); }
-          50% { transform: translate(-50%, -50%) rotate(3deg); }
+        @keyframes livv-orbit-spin {
+          from { transform: translate(-50%, -50%) rotate(0deg); }
+          to { transform: translate(-50%, -50%) rotate(360deg); }
+        }
+        @media (prefers-reduced-motion: reduce) {
+          :global(.motion-safe\\:animate-\\[livv-orbit-spin_32s_linear_infinite\\]) { animation: none; }
         }
       `}</style>
     </section>
