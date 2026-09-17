@@ -77,8 +77,9 @@ export async function renderLIVVShareCard(t:ShareTemplate,d:ShareCardData):Promi
   const canvas=document.createElement("canvas"); canvas.width=W; canvas.height=H;
   const c=canvas.getContext("2d"); if(!c) throw Error("canvas");
   const f=d.font||"sans", col=d.textColor||"#fff";
-  const isLight=col.toLowerCase()==="#ffffff"||col.toLowerCase()==="#fff";
-  const muted=isLight?"rgba(255,255,255,.68)":"rgba(0,0,0,.62)";
+  const isWhiteText=col.toLowerCase()==="#ffffff"||col.toLowerCase()==="#fff";
+  // Every piece of card copy follows the selected text color. The logo is independent.
+  const muted=isWhiteText?"rgba(255,255,255,.68)":"rgba(0,0,0,.62)";
   await background(c,d.backgroundSrc||d.customPhoto||null,d.tierColor||"#1769ff");
   await logo(c,d.logo||"auto",d.backgroundSrc||d.customPhoto||null);
 
