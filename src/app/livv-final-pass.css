@@ -1,16 +1,5 @@
 /* LIVV product UI system. Surfaces are structural, not decorative. */
-:root {
-  --livv-blue:#0F7FFF;
-  --livv-yellow:#FCF927;
-  --livv-red:#F93827;
-  --livv-pink:#F61981;
-  --livv-purple:#9A00FF;
-  --livv-green:#4DFF00;
-  --livv-orange:#FF9D23;
-  --livv-radius:18px;
-  --livv-radius-sm:14px;
-}
-
+:root { --livv-blue:#0F7FFF; --livv-yellow:#FCF927; --livv-red:#F93827; --livv-pink:#F61981; --livv-purple:#9A00FF; --livv-green:#4DFF00; --livv-orange:#FF9D23; --livv-radius:18px; --livv-radius-sm:14px; }
 :where(button,a,input,textarea,select):focus-visible { outline:2px solid #0F7FFF; outline-offset:3px; }
 :where(button,[role="button"]) { min-height:44px; }
 :where(a) { min-height:44px; }
@@ -18,8 +7,6 @@
 input,textarea,select,button { font:inherit; }
 textarea { line-height:1.55; }
 button,a { -webkit-tap-highlight-color:transparent; }
-
-/* Accent enforcement. LIVV uses exactly seven signal colors. */
 [class*="text-blue-"],[class*="text-sky-"],[class*="text-cyan-"] { color:#0F7FFF !important; }
 [class*="text-yellow-"],[class*="text-amber-"] { color:#FCF927 !important; }
 [class*="text-red-"] { color:#F93827 !important; }
@@ -27,8 +14,6 @@ button,a { -webkit-tap-highlight-color:transparent; }
 [class*="text-purple-"],[class*="text-violet-"],[class*="text-fuchsia-"] { color:#9A00FF !important; }
 [class*="text-green-"],[class*="text-emerald-"],[class*="text-teal-"],[class*="text-lime-"] { color:#4DFF00 !important; }
 [style*="#B28CFF"],[style*="#b28cff"] { color:#F61981 !important; border-color:rgb(246 25 129 / .35) !important; }
-
-/* Product shell */
 .livv-page,.livv-social-page { overflow-x:hidden; }
 .livv-page { padding-bottom:calc(7rem + env(safe-area-inset-bottom)); }
 .livv-social-page { padding-bottom:calc(7rem + env(safe-area-inset-bottom)); }
@@ -36,96 +21,80 @@ button,a { -webkit-tap-highlight-color:transparent; }
 .livv-page > div { max-width:38rem; }
 .livv-social-page { max-width:38rem; margin-inline:auto; }
 .livv-page img,.livv-page video,.livv-social-page img,.livv-social-page video { max-width:100%; }
-
-/* Replace the repeated floating-card look with quiet, layered surfaces. */
 .livv-page [class*="rounded-[32px]"],.livv-page [class*="rounded-[30px]"],.livv-page [class*="rounded-[28px]"],.livv-page [class*="rounded-[26px]"],.livv-page [class*="rounded-[25px]"],.livv-page [class*="rounded-[24px]"],.livv-page [class*="rounded-[23px]"],.livv-page [class*="rounded-[22px]"],.livv-social-page [class*="rounded-[32px]"],.livv-social-page [class*="rounded-[30px]"],.livv-social-page [class*="rounded-[28px]"],.livv-social-page [class*="rounded-[26px]"],.livv-social-page [class*="rounded-[25px]"],.livv-social-page [class*="rounded-[24px]"] { border-radius:var(--livv-radius) !important; }
-
-.livv-page > div > section,
-.livv-social-page > section {
-  position:relative;
-}
-
-/* Outer sections read like app modules. Nested controls retain their own surfaces. */
-.livv-page > div > section[class*="border-white"],
-.livv-social-page > section[class*="border-white"] {
-  border-color:rgb(255 255 255 / .085) !important;
-  background:linear-gradient(145deg,rgb(255 255 255 / .042),rgb(255 255 255 / .012)) !important;
-  box-shadow:0 18px 50px rgb(0 0 0 / .18), inset 0 1px 0 rgb(255 255 255 / .035) !important;
-}
-
+.livv-page > div > section,.livv-social-page > section { position:relative; }
+.livv-page > div > section[class*="border-white"],.livv-social-page > section[class*="border-white"] { border-color:rgb(255 255 255 / .085) !important; background:linear-gradient(145deg,rgb(255 255 255 / .042),rgb(255 255 255 / .012)) !important; box-shadow:0 18px 50px rgb(0 0 0 / .18),inset 0 1px 0 rgb(255 255 255 / .035) !important; }
 .livv-page > div > section + section { margin-top:2rem; }
 .livv-social-page > section + section { margin-top:1rem; }
-
-/* Kill the "every element is a card" effect for simple list rows. */
-.livv-page [class*="bg-white/[0.025]"],.livv-page [class*="bg-white/[.025]"],.livv-social-page [class*="bg-white/[0.025]"],.livv-social-page [class*="bg-white/[.025]"] {
-  background:rgb(255 255 255 / .025) !important;
-}
-
-/* Buttons feel like controls instead of miniature cards. */
-.livv-page button[class*="rounded-[24px]"],.livv-page button[class*="rounded-[23px]"],.livv-page button[class*="rounded-[22px]"],.livv-page button[class*="rounded-2xl"],.livv-social-page button[class*="rounded-[24px]"] {
-  border-color:rgb(255 255 255 / .12);
-}
+.livv-page [class*="bg-white/[0.025]"],.livv-page [class*="bg-white/[.025]"],.livv-social-page [class*="bg-white/[0.025]"],.livv-social-page [class*="bg-white/[.025]"] { background:rgb(255 255 255 / .025) !important; }
+.livv-page button[class*="rounded-[24px]"],.livv-page button[class*="rounded-[23px]"],.livv-page button[class*="rounded-[22px]"],.livv-page button[class*="rounded-2xl"],.livv-social-page button[class*="rounded-[24px]"] { border-color:rgb(255 255 255 / .12); }
 .livv-page button:not([disabled]):hover,.livv-social-page button:not([disabled]):hover { filter:brightness(1.06); }
 .livv-page button:active,.livv-social-page button:active { transform:scale(.985); }
-
-/* Primary action language */
-.livv-page button[class*="bg-white"],.livv-social-page button[class*="bg-white"] {
-  border:1px solid rgb(255 255 255 / .72);
-  box-shadow:0 8px 24px rgb(0 0 0 / .22);
-}
+.livv-page button[class*="bg-white"],.livv-social-page button[class*="bg-white"] { border:1px solid rgb(255 255 255 / .72); box-shadow:0 8px 24px rgb(0 0 0 / .22); }
 .livv-page button[class*="bg-white"]:not([disabled]):hover,.livv-social-page button[class*="bg-white"]:not([disabled]):hover { transform:translateY(-1px); box-shadow:0 12px 28px rgb(0 0 0 / .28); }
-
-/* Typography hierarchy */
 .livv-page h1,.livv-page h2,.livv-page h3,.livv-social-page h1,.livv-social-page h2,.livv-social-page h3 { text-wrap:balance; }
 .livv-page p,.livv-social-page p { text-wrap:pretty; }
-
-.livv-page-hero {
-  padding-top:.85rem !important;
-  padding-bottom:1.25rem !important;
-}
-.livv-page-hero h1 {
-  font-size:clamp(2.15rem,8vw,3.25rem) !important;
-  line-height:.96 !important;
-  letter-spacing:-.06em !important;
-}
+.livv-page-hero { padding-top:.85rem !important; padding-bottom:1.25rem !important; }
+.livv-page-hero h1 { font-size:clamp(2.15rem,8vw,3.25rem) !important; line-height:.96 !important; letter-spacing:-.06em !important; }
 .livv-page-hero p { letter-spacing:.18em; }
-
-/* Make data strips look native to a product. */
-.livv-metric-strip {
-  display:grid;
-  overflow:hidden;
-  border:1px solid rgb(255 255 255 / .09);
-  border-radius:var(--livv-radius);
-  background:rgb(255 255 255 / .025);
-}
+.livv-metric-strip { display:grid; overflow:hidden; border:1px solid rgb(255 255 255 / .09); border-radius:var(--livv-radius); background:rgb(255 255 255 / .025); }
 .livv-metric-strip > * { min-width:0; padding:1rem; }
 .livv-metric-strip > * + * { border-left:1px solid rgb(255 255 255 / .08); }
-
-/* Social feed */
-.livv-social-page article {
-  border-color:rgb(255 255 255 / .085) !important;
-  background:rgb(255 255 255 / .025) !important;
-  box-shadow:0 14px 36px rgb(0 0 0 / .14) !important;
-}
+.livv-social-page article { border-color:rgb(255 255 255 / .085) !important; background:rgb(255 255 255 / .025) !important; box-shadow:0 14px 36px rgb(0 0 0 / .14) !important; }
 .livv-social-page article + article { margin-top:.9rem; }
 .livv-social-page article > div[class*="border-t"] { border-color:rgb(255 255 255 / .075) !important; }
 .livv-social-page article p { letter-spacing:-.018em; }
+.livv-social-page article img,.livv-social-page article video { display:block; }
+.livv-page input,.livv-page textarea,.livv-page select,.livv-social-page input,.livv-social-page textarea,.livv-social-page select { border-color:rgb(255 255 255 / .13) !important; background:rgb(0 0 0 / .22) !important; }
+.livv-page input:focus,.livv-page textarea:focus,.livv-page select:focus,.livv-social-page input:focus,.livv-social-page textarea:focus,.livv-social-page select:focus { border-color:rgb(15 127 255 / .58) !important; box-shadow:0 0 0 3px rgb(15 127 255 / .08); }
 
-/* Media gets the visual weight social products need. */
-.livv-social-page article img { display:block; }
-.livv-social-page article video { display:block; }
+/* Home: make the command center read as one continuous composition. */
+html[data-livv-route="home"] .livv-page > div > section { border:0 !important; background:transparent !important; box-shadow:none !important; }
+html[data-livv-route="home"] .livv-page > div > section:nth-of-type(1) { margin-top:1.5rem; }
+html[data-livv-route="home"] .livv-page > div > section:nth-of-type(2) { border-top:1px solid rgb(255 255 255 / .08) !important; border-bottom:1px solid rgb(255 255 255 / .08) !important; padding-top:1.25rem; padding-bottom:1.25rem; }
+html[data-livv-route="home"] .livv-page > div > section:nth-of-type(3) { border:1px solid rgb(255 255 255 / .09) !important; border-radius:22px !important; background:linear-gradient(145deg,rgb(255 255 255 / .05),rgb(255 255 255 / .018)) !important; padding:1.25rem !important; box-shadow:0 20px 55px rgb(0 0 0 / .2) !important; }
 
-/* Form controls */
-.livv-page input,.livv-page textarea,.livv-page select,.livv-social-page input,.livv-social-page textarea,.livv-social-page select {
-  border-color:rgb(255 255 255 / .13) !important;
-  background:rgb(0 0 0 / .22) !important;
-}
-.livv-page input:focus,.livv-page textarea:focus,.livv-page select:focus,.livv-social-page input:focus,.livv-social-page textarea:focus,.livv-social-page select:focus {
-  border-color:rgb(15 127 255 / .58) !important;
-  box-shadow:0 0 0 3px rgb(15 127 255 / .08);
-}
+/* Daily: tasks are a workflow, not a pile of cards. */
+html[data-livv-route="home-daily"] .livv-page > div > section:nth-of-type(2) { border:0 !important; background:transparent !important; box-shadow:none !important; padding-inline:0 !important; }
+html[data-livv-route="home-daily"] .livv-page > div > section:nth-of-type(2) button { border-left:0 !important; border-right:0 !important; border-radius:0 !important; background:transparent !important; box-shadow:none !important; }
+html[data-livv-route="home-daily"] .livv-page > div > section:nth-of-type(2) button + button { border-top:1px solid rgb(255 255 255 / .08); }
+html[data-livv-route="home-daily"] .livv-page > div > section:nth-of-type(3) { border-color:rgb(15 127 255 / .18) !important; }
 
-/* Light mode: absolutely no white text. */
+/* Train: emphasize the workout builder like a real training product. */
+html[data-livv-route="home-train"] .livv-page > div > section { background:transparent !important; box-shadow:none !important; }
+html[data-livv-route="home-train"] .livv-page > div > section:nth-of-type(1) { border:1px solid rgb(249 56 39 / .2) !important; background:linear-gradient(145deg,rgb(249 56 39 / .065),rgb(255 255 255 / .018)) !important; }
+html[data-livv-route="home-train"] .livv-page > div > section:nth-of-type(2) button { min-height:96px; }
+html[data-livv-route="home-train"] .livv-page button[style*="background: white"] { box-shadow:0 12px 30px rgb(0 0 0 / .32); }
+
+/* Mind: content discovery gets a magazine-like reading hierarchy. */
+html[data-livv-route="home-mind"] .livv-page > div > section { border:0 !important; background:transparent !important; box-shadow:none !important; }
+html[data-livv-route="home-mind"] .livv-page > div > section:nth-of-type(1) { border:1px solid rgb(246 25 129 / .16) !important; border-radius:22px !important; background:linear-gradient(145deg,rgb(246 25 129 / .045),rgb(255 255 255 / .015)) !important; box-shadow:0 20px 55px rgb(0 0 0 / .18) !important; }
+html[data-livv-route="home-mind"] .livv-page > div > section:nth-of-type(n+2) { padding-inline:0 !important; }
+
+/* Shop: product commerce needs stronger product scale and less utility-dashboard density. */
+html[data-livv-route="home-shop"] .livv-page > div > section { border:0 !important; background:transparent !important; box-shadow:none !important; }
+html[data-livv-route="home-shop"] .livv-page > div > section:first-of-type { border:1px solid rgb(255 157 35 / .18) !important; border-radius:22px !important; background:linear-gradient(145deg,rgb(255 157 35 / .05),rgb(255 255 255 / .015)) !important; box-shadow:0 20px 55px rgb(0 0 0 / .2) !important; }
+html[data-livv-route="home-shop"] .livv-pack-frame { border-radius:18px; }
+
+/* Social: give the feed breathing room and real social-product density. */
+html[data-livv-route="home-connect"] .livv-social-page { padding-inline:0; }
+html[data-livv-route="home-connect"] .livv-social-page article { border-radius:20px !important; }
+html[data-livv-route="home-connect"] .livv-social-page article p[class*="text-[15px]"] { font-size:16px !important; line-height:1.55 !important; }
+
+/* Profile: identity first, account data second. */
+html[data-livv-route="home-profile"] .livv-page > div > section:first-of-type { border-radius:24px !important; background:radial-gradient(circle at 50% 0%,rgb(255 157 35 / .08),transparent 45%),linear-gradient(145deg,rgb(255 255 255 / .05),rgb(255 255 255 / .018)) !important; }
+html[data-livv-route="home-profile"] .livv-page > div > section:nth-of-type(2) { border-left:0 !important; border-right:0 !important; border-radius:0 !important; background:transparent !important; box-shadow:none !important; }
+
+/* Progress: data visualization should dominate over prose. */
+html[data-livv-route="home-progress"] .livv-page > div > section:first-of-type { border:1px solid rgb(15 127 255 / .2) !important; background:linear-gradient(145deg,rgb(15 127 255 / .06),rgb(255 255 255 / .015)) !important; }
+html[data-livv-route="home-progress"] .livv-page > div > section:nth-of-type(n+3) { background:transparent !important; box-shadow:none !important; border-left:0 !important; border-right:0 !important; }
+
+/* Settings and utility screens use compact rows rather than oversized panels. */
+html[data-livv-route="home-settings"] .livv-page > div > section { border-radius:16px !important; }
+html[data-livv-route="home-settings"] .livv-page > div > section > div + div { border-color:rgb(255 255 255 / .07); }
+html[data-livv-route="home-messages"] .livv-page > div > * { border-radius:16px !important; }
+
+/* Light mode: zero white text, ever. */
 html[data-theme="light"] :where(.text-white,[class*="text-white/"]) { color:#111114 !important; }
 html[data-theme="light"] :where(.text-white\/45,.text-white\/50,.text-white\/55,.text-white\/60,.text-white\/65,.text-white\/70,.text-white\/75,.text-white\/80,.text-white\/85,.text-white\/90,.text-white\/95) { color:#2D3038 !important; }
 html[data-theme="light"] :where(.bg-black\/10,.bg-black\/15,.bg-black\/20,.bg-black\/70) { background-color:rgb(17 17 20 / .045) !important; }
@@ -136,17 +105,11 @@ html[data-theme="light"] .livv-page > div > section[class*="border-white"],html[
 html[data-theme="light"] .livv-social-page article { border-color:rgb(17 17 20 / .15) !important; background:rgb(255 255 255 / .88) !important; box-shadow:0 10px 26px rgb(17 17 20 / .06) !important; }
 html[data-theme="light"] .livv-page input,html[data-theme="light"] .livv-page textarea,html[data-theme="light"] .livv-page select,html[data-theme="light"] .livv-social-page input,html[data-theme="light"] .livv-social-page textarea,html[data-theme="light"] .livv-social-page select { background:rgb(255 255 255 / .72) !important; border-color:rgb(17 17 20 / .2) !important; }
 html[data-theme="light"] .livv-page [class*="border-white"],html[data-theme="light"] .livv-social-page [class*="border-white"] { border-color:rgb(17 17 20 / .18) !important; }
-
-/* Keep the navigation dock visually separate from content. */
-.livv-tabbar-dock { border:1px solid rgb(255 255 255 / .12) !important; box-shadow:0 16px 50px rgb(0 0 0 / .42), inset 0 1px 0 rgb(255 255 255 / .035) !important; }
+.livv-tabbar-dock { border:1px solid rgb(255 255 255 / .12) !important; box-shadow:0 16px 50px rgb(0 0 0 / .42),inset 0 1px 0 rgb(255 255 255 / .035) !important; }
 html[data-theme="light"] .livv-tabbar-dock { border-color:rgb(17 17 20 / .2) !important; background:rgb(255 255 255 / .95) !important; box-shadow:0 12px 34px rgb(17 17 20 / .12) !important; }
-
-/* Pack art stays crisp and contained. */
 .livv-pack-frame { position:relative; width:100%; height:100%; overflow:hidden; border-radius:16px; }
 .livv-pack-frame img { display:block; width:100%; height:100%; object-fit:cover; object-position:center; }
 .livv-pack-fallback { position:absolute; inset:0; display:grid; place-items:center; background:linear-gradient(160deg,#171a22,#050505); }
-
-/* Accessibility and motion */
 @media (max-width:767px) { input,textarea,select { font-size:16px !important; } }
 @media (prefers-reduced-motion:reduce) { *,*::before,*::after { scroll-behavior:auto !important; animation-duration:.01ms !important; animation-iteration-count:1 !important; transition-duration:.01ms !important; } }
 @media (max-width:380px) { .livv-page { padding-inline:.1rem; } }
