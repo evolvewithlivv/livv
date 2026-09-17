@@ -1,5 +1,7 @@
 "use client";
 
+import type { ReactNode } from "react";
+
 type OrbitItem = {
   id: string;
   label: string;
@@ -22,7 +24,7 @@ const positions = [
   { x: 16, y: 30 },
 ];
 
-const icons: Record<string, React.ReactNode> = {
+const icons: Record<string, ReactNode> = {
   body: <path d="M12 4.5a2.5 2.5 0 1 0 0 5 2.5 2.5 0 0 0 0-5ZM7.5 11.5h9M9 11.5l-1 8M15 11.5l1 8M12 11.5v8" />,
   mind: <path d="M9.5 19a4.5 4.5 0 0 1-1.1-8.86A4.7 4.7 0 0 1 17.4 9a4.5 4.5 0 0 1-.9 8.87M12 5v14M8.5 13.5h3M12 9h3.5" />,
   career: <path d="M7 7.5h10a2 2 0 0 1 2 2v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7a2 2 0 0 1 2-2ZM9 7.5V6a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v1.5M5 12h14M10 12v2h4v-2" />,
@@ -69,14 +71,6 @@ export function CapabilityOrbit({ items, onSelect }: CapabilityOrbitProps) {
               <stop offset="42%" stopColor="#8B5CFF" stopOpacity=".045" />
               <stop offset="100%" stopColor="#0F7FFF" stopOpacity="0" />
             </radialGradient>
-            <linearGradient id="capabilityRing" x1="0" y1="0" x2="1" y2="1">
-              <stop offset="0%" stopColor="#F93827" />
-              <stop offset="18%" stopColor="#F61981" />
-              <stop offset="38%" stopColor="#9A00FF" />
-              <stop offset="58%" stopColor="#0F7FFF" />
-              <stop offset="78%" stopColor="#4DFF00" />
-              <stop offset="100%" stopColor="#FCF927" />
-            </linearGradient>
           </defs>
           <circle cx="250" cy="195" r="154" fill="url(#capabilityGlow)" />
           <circle cx="250" cy="195" r="139" fill="none" stroke="rgba(255,255,255,.055)" strokeWidth="1" strokeDasharray="2 8" />
