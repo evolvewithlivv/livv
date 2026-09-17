@@ -35,7 +35,13 @@ const icons: Record<string, ReactNode> = {
 
 function Icon({ id }: { id: string }) {
   return (
-    <svg viewBox="0 0 24 24" aria-hidden="true" className="h-5 w-5 fill-none stroke-current stroke-[1.7] stroke-linecap="round" stroke-linejoin="round">
+    <svg
+      viewBox="0 0 24 24"
+      aria-hidden="true"
+      className="h-5 w-5 fill-none stroke-current stroke-[1.7]"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
       {icons[id] ?? icons.life}
     </svg>
   );
