@@ -100,11 +100,11 @@ html[data-theme="light"] {
 .livv-page { padding-bottom: 6.5rem; }
 
 .livv-glass {
-  background: linear-gradient(135deg, rgb(var(--livv-glass)/.075), rgb(var(--livv-glass)/.018));
-  border: 1px solid rgb(var(--livv-line)/.075);
-  box-shadow: 0 22px 70px rgba(0,0,0,.24), inset 0 1px 0 rgba(255,255,255,.045);
-  backdrop-filter: blur(24px) saturate(1.35);
-  -webkit-backdrop-filter: blur(24px) saturate(1.35);
+  background: linear-gradient(135deg, rgb(var(--livv-glass)/.065), rgb(var(--livv-glass)/.018));
+  border: 1px solid rgb(var(--livv-line)/.095);
+  box-shadow: 0 18px 52px rgba(0,0,0,.2), inset 0 1px 0 rgba(255,255,255,.04);
+  backdrop-filter: blur(22px) saturate(1.28);
+  -webkit-backdrop-filter: blur(22px) saturate(1.28);
 }
 html[data-theme="light"] .livv-glass {
   background: linear-gradient(135deg, rgba(255,255,255,.98), rgba(248,249,251,.96));
@@ -113,8 +113,8 @@ html[data-theme="light"] .livv-glass {
 }
 
 .livv-panel {
-  border-radius: 28px;
-  border: 1px solid rgb(var(--livv-line)/.08);
+  border-radius: 22px;
+  border: 1px solid rgb(var(--livv-line)/.09);
   background: rgb(var(--livv-surface)/.55);
 }
 .livv-app-shell { background: var(--livv-bg); }
@@ -168,10 +168,9 @@ html[data-theme="light"] [style*="color: rgba(255"] { color: rgb(var(--livv-fg))
 html[data-theme="light"] .livv-panel { border-color: rgb(17 17 20 / .22); }
 html[data-theme="light"] [class~="bg-[#101116]"],
 html[data-theme="light"] [class~="bg-[#0a0c11]"],
-html[data-theme="light"] [class~="bg-[#030405]"] { background-color: rgb(var(--livv-surface)) !important; }
+html[data-theme="light"] [class~="bg-[#030405"]] { background-color: rgb(var(--livv-surface)) !important; }
 html[data-theme="light"] [class~="bg-black/20"] { background-color: rgba(17,17,20,.035) !important; }
 
-/* Give controls and compact labels enough contrast to read at a glance. */
 html[data-theme="light"] button,
 html[data-theme="light"] a { text-decoration-thickness: 1px; }
 html[data-theme="light"] input,
@@ -184,18 +183,40 @@ main > .livv-page-hero { width: 100%; max-width: 36rem; margin-inline: auto; pad
 .livv-tabbar-dock { border: 1px solid rgb(var(--livv-line) / .12); }
 html[data-theme="light"] .livv-tabbar-dock { border-color: rgb(17 17 20 / .24); background: rgba(255,255,255,.96) !important; box-shadow: 0 14px 34px rgba(17,17,20,.12); }
 
-/* PWA install instructions should stay obvious without depending on a browser-specific prompt. */
 .livv-install-card { border: 1px solid rgb(var(--livv-border) / .35); }
 html[data-theme="light"] .livv-install-card { border-color: rgb(17 17 20 / .24); }
 
-/* Social is a first-class destination, not a hidden utility. */
 .livv-social-page { width: 100%; max-width: 36rem; margin-inline: auto; box-sizing: border-box; }
 .livv-social-nav-label { min-width: 0; }
 
-/* Pack art: keep the image inside its frame so the card never clips or overflows its touch target. */
 .livv-pack-frame { position: relative; width: 100%; height: 100%; overflow: hidden; border-radius: 16px; }
 .livv-pack-frame img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center; }
 .livv-pack-fallback { position: absolute; inset: 0; display: grid; place-items: center; background: radial-gradient(circle at 50% 28%, rgba(255,255,255,.16), transparent 42%), linear-gradient(160deg, #171a22, #050505); }
+
+/* Product-level composition rules. These reduce the repeated prototype-card look while keeping existing behavior intact. */
+.livv-page [class~="rounded-[32px]"] { border-radius: 24px !important; }
+.livv-page [class~="rounded-[30px]"] { border-radius: 23px !important; }
+.livv-page [class~="rounded-[28px]"] { border-radius: 21px !important; }
+.livv-page [class~="rounded-[26px]"] { border-radius: 20px !important; }
+.livv-page [class~="rounded-[25px]"] { border-radius: 19px !important; }
+.livv-page [class~="rounded-[24px]"] { border-radius: 18px !important; }
+.livv-page [class~="rounded-[23px]"] { border-radius: 18px !important; }
+.livv-page [class~="rounded-[22px]"] { border-radius: 17px !important; }
+.livv-page [class~="rounded-2xl"] { border-radius: 14px !important; }
+.livv-page [class~="rounded-xl"] { border-radius: 11px !important; }
+
+.livv-page [class*="shadow-[0_22px_70px"] { box-shadow: 0 16px 42px rgba(0,0,0,.2) !important; }
+.livv-page [class*="bg-white/[0.025]"] { background-color: rgb(255 255 255 / .022); }
+html[data-theme="light"] .livv-page [class*="bg-white/[0.025]"] { background-color: rgb(17 17 20 / .028); }
+
+.livv-section-label { display: inline-flex; align-items: center; gap: .55rem; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: .22em; }
+.livv-section-label::before { content: ""; width: 5px; height: 5px; border-radius: 999px; background: currentColor; box-shadow: 0 0 10px currentColor; }
+.livv-feed { border-top: 1px solid rgb(var(--livv-line) / .08); }
+.livv-feed > * { border-bottom: 1px solid rgb(var(--livv-line) / .08); }
+.livv-native-row { min-height: 68px; border-bottom: 1px solid rgb(var(--livv-line) / .08); }
+.livv-native-row:last-child { border-bottom: 0; }
+.livv-native-control { min-height: 44px; border: 1px solid rgb(var(--livv-line) / .12); background: rgb(var(--livv-surface) / .72); }
+html[data-theme="light"] .livv-native-control { border-color: rgb(17 17 20 / .2); background: rgb(255 255 255 / .9); }
 
 /* Accent enforcement: non-neutral UI accents use only the seven LIVV colors. */
 html:not(.livv-nav-exempt) [class*="text-blue-"],
@@ -247,7 +268,6 @@ html:not(.livv-nav-exempt) [class*="border-teal-"],
 html:not(.livv-nav-exempt) [class*="border-lime-"] { border-color: #4DFF00 !important; }
 html:not(.livv-nav-exempt) [class*="border-orange-"] { border-color: #FF9D23 !important; }
 
-/* Gradient accents follow the same seven-color mapping. */
 html:not(.livv-nav-exempt) [class*="from-blue-"],
 html:not(.livv-nav-exempt) [class*="from-sky-"],
 html:not(.livv-nav-exempt) [class*="from-cyan-"] { --tw-gradient-from: #0F7FFF var(--tw-gradient-from-position); }
