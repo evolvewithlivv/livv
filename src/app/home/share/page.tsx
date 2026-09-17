@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import { ArrowLeft, Camera, Check, ChevronDown, Download, ImagePlus, RefreshCw, Share2, Trash2 } from "lucide-react";
 import Link from "next/link";
 import { Container } from "@/components/ui/container";
@@ -267,7 +267,7 @@ export default function SharePage() {
   );
 }
 
-function OptionGroup({ label, children }: { label: string; children: React.ReactNode }) {
+function OptionGroup({ label, children }: { label: string; children: ReactNode }) {
   return <div><p className="share-label">{label}</p>{children}</div>;
 }
 
