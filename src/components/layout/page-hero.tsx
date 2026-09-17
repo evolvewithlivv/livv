@@ -10,17 +10,20 @@ type PageHeroProps = {
 
 export function PageHero({ eyebrow, title, subtitle, accent = "#0F7FFF", right }: PageHeroProps) {
   return (
-    <header className="livv-page-hero relative flex items-end justify-between gap-5 pb-4">
-      <div className="min-w-0">
+    <header className="livv-page-hero relative flex items-end justify-between gap-4 pb-5">
+      <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2.5">
-          <span className="h-1.5 w-1.5 rounded-full" style={{ background: accent, boxShadow: `0 0 12px ${accent}70` }} />
-          <p className="text-[10px] font-semibold uppercase tracking-[0.28em]" style={{ color: accent }}>{eyebrow}</p>
+          <span className="h-1.5 w-1.5 rounded-full" style={{ background: accent, boxShadow: `0 0 10px ${accent}66` }} />
+          <p className="text-[10px] font-bold uppercase tracking-[0.24em]" style={{ color: accent }}>{eyebrow}</p>
         </div>
-        <h1 className="font-display mt-3 max-w-[12ch] text-[clamp(2.15rem,9vw,3.2rem)] font-semibold leading-[0.9] tracking-[-0.065em] text-[rgb(var(--livv-fg))]">{title}</h1>
-        {subtitle ? <p className="mt-3 max-w-[35ch] text-[14px] leading-[1.45] text-livv-muted">{subtitle}</p> : null}
+        <h1 className="font-display mt-3 max-w-[13ch] text-[clamp(2.1rem,8vw,3.15rem)] font-semibold leading-[.94] tracking-[-.065em] text-[rgb(var(--livv-fg))]">{title}</h1>
+        {subtitle ? <p className="mt-3 max-w-[39ch] text-[14px] leading-[1.48] text-livv-muted">{subtitle}</p> : null}
       </div>
-      {right ? <div className="mb-1 shrink-0">{right}</div> : null}
-      <div className="absolute inset-x-0 bottom-0 h-px" style={{ background: `linear-gradient(90deg, ${accent}85, ${accent}20 38%, transparent 78%)` }} />
+      {right ? <div className="shrink-0 self-end pb-1">{right}</div> : null}
+      <div className="absolute inset-x-0 bottom-0 flex h-px items-center overflow-hidden">
+        <span className="h-px w-20 shrink-0" style={{ background: accent }} />
+        <span className="h-px flex-1" style={{ background: `linear-gradient(90deg, ${accent}30, transparent)` }} />
+      </div>
     </header>
   );
 }
