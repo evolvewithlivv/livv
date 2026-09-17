@@ -51,30 +51,30 @@ export default function HomePage() {
   return (
     <main className="livv-page min-h-full pb-24">
       <div className="mx-auto w-full max-w-xl px-5 pb-10 sm:px-6">
-        <section className="pt-5 sm:pt-8">
-          <p className="text-[11px] font-medium uppercase tracking-[.16em] text-livv-muted">LIVV / Today</p>
-          <div className="mt-2 flex items-start justify-between gap-4">
-            <div className="min-w-0">
-              <p className="text-[13px] text-livv-muted">Good to see you, {me.displayName || "there"}.</p>
-              <h1 className="mt-1 text-[31px] font-semibold leading-[1.05] tracking-[-.05em] sm:text-[38px]">{daily?.world.line || "What are you building today?"}</h1>
-            </div>
-            <div className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-livv-border bg-livv-surface text-livv-accent"><Flame size={17} strokeWidth={1.8} /></div>
+        <section className="pt-6 sm:pt-9">
+          <div className="flex items-center justify-between gap-4">
+            <p className="text-[10px] font-semibold uppercase tracking-[.2em] text-livv-muted">Today</p>
+            <span className="text-[11px] font-medium text-livv-muted">Level {rec.level}</span>
+          </div>
+          <div className="mt-3 max-w-[34rem]">
+            <p className="text-[13px] text-livv-muted">Good to see you, {me.displayName || "there"}.</p>
+            <h1 className="mt-1 text-[34px] font-semibold leading-[1.02] tracking-[-.055em] sm:text-[42px]">{daily?.world.line || "What are you building today?"}</h1>
           </div>
         </section>
 
-        <section className="mt-7 border-y border-livv-border py-5">
+        <section className="mt-8 border-y border-livv-border py-5">
           <div className="flex items-center justify-between gap-4">
-            <div><p className="text-[10px] font-semibold uppercase tracking-[.18em] text-livv-muted">Today</p><p className="mt-1 text-[25px] font-semibold tracking-[-.04em]">{done} of {AREAS.length} moved</p></div>
+            <div><p className="text-[10px] font-semibold uppercase tracking-[.18em] text-livv-muted">Daily movement</p><p className="mt-1 text-[25px] font-semibold tracking-[-.04em]">{done} / {AREAS.length}</p></div>
             <button type="button" onClick={checkIn} disabled={checkedIn} className="flex min-h-10 shrink-0 items-center gap-2 rounded-full bg-livv-ink px-4 text-[11px] font-semibold text-livv-bg disabled:opacity-45">{checkedIn ? <Check size={14} /> : <Plus size={14} />}{checkedIn ? "Checked in" : "Check in"}</button>
           </div>
           <div className="mt-5 h-1.5 overflow-hidden rounded-full bg-livv-border"><div className="h-full rounded-full bg-livv-accent transition-all" style={{ width: `${(done / AREAS.length) * 100}%` }} /></div>
-          <div className="mt-3 flex items-center justify-between text-[10px] text-livv-muted"><span>{rec.streak} day streak</span><span>Level {rec.level} · {xp}% to next</span></div>
+          <div className="mt-3 flex items-center justify-between text-[10px] text-livv-muted"><span>{rec.streak} day streak</span><span>{xp}% toward next level</span></div>
         </section>
 
-        <section className="mt-8">
-          <div className="mb-3"><p className="text-[10px] font-semibold uppercase tracking-[.18em] text-livv-muted">Your life</p><h2 className="mt-1 text-[24px] font-semibold tracking-[-.04em]">Six areas. One life.</h2></div>
+        <section className="mt-9">
+          <div className="mb-3 flex items-end justify-between gap-4"><div><p className="text-[10px] font-semibold uppercase tracking-[.18em] text-livv-muted">Life</p><h2 className="mt-1 text-[24px] font-semibold tracking-[-.04em]">Six areas. One life.</h2></div><Link href="/home/progress" className="text-[11px] font-semibold text-livv-muted">Progress</Link></div>
           <div className="divide-y divide-livv-border border-y border-livv-border">
-            {AREAS.map((area, i) => { const isDone = complete(area.id); return <Link key={area.id} href={area.href} className="group flex items-center gap-4 py-4 transition-colors">
+            {AREAS.map((area, i) => { const isDone = complete(area.id); return <Link key={area.id} href={area.href} className="group flex items-center gap-4 py-4">
               <span className={`grid h-9 w-9 shrink-0 place-items-center rounded-full border ${isDone ? "border-livv-accent bg-livv-accent-soft text-livv-accent" : "border-livv-border text-livv-muted"}`}>{isDone ? <Check size={15} /> : <span className="text-[11px] font-semibold">{String(i + 1).padStart(2, "0")}</span>}</span>
               <span className="min-w-0 flex-1"><span className="block text-[14px] font-semibold">{area.label}</span><span className="mt-0.5 block text-[11px] text-livv-muted">{area.description}</span></span>
               <ChevronRight size={17} className="shrink-0 text-livv-muted transition-transform group-hover:translate-x-0.5" />
@@ -82,7 +82,7 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section className="mt-8 border-b border-livv-border pb-7">
+        <section className="mt-9 border-b border-livv-border pb-7">
           <div className="flex items-start justify-between gap-4"><div><p className="text-[10px] font-semibold uppercase tracking-[.18em] text-livv-muted">Next move</p><h2 className="mt-1 text-[23px] font-semibold tracking-[-.035em]">{loop.move.title}</h2><p className="mt-2 max-w-[38ch] text-[12px] leading-relaxed text-livv-muted">{loop.move.reason}</p></div><Link href={loop.move.href} className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-livv-border"><ArrowRight size={16} /></Link></div>
         </section>
       </div>
