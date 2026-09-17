@@ -5,15 +5,12 @@ import Link from "next/link";
 import { ArrowUpRight, ShoppingBag, Sparkles } from "lucide-react";
 import { PackFoil } from "@/components/packs/pack-foil";
 import { PackOpenModal } from "@/components/packs/pack-open";
-import { PageHero } from "@/components/layout/page-hero";
 import { loadPacks, GRADE_META, collectionStats, formatCountdown, msUntilNextPack, canClaimPacks, claimPacksIfDue, type PackGrade, type PendingPack } from "@/lib/packs";
 import { buyPack, PACK_SHOP } from "@/lib/pack-shop";
 import { getEffectiveTier, isStripeConfigured } from "@/lib/billing";
 import { feedback } from "@/lib/sensory";
 
 const SHOP_URL = "https://n8tv6p-pu.myshopify.com";
-const SHOP_ACCENT = "#FF9D23";
-
 const PRODUCTS = [
   { name: "Essential Long Sleeve Tee", subtitle: "Black / White Logo", price: "$44.99", image: "https://cdn.shopify.com/s/files/1/1091/3644/5726/files/unisex-long-sleeve-tee-black-heather-front-6a9eead841a4c.png?v=1788799728", href: `${SHOP_URL}/products/livv-essential-long-sleeve-tee-1` },
   { name: "Essential Long Sleeve Tee", subtitle: "White / Black Logo", price: "$44.99", image: "https://cdn.shopify.com/s/files/1/1091/3644/5726/files/unisex-long-sleeve-tee-white-front-6a9ee93df3eae.png?v=1788799311", href: `${SHOP_URL}/products/livv-essential-long-sleeve-tee` },
@@ -75,55 +72,121 @@ export default function ShopPage() {
   }
 
   return (
-    <main className="livv-page relative min-h-full overflow-hidden text-white">
-      <div className="relative z-10 mx-auto max-w-xl px-5 pt-5 pb-8">
-        <PageHero eyebrow="LIVV Shop" title="Packs and merch." subtitle="Buy packs here. Wear the standard. Collect the system." accent={SHOP_ACCENT} right={<ShoppingBag className="text-[#FF9D23]" size={22} strokeWidth={1.7} />} />
+    <main className="livv-page min-h-full text-livv-ink">
+      <div className="mx-auto w-full max-w-2xl px-5 pb-12 pt-6 sm:px-6">
+        <header className="border-b border-livv-line pb-6">
+          <div className="flex items-center justify-between gap-4">
+            <div>
+              <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-livv-muted">LIVV / Shop</p>
+              <h1 className="mt-2 text-3xl font-semibold tracking-[-0.035em] sm:text-4xl">Wear the standard.</h1>
+            </div>
+            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-livv-line bg-livv-surface">
+              <ShoppingBag size={19} strokeWidth={1.7} />
+            </div>
+          </div>
+          <p className="mt-4 max-w-xl text-sm leading-6 text-livv-muted">Evolution Packs for the archive. Essentials for the life you are building.</p>
+        </header>
 
-        <section id="packs" className="mt-7">
-          <div className="livv-glass overflow-hidden rounded-[26px] p-5">
-            <div className="flex items-start justify-between gap-4">
+        <section className="border-b border-livv-line py-7">
+          <div className="flex items-end justify-between gap-4">
+            <div>
+              <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-livv-muted">Evolution Packs</p>
+              <h2 className="mt-1 text-xl font-semibold tracking-[-0.02em]">Build your archive.</h2>
+            </div>
+            <Sparkles size={18} strokeWidth={1.6} className="text-livv-muted" />
+          </div>
+
+          <div className="mt-5 rounded-2xl border border-livv-line bg-livv-surface p-4">
+            <div className="flex items-center justify-between gap-4">
               <div>
-                <p className="text-[9px] font-semibold uppercase tracking-[0.3em] text-[#FF9D23]">Evolution packs</p>
-                <h2 className="font-display mt-2 text-[27px] font-semibold">Buy packs here.</h2>
-                <p className="mt-2 max-w-[34ch] text-[12px] leading-relaxed text-white/45">Membership can grant packs on a timer. Paid pulls are optional and always available below.</p>
+                <p className="text-[9px] font-semibold uppercase tracking-[0.2em] text-livv-muted">Next drop</p>
+                <p className="mt-1 text-2xl font-semibold tracking-[-0.025em]">{ready ? `${pending.length} ready` : formatCountdown(msLeft)}</p>
               </div>
-              <Sparkles className="mt-1 shrink-0 text-[#FF9D23]" size={22} strokeWidth={1.6} />
+              <div className="text-right">
+                <p className="text-[9px] font-semibold uppercase tracking-[0.2em] text-livv-muted">Collected</p>
+                <p className="mt-1 text-sm font-semibold">{stats.uniqueCount}<span className="text-livv-muted"> / {stats.catalogSize}</span></p>
+              </div>
+            </div>
+            <div className="mt-4 h-1 overflow-hidden rounded-full bg-livv-line">
+              <div className="h-full rounded-full bg-livv-ink transition-all duration-500" style={{ width: `${collectionPct}%` }} />
             </div>
 
-            <div className="mt-5 border-y border-white/[0.08] py-4">
-              <div className="flex items-center justify-between gap-3">
-                <div>
-                  <p className="text-[9px] uppercase tracking-[0.25em] text-white/30">Your next drop</p>
-                  <p className="font-display mt-1 text-2xl font-semibold">{ready ? `${pending.length} ready` : formatCountdown(msLeft)}</p>
-                </div>
-                <div className="text-right">
-                  <p className="text-[9px] uppercase tracking-[0.2em] text-white/30">Archive</p>
-                  <p className="mt-1 text-sm font-semibold">{stats.uniqueCount}<span className="text-white/30">/{stats.catalogSize}</span></p>
-                </div>
+            {ready && (
+              <div className="mt-4 flex gap-3 overflow-x-auto pb-1 scrollbar-none">
+                {pending.map((pack) => (
+                  <button key={pack.id} type="button" onClick={() => { feedback("tick"); setOpening(pack); }} className="shrink-0 rounded-xl border border-livv-line bg-livv-surface-2 px-3 py-2 text-center transition active:scale-[0.98]">
+                    <PackFoil grade={pack.grade} size="sm" pulse />
+                    <p className="mt-2 text-[9px] font-semibold uppercase tracking-[0.16em] text-livv-muted">{GRADE_META[pack.grade].name.replace(" Pack", "")}</p>
+                  </button>
+                ))}
               </div>
-              <div className="mt-3 h-1 overflow-hidden rounded-full bg-white/[0.08]"><div className="h-full rounded-full bg-[#FF9D23] transition-all duration-500" style={{ width: `${collectionPct}%` }} /></div>
-              {ready && <div className="-my-1 flex gap-4 overflow-x-auto px-1 py-3 scrollbar-none">{pending.map((pack) => <button key={pack.id} type="button" onClick={() => { feedback("tick"); setOpening(pack); }} className="shrink-0 rounded-2xl p-1 text-center transition active:scale-[0.98]"><PackFoil grade={pack.grade} size="sm" pulse /><p className="mt-2 text-[9px] font-medium uppercase tracking-[0.16em] text-white/45">{GRADE_META[pack.grade].name.replace(" Pack", "")}</p></button>)}</div>}
-            </div>
+            )}
+          </div>
 
-            <div className="mt-4 divide-y divide-white/[0.08]">
-              {([1, 2, 3, 4] as PackGrade[]).map((grade) => {
-                const meta = GRADE_META[grade];
-                const shop = PACK_SHOP[grade];
-                return <div key={grade} className="py-4 first:pt-0 last:pb-0"><div className="flex items-center gap-3"><PackFoil grade={grade} size="sm" /><div className="min-w-0 flex-1"><div className="flex items-baseline justify-between gap-3"><p className="text-[15px] font-semibold">{meta.name}</p><p className="text-[15px] font-semibold">{shop.price}</p></div><p className="mt-1 text-[11px] leading-relaxed text-white/40">{meta.subtitle} · {shop.value}</p></div></div><button type="button" disabled={buying !== null} onClick={() => handlePackBuy(grade)} className="mt-3 w-full rounded-full bg-white py-2.5 text-[11px] font-semibold uppercase tracking-[0.12em] text-black disabled:opacity-50">{buying === grade ? "Opening checkout…" : isStripeConfigured() ? `Buy ${shop.price}` : `Add ${shop.price} pack`}</button></div>;
-              })}
-            </div>
+          <div className="mt-5 divide-y divide-livv-line border-y border-livv-line">
+            {([1, 2, 3, 4] as PackGrade[]).map((grade) => {
+              const meta = GRADE_META[grade];
+              const shop = PACK_SHOP[grade];
+              return (
+                <div key={grade} className="py-4 first:pt-3 last:pb-3">
+                  <div className="flex items-center gap-4">
+                    <PackFoil grade={grade} size="sm" />
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-baseline justify-between gap-3">
+                        <p className="text-sm font-semibold">{meta.name}</p>
+                        <p className="text-sm font-semibold">{shop.price}</p>
+                      </div>
+                      <p className="mt-1 text-[11px] leading-5 text-livv-muted">{meta.subtitle} · {shop.value}</p>
+                    </div>
+                  </div>
+                  <button type="button" disabled={buying !== null} onClick={() => handlePackBuy(grade)} className="mt-3 w-full rounded-xl border border-livv-line bg-livv-ink px-4 py-3 text-[10px] font-semibold uppercase tracking-[0.16em] text-livv-bg transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-45">
+                    {buying === grade ? "Opening checkout…" : isStripeConfigured() ? `Buy ${shop.price}` : `Add ${shop.price} pack`}
+                  </button>
+                </div>
+              );
+            })}
           </div>
         </section>
 
-        <Link href="/home/vault" className="mt-3 flex items-center justify-between border-b border-white/[0.08] py-4 transition active:scale-[0.99]"><div><p className="text-[9px] font-semibold uppercase tracking-[0.28em] text-[#FF9D23]">Your archive</p><p className="mt-1 text-[13px] font-medium text-white/75">Open the vault</p></div><ArrowUpRight size={18} className="text-[#FF9D23]" /></Link>
+        <Link href="/home/vault" className="flex items-center justify-between border-b border-livv-line py-5 transition active:scale-[0.99]">
+          <div>
+            <p className="text-[9px] font-semibold uppercase tracking-[0.22em] text-livv-muted">Your archive</p>
+            <p className="mt-1 text-sm font-medium">Open the Vault</p>
+          </div>
+          <ArrowUpRight size={18} strokeWidth={1.7} />
+        </Link>
 
-        <section className="mt-9">
-          <div className="mb-4 flex items-end justify-between px-1"><div><p className="text-[9px] font-semibold uppercase tracking-[0.3em] text-white/35">Essentials</p><h2 className="font-display mt-1 text-[22px] font-semibold">Wear the evolution.</h2></div><span className="text-[10px] uppercase tracking-[0.18em] text-[#FF9D23]">{PRODUCTS.length} pieces</span></div>
-          <div className="grid grid-cols-2 gap-3">{PRODUCTS.map((product) => <a key={product.href} href={product.href} className="livv-glass group overflow-hidden rounded-[24px] transition active:scale-[0.98]"><div className="relative aspect-[4/5] overflow-hidden bg-white/[0.025]"><img src={product.image} alt={`${product.name} / ${product.subtitle}`} className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]" /><div className="absolute inset-x-0 bottom-0 h-24 bg-gradient-to-t from-[#030405] to-transparent" /></div><div className="p-4"><p className="text-[9px] font-semibold uppercase tracking-[0.2em] text-[#FF9D23]">Essential</p><h3 className="mt-1 text-[14px] font-semibold leading-tight">{product.name}</h3><p className="mt-1 text-[11px] text-white/45">{product.subtitle}</p><div className="mt-4 flex items-center justify-between"><span className="text-[13px] font-semibold">{product.price}</span><span className="flex h-8 w-8 items-center justify-center rounded-full border border-white/10 bg-white/[0.05] text-white/60 group-hover:border-[#FF9D23]/35 group-hover:text-[#FF9D23]"><ArrowUpRight size={15} /></span></div></div></a>)}</div>
+        <section className="pt-8">
+          <div className="flex items-end justify-between gap-4 border-b border-livv-line pb-4">
+            <div>
+              <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-livv-muted">Essentials</p>
+              <h2 className="mt-1 text-xl font-semibold tracking-[-0.02em]">The physical system.</h2>
+            </div>
+            <span className="text-[10px] font-medium uppercase tracking-[0.16em] text-livv-muted">{PRODUCTS.length} pieces</span>
+          </div>
+
+          <div className="mt-4 grid grid-cols-2 gap-3">
+            {PRODUCTS.map((product) => (
+              <a key={product.href} href={product.href} className="group overflow-hidden rounded-2xl border border-livv-line bg-livv-surface transition active:scale-[0.99]">
+                <div className="aspect-[4/5] overflow-hidden bg-livv-surface-2">
+                  <img src={product.image} alt={`${product.name} / ${product.subtitle}`} className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.025]" />
+                </div>
+                <div className="p-4">
+                  <p className="text-[9px] font-semibold uppercase tracking-[0.18em] text-livv-muted">Essential</p>
+                  <h3 className="mt-1 text-[13px] font-semibold leading-tight">{product.name}</h3>
+                  <p className="mt-1 text-[11px] text-livv-muted">{product.subtitle}</p>
+                  <div className="mt-4 flex items-center justify-between">
+                    <span className="text-sm font-semibold">{product.price}</span>
+                    <span className="flex h-8 w-8 items-center justify-center rounded-full border border-livv-line text-livv-muted transition group-hover:text-livv-ink"><ArrowUpRight size={15} /></span>
+                  </div>
+                </div>
+              </a>
+            ))}
+          </div>
         </section>
 
-        <a href={SHOP_URL} className="mt-6 flex items-center justify-center rounded-full border border-[#FF9D23]/25 bg-[#FF9D23]/[0.06] py-3 text-[10px] font-semibold uppercase tracking-[0.2em] text-[#FF9D23]">Open full storefront</a>
-        <p className="mt-6 pb-4 text-center text-[9px] uppercase tracking-[0.22em] text-white/25">Built to evolve with you</p>
+        <a href={SHOP_URL} className="mt-6 flex items-center justify-center rounded-xl border border-livv-line bg-livv-surface py-3 text-[10px] font-semibold uppercase tracking-[0.18em] transition hover:bg-livv-surface-2">Open full storefront <ArrowUpRight size={14} className="ml-2" /></a>
+        <p className="mt-7 text-center text-[9px] uppercase tracking-[0.2em] text-livv-muted">Built to evolve with you</p>
       </div>
 
       {opening && <PackOpenModal packId={opening.id} grade={opening.grade} onClose={() => { setOpening(null); sync(); }} />}
