@@ -3,6 +3,7 @@ import { Plus_Jakarta_Sans, Syne } from "next/font/google";
 import "./globals.css";
 import "./livv-background.css";
 import "./livv-final-pass.css";
+import "./livv-visual-redesign.css";
 import { ThemeShell } from "@/components/layout/theme-shell";
 const body=Plus_Jakarta_Sans({subsets:["latin"],variable:"--font-body",display:"swap"});
 const display=Syne({subsets:["latin"],variable:"--font-display",display:"swap",weight:["500","600","700"]});

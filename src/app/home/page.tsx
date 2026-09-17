@@ -28,26 +28,20 @@ const ACTIONS = [
 
 type Action = (typeof ACTIONS)[number];
 
-function ActionCard({ action, complete, onOpen }: { action: Action; complete: boolean; onOpen: () => void }) {
+function ActionRow({ action, complete, onOpen }: { action: Action; complete: boolean; onOpen: () => void }) {
   return (
-    <button
-      type="button"
-      onClick={onOpen}
-      aria-label={`${action.label}: ${complete ? "complete" : "open"}`}
-      className="group relative min-h-[126px] overflow-hidden rounded-[24px] border p-4 text-left transition hover:-translate-y-0.5 hover:border-white/20 active:scale-[.98]"
-      style={{
-        borderColor: complete ? `${action.color}55` : "rgba(255,255,255,.10)",
-        background: complete
-          ? `linear-gradient(145deg,${action.color}0A,rgba(11,13,16,.94))`
-          : "linear-gradient(145deg,rgba(17,19,24,.92),rgba(8,10,13,.96))",
-      }}
-    >
-      <span className="absolute inset-x-4 top-0 h-px opacity-0 transition group-hover:opacity-100" style={{ background: `linear-gradient(90deg,transparent,${action.color},transparent)` }} />
-      <span aria-hidden="true" className="absolute right-4 top-4 h-2 w-2 rounded-full" style={{ background: action.color, boxShadow: `0 0 12px ${action.color}70` }} />
-      <p className="text-[10px] font-semibold uppercase leading-none tracking-[.22em]" style={{ color: action.color }}>{action.label}</p>
-      <p className="mt-6 text-[16px] font-semibold text-white/90">{complete ? "Complete" : "Open"}</p>
-      <p className="mt-1 text-[11px] leading-relaxed text-white/55">{complete ? "Logged today." : action.help}</p>
-      {complete && <span aria-hidden="true" className="absolute bottom-3 right-4 text-[18px]" style={{ color: action.color }}>✓</span>}
+    <button type="button" onClick={onOpen} className="group flex w-full items-center gap-4 border-b border-white/[.08] py-4 text-left last:border-b-0">
+      <span className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-white/10 bg-white/[.025]" style={{ borderColor: complete ? `${action.color}65` : undefined }}>
+        <span className="h-2 w-2 rounded-full" style={{ background: action.color, boxShadow: complete ? `0 0 12px ${action.color}80` : "none" }} />
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className="flex items-center gap-2">
+          <span className="text-[14px] font-semibold text-white/90">{action.label}</span>
+          {complete && <span className="text-[9px] font-semibold uppercase tracking-[.16em]" style={{ color: action.color }}>logged</span>}
+        </span>
+        <span className="mt-1 block text-[11px] text-white/45">{complete ? "Proof added today." : action.help}</span>
+      </span>
+      <span className="text-[18px] text-white/25 transition group-hover:translate-x-1 group-hover:text-white/60">→</span>
     </button>
   );
 }
@@ -60,27 +54,17 @@ export default function HomePage() {
   const [quote, setQuote] = useState<Quote | null>(null);
   const [daily, setDaily] = useState(() => (typeof window !== "undefined" ? dailySummary() : null));
 
-  const pull = () => {
-    setRec(loadRecord());
-    setMe(loadIdentity());
-    setDaily(dailySummary());
-  };
-
+  const pull = () => { setRec(loadRecord()); setMe(loadIdentity()); setDaily(dailySummary()); };
   useEffect(() => {
-    pull();
-    setQuote(quoteForSession());
+    pull(); setQuote(quoteForSession());
     const timer = window.setInterval(() => setNow(new Date()), 30000);
     for (const e of ["livv-identity", "livv-record", "livv-daily", "livv-billing"]) window.addEventListener(e, pull);
-    return () => {
-      window.clearInterval(timer);
-      for (const e of ["livv-identity", "livv-record", "livv-daily", "livv-billing"]) window.removeEventListener(e, pull);
-    };
+    return () => { window.clearInterval(timer); for (const e of ["livv-identity", "livv-record", "livv-daily", "livv-billing"]) window.removeEventListener(e, pull); };
   }, []);
 
   const status = useMemo(() => (rec ? dailyPillarStatus(rec) : []), [rec]);
   const loop = useMemo(() => (rec ? buildBehaviorLoop(rec, now) : null), [rec, now]);
   const insights = useMemo(() => (rec ? buildProgressInsights(rec, 14) : null), [rec]);
-
   if (!rec || !me || !loop || !insights) return <main className="min-h-dvh" />;
 
   const tier = getTier(getEffectiveTier());
@@ -93,117 +77,50 @@ export default function HomePage() {
 
   const onCheckIn = () => {
     if (checkedIn) return;
-    const result = checkInRecord();
-    if (result.already) return;
-    feedback("checkin");
-    addEmbers(10 * tier.multiplier + (result.emberBonus || 0));
+    const result = checkInRecord(); if (result.already) return;
+    feedback("checkin"); addEmbers(10 * tier.multiplier + (result.emberBonus || 0));
     if (canClaimPacks(getEffectiveTier())) claimPacksIfDue(getEffectiveTier());
     pull();
   };
-
-  const openAction = (href: string) => {
-    feedback("tick");
-    router.push(href);
-  };
+  const openAction = (href: string) => { feedback("tick"); router.push(href); };
 
   return (
     <main className="livv-page min-h-full overflow-hidden pb-16 text-white">
       <div className="mx-auto max-w-xl px-5 pt-5">
-        <section className="livv-glass relative overflow-hidden rounded-[34px] px-6 pb-7 pt-6">
-          <div className="absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-livv-accent/60 to-transparent" />
-          <div className="absolute -right-20 -top-24 h-48 w-48 rounded-full bg-[#0F7FFF]/[.08] blur-3xl" />
-          <div className="absolute -bottom-24 -left-16 h-44 w-44 rounded-full bg-[#9A00FF]/[.05] blur-3xl" />
-          <div className="relative flex items-start justify-between gap-5">
-            <div className="min-w-0">
-              <p className="text-[10px] font-semibold uppercase tracking-[.28em] text-livv-accent-soft">{daily?.world.focus || "Today"}</p>
-              <h1 className="font-display mt-3 text-[31px] font-semibold leading-[.98] tracking-[-.04em]">{daily?.world.line || `Welcome back, ${me.displayName || "member"}.`}</h1>
+        <header className="relative pb-6 pt-2">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <span className="h-1.5 w-1.5 rounded-full bg-[#0F7FFF] shadow-[0_0_12px_#0F7FFF70]" />
+              <span className="text-[10px] font-semibold uppercase tracking-[.3em] text-[#0F7FFF]">Today</span>
             </div>
-            <div className="shrink-0 text-right">
-              <p className="text-[10px] uppercase tracking-[.2em] text-white/45">Streak</p>
-              <p className="font-display mt-1 text-3xl font-semibold">{rec.streak}</p>
-              <p className="text-[10px] uppercase tracking-[.18em] text-white/45">days</p>
-            </div>
+            <span className="text-[10px] uppercase tracking-[.2em] text-white/35">{now.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })}</span>
           </div>
-          {quote && (
-            <blockquote className="relative mt-7 border-l-2 border-livv-accent/50 pl-4">
-              <p className="font-display text-[17px] font-medium leading-snug text-white/90">“{quote.text}”</p>
-              <footer className="mt-2 text-[10px] uppercase tracking-[.2em] text-white/45">{quote.author}</footer>
-            </blockquote>
-          )}
-        </section>
+          <div className="mt-5 grid grid-cols-[1fr_auto] items-end gap-5">
+            <h1 className="font-display text-[clamp(2.35rem,10vw,3.6rem)] font-semibold leading-[.88] tracking-[-.07em]">{daily?.world.line || `Welcome back, ${me.displayName || "member"}.`}</h1>
+            <div className="text-right"><p className="font-display text-[32px] leading-none">{rec.streak}</p><p className="mt-1 text-[9px] uppercase tracking-[.2em] text-white/40">day streak</p></div>
+          </div>
+          <div className="absolute bottom-0 left-0 h-px w-full bg-gradient-to-r from-[#0F7FFF]/60 via-white/10 to-transparent" />
+        </header>
+
+        {quote && <blockquote className="relative mt-5 border-l-2 border-[#0F7FFF]/55 pl-5 py-1"><p className="font-display text-[17px] leading-snug text-white/80">“{quote.text}”</p><footer className="mt-3 text-[9px] uppercase tracking-[.22em] text-white/38">{quote.author}</footer></blockquote>}
 
         <CapabilityOrbit items={orbitItems} onSelect={(item) => openAction(item.href)} />
 
-        <section className="mt-5 rounded-[28px] border border-white/10 bg-white/[.025] p-5">
-          <div className="flex items-start justify-between gap-4">
-            <div>
-              <p className="text-[10px] font-semibold uppercase tracking-[.24em] text-livv-accent-soft">Next move</p>
-              <h2 className="font-display mt-2 text-[23px] font-semibold">{loop.move.title}</h2>
-              <p className="mt-1 text-[12px] leading-relaxed text-white/60">{loop.move.reason}</p>
-            </div>
-            <Link href={loop.move.href} className="flex shrink-0 items-center justify-center rounded-full bg-white px-4 py-2.5 text-center text-[10px] font-bold leading-none text-black">{loop.move.cta}</Link>
-          </div>
-          <p className="mt-4 border-t border-white/10 pt-4 text-[11px] leading-relaxed text-white/45">{loop.status}</p>
+        <section className="mt-7">
+          <div className="flex items-end justify-between px-1 pb-2"><div><p className="text-[9px] font-semibold uppercase tracking-[.3em] text-white/38">Today</p><h2 className="font-display mt-1 text-[25px]">Six useful moves.</h2></div><span className="text-[10px] text-white/40">{done}/6 logged</span></div>
+          <div className="border-y border-white/[.08]">{ACTIONS.map((a) => <ActionRow key={a.id} action={a} complete={statusFor(a.id)} onOpen={() => openAction(a.href)} />)}</div>
         </section>
 
-        <section className="mt-6">
-          <div className="mb-3 flex items-end justify-between px-1">
-            <div>
-              <p className="text-[10px] font-semibold uppercase tracking-[.28em] text-white/50">Today</p>
-              <p className="mt-1 text-[14px] font-medium text-white/80">{done} of 6 actions complete</p>
-            </div>
-            <Link href="/home/daily" className="text-[11px] font-semibold text-livv-accent-soft">Open Daily</Link>
-          </div>
-          <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
-            {ACTIONS.map((a) => <ActionCard key={a.id} action={a} complete={statusFor(a.id)} onOpen={() => openAction(a.href)} />)}
-          </div>
+        <section className="mt-7 overflow-hidden rounded-[22px] border border-white/10 bg-white/[.025] p-5">
+          <div className="flex items-start justify-between gap-4"><div><p className="text-[9px] font-semibold uppercase tracking-[.3em] text-[#0F7FFF]">Next move</p><h2 className="font-display mt-2 text-[24px] leading-none">{loop.move.title}</h2><p className="mt-2 max-w-[32ch] text-[11px] leading-relaxed text-white/50">{loop.move.reason}</p></div><Link href={loop.move.href} className="grid h-11 w-11 shrink-0 place-items-center rounded-full bg-white text-[18px] text-black">→</Link></div>
+          <div className="mt-5 flex items-center justify-between border-t border-white/[.08] pt-4"><span className="text-[10px] uppercase tracking-[.18em] text-white/35">System status</span><span className="text-[11px] text-white/65">{loop.status}</span></div>
         </section>
 
-        <section className="mt-6 grid grid-cols-[1fr_auto] gap-3">
-          <div className="livv-glass rounded-[28px] p-5">
-            <div className="flex items-end justify-between">
-              <div>
-                <p className="text-[10px] uppercase tracking-[.24em] text-white/50">Level</p>
-                <p className="font-display mt-1 text-4xl font-semibold">{rec.level}</p>
-              </div>
-              <p className="text-[10px] text-white/55">{rec.currentXp} / {rec.xpToNext} XP</p>
-            </div>
-            <div className="mt-5 h-1.5 overflow-hidden rounded-full bg-white/10">
-              <div className="h-full rounded-full bg-livv-accent transition-[width] duration-700" style={{ width: `${xpPct}%` }} />
-            </div>
-            <p className="mt-3 text-[11px] text-white/55">{evo.name}</p>
-          </div>
-          <button type="button" onClick={onCheckIn} disabled={checkedIn} className="flex min-w-[98px] flex-col justify-between rounded-[28px] border border-livv-accent/35 bg-livv-accent/[.08] p-4 text-left disabled:opacity-70">
-            <span className="text-[10px] uppercase tracking-[.22em] text-livv-accent-soft">Check in</span>
-            <span className="font-display text-3xl font-semibold">{checkedIn ? "✓" : "GO"}</span>
-            <span className="text-[10px] text-white/55">{checkedIn ? "Logged" : "Close today"}</span>
-          </button>
-        </section>
-
-        <section className="mt-6 rounded-[28px] border border-white/10 bg-white/[.025] p-5">
-          <div className="flex items-end justify-between">
-            <div>
-              <p className="text-[10px] uppercase tracking-[.22em] text-white/40">Progress pulse</p>
-              <h2 className="font-display mt-1 text-[22px]">Your record this week.</h2>
-            </div>
-            <Link href="/home/progress" className="text-[11px] text-livv-accent-soft">Full picture</Link>
-          </div>
-          <div className="mt-5 grid grid-cols-3 gap-2">
-            <Pulse value={`${insights.consistencyPct}%`} label="14d active" />
-            <Pulse value={insights.momentum} label="momentum" />
-            <Pulse value={`${insights.balancePct}%`} label="areas active" />
-          </div>
+        <section className="mt-7 grid grid-cols-[1fr_104px] gap-3">
+          <Link href="/home/progress" className="rounded-[22px] border border-white/10 bg-white/[.025] p-5"><div className="flex items-end justify-between"><div><p className="text-[9px] uppercase tracking-[.25em] text-white/38">Evolution</p><p className="font-display mt-2 text-[31px] leading-none">Level {rec.level}</p></div><span className="text-[10px] text-white/40">{rec.currentXp}/{rec.xpToNext}</span></div><div className="mt-5 h-1.5 overflow-hidden rounded-full bg-white/10"><div className="h-full rounded-full bg-[#0F7FFF]" style={{ width: `${xpPct}%` }} /></div><p className="mt-3 text-[10px] text-white/45">{evo.name} · {insights.momentum} momentum</p></Link>
+          <button type="button" onClick={onCheckIn} disabled={checkedIn} className="flex flex-col justify-between rounded-[22px] border border-[#0F7FFF]/30 bg-[#0F7FFF]/[.07] p-4 text-left disabled:opacity-70"><span className="text-[9px] uppercase tracking-[.2em] text-[#0F7FFF]">Check in</span><span className="font-display text-[30px]">{checkedIn ? "✓" : "GO"}</span><span className="text-[9px] uppercase tracking-[.16em] text-white/38">{checkedIn ? "logged" : "close today"}</span></button>
         </section>
       </div>
     </main>
-  );
-}
-
-function Pulse({ value, label }: { value: string; label: string }) {
-  return (
-    <div className="rounded-2xl border border-white/10 bg-black/10 p-3">
-      <p className="font-display text-[16px] capitalize">{value}</p>
-      <p className="mt-1 text-[9px] uppercase tracking-[.15em] text-white/40">{label}</p>
-    </div>
   );
 }
