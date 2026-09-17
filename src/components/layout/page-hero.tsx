@@ -16,11 +16,11 @@ export function PageHero({ eyebrow, title, subtitle, accent = "#0F7FFF", right }
           <span className="h-1.5 w-1.5 rounded-full" style={{ background: accent, boxShadow: `0 0 12px ${accent}70` }} />
           <p className="text-[10px] font-semibold uppercase tracking-[0.28em]" style={{ color: accent }}>{eyebrow}</p>
         </div>
-        <h1 className="font-display mt-3 text-[clamp(2.15rem,9vw,3.2rem)] font-semibold leading-[0.92] tracking-[-0.065em] text-[rgb(var(--livv-fg))]">{title}</h1>
-        {subtitle ? <p className="mt-3 max-w-[34ch] text-[14px] leading-[1.45] text-livv-muted">{subtitle}</p> : null}
+        <h1 className="font-display mt-3 max-w-[12ch] text-[clamp(2.15rem,9vw,3.2rem)] font-semibold leading-[0.9] tracking-[-0.065em] text-[rgb(var(--livv-fg))]">{title}</h1>
+        {subtitle ? <p className="mt-3 max-w-[35ch] text-[14px] leading-[1.45] text-livv-muted">{subtitle}</p> : null}
       </div>
       {right ? <div className="mb-1 shrink-0">{right}</div> : null}
-      <div className="absolute inset-x-0 bottom-0 h-px" style={{ background: `linear-gradient(90deg, ${accent}80, ${accent}18 42%, transparent 85%)` }} />
+      <div className="absolute inset-x-0 bottom-0 h-px" style={{ background: `linear-gradient(90deg, ${accent}85, ${accent}20 38%, transparent 78%)` }} />
     </header>
   );
 }
