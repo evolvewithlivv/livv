@@ -32,14 +32,14 @@ export function BottomNav() {
   const pathname = usePathname() || "";
   const keyboard = useKeyboardVisible();
   return (
-    <nav className={`livv-tabbar fixed inset-x-0 bottom-0 z-[80] px-3 transition duration-200 ${keyboard ? "pointer-events-none translate-y-full opacity-0" : "translate-y-0 opacity-100"}`} style={{ paddingBottom: "max(.65rem, env(safe-area-inset-bottom))" }} aria-label="Primary navigation">
-      <div className="livv-tabbar-dock mx-auto grid max-w-2xl grid-cols-5 items-center rounded-[20px] border px-1.5 py-1.5">
+    <nav className={`livv-tabbar fixed inset-x-0 bottom-0 z-[80] border-t border-[var(--livv-pro-line)] bg-[var(--livv-pro-bg)]/96 px-2 transition duration-200 ${keyboard ? "pointer-events-none translate-y-full opacity-0" : "translate-y-0 opacity-100"}`} style={{ paddingBottom: "max(.4rem, env(safe-area-inset-bottom))" }} aria-label="Primary navigation">
+      <div className="mx-auto grid w-full max-w-[44rem] grid-cols-5 items-center py-1">
         {NAV.map(({ href, label, Icon, match }) => {
           const active = match(pathname);
           return (
-            <Link key={href} href={href} aria-current={active ? "page" : undefined} className={`livv-tab flex min-h-[52px] flex-col items-center justify-center gap-1 rounded-[15px] px-1 py-2 transition-colors ${active ? "is-active" : ""}`}>
-              <Icon size={19} strokeWidth={active ? 2.15 : 1.7} />
-              <span className="text-[10px] font-medium tracking-[-.01em]">{label}</span>
+            <Link key={href} href={href} aria-current={active ? "page" : undefined} className={`livv-tab flex min-h-[54px] flex-col items-center justify-center gap-1 px-1 py-2 ${active ? "is-active" : ""}`}>
+              <Icon size={20} strokeWidth={active ? 2.25 : 1.65} />
+              <span className="text-[10px] font-medium">{label}</span>
             </Link>
           );
         })}
