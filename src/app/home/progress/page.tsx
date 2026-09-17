@@ -1,10 +1,160 @@
 "use client";
+
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { PageHero } from "@/components/layout/page-hero";
+import { ActivityConstellation } from "@/components/livv/activity-constellation";
 import { livePillars, loadRecord, weekBars, weekHitCount, type LivvRecord } from "@/lib/record";
 import { evolutionTitle } from "@/lib/levels";
 import { buildProgressInsights } from "@/lib/progress-insights";
-const COLORS:Record<string,string>={Body:"#F93827",Mind:"#F61981",Career:"#FF9D23",Finance:"#9A00FF",Social:"#4DFF00",Life:"#FCF927"};
-export default function ProgressPage(){const[rec,setRec]=useState<LivvRecord|null>(null);useEffect(()=>{const sync=()=>setRec(loadRecord());sync();for(const e of ["livv-record","livv-daily","livv-identity"])window.addEventListener(e,sync);return()=>{for(const e of ["livv-record","livv-daily","livv-identity"])window.removeEventListener(e,sync)}},[]);const insights=useMemo(()=>rec?buildProgressInsights(rec,14):null,[rec]);if(!rec||!insights)return <main className="min-h-dvh"/>;const week=weekBars(rec),pillars=livePillars(rec),evo=evolutionTitle(rec.level),pct=Math.min(100,Math.round(rec.currentXp/Math.max(1,rec.xpToNext)*100));return <main className="livv-page min-h-full overflow-hidden pb-14 text-white"><div className="mx-auto max-w-xl px-5 pt-5"><PageHero eyebrow="Progress" title="Is your life getting better?" subtitle="Progress is what your recorded actions say, not what a badge says." accent="#0F7FFF"/><section className="livv-glass mt-7 rounded-[30px] p-6"><div className="flex items-end justify-between"><div><p className="text-[10px] uppercase tracking-[.25em] text-white/45">Current evolution</p><h2 className="font-display mt-2 text-[28px]">{evo.name}</h2></div><div className="text-right"><p className="text-[9px] uppercase tracking-[.2em] text-white/40">Level</p><p className="font-display text-[30px] text-[#0F7FFF]">{rec.level}</p></div></div><p className="mt-2 text-[12px] leading-relaxed text-white/60">{evo.line}</p><div className="mt-6 h-2 overflow-hidden rounded-full bg-white/[.08]"><div className="h-full rounded-full bg-[#0F7FFF]" style={{width:`${pct}%`}}/></div><p className="mt-2 text-right text-[10px] text-white/40">{rec.currentXp} / {rec.xpToNext} XP</p></section><section className="mt-7 grid grid-cols-3 gap-2"><Stat value={`${insights.consistencyPct}%`} label="14d active"/><Stat value={`${insights.longestActiveRun}d`} label="best run"/><Stat value={`${insights.objectivesCompletedInWindow}`} label="actions"/></section><section className="mt-4 grid grid-cols-2 gap-2"><Stat value={insights.momentum} label="momentum"/><Stat value={`${insights.balancePct}%`} label="life areas active"/></section><section className="mt-9"><div className="flex items-end justify-between"><div><p className="text-[10px] uppercase tracking-[.25em] text-white/40">This week</p><h2 className="font-display mt-1 text-[23px]">Consistency</h2></div><span className="text-[11px] text-white/45">{weekHitCount(rec)}/7 active</span></div><div className="mt-5 flex items-end gap-2">{week.map(d=><div key={d.key} className="flex flex-1 flex-col items-center gap-2"><div className="relative h-20 w-full overflow-hidden rounded-xl bg-white/[.05]"><div className="absolute bottom-0 w-full rounded-xl bg-[#0F7FFF]/75" style={{height:`${Math.max(8,d.v)}%`}}/></div><span className="text-[9px] text-white/40">{d.d}</span></div>)}</div></section><section className="mt-10"><p className="text-[10px] uppercase tracking-[.25em] text-white/40">Six areas</p><h2 className="font-display mt-1 text-[23px]">Where your life is moving.</h2><div className="mt-4 space-y-3">{pillars.map(p=><div key={p.id} className="rounded-[24px] border border-white/10 bg-white/[.025] p-4"><div className="flex items-center justify-between"><div><p className="text-[14px] font-semibold">{p.name}</p><p className="mt-1 text-[10px] text-white/40">Level {p.level} · {p.xp} XP</p></div><span className="h-2.5 w-2.5 rounded-full" style={{background:COLORS[p.name]}}/></div><div className="mt-4 h-1.5 overflow-hidden rounded-full bg-white/[.08]"><div className="h-full rounded-full" style={{width:`${p.progress}%`,background:COLORS[p.name]}}/></div></div>)}</div></section><section className="mt-10"><p className="text-[10px] uppercase tracking-[.25em] text-white/40">What the evidence says</p><div className="mt-4 space-y-3">{insights.bullets.map(b=><div key={b.title} className="rounded-[24px] border border-white/10 bg-white/[.025] p-5"><p className="text-[9px] uppercase tracking-[.2em] text-white/40">{b.title}</p><p className="mt-2 text-[15px] font-medium leading-snug text-white/85">{b.detail}</p><p className="mt-2 text-[10px] leading-relaxed text-white/40">{b.evidence.facts.slice(0,3).join(" · ")}</p></div>)}</div></section><Link href="/home/evala" className="mt-10 flex items-center justify-between rounded-[24px] border border-white/10 bg-white/[.025] p-5"><div><p className="text-[10px] uppercase tracking-[.2em] text-[#0F7FFF]">Next step</p><p className="mt-1 text-[15px] font-semibold">Ask Evala what to improve next.</p></div><span className="text-white/45">→</span></Link></div></main>}
-function Stat({value,label}:{value:string;label:string}){return <div className="rounded-[22px] border border-white/10 bg-white/[.025] p-4"><p className="font-display text-[20px] capitalize">{value}</p><p className="mt-1 text-[9px] uppercase tracking-[.16em] text-white/45">{label}</p></div>}
+
+const COLORS: Record<string, string> = {
+  Body: "#F93827",
+  Mind: "#F61981",
+  Career: "#FF9D23",
+  Finance: "#9A00FF",
+  Social: "#4DFF00",
+  Life: "#FCF927",
+};
+
+export default function ProgressPage() {
+  const [rec, setRec] = useState<LivvRecord | null>(null);
+
+  useEffect(() => {
+    const sync = () => setRec(loadRecord());
+    sync();
+    for (const e of ["livv-record", "livv-daily", "livv-identity"]) window.addEventListener(e, sync);
+    return () => {
+      for (const e of ["livv-record", "livv-daily", "livv-identity"]) window.removeEventListener(e, sync);
+    };
+  }, []);
+
+  const insights = useMemo(() => (rec ? buildProgressInsights(rec, 14) : null), [rec]);
+  if (!rec || !insights) return <main className="min-h-dvh" />;
+
+  const week = weekBars(rec);
+  const pillars = livePillars(rec);
+  const evo = evolutionTitle(rec.level);
+  const pct = Math.min(100, Math.round((rec.currentXp / Math.max(1, rec.xpToNext)) * 100));
+
+  return (
+    <main className="livv-page min-h-full overflow-hidden pb-14 text-white">
+      <div className="mx-auto max-w-xl px-5 pt-5">
+        <PageHero
+          eyebrow="Progress"
+          title="Is your life getting better?"
+          subtitle="Progress is what your recorded actions say, not what a badge says."
+          accent="#0F7FFF"
+        />
+
+        <section className="livv-glass relative mt-7 overflow-hidden rounded-[30px] p-6">
+          <div className="absolute -right-20 -top-24 h-48 w-48 rounded-full bg-[#0F7FFF]/[.07] blur-3xl" />
+          <div className="relative flex items-end justify-between">
+            <div>
+              <div className="flex items-center gap-2">
+                <span className="h-1.5 w-1.5 rounded-full bg-[#0F7FFF] shadow-[0_0_10px_#0F7FFF]" />
+                <p className="text-[10px] uppercase tracking-[.25em] text-white/45">Current evolution</p>
+              </div>
+              <h2 className="font-display mt-2 text-[28px]">{evo.name}</h2>
+            </div>
+            <div className="text-right">
+              <p className="text-[9px] uppercase tracking-[.2em] text-white/40">Level</p>
+              <p className="font-display text-[30px] text-[#0F7FFF]">{rec.level}</p>
+            </div>
+          </div>
+          <p className="relative mt-2 text-[12px] leading-relaxed text-white/60">{evo.line}</p>
+          <div className="relative mt-6 h-2 overflow-hidden rounded-full bg-white/[.08]">
+            <div className="h-full rounded-full bg-[#0F7FFF] transition-[width] duration-700" style={{ width: `${pct}%` }} />
+          </div>
+          <div className="relative mt-2 flex justify-between text-[10px] text-white/40">
+            <span>{pct}% toward next level</span>
+            <span>{rec.currentXp} / {rec.xpToNext} XP</span>
+          </div>
+        </section>
+
+        <section className="mt-4 grid grid-cols-3 gap-2">
+          <Stat value={`${insights.consistencyPct}%`} label="14d active" />
+          <Stat value={`${insights.longestActiveRun}d`} label="best run" />
+          <Stat value={`${insights.objectivesCompletedInWindow}`} label="actions" />
+        </section>
+        <section className="mt-2 grid grid-cols-2 gap-2">
+          <Stat value={insights.momentum} label="momentum" />
+          <Stat value={`${insights.balancePct}%`} label="life areas active" />
+        </section>
+
+        <ActivityConstellation rec={rec} />
+
+        <section className="mt-9">
+          <div className="flex items-end justify-between">
+            <div>
+              <p className="text-[10px] uppercase tracking-[.25em] text-white/40">This week</p>
+              <h2 className="font-display mt-1 text-[23px]">Consistency</h2>
+            </div>
+            <span className="text-[11px] text-white/45">{weekHitCount(rec)}/7 active</span>
+          </div>
+          <div className="mt-5 flex items-end gap-2">
+            {week.map((d) => (
+              <div key={d.key} className="flex flex-1 flex-col items-center gap-2">
+                <div className="relative h-20 w-full overflow-hidden rounded-xl bg-white/[.05]">
+                  <div className="absolute bottom-0 w-full rounded-xl bg-[#0F7FFF]/75 transition-[height] duration-700" style={{ height: `${Math.max(8, d.v)}%` }} />
+                </div>
+                <span className="text-[9px] text-white/40">{d.d}</span>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section className="mt-10">
+          <p className="text-[10px] uppercase tracking-[.25em] text-white/40">Six areas</p>
+          <h2 className="font-display mt-1 text-[23px]">Where your life is moving.</h2>
+          <div className="mt-4 space-y-3">
+            {pillars.map((p) => (
+              <div key={p.id} className="rounded-[24px] border border-white/10 bg-white/[.025] p-4 transition hover:border-white/20">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <p className="text-[14px] font-semibold">{p.name}</p>
+                    <p className="mt-1 text-[10px] text-white/40">Level {p.level} · {p.xp} XP</p>
+                  </div>
+                  <span className="h-2.5 w-2.5 rounded-full" style={{ background: COLORS[p.name], boxShadow: `0 0 12px ${COLORS[p.name]}55` }} />
+                </div>
+                <div className="mt-4 h-1.5 overflow-hidden rounded-full bg-white/[.08]">
+                  <div className="h-full rounded-full transition-[width] duration-700" style={{ width: `${p.progress}%`, background: COLORS[p.name] }} />
+                </div>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <section className="mt-10">
+          <p className="text-[10px] uppercase tracking-[.25em] text-white/40">What the evidence says</p>
+          <div className="mt-4 space-y-3">
+            {insights.bullets.map((b) => (
+              <div key={b.title} className="rounded-[24px] border border-white/10 bg-white/[.025] p-5">
+                <p className="text-[9px] uppercase tracking-[.2em] text-white/40">{b.title}</p>
+                <p className="mt-2 text-[15px] font-medium leading-snug text-white/85">{b.detail}</p>
+                <p className="mt-2 text-[10px] leading-relaxed text-white/40">{b.evidence.facts.slice(0, 3).join(" · ")}</p>
+              </div>
+            ))}
+          </div>
+        </section>
+
+        <Link href="/home/evala" className="mt-10 flex items-center justify-between rounded-[24px] border border-white/10 bg-white/[.025] p-5 transition hover:border-[#0F7FFF]/35 hover:bg-[#0F7FFF]/[.04]">
+          <div>
+            <p className="text-[10px] uppercase tracking-[.2em] text-[#0F7FFF]">Next step</p>
+            <p className="mt-1 text-[15px] font-semibold">Ask Evala what to improve next.</p>
+          </div>
+          <span className="text-white/45">→</span>
+        </Link>
+      </div>
+    </main>
+  );
+}
+
+function Stat({ value, label }: { value: string; label: string }) {
+  return (
+    <div className="rounded-[22px] border border-white/10 bg-white/[.025] p-4">
+      <p className="font-display text-[20px] capitalize">{value}</p>
+      <p className="mt-1 text-[9px] uppercase tracking-[.16em] text-white/45">{label}</p>
+    </div>
+  );
+}
