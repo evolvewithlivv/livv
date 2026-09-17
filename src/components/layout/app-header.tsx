@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { Search, Bell } from "lucide-react";
 import { Avatar } from "@/components/identity/avatar";
 import { InstallApp } from "@/components/layout/install-app";
 import { loadIdentity, type Identity } from "@/lib/identity";
@@ -8,7 +9,6 @@ import { useEffect, useState } from "react";
 
 const LOGO = "https://raw.githubusercontent.com/evolvewithlivv/livv/main/Photoroom_20260831_123254.png";
 
-/** Same top chrome on every authenticated screen. */
 export function AppHeader() {
   const [me, setMe] = useState<Identity | null>(null);
 
@@ -24,31 +24,27 @@ export function AppHeader() {
   }, []);
 
   return (
-    <header className="livv-app-header relative z-[70] px-5">
-      <div
-        className="mx-auto flex max-w-xl items-center justify-between gap-3"
-        style={{ height: "2.75rem", marginTop: "max(0.55rem, env(safe-area-inset-top))" }}
-      >
-        <Link href="/home" aria-label="LIVV home" className="group flex min-w-0 items-center gap-2">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={LOGO} alt="LIVV" className="h-8 w-8 shrink-0 object-contain transition group-active:scale-95" />
-          <span className="text-[10px] font-semibold leading-none tracking-[0.32em] text-white/35">LIVV</span>
+    <header className="livv-app-header relative z-[70] px-4">
+      <div className="mx-auto flex max-w-xl items-center justify-between gap-3 py-2.5" style={{ marginTop: "max(0.35rem, env(safe-area-inset-top))" }}>
+        <Link href="/home" aria-label="LIVV home" className="flex min-w-0 items-center gap-2.5">
+          <span className="grid h-9 w-9 shrink-0 place-items-center rounded-[13px] border border-white/10 bg-white/[0.035]">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src={LOGO} alt="LIVV" className="h-7 w-7 object-contain" />
+          </span>
+          <span className="text-[11px] font-bold tracking-[0.34em] text-white/65">LIVV</span>
         </Link>
-        <div className="flex min-w-0 items-center gap-2">
-          <InstallApp />
-          <Link
-            href="/home/messages"
-            className="shrink-0 self-center px-1 py-1 text-[10px] font-medium uppercase leading-none tracking-[0.18em] text-white/45 transition hover:text-white/70"
-          >
-            Inbox
+        <div className="flex items-center gap-1">
+          <Link href="/home/mind" aria-label="Search LIVV" className="grid h-10 w-10 place-items-center rounded-full text-white/50 hover:bg-white/[0.05] hover:text-white">
+            <Search size={18} strokeWidth={1.8} />
           </Link>
-          {me ? (
-            <Link href="/home/profile" aria-label="Profile" className="shrink-0">
-              <Avatar identity={me} size={34} />
-            </Link>
-          ) : null}
+          <Link href="/home/messages" aria-label="Inbox" className="relative grid h-10 w-10 place-items-center rounded-full text-white/50 hover:bg-white/[0.05] hover:text-white">
+            <Bell size={18} strokeWidth={1.8} />
+          </Link>
+          <InstallApp />
+          {me ? <Link href="/home/profile" aria-label="Profile" className="ml-1 rounded-full"><Avatar identity={me} size={34} /></Link> : null}
         </div>
       </div>
+      <div className="mx-auto max-w-xl border-b border-white/[0.055]" />
     </header>
   );
 }
