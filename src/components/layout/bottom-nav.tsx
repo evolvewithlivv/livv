@@ -37,7 +37,7 @@ export function BottomNav() {
         {NAV.map(({ href, label, Icon, match }) => {
           const active = match(pathname);
           return (
-            <Link key={href} href={href} aria-current={active ? "page" : undefined} className={`livv-tab flex min-h-[54px] flex-col items-center justify-center gap-1 px-1 py-2 ${active ? "is-active" : ""}`}>
+            <Link key={href} href={href} aria-current={active ? "page" : undefined} className={`livv-tab flex min-h-[54px] flex-col items-center justify-center gap-1 rounded-xl px-1 py-2 ${active ? "is-active" : ""}`}>
               <Icon size={20} strokeWidth={active ? 2.25 : 1.65} />
               <span className="text-[10px] font-medium">{label}</span>
             </Link>
