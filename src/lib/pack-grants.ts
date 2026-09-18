@@ -4,8 +4,9 @@ import type { PackGrade, PackState } from "./packs";
 
 const GRANT_FLAG = "livv-pack-grants-v1";
 
-/** Official grants only — @kanyethomas and internal seed accounts. */
+/** Official grants only — internal/test accounts. */
 export const PACK_GRANTS: Record<string, PackGrade[]> = {
+  evolvewithlivv: [1, 2, 3, 4],
   livvwillprosper: [1, 2, 3, 4],
   kanyethomas: [1, 2, 3, 4],
 };
@@ -19,14 +20,16 @@ export function applyPackGrants(username: string, state: PackState): PackState {
   try {
     const raw = window.localStorage.getItem(GRANT_FLAG);
     const done = raw ? (JSON.parse(raw) as Record<string, boolean>) : {};
-    const key = `${clean}:spark-rise-signal-apex`;
+    const key = clean + ":spark-rise-signal-apex";
     if (done[key]) return state;
 
     const now = Date.now();
     const pending = [...state.pending];
+    const existingGrades = new Set(pending.map((pack) => pack.grade));
     for (const grade of grades) {
+      if (existingGrades.has(grade)) continue;
       pending.push({
-        id: `grant_${grade}_${now}`,
+        id: "grant_" + clean + "_" + grade + "_" + now,
         grade,
         grantedAt: now,
       });
