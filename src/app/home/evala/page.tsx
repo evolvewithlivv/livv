@@ -1,37 +1,66 @@
 "use client";
-import { useEffect, useMemo, useState } from "react";
-import Link from "next/link";
-import { PageHero } from "@/components/layout/page-hero";
-import { livePillars, loadRecord, logCustomAction, setObjective, todaysCustom, todaysObjectives, type LivvRecord } from "@/lib/record";
-import { loadIdentity } from "@/lib/identity";
-import { evolutionTitle } from "@/lib/levels";
-import { strongestPillar, needsAttention } from "@/lib/command";
-import { feedback } from "@/lib/sensory";
-import { cn } from "@/lib/utils";
-import { PILLAR_DEFS } from "@/lib/evolve-data";
-import { buildEvalaEvidence } from "@/lib/evala-evidence";
-import { ensureAnonymousSession } from "@/lib/supabase/anon-session";
-import { getSupabaseBrowserClient, isSupabaseConfigured } from "@/lib/supabase/client";
 
-const PROMPTS=["What should I prioritize this week?","Where am I wasting time or money?","Turn my biggest goal into the next three actions.","Review my last seven days without sugarcoating it.","What should I stop doing right now?","What is the smallest action that restores momentum?"];
-const PLANS=[{label:"Career",text:"Choose one outcome that makes this week meaningfully better.",pillar:"Career"},{label:"Finance",text:"Make one decision that protects or grows your money.",pillar:"Finance"},{label:"Life",text:"Remove one piece of friction from tomorrow.",pillar:"Life"}];
-export default function EvalaPage(){
- const[rec,setRec]=useState<LivvRecord|null>(null);const[draft,setDraft]=useState("");const[thread,setThread]=useState<{role:"you"|"evala";text:string}[]>([]);const[busy,setBusy]=useState(false);const[logOpen,setLogOpen]=useState(false);const[title,setTitle]=useState("");const[pillar,setPillar]=useState("Mind");const[size,setSize]=useState<"small"|"standard"|"major">("standard");
- useEffect(()=>{const sync=()=>setRec(loadRecord());sync();window.addEventListener("livv-record",sync);return()=>window.removeEventListener("livv-record",sync)},[]);
- const briefing=useMemo(()=>{if(!rec)return null;const strong=strongestPillar(rec),weak=needsAttention(rec),evo=evolutionTitle(rec.level),open=todaysObjectives(rec).filter(o=>!o.completed),evidence=buildEvalaEvidence(rec);return{evo,strong,weak,open,evidence,line:evidence.headline}},[rec]);
- if(!rec||!briefing)return <main className="min-h-dvh"/>;
- const snapshot=()=>{const me=loadIdentity();return{name:me.displayName||me.username,level:rec.level,streak:rec.streak,embers:me.embers,evo:briefing.evo.name,strong:briefing.strong.name,weak:briefing.weak.name,open:briefing.open.map(o=>o.title),lastWorkout:rec.lastWorkout?.name||null,evidence:briefing.evidence.snapshotLines.slice(0,12)}};
- const auth=async():Promise<Record<string,string>>=>{if(!isSupabaseConfigured())return{};try{await ensureAnonymousSession();const client=getSupabaseBrowserClient();if(!client)return{};const{data}=await client.auth.getSession();return data.session?.access_token?{Authorization:`Bearer ${data.session.access_token}`}:{}}catch{return{}}};
- const ask=async(question:string)=>{const q=question.trim();if(!q||busy)return;feedback("tick");setDraft("");setThread(t=>[...t,{role:"you",text:q}]);setBusy(true);try{const headers=await auth();if(isSupabaseConfigured()&&!headers.Authorization){setThread(t=>[...t,{role:"evala",text:"Your LIVV session is still loading. Try again in a second."}]);return}const res=await fetch("/api/evala",{method:"POST",headers:{"Content-Type":"application/json",...headers},body:JSON.stringify({question:q,snapshot:snapshot()})});const data=(await res.json()) as{text?:string;error?:string};setThread(t=>[...t,{role:"evala",text:res.ok?(data.text||"Say that again."):(data.error||"Evala could not answer that pass.")}])}catch{setThread(t=>[...t,{role:"evala",text:"I could not reach the live layer. Ask again in a second."}])}finally{setBusy(false)}};
- const pillars=livePillars(rec),custom=todaysCustom(rec),completed=todaysObjectives(rec).filter(o=>o.completed).length,total=todaysObjectives(rec).length;
- return <main className="livv-page relative min-h-full overflow-hidden pb-12 text-white"><div className="relative z-10 mx-auto max-w-xl px-5 pt-5"><PageHero eyebrow="Intelligence" title="Evala" subtitle="Turn questions into decisions, then turn decisions into recorded action." accent="#9A00FF"/>
- <section className="livv-glass mt-7 overflow-hidden rounded-[30px] p-5"><div className="flex items-center justify-between"><div><p className="text-[10px] uppercase tracking-[0.28em] text-[#9A00FF]">Live read</p><p className="mt-1 text-[11px] text-white/45">Built from your current LIVV record</p></div><span className="rounded-full border border-white/10 px-3 py-1 text-[9px] uppercase tracking-[0.2em] text-white/50">Active</span></div><p className="font-display mt-6 text-[25px] leading-[1.12]">{briefing.line}</p><div className="mt-6 grid grid-cols-3 gap-2"><Metric label="EVOLUTION" value={`Lv ${rec.level}`}/><Metric label="CHAIN" value={`${rec.streak}d`}/><Metric label="TODAY" value={`${completed}/${total}`}/></div><div className="mt-6 border-t border-white/[0.07] pt-5"><p className="text-[9px] uppercase tracking-[0.22em] text-white/40">Evidence</p><ul className="mt-3 space-y-2">{briefing.evidence.items.slice(0,4).map(item=><li key={item.claim} className="rounded-2xl border border-white/[0.07] bg-white/[0.02] p-3"><p className="text-[13px] font-medium text-white/85">{item.claim}</p><p className="mt-1 text-[10px] leading-relaxed text-white/40">{item.because.slice(0,3).join(" · ")}</p></li>)}</ul></div></section>
- <section className="mt-8"><div className="mb-4"><p className="text-[10px] uppercase tracking-[0.25em] text-white/40">Practical planning</p><h2 className="font-display mt-1 text-[24px]">Make the next move obvious.</h2><p className="mt-1 text-[12px] text-white/50">Use one area as the anchor, then record the action you actually take.</p></div><div className="grid gap-3">{PLANS.map((plan,i)=><button key={plan.label} type="button" onClick={()=>{setPillar(plan.pillar);setTitle("");setLogOpen(true)}} className="flex items-center gap-4 rounded-[24px] border border-white/10 bg-white/[0.025] p-4 text-left"><span className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl border border-white/10 text-[10px] font-bold" style={{color:["#FF9D23","#9A00FF","#FCF927"][i]}}>{String(i+1).padStart(2,"0")}</span><span className="min-w-0 flex-1"><span className="block text-[15px] font-semibold">{plan.label}</span><span className="mt-1 block text-[11px] leading-relaxed text-white/50">{plan.text}</span></span><span className="text-white/35">→</span></button>)}</div></section>
- <section className="mt-9"><div className="flex items-end justify-between"><div><p className="text-[10px] uppercase tracking-[0.25em] text-white/40">Today</p><p className="mt-1 text-[12px] text-white/50">Small actions compound.</p></div><span className="text-[12px] text-[#9A00FF]">{completed}/{total}</span></div><div className="mt-4 space-y-2">{todaysObjectives(rec).map((obj,i)=><button key={obj.id} type="button" onClick={()=>{setObjective(obj.id,!obj.completed);feedback(obj.completed?"tick":"checkin");setRec(loadRecord())}} className={cn("group flex w-full items-center gap-3 rounded-2xl border p-3.5 text-left",obj.completed?"border-[#9A00FF]/25 bg-[#9A00FF]/[0.05]":"border-white/[0.08] bg-white/[0.025]")}><span className={cn("flex h-9 w-9 shrink-0 items-center justify-center rounded-xl text-xs",obj.completed?"bg-[#9A00FF] text-white":"bg-white/[0.04] text-white/35 ring-1 ring-white/10")}>{obj.completed?"✓":String(i+1).padStart(2,"0")}</span><span className="min-w-0 flex-1"><span className={cn("block text-[14px]",obj.completed&&"text-white/40 line-through")}>{obj.title}</span><span className="mt-0.5 block text-[11px] text-white/40">{obj.pillar} · +{obj.xp} XP</span></span><span className="text-white/25">›</span></button>)}{custom.map(c=><div key={c.id} className="flex items-center gap-3 px-2 py-2 text-[12px] text-white/50"><span className="h-1.5 w-1.5 rounded-full bg-[#9A00FF]"/>{c.title}<span className="text-white/25">+{c.xp}</span></div>)}</div></section>
- <section className="mt-10 rounded-[28px] border border-white/10 bg-white/[0.025] p-5"><div className="flex items-end justify-between"><div><p className="text-[10px] uppercase tracking-[0.25em] text-white/40">Ask Evala</p><h2 className="font-display mt-1 text-[23px]">Think it through.</h2></div></div><div className="mt-4 flex gap-2 overflow-x-auto pb-1">{PROMPTS.map(p=><button key={p} type="button" onClick={()=>ask(p)} className="shrink-0 rounded-full border border-white/10 bg-white/[0.025] px-3 py-2 text-[11px] text-white/50">{p}</button>)}</div><div className="mt-5 space-y-3">{thread.map((m,i)=><div key={i} className={m.role==="you"?"text-right":"text-left"}><p className="text-[9px] uppercase tracking-[0.2em] text-white/25">{m.role==="you"?"You":"Evala"}</p><p className={cn("mt-1 inline-block max-w-[92%] rounded-2xl px-3.5 py-3 text-[13px] leading-relaxed",m.role==="you"?"bg-white/[0.04] text-white/60":"bg-[#9A00FF]/[0.07] text-white/80 ring-1 ring-[#9A00FF]/10")}>{m.text}</p></div>)}</div>{busy&&<p className="mt-3 text-[11px] text-white/40">Evala is reading it...</p>}<div className="mt-5 flex gap-2"><input value={draft} onChange={e=>setDraft(e.target.value)} onKeyDown={e=>e.key==="Enter"&&ask(draft)} placeholder="Ask from your actual life..." aria-label="Ask Evala" className="h-12 min-w-0 flex-1 rounded-2xl bg-white/[0.035] px-4 text-sm outline-none ring-1 ring-white/10 placeholder:text-white/30"/><button type="button" disabled={busy} onClick={()=>ask(draft)} className="h-12 rounded-2xl bg-white px-5 text-sm font-semibold text-black disabled:opacity-40">Ask</button></div></section>
- <div className="mt-10 grid grid-cols-2 gap-3"><div className="rounded-[24px] border border-white/10 bg-white/[0.025] p-4"><p className="text-[9px] uppercase tracking-[0.2em] text-white/40">Leading</p><p className="mt-3 text-[18px] font-semibold">{briefing.strong.name}</p><p className="mt-1 text-[11px] text-white/40">Level {briefing.strong.level}</p></div><div className="rounded-[24px] border border-white/10 bg-white/[0.025] p-4"><p className="text-[9px] uppercase tracking-[0.2em] text-white/40">Needs attention</p><p className="mt-3 text-[18px] font-semibold">{briefing.weak.name}</p><p className="mt-1 text-[11px] text-white/40">Level {briefing.weak.level}</p></div></div>
- <Link href="/home/progress" className="mt-9 flex items-center justify-between border-t border-white/[0.07] pt-5 text-[13px] text-white/45"><span>See the full progress picture</span><span>→</span></Link></div>
- {logOpen&&<div className="fixed inset-0 z-[70] flex items-end bg-black/75 backdrop-blur-md"><div className="w-full max-w-xl rounded-t-[30px] border-t border-white/10 bg-[#0a0c10] p-5 pb-10"><div className="flex items-center justify-between"><div><p className="text-[10px] uppercase tracking-[0.24em] text-white/40">Log action</p><p className="mt-1 text-[12px] text-white/30">Record what you actually did.</p></div><button type="button" onClick={()=>setLogOpen(false)} className="grid h-10 w-10 place-items-center text-xl text-white/45" aria-label="Close">×</button></div><input autoFocus value={title} onChange={e=>setTitle(e.target.value)} placeholder="What did you actually do?" aria-label="Action" className="mt-6 w-full border-b border-white/10 bg-transparent pb-3 text-[19px] outline-none placeholder:text-white/25"/><div className="mt-5 flex flex-wrap gap-2">{PILLAR_DEFS.filter(p=>p.id!=="life").map(p=><button key={p.id} type="button" onClick={()=>setPillar(p.name)} className={cn("rounded-full px-3 py-2 text-xs ring-1",pillar===p.name?"bg-[#9A00FF]/20 text-white ring-[#9A00FF]/40":"text-white/40 ring-white/10")}>{p.name}</button>)}</div><div className="mt-4 flex gap-2">{(["small","standard","major"] as const).map(s=><button key={s} type="button" onClick={()=>setSize(s)} className={cn("flex-1 rounded-xl py-3 text-xs capitalize ring-1",size===s?"bg-[#9A00FF]/10 text-white ring-[#9A00FF]/40":"text-white/40 ring-white/10")}>{s}</button>)}</div><button type="button" onClick={()=>{if(title.trim().length<2)return;logCustomAction({title,pillar,size});feedback("complete");setRec(loadRecord());setTitle("");setLogOpen(false)}} className="mt-6 w-full rounded-2xl bg-white py-3.5 text-sm font-semibold text-black">Add to record</button></div></div>}
- </main>;
+import { FormEvent, useEffect, useRef, useState } from "react";
+import { ArrowUp, Sparkles } from "lucide-react";
+import { getSupabaseBrowserClient } from "@/lib/supabase/client";
+
+type Message = { role: "user" | "assistant"; content: string };
+const STARTER: Message = { role: "assistant", content: "I'm EVALA. Tell me what's going on, what you're trying to change, or what you need to figure out." };
+
+export default function EvalaPage() {
+  const [messages, setMessages] = useState<Message[]>([STARTER]);
+  const [input, setInput] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState("");
+  const endRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => { endRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages, busy]);
+
+  async function send(e?: FormEvent) {
+    e?.preventDefault();
+    const text = input.trim();
+    if (!text || busy) return;
+    setInput(""); setError("");
+    const next = [...messages, { role: "user" as const, content: text }];
+    setMessages(next); setBusy(true);
+    try {
+      const supabase = getSupabaseBrowserClient();
+      const { data } = await supabase?.auth.getSession() ?? { data: { session: null } };
+      const token = data.session?.access_token;
+      if (!token) throw new Error("Sign in to use EVALA.");
+      const res = await fetch("/api/evala/chat", { method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` }, body: JSON.stringify({ messages: next }) });
+      const payload = await res.json().catch(() => ({}));
+      if (!res.ok) throw new Error(payload.error || "EVALA couldn't respond.");
+      setMessages(current => [...current, { role: "assistant", content: payload.message }]);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "EVALA couldn't respond.");
+    } finally { setBusy(false); }
+  }
+
+  return (
+    <main className="livv-page min-h-full pb-24">
+      <div className="mx-auto flex min-h-[calc(100dvh-8rem)] w-full max-w-xl flex-col px-5 pb-8 sm:px-6">
+        <section className="pt-6">
+          <div className="flex items-center gap-3">
+            <div className="grid h-10 w-10 place-items-center rounded-full border border-livv-border"><Sparkles size={17} /></div>
+            <div><p className="text-[10px] font-semibold uppercase tracking-[.2em] text-livv-muted">LIVV Intelligence</p><h1 className="mt-1 text-[30px] font-semibold tracking-[-.05em]">EVALA</h1></div>
+          </div>
+          <p className="mt-3 max-w-[40ch] text-[13px] leading-relaxed text-livv-muted">Think clearly. Make the next move. EVALA is the intelligence layer inside LIVV.</p>
+        </section>
+        <section className="mt-7 flex-1 space-y-5" aria-live="polite">
+          {messages.map((m, i) => <div key={i} className={m.role === "user" ? "flex justify-end" : "flex justify-start"}><div className={m.role === "user" ? "max-w-[86%] rounded-2xl bg-livv-ink px-4 py-3 text-[13px] leading-relaxed text-livv-bg" : "max-w-[92%]"}>{m.role === "assistant" && <p className="mb-1 text-[9px] font-semibold uppercase tracking-[.18em] text-livv-muted">EVALA</p>}<p className="whitespace-pre-wrap">{m.content}</p></div></div>)}
+          {busy && <div className="flex items-center gap-2 text-[12px] text-livv-muted"><span className="h-1.5 w-1.5 animate-pulse rounded-full bg-current" />Thinking…</div>}
+          {error && <p className="border-y border-livv-border py-3 text-[12px] text-livv-muted">{error}</p>}
+          <div ref={endRef} />
+        </section>
+        <form onSubmit={send} className="sticky bottom-0 mt-6 border-t border-livv-border bg-livv-bg pt-3">
+          <div className="flex items-end gap-2 rounded-2xl border border-livv-border bg-livv-surface px-3 py-2">
+            <textarea value={input} onChange={e=>setInput(e.target.value)} onKeyDown={e=>{if(e.key==="Enter"&&!e.shiftKey){e.preventDefault();void send();}}} rows={1} maxLength={6000} placeholder="Talk to EVALA…" className="max-h-32 min-h-10 flex-1 resize-none bg-transparent px-1 py-2 text-[13px] outline-none placeholder:text-livv-muted" aria-label="Message EVALA" />
+            <button type="submit" disabled={busy||!input.trim()} className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-livv-ink text-livv-bg disabled:opacity-30" aria-label="Send message"><ArrowUp size={17}/></button>
+          </div>
+          <p className="mt-2 text-center text-[9px] text-livv-muted">EVALA can make mistakes. Verify important information.</p>
+        </form>
+      </div>
+    </main>
+  );
 }
-function Metric({label,value}:{label:string;value:string}){return <div className="rounded-2xl bg-black/20 px-3 py-3 ring-1 ring-white/[0.06]"><p className="text-[8px] tracking-[0.18em] text-white/40">{label}</p><p className="mt-1 text-[15px] font-medium text-white/80">{value}</p></div>}
