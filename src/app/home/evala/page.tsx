@@ -1,6 +1,7 @@
 "use client";
 
-import { FormEvent, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import type { FormEvent } from "react";
 import { ArrowUp, Sparkles } from "lucide-react";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 
