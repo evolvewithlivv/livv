@@ -11,6 +11,8 @@ export const PACK_GRANTS: Record<string, PackGrade[]> = {
   kanyethomas: [1, 2, 3, 4],
 };
 
+const QTY_PER_GRADE = 2;
+
 export function applyPackGrants(username: string, state: PackState): PackState {
   if (typeof window === "undefined") return state;
   const clean = username.toLowerCase().replace(/^@/, "");
@@ -20,18 +22,20 @@ export function applyPackGrants(username: string, state: PackState): PackState {
   try {
     const raw = window.localStorage.getItem(GRANT_FLAG);
     const done = raw ? (JSON.parse(raw) as Record<string, boolean>) : {};
-    // v2 grant wave — one of each pack variety ready to open
-    const key = clean + ":one-of-each-v2";
+    // v3 grant wave — 2 of each pack variety ready to open
+    const key = clean + ":two-of-each-v3";
     if (done[key]) return state;
 
     const now = Date.now();
     const pending = [...state.pending];
     for (const grade of grades) {
-      pending.push({
-        id: "grant_" + clean + "_" + grade + "_" + now,
-        grade,
-        grantedAt: now,
-      });
+      for (let i = 0; i < QTY_PER_GRADE; i++) {
+        pending.push({
+          id: "grant_" + clean + "_" + grade + "_" + now + "_" + i,
+          grade,
+          grantedAt: now,
+        });
+      }
     }
     done[key] = true;
     window.localStorage.setItem(GRANT_FLAG, JSON.stringify(done));
