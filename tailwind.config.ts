@@ -15,6 +15,8 @@ const config: Config = {
           surface: "rgb(var(--livv-surface) / <alpha-value>)",
           border: "rgb(var(--livv-border) / <alpha-value>)",
           muted: "rgb(var(--livv-muted) / <alpha-value>)",
+          ink: "rgb(var(--livv-ink) / <alpha-value>)",
+          line: "rgb(var(--livv-line) / <alpha-value>)",
           accent: "rgb(var(--livv-accent) / <alpha-value>)",
           "accent-soft": "rgb(var(--livv-accent-soft) / <alpha-value>)",
           glow: "rgb(var(--livv-accent) / <alpha-value>)",
