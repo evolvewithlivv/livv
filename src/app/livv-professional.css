@@ -4,6 +4,11 @@ html[data-theme="dark"]{--livv-pro-bg:#090a0c;--livv-pro-surface:#111316;--livv-
 html,body{background:var(--livv-pro-bg)!important;color:var(--livv-pro-ink)}body{letter-spacing:-.012em}body::before{display:none!important}.livv-app-shell{background:var(--livv-pro-bg)!important}
 .livv-app-header{background:color-mix(in srgb,var(--livv-pro-bg) 94%,transparent)!important;border-bottom:1px solid var(--livv-pro-line)!important;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
 .livv-wordmark{font-family:var(--font-display),sans-serif;font-size:18px;font-weight:700;letter-spacing:-.06em;color:var(--livv-pro-ink)}
+/* Header brand mark: white on dark, black on light */
+.livv-header-logo-light{display:none}
+html[data-theme="light"] .livv-header-logo-dark{display:none}
+html[data-theme="light"] .livv-header-logo-light{display:block}
+.livv-header-logo{display:block;user-select:none;-webkit-user-drag:none}
 .livv-icon-button{display:grid;place-items:center;width:38px;height:38px;border-radius:12px;color:var(--livv-pro-muted)}.livv-icon-button:hover{background:var(--livv-pro-accent-soft);color:var(--livv-pro-ink)}
 .livv-tabbar-dock{background:color-mix(in srgb,var(--livv-pro-surface) 97%,transparent)!important;border:1px solid var(--livv-pro-line)!important;box-shadow:0 12px 34px rgba(0,0,0,.10)!important;backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
 .livv-tab{color:var(--livv-pro-muted)!important;text-shadow:none!important}.livv-tab.is-active{color:var(--livv-pro-ink)!important;background:var(--livv-pro-accent-soft)!important}.livv-tab.is-active svg{color:var(--livv-pro-accent)!important}.livv-tabbar .livv-tab span{color:inherit!important}
@@ -25,7 +30,7 @@ html[data-theme="light"] [class~="text-white"],html[data-theme="light"] [class*=
 .livv-page-hero h1{font-weight:600!important;letter-spacing:-.055em!important}
 .livv-page-hero p{max-width:34rem!important;line-height:1.45!important;letter-spacing:.045em!important}
 .livv-page main,.livv-page>main{width:100%!important}
-.livv-page section[class*="rounded-\[28px\]"],.livv-page section[class*="rounded-\[30px\]"],.livv-page section[class*="rounded-\[32px\]"],.livv-page section[class*="rounded-3xl"],.livv-page section[class*="rounded-2xl"]{border-radius:20px!important}
+.livv-page section[class*="rounded-\\[28px\\]"],.livv-page section[class*="rounded-\\[30px\\]"],.livv-page section[class*="rounded-\\[32px\\]"],.livv-page section[class*="rounded-3xl"],.livv-page section[class*="rounded-2xl"]{border-radius:20px!important}
 .livv-social-page article{border-radius:0!important;background:transparent!important;border-left:0!important;border-right:0!important}
 .livv-social-page{padding-left:0!important;padding-right:0!important}
 .livv-social-page article p{line-height:1.45}
