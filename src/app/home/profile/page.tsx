@@ -62,7 +62,13 @@ export default function ProfilePage() {
         </section>
         <section className="profile-section border-t account-divider py-7"><p className="text-[10px] font-semibold uppercase tracking-[.2em] account-accent">Membership</p><div className="mt-2 flex items-center justify-between gap-4"><div><h2 className="text-[24px] font-semibold">{getTier(getEffectiveTier()).name}</h2><p className="mt-1 max-w-[33ch] text-[11px] leading-relaxed account-muted">Access to the parts of LIVV you have earned or purchased.</p></div><Link href="/home/settings" className="grid h-10 w-10 shrink-0 place-items-center rounded-full border account-divider account-muted"><ChevronRight size={16} /></Link></div></section>
       </div>
+        <footer className="livv-brand-footer" aria-label="LIVV">
+          {/* Official LIVV Pillars logo — intentionally exclusive to Profile. */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/share-backgrounds/LIVV%20Pillars%20Logo%20-%20BLACK.PNG" alt="LIVV pillars" className="livv-footer-logo livv-footer-logo-light" draggable={false} />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/share-backgrounds/LIVV%20Pillars%20Logo%20-%20WHITE.PNG" alt="" aria-hidden="true" className="livv-footer-logo livv-footer-logo-dark" draggable={false} />
+        </footer>
     </main>
-  );
 }
 function Stat({ value, label, icon }: { value: string; label: string; icon: ReactNode }) { return <div className="flex flex-col items-center gap-1 account-muted">{icon}<span className="text-[18px] font-semibold account-ink">{value}</span><span className="text-[9px] uppercase tracking-[.16em]">{label}</span></div>; }
