@@ -10,6 +10,7 @@ const config: Config = {
     extend: {
       colors: {
         livv: {
+          bg: "var(--livv-bg)",
           black: "var(--livv-bg)",
           dark: "var(--livv-bg)",
           surface: "rgb(var(--livv-surface) / <alpha-value>)",
