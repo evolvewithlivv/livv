@@ -84,7 +84,8 @@ export default function ShopPage() {
               <ShoppingBag size={19} strokeWidth={1.7} />
             </div>
           </div>
-          <p className="mt-4 max-w-xl text-sm leading-6 text-livv-muted">Evolution Packs for the archive. Essentials for the life you are building.</p>
+          <p className="mt-4 max-w-xl text-sm leading-6 text-livv-muted">The physical side of LIVV. Wear the standard. Carry the mindset. Keep evolving.</p>
+          <a href={SHOP_URL} target="_blank" rel="noreferrer" className="mt-5 inline-flex items-center rounded-full bg-livv-ink px-5 py-3 text-[10px] font-semibold uppercase tracking-[0.18em] text-livv-bg transition hover:opacity-90 active:scale-[0.98]">Shop the full LIVV store <ArrowUpRight size={14} className="ml-2" /></a>
         </header>
 
         <section className="border-b border-livv-line py-7">
@@ -165,8 +166,23 @@ export default function ShopPage() {
             <span className="text-[10px] font-medium uppercase tracking-[0.16em] text-livv-muted">{PRODUCTS.length} pieces</span>
           </div>
 
-          <div className="mt-4 grid grid-cols-2 gap-3">
-            {PRODUCTS.map((product) => (
+          <div className="mt-5 overflow-hidden rounded-[1.5rem] border border-livv-line bg-livv-surface">
+            <a href={PRODUCTS[0].href} target="_blank" rel="noreferrer" className="group block">
+              <div className="relative aspect-[16/10] overflow-hidden bg-livv-surface-2">
+                <img src={PRODUCTS[0].image} alt={`${PRODUCTS[0].name} / ${PRODUCTS[0].subtitle}`} className="h-full w-full object-cover object-center transition duration-700 group-hover:scale-[1.03]" />
+                <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-5 pt-16 text-white">
+                  <p className="text-[9px] font-semibold uppercase tracking-[0.2em] text-white/70">Featured / LIVV Essential</p>
+                  <div className="mt-1 flex items-end justify-between gap-4">
+                    <div><h3 className="text-xl font-semibold tracking-[-0.025em]">The Essential Long Sleeve</h3><p className="mt-1 text-xs text-white/70">Black / White Logo</p></div>
+                    <span className="shrink-0 text-sm font-semibold">$44.99</span>
+                  </div>
+                </div>
+              </div>
+            </a>
+          </div>
+
+          <div className="mt-3 grid grid-cols-2 gap-3">
+            {PRODUCTS.slice(1).map((product) => (
               <a key={product.href} href={product.href} className="group overflow-hidden rounded-2xl border border-livv-line bg-livv-surface transition active:scale-[0.99]">
                 <div className="aspect-[4/5] overflow-hidden bg-livv-surface-2">
                   <img src={product.image} alt={`${product.name} / ${product.subtitle}`} className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.025]" />
@@ -185,7 +201,7 @@ export default function ShopPage() {
           </div>
         </section>
 
-        <a href={SHOP_URL} className="mt-6 flex items-center justify-center rounded-xl border border-livv-line bg-livv-surface py-3 text-[10px] font-semibold uppercase tracking-[0.18em] transition hover:bg-livv-surface-2">Open full storefront <ArrowUpRight size={14} className="ml-2" /></a>
+        <a href={SHOP_URL} target="_blank" rel="noreferrer" className="mt-6 flex items-center justify-center rounded-xl bg-livv-ink py-4 text-[10px] font-semibold uppercase tracking-[0.18em] text-livv-bg transition hover:opacity-90 active:scale-[0.99]">Explore the entire LIVV storefront <ArrowUpRight size={14} className="ml-2" /></a>
         <p className="mt-7 text-center text-[9px] uppercase tracking-[0.2em] text-livv-muted">Built to evolve with you</p>
       </div>
 
