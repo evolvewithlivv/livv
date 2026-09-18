@@ -7,6 +7,17 @@ import { feedback } from "@/lib/sensory";
 import { PackFoil } from "./pack-foil";
 import { CardFace } from "./card-face";
 
+export function PackOpenModal({
+  packId,
+  grade,
+  onClose,
+  onOpened,
+}: {
+  packId: string;
+  grade: PackGrade;
+  onClose: () => void;
+  onOpened?: (card: CardDef) => void;
+}) {
   const [mounted, setMounted] = useState(false);
   const [phase, setPhase] = useState<"opening" | "reveal">("opening");
   const [result, setResult] = useState<ReturnType<typeof openPack>>(null);
