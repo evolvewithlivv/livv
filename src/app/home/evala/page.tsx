@@ -2,11 +2,11 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { FormEvent } from "react";
-import { ArrowUp, Sparkles } from "lucide-react";
+import { ArrowUp, RotateCcw, Sparkles } from "lucide-react";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 
 type Message = { role: "user" | "assistant"; content: string };
-const STARTER: Message = { role: "assistant", content: "I'm EVALA. Tell me what's going on, what you're trying to change, or what you need to figure out." };
+const STARTER: Message = { role: "assistant", content: "I'm EVALA. Tell me what's going on, what you're trying to change, or what you need to figure out." };\nconst CHAT_KEY = "livv-evala-chat-v1";
 
 export default function EvalaPage() {
   const [messages, setMessages] = useState<Message[]>([STARTER]);
@@ -46,7 +46,7 @@ export default function EvalaPage() {
             <div className="grid h-10 w-10 place-items-center rounded-full border border-livv-border"><Sparkles size={17} /></div>
             <div><p className="text-[10px] font-semibold uppercase tracking-[.2em] text-livv-muted">LIVV Intelligence</p><h1 className="mt-1 text-[30px] font-semibold tracking-[-.05em]">EVALA</h1></div>
           </div>
-          <p className="mt-3 max-w-[40ch] text-[13px] leading-relaxed text-livv-muted">Think clearly. Make the next move. EVALA is the intelligence layer inside LIVV.</p>
+          <div className="mt-3 flex items-start justify-between gap-4"><p className="max-w-[40ch] text-[13px] leading-relaxed text-livv-muted">Think clearly. Make the next move. EVALA is the intelligence layer inside LIVV.</p><button type="button" onClick={resetChat} className="mt-0.5 inline-flex shrink-0 items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[.14em] text-livv-muted" aria-label="Start a new EVALA conversation"><RotateCcw size={12} /> New</button></div>
         </section>
         <section className="mt-7 flex-1 space-y-5" aria-live="polite">
           {messages.map((m, i) => <div key={i} className={m.role === "user" ? "flex justify-end" : "flex justify-start"}><div className={m.role === "user" ? "max-w-[86%] rounded-2xl bg-livv-ink px-4 py-3 text-[13px] leading-relaxed text-livv-bg" : "max-w-[92%]"}>{m.role === "assistant" && <p className="mb-1 text-[9px] font-semibold uppercase tracking-[.18em] text-livv-muted">EVALA</p>}<p className="whitespace-pre-wrap">{m.content}</p></div></div>)}
