@@ -43,7 +43,7 @@ export async function POST(req: Request) {
       .slice(-20)
       .map((m: any) => ({ role: m.role, content: m.content.slice(0, 6000) }));
 
-    if (!clean.length) return jsonError("Send a message to EVALA.", 400);
+    if (!clean.length) return jsonError("Send a message to EVALA.", 400);\n    const totalChars = clean.reduce((sum: number, m: { content: string }) => sum + m.content.length, 0);\n    if (totalChars > 30000) return jsonError("That conversation is too large. Start a new EVALA conversation and try again.", 413);
 
     const apiKey = process.env.EVALA_API_KEY?.trim();
     const baseUrl = (process.env.EVALA_BASE_URL || "https://models.github.ai/inference").trim().replace(/\/$/, "");
@@ -60,7 +60,7 @@ export async function POST(req: Request) {
         temperature: 0.7,
         max_tokens: 900,
       }),
-      cache: "no-store",
+      cache: "no-store",\n      signal: AbortSignal.timeout(30000),
     });
 
     if (!response.ok) {
