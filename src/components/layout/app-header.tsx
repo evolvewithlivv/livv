@@ -25,7 +25,7 @@ export function AppHeader() {
           <img
             src="/share-backgrounds/LIVV%20Pillars%20Logo%20-%20BLACK.PNG"
             alt="LIVV"
-            className="livv-header-logo livv-header-logo-light"
+            className="livv-header-logo"
             draggable={false}
           />
           {/* eslint-disable-next-line @next/next/no-img-element */}
