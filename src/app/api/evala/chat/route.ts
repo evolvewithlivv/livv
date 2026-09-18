@@ -33,8 +33,8 @@ export async function POST(req: Request) {
     if (!token) return jsonError("Sign in to use EVALA.", 401);
 
     const supabase = createClient(url, anonKey, { auth: { persistSession: false, autoRefreshToken: false } });
-    const { data, error } = await supabase.auth.getUser(token);
-    if (error || !data.user || data.user.is_anonymous) return jsonError("Sign in to use EVALA.", 401);
+    const { data: authData, error } = await supabase.auth.getUser(token);
+    if (error || !authData.user || authData.user.is_anonymous) return jsonError("Sign in to use EVALA.", 401);
 
     const body = await req.json();
     const messages = Array.isArray(body?.messages) ? body.messages : [];
@@ -69,8 +69,8 @@ export async function POST(req: Request) {
       return jsonError("EVALA couldn't reach its model right now. Try again in a moment.", 502);
     }
 
-    const data = await response.json();
-    const message = data?.choices?.[0]?.message?.content;
+    const providerData = await response.json();
+    const message = providerData?.choices?.[0]?.message?.content;
     if (typeof message !== "string" || !message.trim()) return jsonError("EVALA returned an empty response.", 502);
 
     return NextResponse.json({ message: message.trim(), model });
