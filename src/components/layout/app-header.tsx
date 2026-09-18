@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Bell, Search } from "lucide-react";
 import { Avatar } from "@/components/identity/avatar";
 import { loadIdentity, type Identity } from "@/lib/identity";
+import { LIVV_ICON_BLACK, LIVV_ICON_WHITE } from "@/lib/header-logo";
 import { useEffect, useState } from "react";
 
 export function AppHeader() {
@@ -32,7 +33,7 @@ export function AppHeader() {
         >
           {/* Dark theme → white icon */}
           <img
-            src="/brand/livv-icon-white.png"
+            src={LIVV_ICON_WHITE}
             alt="LIVV"
             width={36}
             height={36}
@@ -41,7 +42,7 @@ export function AppHeader() {
           />
           {/* Light theme → black icon */}
           <img
-            src="/brand/livv-icon-black.png"
+            src={LIVV_ICON_BLACK}
             alt="LIVV"
             width={36}
             height={36}
