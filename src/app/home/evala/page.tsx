@@ -6,7 +6,8 @@ import { ArrowUp, RotateCcw, Sparkles } from "lucide-react";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 
 type Message = { role: "user" | "assistant"; content: string };
-const STARTER: Message = { role: "assistant", content: "I'm EVALA. Tell me what's going on, what you're trying to change, or what you need to figure out." };\nconst CHAT_KEY = "livv-evala-chat-v1";
+const STARTER: Message = { role: "assistant", content: "I'm EVALA. Tell me what's going on, what you're trying to change, or what you need to figure out." };
+const CHAT_KEY = "livv-evala-chat-v1";
 
 export default function EvalaPage() {
   const [messages, setMessages] = useState<Message[]>([STARTER]);
@@ -15,7 +16,7 @@ export default function EvalaPage() {
   const [error, setError] = useState("");
   const endRef = useRef<HTMLDivElement>(null);
 
-  useEffect(() => { endRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages, busy]);
+  useEffect(() => {\n    try {\n      const raw = window.localStorage.getItem(CHAT_KEY);\n      if (!raw) return;\n      const saved = JSON.parse(raw);\n      if (Array.isArray(saved)) {\n        const clean = saved.filter((m): m is Message => m && (m.role === "user" || m.role === "assistant") && typeof m.content === "string").slice(-40);\n        if (clean.length) setMessages(clean);\n      }\n    } catch { /* keep fresh conversation */ }\n  }, []);\n\n  useEffect(() => {\n    try { window.localStorage.setItem(CHAT_KEY, JSON.stringify(messages.slice(-40))); } catch { /* best effort */ }\n    endRef.current?.scrollIntoView({ behavior: "smooth" });\n  }, [messages, busy]);\n\n  function resetChat() {\n    setMessages([STARTER]);\n    setInput("");\n    setError("");\n    try { window.localStorage.setItem(CHAT_KEY, JSON.stringify([STARTER])); } catch { /* best effort */ }\n  }
 
   async function send(e?: FormEvent) {
     e?.preventDefault();
