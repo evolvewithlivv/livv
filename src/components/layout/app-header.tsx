@@ -31,18 +31,18 @@ export function AppHeader() {
           aria-label="LIVV home"
           className="flex min-h-11 items-center"
         >
-          {/* Official LIVV Pillars mark: black in light mode, white in dark mode. */}
+          {/* LIVV app icon: black in light mode, white in dark mode. */}
           <img
-            src="/share-backgrounds/LIVV%20Pillars%20Logo%20-%20BLACK.PNG"
+            src={LIVV_ICON_BLACK}
             alt="LIVV"
-            className="livv-header-logo livv-header-logo-light"
+            className="livv-header-icon livv-header-icon-light"
             draggable={false}
           />
           <img
-            src="/share-backgrounds/LIVV%20Pillars%20Logo%20-%20WHITE.PNG"
+            src={LIVV_ICON_WHITE}
             alt=""
             aria-hidden="true"
-            className="livv-header-logo livv-header-logo-dark"
+            className="livv-header-icon livv-header-icon-dark"
             draggable={false}
           />
         </Link>
