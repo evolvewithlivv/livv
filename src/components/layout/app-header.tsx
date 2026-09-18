@@ -19,7 +19,24 @@ export function AppHeader() {
   return (
     <header className="livv-app-header sticky top-0 z-[70] px-4">
       <div className="mx-auto flex min-h-[56px] max-w-2xl items-center justify-between gap-4" style={{ paddingTop: "max(.5rem, env(safe-area-inset-top))" }}>
-        <Link href="/home" aria-label="LIVV home" className="flex min-h-11 items-center"><span className="livv-wordmark">LIVV</span></Link>
+        <Link href="/home" aria-label="LIVV home" className="flex min-h-11 items-center">
+          {/* Official LIVV Pillars mark: black in light mode, white in dark mode. */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/share-backgrounds/LIVV%20Pillars%20Logo%20-%20BLACK.PNG"
+            alt="LIVV"
+            className="livv-header-logo livv-header-logo-light"
+            draggable={false}
+          />
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/share-backgrounds/LIVV%20Pillars%20Logo%20-%20WHITE.PNG"
+            alt=""
+            aria-hidden="true"
+            className="livv-header-logo livv-header-logo-dark"
+            draggable={false}
+          />
+        </Link>
         <div className="flex items-center gap-1">
           <Link href="/home/mind" aria-label="Search" className="livv-icon-button" title="Search"><Search size={20} strokeWidth={1.8} /></Link>
           <Link href="/home/messages" aria-label="Notifications" className="livv-icon-button" title="Notifications"><Bell size={20} strokeWidth={1.8} /></Link>
