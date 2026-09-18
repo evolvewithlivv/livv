@@ -70,5 +70,6 @@ export default function ProfilePage() {
           <img src="/share-backgrounds/LIVV%20Pillars%20Logo%20-%20WHITE.PNG" alt="" aria-hidden="true" className="livv-footer-logo livv-footer-logo-dark" draggable={false} />
         </footer>
     </main>
+  );
 }
 function Stat({ value, label, icon }: { value: string; label: string; icon: ReactNode }) { return <div className="flex flex-col items-center gap-1 account-muted">{icon}<span className="text-[18px] font-semibold account-ink">{value}</span><span className="text-[9px] uppercase tracking-[.16em]">{label}</span></div>; }
