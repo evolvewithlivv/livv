@@ -23,30 +23,26 @@ export function AppHeader() {
   return (
     <header className="livv-app-header sticky top-0 z-[70] px-4">
       <div
-        className="relative mx-auto flex min-h-[56px] max-w-2xl items-center justify-end gap-4"
+        className="relative mx-auto flex min-h-[56px] max-w-2xl items-center justify-between gap-4"
         style={{ paddingTop: "max(.5rem, env(safe-area-inset-top))" }}
       >
         <Link
           href="/home"
           aria-label="LIVV home"
-          className="absolute left-1/2 top-1/2 flex -translate-x-1/2 -translate-y-1/2 items-center justify-center"
+          className="flex min-h-11 items-center"
         >
-          {/* Dark theme → white icon */}
+          {/* Official LIVV Pillars mark: black in light mode, white in dark mode. */}
           <img
-            src={LIVV_ICON_WHITE}
+            src="/share-backgrounds/LIVV%20Pillars%20Logo%20-%20BLACK.PNG"
             alt="LIVV"
-            width={36}
-            height={36}
-            className="livv-header-logo livv-header-logo-dark h-9 w-9 object-contain"
+            className="livv-header-logo livv-header-logo-light"
             draggable={false}
           />
-          {/* Light theme → black icon */}
           <img
-            src={LIVV_ICON_BLACK}
-            alt="LIVV"
-            width={36}
-            height={36}
-            className="livv-header-logo livv-header-logo-light h-9 w-9 object-contain"
+            src="/share-backgrounds/LIVV%20Pillars%20Logo%20-%20WHITE.PNG"
+            alt=""
+            aria-hidden="true"
+            className="livv-header-logo livv-header-logo-dark"
             draggable={false}
           />
         </Link>
