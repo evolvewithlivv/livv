@@ -166,24 +166,9 @@ export default function ShopPage() {
             <span className="text-[10px] font-medium uppercase tracking-[0.16em] text-livv-muted">{PRODUCTS.length} pieces</span>
           </div>
 
-          <div className="mt-5 overflow-hidden rounded-[1.5rem]">
-            <a href={PRODUCTS[0].href} target="_blank" rel="noreferrer" className="group block">
-              <div className="relative aspect-[16/10] overflow-hidden rounded-[1.5rem]">
-                <img src={PRODUCTS[0].image} alt={`${PRODUCTS[0].name} / ${PRODUCTS[0].subtitle}`} className="h-full w-full object-cover object-center transition duration-700 group-hover:scale-[1.03]" />
-                <div className="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/70 to-transparent p-5 pt-16 text-white">
-                  <p className="text-[9px] font-semibold uppercase tracking-[0.2em] text-white/70">Featured / LIVV Essential</p>
-                  <div className="mt-1 flex items-end justify-between gap-4">
-                    <div><h3 className="text-xl font-semibold tracking-[-0.025em]">The Essential Long Sleeve</h3><p className="mt-1 text-xs text-white/70">Black / White Logo</p></div>
-                    <span className="shrink-0 text-sm font-semibold">$44.99</span>
-                  </div>
-                </div>
-              </div>
-            </a>
-          </div>
-
-          <div className="mt-3 grid grid-cols-2 gap-3">
-            {PRODUCTS.slice(1).map((product) => (
-              <a key={product.href} href={product.href} className="group transition active:scale-[0.99]">
+          <div className="mt-5 grid grid-cols-2 gap-x-4 gap-y-6">
+            {PRODUCTS.map((product) => (
+              <a key={product.href} href={product.href} target="_blank" rel="noreferrer" className="group transition active:scale-[0.99]">
                 <div className="aspect-[4/5] overflow-hidden rounded-xl">
                   <img src={product.image} alt={`${product.name} / ${product.subtitle}`} className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.025]" />
                 </div>
