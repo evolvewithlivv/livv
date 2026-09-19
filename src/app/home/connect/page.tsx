@@ -371,11 +371,7 @@ export default function SocialPage() {
                         View all {post.replies.length} replies
                       </Link>
                     ) : null}
-                    {me?.username === post.author.username ? (
-                      <button type="button" onClick={() => setPosts(deletePost(post.id))} className="ml-auto min-h-9 px-2 text-[11px] text-[var(--livv-pro-muted)]">
-                        Delete
-                      </button>
-                    ) : null}
+
                   </div>
 
                   {post.replies.length > 0 ? (
