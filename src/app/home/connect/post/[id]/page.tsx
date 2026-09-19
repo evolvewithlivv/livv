@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, Heart, MessageCircle, MoreHorizontal, Send, Share2 } from "lucide-react";
+import { ArrowLeft, Heart, MessageCircle, MoreHorizontal, Send } from "lucide-react";
 import { useParams } from "next/navigation";
 import { Avatar } from "@/components/identity/avatar";
 import { loadIdentity, type Identity } from "@/lib/identity";
@@ -14,6 +14,7 @@ export default function SocialPostPage() {
   const [me, setMe] = useState<Identity | null>(null);
   const [post, setPost] = useState<Post | null>(null);
   const [replyText, setReplyText] = useState("");
+  const [menuOpen, setMenuOpen] = useState(false);
 
   useEffect(() => {
     const sync = () => {
@@ -49,6 +50,10 @@ export default function SocialPostPage() {
     savePosts(posts);
     setPost(next);
   };
+
+  const sharePost = async () => { if (!post) return; const url = `${window.location.origin}/home/connect/post/${post.id}`; if (navigator.share) { try { await navigator.share({ title: `${post.author.displayName} on LIVV`, text: post.text || "A post from LIVV Community", url }); } catch {} } else { await navigator.clipboard?.writeText(url); } setMenuOpen(false); };
+
+  const savePostToDevice = async () => { if (!post) return; const canvas=document.createElement("canvas"); canvas.width=1080; canvas.height=1350; const ctx=canvas.getContext("2d"); if(!ctx)return; ctx.fillStyle="#f7f7f5";ctx.fillRect(0,0,1080,1350);ctx.fillStyle="#111";ctx.font="600 42px Arial";ctx.fillText("LIVV",72,92);ctx.font="600 34px Arial";ctx.fillText(post.author.displayName.slice(0,32),72,170);ctx.fillStyle="#666";ctx.font="24px Arial";ctx.fillText(`@${post.author.username} · ${formatSocialTime(post.createdAt,Date.now())}`,72,208);ctx.fillStyle="#111";ctx.font="34px Arial";let line="",y=310;for(const word of (post.text||"LIVV Community").split(" ")){const test=line?`${line} ${word}`:word;if(ctx.measureText(test).width>900){ctx.fillText(line,72,y);y+=52;line=word}else line=test}if(line)ctx.fillText(line,72,y);canvas.toBlob(blob=>{if(!blob)return;const a=document.createElement("a");a.href=URL.createObjectURL(blob);a.download=`livv-post-${post.id}.png`;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)},"image/png");setMenuOpen(false); };
 
   const reply = () => {
     if (!post || !me || !replyText.trim()) return;
