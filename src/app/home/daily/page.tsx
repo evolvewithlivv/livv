@@ -99,13 +99,11 @@ export default function DailyPage() {
   return (
     <main className="livv-page min-h-full pb-20">
       <div className="mx-auto max-w-xl px-5 pt-5">
-        <header className="pb-6 text-center">
-          <p className="text-[10px] font-semibold uppercase tracking-[.22em] text-[var(--livv-pro-muted)]">Daily</p>
-          <h1 className="mt-2 text-[clamp(1.7rem,7vw,2.25rem)] font-semibold tracking-[-.045em]">
-            {now.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" })}
-          </h1>
-          <p className="mx-auto mt-2 max-w-[38ch] text-[12px] leading-relaxed text-[var(--livv-pro-muted)]">
-            Use today however you want. Keep moving the life forward.
+        <header className="pb-6">
+          <p className="text-[10px] font-semibold uppercase tracking-[.22em] text-[var(--livv-pro-accent)]">Daily</p>
+          <h1 className="mt-2 text-[34px] font-semibold leading-none tracking-[-.055em] sm:text-[42px]">Daily.</h1>
+          <p className="mt-3 text-[12px] leading-relaxed text-[var(--livv-pro-muted)]">
+            {now.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" })} · Use today however you want.
           </p>
         </header>
 
