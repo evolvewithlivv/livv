@@ -1,6 +1,6 @@
 /* LIVV Professional System — global product reset. Presentation only; product/data logic stays intact. */
-:root{--livv-pro-bg:#f7f7f5;--livv-pro-surface:#fff;--livv-pro-surface-2:#f1f2f4;--livv-pro-ink:#111214;--livv-pro-muted:#6b7078;--livv-pro-line:#e1e3e7;--livv-pro-accent:#1769ff;--livv-pro-accent-soft:rgba(23,105,255,.08)}
-html[data-theme="dark"]{--livv-pro-bg:#090a0c;--livv-pro-surface:#111316;--livv-pro-surface-2:#181a1f;--livv-pro-ink:#f5f5f2;--livv-pro-muted:#969aa3;--livv-pro-line:#292c32;--livv-pro-accent:#6b98ff;--livv-pro-accent-soft:rgba(107,152,255,.12)}
+:root{--livv-pro-bg:#f7f7f5;--livv-pro-surface:#fff;--livv-pro-surface-2:#f1f2f4;--livv-pro-ink:#111214;--livv-pro-muted:#6b7078;--livv-pro-line:#e1e3e7;--livv-pro-accent:rgb(var(--livv-accent));--livv-pro-accent-soft:rgb(var(--livv-accent) / .08)}
+html[data-theme="dark"]{--livv-pro-bg:#090a0c;--livv-pro-surface:#111316;--livv-pro-surface-2:#181a1f;--livv-pro-ink:#f5f5f2;--livv-pro-muted:#969aa3;--livv-pro-line:#292c32;--livv-pro-accent:rgb(var(--livv-accent));--livv-pro-accent-soft:rgb(var(--livv-accent) / .12)}
 html,body{background:var(--livv-pro-bg)!important;color:var(--livv-pro-ink)}body{letter-spacing:-.012em}body::before{display:none!important}.livv-app-shell{background:var(--livv-pro-bg)!important}
 .livv-app-header{background:color-mix(in srgb,var(--livv-pro-bg) 94%,transparent)!important;border-bottom:1px solid var(--livv-pro-line)!important;backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px)}
 .livv-wordmark{font-family:var(--font-display),sans-serif;font-size:18px;font-weight:700;letter-spacing:-.06em;color:var(--livv-pro-ink)}
@@ -37,3 +37,8 @@ html[data-theme="light"] [class~="text-white"],html[data-theme="light"] [class*=
 
 /* Brand footer — the Pillars logo is the large, centered brand signature at the bottom of the app. */
 .livv-brand-footer{display:flex;justify-content:center;align-items:center;width:100%;padding:2rem 1.25rem 2.75rem;box-sizing:border-box}.livv-footer-logo{display:block;width:auto;height:92px;max-width:min(440px,90vw);object-fit:contain;object-position:center}.livv-footer-logo-dark{display:none}html[data-theme="dark"] .livv-footer-logo-light{display:none}html[data-theme="dark"] .livv-footer-logo-dark{display:block}html[data-theme="light"] .livv-footer-logo-light{display:block}html[data-theme="light"] .livv-footer-logo-dark{display:none}
+
+/* Selected LIVV accent is the single source of truth, including legacy hard-coded accent utilities. */
+html [class*="text-[#1769ff]"],html [class*="text-[#0F7FFF]"],html [class*="text-[#F93827]"],html [class*="text-[#F61981]"],html [class*="text-[#9A00FF]"],html [class*="text-[#4DFF00]"],html [class*="text-[#FCF927]"],html [class*="text-[#FF9D23]"]{color:var(--livv-pro-accent)!important}
+html [class*="bg-[#1769ff]"],html [class*="bg-[#0F7FFF]"],html [class*="bg-[#F93827]"],html [class*="bg-[#F61981]"],html [class*="bg-[#9A00FF]"],html [class*="bg-[#4DFF00]"],html [class*="bg-[#FCF927]"],html [class*="bg-[#FF9D23]"]{background-color:var(--livv-pro-accent)!important}
+html [class*="border-[#1769ff]"],html [class*="border-[#0F7FFF]"],html [class*="border-[#F93827]"],html [class*="border-[#F61981]"],html [class*="border-[#9A00FF]"],html [class*="border-[#4DFF00]"],html [class*="border-[#FCF927]"],html [class*="border-[#FF9D23]"]{border-color:var(--livv-pro-accent)!important}
