@@ -1,4 +1,4 @@
-import { DEFAULT_ACCENT,applyAppearance,type Identity,type Appearance } from "./identity";
+import { DEFAULT_ACCENT,ACCENTS,applyAppearance,type Identity,type Appearance } from "./identity";
 import { getAnonSessionState } from "./supabase/anon-session";
 import { clearLocalCloudSyncedState,markSigningOut } from "./supabase/cloud-state";
 import { getSupabaseBrowserClient,isSupabaseConfigured } from "./supabase/client";
