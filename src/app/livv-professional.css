@@ -116,3 +116,25 @@ html [class*="border-[#1769ff]"],html [class*="border-[#0F7FFF]"],html [class*="
   box-shadow: none!important;
   background: transparent!important;
 }
+
+
+/* Global page rhythm: shared shell spacing keeps LIVV screens designed as one system. */
+.livv-page > .mx-auto {
+  padding-top: 1.25rem !important;
+}
+@media (min-width: 640px) {
+  .livv-page > .mx-auto {
+    padding-top: 1.75rem !important;
+  }
+}
+.livv-page-hero {
+  padding-top: 0 !important;
+  padding-bottom: 1.5rem !important;
+  margin-bottom: 0 !important;
+}
+.livv-page-hero h1 {
+  margin-top: .65rem !important;
+}
+.livv-page-hero p + h1 {
+  margin-top: .65rem !important;
+}
