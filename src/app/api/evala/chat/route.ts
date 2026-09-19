@@ -47,6 +47,26 @@ export async function POST(req: Request) {
     const totalChars = clean.reduce((sum: number, m: { content: string }) => sum + m.content.length, 0);
     if (totalChars > 30000) return jsonError("That conversation is too large. Start a new EVALA conversation and try again.", 413);
 
+    // Protect the model provider from automated abuse and runaway spend.
+    // The database function keys the limit to the verified Supabase user and
+    // fails closed if the limiter cannot be evaluated.
+    const { data: allowed, error: rateLimitError } = await supabase.rpc("consume_evala_rate_limit", {
+      p_limit: 20,
+      p_window_seconds: 600,
+    });
+
+    if (rateLimitError) {
+      console.error("[EVALA] rate limiter error", rateLimitError.message);
+      return jsonError("EVALA is temporarily unavailable. Try again in a moment.", 503);
+    }
+
+    if (allowed !== true) {
+      return NextResponse.json(
+        { error: "EVALA request limit reached. Try again in a few minutes." },
+        { status: 429, headers: { "Retry-After": "600" } }
+      );
+    }
+
     const apiKey = process.env.EVALA_API_KEY?.trim();
     const baseUrl = (process.env.EVALA_BASE_URL || "https://models.github.ai/inference").trim().replace(/\/$/, "");
     const model = (process.env.EVALA_MODEL || "openai/gpt-4.1-mini").trim();
