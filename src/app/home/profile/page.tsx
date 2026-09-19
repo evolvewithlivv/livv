@@ -9,7 +9,6 @@ import { fileToPhoto, loadIdentity, patchIdentity, type Identity } from "@/lib/i
 import { loadRecord } from "@/lib/record";
 import { evolutionTitle } from "@/lib/levels";
 import { collectionStats } from "@/lib/packs";
-import { getTier } from "@/lib/membership";
 import { feedback } from "@/lib/sensory";
 
 const PROFILE_ACCENT = "#1769ff";
@@ -88,7 +87,7 @@ export default function ProfilePage() {
           <Link href="/home/progress" className="account-row flex items-center gap-4 border-t py-5"><span className="grid h-10 w-10 place-items-center rounded-[14px] bg-[var(--livv-pro-surface-2)] account-accent"><Trophy size={17} /></span><span className="min-w-0 flex-1"><b className="block text-[14px]">Progress</b><span className="mt-1 block text-[11px] account-muted">Chapters, milestones, and recent evidence</span></span><ChevronRight size={16} className="account-muted" /></Link>
           <Link href="/home/vault" className="account-row flex items-center gap-4 border-t py-5"><span className="grid h-10 w-10 place-items-center rounded-[14px] bg-[var(--livv-pro-surface-2)] account-accent"><Sparkles size={17} /></span><span className="min-w-0 flex-1"><b className="block text-[14px]">Vault</b><span className="mt-1 block text-[11px] account-muted">{vault.uniqueCount} of {vault.catalogSize} collected</span></span><ChevronRight size={16} className="account-muted" /></Link>
         </section>
-        <section className="profile-section border-t account-divider py-7"><p className="text-[10px] font-semibold uppercase tracking-[.2em] account-accent">Membership</p><div className="mt-2 flex items-center justify-between gap-4"><div><h2 className="text-[24px] font-semibold">{getTier(me.tier).name}</h2><p className="mt-1 max-w-[33ch] text-[11px] leading-relaxed account-muted">Access to the parts of LIVV you have earned or purchased.</p></div><Link href="/home/settings" className="grid h-10 w-10 shrink-0 place-items-center rounded-full border account-divider account-muted"><ChevronRight size={16} /></Link></div></section>
+        <section className="profile-section border-t account-divider py-7"><p className="text-[10px] font-semibold uppercase tracking-[.2em] account-accent">Membership</p><div className="mt-2 flex items-center justify-between gap-4"><div><h2 className="text-[24px] font-semibold">{me.tier === "circle" ? "Inner Circle" : me.tier === "apex" ? "Apex" : me.tier === "rise" ? "Rise" : "Spark"}</h2><p className="mt-1 max-w-[33ch] text-[11px] leading-relaxed account-muted">Access to the parts of LIVV you have earned or purchased.</p></div><Link href="/home/settings" className="grid h-10 w-10 shrink-0 place-items-center rounded-full border account-divider account-muted"><ChevronRight size={16} /></Link></div></section>
       </div>
         <footer className="livv-brand-footer" aria-label="LIVV">
           {/* Official LIVV Pillars logo — intentionally exclusive to Profile. */}
