@@ -42,12 +42,12 @@ export default function ProfilePage() {
     <main className="livv-account-page livv-page min-h-full pb-28">
       <div className="account-inner mx-auto max-w-xl px-5 pt-5">
         <PageHero eyebrow="Profile" title="Profile" subtitle="Your identity, goals, progress, and account in one place." accent={PROFILE_ACCENT} right={<div className="flex items-center gap-2"><Link href="/home/share" aria-label="Share profile" className="profile-share-action"><Share2 size={17} /></Link><Link href="/home/settings" aria-label="Settings" className="profile-edit-action"><Pencil size={16} /></Link></div>} />
-        <section className="profile-identity mt-6 pb-8 text-center">
-          <button type="button" onClick={() => fileRef.current?.click()} className="relative mx-auto block rounded-full" aria-label="Change profile photo"><Avatar identity={me} size={112} /><span className="absolute bottom-0 right-0 grid h-8 w-8 place-items-center rounded-full border-4 border-[var(--livv-pro-bg)] bg-[var(--livv-pro-ink)] text-[var(--livv-pro-bg)]"><Sparkles size={13} /></span></button>
+        <section className="profile-identity mt-6 overflow-hidden rounded-[24px] border border-[var(--livv-pro-line)] bg-[var(--livv-pro-surface)] pb-8 text-center shadow-sm">
+          <button type="button" onClick={() => fileRef.current?.click()} className="relative mx-auto block rounded-full" aria-label="Change profile photo"><Avatar identity={me} size={132} fit="contain" className="profile-avatar" /><span className="absolute bottom-1 right-1 grid h-8 w-8 place-items-center rounded-full border-4 border-[var(--livv-pro-bg)] bg-[var(--livv-pro-ink)] text-[var(--livv-pro-bg)] shadow-lg"><Sparkles size={13} /></span></button>
           <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={(e) => void photo(e.target.files?.[0])} />
           <h1 className="mt-5 text-[31px] font-semibold">{me.displayName || "Member"}</h1><p className="mt-1 text-[14px] account-muted">@{me.username || "member"}</p>
           {me.goal && <p className="mx-auto mt-4 max-w-[32ch] text-[13px] leading-relaxed account-muted">Goal: {me.goal}</p>}
-          <div className="mt-6 grid grid-cols-3 divide-x account-divider border-y py-4"><Stat value={`${rec.streak}d`} label="streak" icon={<CalendarCheck size={13} />} /><Stat value={String(rec.level)} label="level" icon={<Zap size={13} />} /><Stat value={String(me.embers)} label="embers" icon={<Flame size={13} />} /></div>
+          <div className="mt-6 grid grid-cols-3 divide-x account-divider border-y py-5"><Stat value={`${rec.streak}d`} label="streak" icon={<CalendarCheck size={13} />} /><Stat value={String(rec.level)} label="level" icon={<Zap size={13} />} /><Stat value={String(me.embers)} label="embers" icon={<Flame size={13} />} /></div>
           <Link href="/home/share" className="mt-6 inline-flex min-h-11 items-center gap-2 rounded-[14px] bg-[var(--livv-pro-ink)] px-5 text-[13px] font-semibold text-[var(--livv-pro-bg)]"><Share2 size={16} /> Share your evolution</Link>
           {status && <p className="mt-3 text-[11px] account-accent">{status}</p>}
         </section>
