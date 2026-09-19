@@ -27,6 +27,8 @@ import {
   type HealthDay,
 } from "@/lib/health";
 
+import { PageHero } from "@/components/layout/page-hero";
+
 const TOOLS = [
   {
     href: "/home/health/sleep",
@@ -94,24 +96,17 @@ export default function HealthPage() {
   return (
     <main className="livv-page min-h-full pb-20">
       <div className="mx-auto w-full max-w-xl px-5 pb-12 sm:px-6">
-        <header className="pt-6 sm:pt-9">
-          <div className="flex items-center justify-between gap-4">
-            <p className="text-[10px] font-semibold uppercase tracking-[.22em] text-livv-accent">
-              Health
-            </p>
+        <PageHero
+          eyebrow="Health"
+          title="Build the baseline."
+          subtitle="Health is the foundation underneath everything else. Track what keeps you rested, fueled, moving, and capable."
+          right={
             <span className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[.16em] text-livv-muted">
               <HeartPulse size={13} />
               Baseline
             </span>
-          </div>
-          <h1 className="mt-3 max-w-[15ch] text-[38px] font-semibold leading-[.98] tracking-[-.06em] sm:text-[46px]">
-            Build the baseline.
-          </h1>
-          <p className="mt-4 max-w-[39ch] text-[13px] leading-6 text-livv-muted">
-            Health is the foundation underneath everything else. Track what
-            keeps you rested, fueled, moving, and capable.
-          </p>
-        </header>
+          }
+        />
 
         <section className="mt-8 border-y border-livv-border py-6">
           <div className="flex items-center gap-5">

@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { feedback } from "@/lib/sensory";
+import { PageHero } from "@/components/layout/page-hero";
 import { claimDailyDrop, completeDailyTask, dailyDrop, dailyQuestion, dailySummary, dailyTasks, journalHistory, loadBuffs, loadDailyState, saveDailyJournal, type DailyDrop, type DailyJournalEntry } from "@/lib/daily";
 
 const TRACKER_KEY = "livv-daily-trackers-v1";
@@ -99,13 +100,15 @@ export default function DailyPage() {
   return (
     <main className="livv-page min-h-full pb-20">
       <div className="mx-auto max-w-xl px-5 pt-5">
-        <header className="pb-6">
-          <p className="text-[10px] font-semibold uppercase tracking-[.22em] text-[var(--livv-pro-accent)]">Daily</p>
-          <h1 className="mt-2 text-[34px] font-semibold leading-none tracking-[-.055em] sm:text-[42px]">Daily.</h1>
-          <p className="mt-3 text-[12px] leading-relaxed text-[var(--livv-pro-muted)]">
-            {now.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" })} · Use today however you want.
-          </p>
-        </header>
+        <PageHero
+          eyebrow="Daily"
+          title="Daily."
+          subtitle={
+            <>
+              {now.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" })} · Use today however you want.
+            </>
+          }
+        />
 
         <section className="border-y border-[var(--livv-pro-line)] py-5">
           <div className="flex items-end justify-between gap-4">

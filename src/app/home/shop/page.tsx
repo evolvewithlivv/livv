@@ -9,6 +9,7 @@ import { loadPacks, GRADE_META, collectionStats, formatCountdown, msUntilNextPac
 import { buyPack, PACK_SHOP } from "@/lib/pack-shop";
 import { getEffectiveTier, isStripeConfigured } from "@/lib/billing";
 import { feedback } from "@/lib/sensory";
+import { PageHero } from "@/components/layout/page-hero";
 
 const SHOP_URL = "https://n8tv6p-pu.myshopify.com";
 const PRODUCTS = [
@@ -74,19 +75,17 @@ export default function ShopPage() {
   return (
     <main className="livv-page min-h-full text-livv-ink">
       <div className="mx-auto w-full max-w-2xl px-5 pb-12 pt-6 sm:px-6">
-        <header className="border-b border-livv-line pb-6">
-          <div className="flex items-center justify-between gap-4">
-            <div>
-              <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-livv-muted">LIVV / Shop</p>
-              <h1 className="mt-2 text-3xl font-semibold tracking-[-0.035em] sm:text-4xl">Wear the standard.</h1>
-            </div>
+        <PageHero
+          eyebrow="LIVV / Shop"
+          title="Wear the standard."
+          subtitle="The physical side of LIVV. Wear the standard. Carry the mindset. Keep evolving."
+          right={
             <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-livv-muted">
               <ShoppingBag size={19} strokeWidth={1.7} />
             </div>
-          </div>
-          <p className="mt-4 max-w-xl text-sm leading-6 text-livv-muted">The physical side of LIVV. Wear the standard. Carry the mindset. Keep evolving.</p>
-          <a href={SHOP_URL} target="_blank" rel="noreferrer" className="mt-5 inline-flex items-center rounded-full bg-livv-ink px-5 py-3 text-[10px] font-semibold uppercase tracking-[0.18em] text-livv-bg transition hover:opacity-90 active:scale-[0.98]">Shop the full LIVV store <ArrowUpRight size={14} className="ml-2" /></a>
-        </header>
+          }
+        />
+        <a href={SHOP_URL} target="_blank" rel="noreferrer" className="mt-5 inline-flex items-center rounded-full bg-livv-ink px-5 py-3 text-[10px] font-semibold uppercase tracking-[0.18em] text-livv-bg transition hover:opacity-90 active:scale-[0.98]">Shop the full LIVV store <ArrowUpRight size={14} className="ml-2" /></a>
 
         <section className="border-b border-livv-line py-7">
           <div className="flex items-end justify-between gap-4">
