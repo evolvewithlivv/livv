@@ -6,7 +6,7 @@ import {
   Camera,
   Heart,
   MessageCircle,
-  MoreHorizontal,
+  Trash2,
   Play,
   Send,
   Video,
@@ -22,7 +22,6 @@ import {
   formatSocialTime,
   loadPosts,
   savePosts,
-  updatePost,
   type Post,
 } from "@/lib/social";
 import { feedback } from "@/lib/sensory";
@@ -37,7 +36,6 @@ export default function SocialPage() {
   const [text, setText] = useState("");
   const [photo, setPhoto] = useState<string | null>(null);
   const [video, setVideo] = useState<string | null>(null);
-  const [editing, setEditing] = useState<string | null>(null);
   const [replying, setReplying] = useState<string | null>(null);
   const [replyText, setReplyText] = useState("");
   const [menuOpen, setMenuOpen] = useState<string | null>(null);
@@ -86,9 +84,7 @@ export default function SocialPage() {
   const submit = () => {
     if (!me || (!text.trim() && !photo && !video)) return;
 
-    if (editing) {
-      setPosts(updatePost(editing, { text: text.trim(), photo, video }));
-    } else {
+    {
       createPost({
         text: text.trim(),
         photo,
@@ -102,7 +98,6 @@ export default function SocialPage() {
     setText("");
     setPhoto(null);
     setVideo(null);
-    setEditing(null);
     setComposerOpen(false);
     feedback("complete");
   };
@@ -202,16 +197,7 @@ export default function SocialPage() {
     setMenuOpen(null);
   };
 
-  const edit = (post: Post) => {
-    setEditing(post.id);
-    setText(post.text);
-    setPhoto(post.photo);
-    setVideo(post.video);
-    setComposerOpen(true);
-  };
-
   const openComposer = () => {
-    setEditing(null);
     setText("");
     setPhoto(null);
     setVideo(null);
@@ -291,7 +277,7 @@ export default function SocialPage() {
                         <Video size={15} /> Video
                       </button>
                       <button type="button" onClick={submit} className="ml-auto rounded-full bg-[var(--livv-pro-ink)] px-5 py-2.5 text-[11px] font-bold text-[var(--livv-pro-bg)]">
-                        {editing ? "Save" : "Post"}
+                        Post
                       </button>
                     </div>
                   </>
@@ -328,11 +314,15 @@ export default function SocialPage() {
                       {me?.username === post.author.username ? (
                         <button
                           type="button"
-                          onClick={(event) => { event.preventDefault(); event.stopPropagation(); edit(post); }}
-                          className="grid h-9 w-9 shrink-0 place-items-center rounded-full text-[var(--livv-pro-muted)]"
-                          aria-label="Edit post"
+                          onClick={(event) => {
+                            event.preventDefault();
+                            event.stopPropagation();
+                            setPosts(deletePost(post.id));
+                          }}
+                          className="grid h-9 w-9 shrink-0 place-items-center rounded-full text-[var(--livv-pro-muted)] hover:text-red-500"
+                          aria-label="Delete post"
                         >
-                          <MoreHorizontal size={18} />
+                          <Trash2 size={17} />
                         </button>
                       ) : null}
                     </div>
