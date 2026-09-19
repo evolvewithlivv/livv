@@ -51,16 +51,16 @@ export default function HomePage() {
   return (
     <main className="livv-page min-h-full pb-24">
       <div className="mx-auto w-full max-w-xl px-5 pb-10 sm:px-6">
-        <section className="pt-6 sm:pt-9">
-          <div className="flex items-center justify-between gap-4">
-            <p className="text-[10px] font-semibold uppercase tracking-[.2em] text-livv-muted">Today</p>
-            <span className="text-[11px] font-medium text-livv-muted">Level {rec.level}</span>
+        <header className="livv-page-hero">
+          <div className="livv-page-hero-main">
+            <p className="livv-page-eyebrow">Today</p>
+            <p className="livv-page-subtitle" style={{ marginTop: "0.625rem" }}>Good to see you, {me.displayName || "there"}.</p>
+            <h1 className="livv-page-title" style={{ marginTop: "0.35rem", maxWidth: "34rem" }}>{daily?.world.line || "What are you building today?"}</h1>
           </div>
-          <div className="mt-3 max-w-[34rem]">
-            <p className="text-[13px] text-livv-muted">Good to see you, {me.displayName || "there"}.</p>
-            <h1 className="mt-1 text-[34px] font-semibold leading-[1.02] tracking-[-.055em] sm:text-[42px]">{daily?.world.line || "What are you building today?"}</h1>
+          <div className="livv-page-hero-right">
+            <span className="text-[11px] font-medium">Level {rec.level}</span>
           </div>
-        </section>
+        </header>
 
         <section className="mt-8 border-y border-livv-border py-5">
           <div className="flex items-center justify-between gap-4">
