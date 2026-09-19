@@ -133,8 +133,18 @@ alter table public.stripe_webhook_events
   add column if not exists status text not null default 'processed';
 alter table public.stripe_webhook_events
   add column if not exists claimed_at timestamptz;
-alter table public.stripe_webhook_events
-  add constraint stripe_webhook_events_status_check
-  check (status in ('processing', 'processed'));
+do $
+begin
+  if not exists (
+    select 1
+      from pg_constraint
+     where conrelid = 'public.stripe_webhook_events'::regclass
+       and conname = 'stripe_webhook_events_status_check'
+  ) then
+    alter table public.stripe_webhook_events
+      add constraint stripe_webhook_events_status_check
+      check (status in ('processing', 'processed'));
+  end if;
+end $;
 create index if not exists stripe_webhook_events_processing_idx
   on public.stripe_webhook_events (status, claimed_at);
