@@ -73,3 +73,28 @@ html [class*="border-[#1769ff]"],html [class*="border-[#0F7FFF]"],html [class*="
   .livv-connect-post{border-radius:20px!important}
   .livv-connect-replies{padding-left:2.5rem}
 }
+
+/* Final Connect cleanup: let the feed breathe without structural rules. */
+.livv-social-page .livv-page-hero{
+  border-bottom:0!important;
+  padding-bottom:1.15rem!important;
+}
+.livv-social-page .livv-connect-tabs{
+  border:0!important;
+}
+.livv-social-page .livv-connect-composer{
+  border:0!important;
+  padding-top:1rem!important;
+  padding-bottom:1.15rem!important;
+}
+.livv-social-page .livv-connect-post{
+  box-shadow:none!important;
+}
+.livv-social-page .livv-connect-replies{
+  border-top:0!important;
+  padding-top:.35rem!important;
+}
+.livv-social-page .livv-connect-action{
+  padding-left:.5rem;
+  padding-right:.75rem;
+}
