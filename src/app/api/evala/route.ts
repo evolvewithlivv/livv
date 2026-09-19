@@ -165,6 +165,25 @@ export async function POST(req: NextRequest) {
       return json({ text: "Keep the question under 2,000 characters." }, { status: 413 });
     }
 
+    if (isSupabaseServerConfigured()) {
+      const { getSupabaseServerClient } = await import("@/lib/supabase/server");
+      const supabase = await getSupabaseServerClient();
+      const { data: allowed, error: rateLimitError } = await supabase.rpc("consume_evala_rate_limit", {
+        p_limit: 20,
+        p_window_seconds: 600,
+      });
+      if (rateLimitError) {
+        console.error("[EVALA] rate limiter error", rateLimitError.message);
+        return json({ error: "EVALA is temporarily unavailable. Try again in a moment." }, { status: 503 });
+      }
+      if (allowed !== true) {
+        return json({ error: "EVALA request limit reached. Try again in a few minutes." }, {
+          status: 429,
+          headers: { "Retry-After": "600" },
+        });
+      }
+    }
+
     const snapshot = boundedSnapshot(body.snapshot);
 
     try {
