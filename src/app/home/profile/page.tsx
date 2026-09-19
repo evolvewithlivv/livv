@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
-import { ArrowRight, CalendarCheck, ChevronRight, Flame, Pencil, Share2, Sparkles, Trophy, Zap } from "lucide-react";
+import { CalendarCheck, ChevronRight, Flame, Pencil, Share2, Sparkles, Trophy, Zap } from "lucide-react";
 import { Avatar } from "@/components/identity/avatar";
 import { PageHero } from "@/components/layout/page-hero";
 import { fileToPhoto, loadIdentity, patchIdentity, type Identity } from "@/lib/identity";
