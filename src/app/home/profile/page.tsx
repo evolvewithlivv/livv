@@ -73,7 +73,7 @@ export default function ProfilePage() {
           </div>
           <div className="border-t border-[var(--livv-pro-line)] px-5 py-4 text-left">
             <div className="flex items-center justify-between gap-3">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] account-muted">{evo}</p>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] account-muted">{evo.name}</p>
               <p className="text-[11px] tabular-nums account-muted">{rec.currentXp} / {xpToNext} XP</p>
             </div>
             <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-[var(--livv-pro-surface-2)]">
