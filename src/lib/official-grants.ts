@@ -84,9 +84,11 @@ export function applyOfficialProfileGrant(identity: Identity): Identity {
       workoutsCompleted: Math.max(rec.workoutsCompleted, grant.workoutsCompleted),
       goalsCompleted: Math.max(rec.goalsCompleted, grant.goalsCompleted),
     };
-    saveRecord(nextRec);
+    // Mark the grant complete before saveRecord() can trigger milestone listeners.
+    // This prevents loadIdentity() from re-entering the grant while the record is saving.
     done[key] = true;
     window.localStorage.setItem(FLAG, JSON.stringify(done));
+    saveRecord(nextRec);
 
     return { ...identity, tier: grant.tier };
   } catch {
