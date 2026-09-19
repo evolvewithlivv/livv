@@ -9,6 +9,7 @@ import {
   MoreHorizontal,
   Play,
   Send,
+  Video,
 } from "lucide-react";
 import { PageHero } from "@/components/layout/page-hero";
 import { Avatar } from "@/components/identity/avatar";
