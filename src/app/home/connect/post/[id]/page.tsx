@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useState, type ChangeEvent } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { ArrowLeft, Heart, MessageCircle, MoreHorizontal, Send } from "lucide-react";
 import { useParams } from "next/navigation";
