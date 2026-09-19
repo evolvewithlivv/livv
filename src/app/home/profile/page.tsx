@@ -22,15 +22,29 @@ export default function ProfilePage() {
   const fileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
-    const sync = () => { setMe(loadIdentity()); setRec(loadRecord()); };
+    const sync = () => {
+      try {
+        setMe(loadIdentity());
+        setRec(loadRecord());
+      } catch {
+        /* keep last good state — never blank the tab on a grant/sync glitch */
+      }
+    };
     sync();
-    for (const event of ["livv-identity", "livv-record", "livv-packs", "livv-billing"]) window.addEventListener(event, sync);
-    return () => { for (const event of ["livv-identity", "livv-record", "livv-packs", "livv-billing"]) window.removeEventListener(event, sync); };
+    for (const event of ["livv-identity", "livv-record", "livv-packs", "livv-billing"]) {
+      window.addEventListener(event, sync);
+    }
+    return () => {
+      for (const event of ["livv-identity", "livv-record", "livv-packs", "livv-billing"]) {
+        window.removeEventListener(event, sync);
+      }
+    };
   }, []);
 
   if (!me || !rec) return <main className="min-h-dvh" />;
   const evo = evolutionTitle(rec.level);
-  const pct = Math.min(100, Math.round((rec.currentXp / rec.xpToNext) * 100));
+  const xpToNext = Math.max(1, rec.xpToNext || 1);
+  const pct = Math.min(100, Math.round((rec.currentXp / xpToNext) * 100));
   const vault = collectionStats();
   const photo = async (file?: File) => {
     if (!file) return;
@@ -46,29 +60,32 @@ export default function ProfilePage() {
           <div className="profile-identity-visual px-5 pb-7 pt-8">
             <button type="button" onClick={() => fileRef.current?.click()} className="relative mx-auto block rounded-full" aria-label="Change profile photo">
               <Avatar identity={me} size={144} fit="contain" className="profile-avatar" />
-              <span className="absolute bottom-1 right-1 grid h-9 w-9 place-items-center rounded-full border-4 border-[var(--livv-pro-surface)] bg-[var(--livv-pro-ink)] text-[var(--livv-pro-bg)]"><Sparkles size={13} /></span>
+              <span className="absolute bottom-1 right-1 grid h-9 w-9 place-items-center rounded-full border-4 border-[var(--livv-pro-surface)] bg-[var(--livv-pro-ink)] text-[var(--livv-pro-bg)]"><Pencil size={14} /></span>
             </button>
             <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={(e) => void photo(e.target.files?.[0])} />
-            <h1 className="mt-5 text-[32px] font-semibold">{me.displayName || "Member"}</h1>
-            <p className="mt-1 text-[14px] account-muted">@{me.username || "member"}</p>
-            {me.goal && <p className="mx-auto mt-4 max-w-[30ch] text-[13px] leading-relaxed account-muted">{me.goal}</p>}
+            <h1 className="mt-5 text-[28px] font-semibold tracking-tight">{me.displayName || me.username || "Member"}</h1>
+            <p className="mt-1 text-[13px] account-muted">@{me.username || "livv"}</p>
+            {me.bio ? <p className="mx-auto mt-3 max-w-[34ch] text-[13px] leading-relaxed account-muted">{me.bio}</p> : null}
+            {status ? <p className="mt-2 text-[12px] text-red-500">{status}</p> : null}
           </div>
-          <div className="grid grid-cols-3 divide-x account-divider border-y px-3 py-5">
-            <Stat value={`${rec.streak}d`} label="streak" icon={<CalendarCheck size={13} />} />
-            <Stat value={String(rec.level)} label="level" icon={<Zap size={13} />} />
-            <Stat value={String(me.embers)} label="embers" icon={<Flame size={13} />} />
+          <div className="grid grid-cols-3 gap-2 border-t border-[var(--livv-pro-line)] px-3 py-5">
+            <Stat value={String(rec.level)} label="Level" icon={<Zap size={14} />} />
+            <Stat value={String(rec.streak)} label="Streak" icon={<Flame size={14} />} />
+            <Stat value={`${pct}%`} label="XP" icon={<Trophy size={14} />} />
           </div>
-          <div className="px-5 py-5">
-            <Link href="/home/share" className="flex min-h-12 w-full items-center justify-center gap-2 rounded-[14px] bg-[var(--livv-pro-ink)] px-5 text-[13px] font-semibold text-[var(--livv-pro-bg)]"><Share2 size={16} /> Share your evolution</Link>
-            {status && <p className="mt-3 text-[11px] account-accent">{status}</p>}
+          <div className="border-t border-[var(--livv-pro-line)] px-5 py-4 text-left">
+            <div className="flex items-center justify-between gap-3">
+              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] account-muted">{evo}</p>
+              <p className="text-[11px] tabular-nums account-muted">{rec.currentXp} / {xpToNext} XP</p>
+            </div>
+            <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-[var(--livv-pro-surface-2)]">
+              <div className="h-full rounded-full bg-[var(--livv-pro-accent)]" style={{ width: `${pct}%` }} />
+            </div>
           </div>
         </section>
-        <section className="profile-section border-t account-divider py-7">
-          <div className="flex items-end justify-between gap-4"><div><p className="text-[10px] uppercase tracking-[.2em] account-muted">Current evolution</p><h2 className="mt-1 text-[27px] font-semibold">{evo.name}</h2></div><span className="text-[11px] account-muted">{rec.currentXp} / {rec.xpToNext} XP</span></div>
-          <p className="mt-2 max-w-[38ch] text-[12px] leading-relaxed account-muted">{evo.line}</p><div className="account-progress mt-5 h-2 overflow-hidden rounded-full"><div className="h-full rounded-full" style={{ width: `${pct}%` }} /></div>
-          <div className="mt-3 flex justify-between text-[10px] account-muted"><span>{pct}% to next level</span><Link href="/home/progress" className="account-accent">View progress <ArrowRight size={12} className="inline" /></Link></div>
-        </section>
-        <section className="profile-section border-t account-divider py-7"><div className="mb-2"><p className="text-[10px] uppercase tracking-[.2em] account-muted">Your system</p><h2 className="mt-1 text-[26px] font-semibold">Keep the record moving.</h2></div>
+
+        <section className="profile-section mt-2">
+          <Link href="/home/daily" className="account-row flex items-center gap-4 py-5"><span className="grid h-10 w-10 place-items-center rounded-[14px] bg-[var(--livv-pro-surface-2)] account-accent"><CalendarCheck size={17} /></span><span className="min-w-0 flex-1"><b className="block text-[14px]">Daily</b><span className="mt-1 block text-[11px] account-muted">Check-ins, focus, and today’s work</span></span><ChevronRight size={16} className="account-muted" /></Link>
           <Link href="/home/progress" className="account-row flex items-center gap-4 border-t py-5"><span className="grid h-10 w-10 place-items-center rounded-[14px] bg-[var(--livv-pro-surface-2)] account-accent"><Trophy size={17} /></span><span className="min-w-0 flex-1"><b className="block text-[14px]">Progress</b><span className="mt-1 block text-[11px] account-muted">Chapters, milestones, and recent evidence</span></span><ChevronRight size={16} className="account-muted" /></Link>
           <Link href="/home/vault" className="account-row flex items-center gap-4 border-t py-5"><span className="grid h-10 w-10 place-items-center rounded-[14px] bg-[var(--livv-pro-surface-2)] account-accent"><Sparkles size={17} /></span><span className="min-w-0 flex-1"><b className="block text-[14px]">Vault</b><span className="mt-1 block text-[11px] account-muted">{vault.uniqueCount} of {vault.catalogSize} collected</span></span><ChevronRight size={16} className="account-muted" /></Link>
         </section>
