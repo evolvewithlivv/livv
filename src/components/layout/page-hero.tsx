@@ -1,14 +1,32 @@
 import type { ReactNode } from "react";
 
-type PageHeroProps = { eyebrow:string; title:ReactNode; subtitle?:string; accent?:string; right?:ReactNode };
+/**
+ * Canonical LIVV primary-screen header.
+ * Eyebrow = section label (neutral, never accent blue).
+ * Title = display headline.
+ * Subtitle = supporting description.
+ * Blue is reserved for UI state elsewhere — not for page labels.
+ */
+type PageHeroProps = {
+  eyebrow: string;
+  title: ReactNode;
+  subtitle?: ReactNode;
+  /** Optional trailing control (icon, level chip, etc.). Does not change type scale. */
+  right?: ReactNode;
+  /** @deprecated Ignored — page labels stay neutral. Kept for call-site compatibility. */
+  accent?: string;
+  className?: string;
+};
 
-export function PageHero({ title, eyebrow, subtitle, right }: PageHeroProps) {
-  return <header className="livv-page-hero flex items-end justify-between gap-4 border-b border-[var(--livv-pro-line)] pb-6 pt-1">
-    <div className="min-w-0 flex-1">
-      <p className="text-[9px] font-semibold uppercase tracking-[.22em] text-[var(--livv-pro-muted)]">{eyebrow}</p>
-      <h1 className="mt-2.5 max-w-[22ch] font-display text-[clamp(2rem,8vw,3.1rem)] font-semibold leading-[.96] tracking-[-.06em] text-[var(--livv-pro-ink)]">{title}</h1>
-      {subtitle ? <p className="mt-3 max-w-[48ch] text-[13px] leading-[1.5] text-[var(--livv-pro-muted)]">{subtitle}</p> : null}
-    </div>
-    {right ? <div className="shrink-0 pb-1 text-[var(--livv-pro-muted)]">{right}</div> : null}
-  </header>;
+export function PageHero({ title, eyebrow, subtitle, right, className }: PageHeroProps) {
+  return (
+    <header className={`livv-page-hero${className ? ` ${className}` : ""}`}>
+      <div className="livv-page-hero-main">
+        <p className="livv-page-eyebrow">{eyebrow}</p>
+        <h1 className="livv-page-title">{title}</h1>
+        {subtitle ? <p className="livv-page-subtitle">{subtitle}</p> : null}
+      </div>
+      {right ? <div className="livv-page-hero-right">{right}</div> : null}
+    </header>
+  );
 }
