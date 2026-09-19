@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { createClient } from "@supabase/supabase-js";
 import { getVerifiedSupabaseUser, isSupabaseServerConfigured } from "@/lib/supabase/server-auth";
 
 type Body = {
@@ -135,6 +136,9 @@ export async function POST(req: NextRequest) {
       if (!verified) {
         return json({ error: "Authenticated session required" }, { status: 401 });
       }
+      if (verified.isAnonymous) {
+        return json({ error: "Sign in with a permanent account to use EVALA." }, { status: 403 });
+      }
     }
 
     const contentLength = Number(req.headers.get("content-length") || 0);
@@ -160,6 +164,29 @@ export async function POST(req: NextRequest) {
     }
     if (typeof body.question === "string" && body.question.trim().length > 2000) {
       return json({ text: "Keep the question under 2,000 characters." }, { status: 413 });
+    }
+
+    if (isSupabaseServerConfigured()) {
+      const authHeader = req.headers.get("authorization") || req.headers.get("Authorization") || "";
+      const token = authHeader.slice(7).trim();
+      const supabase = createClient(process.env.NEXT_PUBLIC_SUPABASE_URL!.trim(), process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!.trim(), {
+        auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false },
+        global: { headers: { Authorization: `Bearer ${token}` } },
+      });
+      const { data: allowed, error: rateLimitError } = await supabase.rpc("consume_evala_rate_limit", {
+        p_limit: 20,
+        p_window_seconds: 600,
+      });
+      if (rateLimitError) {
+        console.error("[EVALA] rate limiter error", rateLimitError.message);
+        return json({ error: "EVALA is temporarily unavailable. Try again in a moment." }, { status: 503 });
+      }
+      if (allowed !== true) {
+        return json({ error: "EVALA request limit reached. Try again in a few minutes." }, {
+          status: 429,
+          headers: { "Retry-After": "600" },
+        });
+      }
     }
 
     const snapshot = boundedSnapshot(body.snapshot);
