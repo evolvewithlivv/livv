@@ -103,3 +103,16 @@ html [class*="border-[#1769ff]"],html [class*="border-[#0F7FFF]"],html [class*="
 .livv-social-page .livv-connect-composer-input,
 .livv-social-page .livv-connect-composer-input:focus,
 .livv-social-page .livv-connect-composer-input:hover{border:0!important;outline:0!important;box-shadow:none!important;background:transparent!important}
+
+
+/* Connect composer: remove every native textarea outline/border treatment. */
+.livv-social-page textarea.livv-connect-composer-input,
+.livv-social-page textarea.livv-connect-composer-input:focus,
+.livv-social-page textarea.livv-connect-composer-input:focus-visible {
+  appearance: none!important;
+  -webkit-appearance: none!important;
+  border: 0!important;
+  outline: 0!important;
+  box-shadow: none!important;
+  background: transparent!important;
+}
