@@ -221,8 +221,8 @@ export default function SocialPage() {
           }
         />
 
-        <section className="pt-1" aria-label="Community feed">
-          <div className="livv-connect-tabs -mt-1" role="tablist">
+        <section className="-mt-3 pt-0" aria-label="Community feed">
+          <div className="livv-connect-tabs -mt-2" role="tablist">
             <div className="grid grid-cols-3">
               {(["For you", "Following", "Watch"] as Tab[]).map((item) => (
                 <button
