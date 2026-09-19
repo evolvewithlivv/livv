@@ -40,6 +40,7 @@ export default function SocialPage() {
   const [editing, setEditing] = useState<string | null>(null);
   const [replying, setReplying] = useState<string | null>(null);
   const [replyText, setReplyText] = useState("");
+  const [menuOpen, setMenuOpen] = useState<string | null>(null);
 
   const composerRef = useRef<HTMLTextAreaElement>(null);
   const replyRef = useRef<HTMLInputElement>(null);
@@ -164,16 +165,41 @@ export default function SocialPage() {
     if (photoRef.current) photoRef.current.value = "";
   };
 
-  const pickVideo = async (event: ChangeEvent<HTMLInputElement>) => {
+  const pickMedia = async (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     if (!file) return;
-    setPhoto(null);
-    try {
-      setVideo(await fileToPostVideo(file));
-    } catch {
+    if (file.type.startsWith("video/")) {
+      setPhoto(null);
+      try { setVideo(await fileToPostVideo(file)); } catch { setVideo(null); }
+    } else if (file.type.startsWith("image/")) {
       setVideo(null);
+      try { setPhoto(await fileToPostPhoto(file)); } catch { setPhoto(null); }
     }
     if (videoRef.current) videoRef.current.value = "";
+  };
+
+  const sharePost = async (post: Post) => {
+    const url = `${window.location.origin}/home/connect/post/${post.id}`;
+    if (navigator.share) { try { await navigator.share({ title: `${post.author.displayName} on LIVV`, text: post.text || "A post from LIVV Community", url }); } catch {} }
+    else { await navigator.clipboard?.writeText(url); }
+    setMenuOpen(null);
+  };
+
+  const savePostToDevice = async (post: Post) => {
+    const canvas = document.createElement("canvas");
+    canvas.width = 1080; canvas.height = 1350;
+    const ctx = canvas.getContext("2d"); if (!ctx) return;
+    ctx.fillStyle = "#f7f7f5"; ctx.fillRect(0, 0, canvas.width, canvas.height);
+    ctx.fillStyle = "#111111"; ctx.font = "600 42px Arial"; ctx.fillText("LIVV", 72, 92);
+    ctx.font = "600 34px Arial"; ctx.fillText(post.author.displayName.slice(0, 32), 72, 170);
+    ctx.fillStyle = "#666666"; ctx.font = "24px Arial"; ctx.fillText(`@${post.author.username} · ${formatSocialTime(post.createdAt, Date.now())}`, 72, 208);
+    ctx.fillStyle = "#111111"; ctx.font = "34px Arial";
+    const words = (post.text || "LIVV Community").split(" "); let line = "", y = 310;
+    for (const word of words) { const test = line ? `${line} ${word}` : word; if (ctx.measureText(test).width > 900) { ctx.fillText(line, 72, y); y += 52; line = word; } else line = test; }
+    if (line) ctx.fillText(line, 72, y);
+    if (post.photo) { try { const img = new Image(); img.crossOrigin = "anonymous"; img.src = post.photo; await new Promise<void>((resolve,reject)=>{img.onload=()=>resolve();img.onerror=()=>reject();}); const scale=Math.min(900/img.width,700/img.height); ctx.drawImage(img,72,y+50,img.width*scale,img.height*scale); } catch {} }
+    canvas.toBlob((blob)=>{ if(!blob)return; const a=document.createElement("a"); a.href=URL.createObjectURL(blob); a.download=`livv-post-${post.id}.png`; a.click(); setTimeout(()=>URL.revokeObjectURL(a.href),1000); },"image/png");
+    setMenuOpen(null);
   };
 
   const edit = (post: Post) => {
@@ -420,7 +446,7 @@ export default function SocialPage() {
       </div>
 
       <input ref={photoRef} type="file" accept="image/*" onChange={pickPhoto} className="hidden" />
-      <input ref={videoRef} type="file" accept="video/*" onChange={pickVideo} className="hidden" />
+      <input ref={videoRef} type="file" accept="video/*" onChange={pickMedia} className="hidden" />
     </main>
   );
 }
