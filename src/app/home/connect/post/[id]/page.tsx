@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, Heart, MessageCircle, MoreHorizontal, Send } from "lucide-react";
+import { ArrowLeft, Heart, MessageCircle, Send, Share2 } from "lucide-react";
 import { useParams } from "next/navigation";
 import { Avatar } from "@/components/identity/avatar";
 import { loadIdentity, type Identity } from "@/lib/identity";
@@ -94,7 +94,7 @@ export default function SocialPostPage() {
   return (
     <main className="livv-page min-h-full pb-28">
       <div className="mx-auto max-w-xl px-5">
-        <header className="flex items-center justify-between border-b border-[var(--livv-pro-line)] py-4">
+        <header className="flex items-center justify-between py-4">
           <Link href="/home/connect" className="grid h-10 w-10 place-items-center rounded-full text-[var(--livv-pro-muted)]" aria-label="Back to Community">
             <ArrowLeft size={21} />
           </Link>
@@ -127,7 +127,7 @@ export default function SocialPostPage() {
             </div>
           ) : null}
 
-          <div className="mt-6 border-y border-[var(--livv-pro-line)] py-4">
+          <div className="mt-6 py-2">
             <p className="text-[11px] text-[var(--livv-pro-muted)]">
               {new Date(post.createdAt).toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })} · {new Date(post.createdAt).toLocaleDateString()} · {post.likes + (post.likedByMe ? 1 : 0)} likes
             </p>
@@ -145,8 +145,8 @@ export default function SocialPostPage() {
           </div>
         </article>
 
-        <section className="border-t border-[var(--livv-pro-line)] py-5">
-          <p className="text-[10px] font-semibold uppercase tracking-[.18em] text-[var(--livv-pro-muted)]">Replies</p>
+        <section className="py-5">
+          <div className="flex items-center justify-between gap-3">\n            <p className="text-[10px] font-semibold uppercase tracking-[.18em] text-[var(--livv-pro-muted)]">Replies</p>\n            <span className="text-[10px] text-[var(--livv-pro-muted)]">{post.replies.length}</span>\n          </div>
           <div className="mt-5 space-y-5">
             {post.replies.length ? post.replies.map((item) => (
               <div key={item.id} className="flex items-start gap-3">
