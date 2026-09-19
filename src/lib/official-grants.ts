@@ -7,7 +7,7 @@
 import type { Identity, LivvTier } from "./identity";
 import { loadRecord, saveRecord, type LivvRecord } from "./record";
 
-const FLAG = "livv-official-profile-grants-v1";
+const FLAG = "livv-official-profile-grants-v2";
 const ENTITLEMENTS_KEY = "livv-entitlements-v1";
 
 type OfficialGrant = {
@@ -20,7 +20,17 @@ type OfficialGrant = {
   goalsCompleted: number;
 };
 
+/** Highest tier is "circle" (Inner Circle). */
 const OFFICIAL: Record<string, OfficialGrant> = {
+  evolvewithlivv: {
+    tier: "circle",
+    level: 20,
+    currentXp: 500,
+    xpToNext: 800,
+    streak: 30,
+    workoutsCompleted: 50,
+    goalsCompleted: 100,
+  },
   kanyethomas: {
     tier: "circle",
     level: 18,
@@ -52,9 +62,13 @@ export function applyOfficialProfileGrant(identity: Identity): Identity {
   try {
     const raw = window.localStorage.getItem(FLAG);
     const done = raw ? (JSON.parse(raw) as Record<string, boolean>) : {};
-    if (done[clean]) {
+    const key = clean + ":" + grant.tier + ":v2";
+
+    // Always keep entitlement + identity tier aligned for allowlisted accounts.
+    writeEntitlement(grant.tier);
+
+    if (done[key]) {
       if (identity.tier !== grant.tier) {
-        writeEntitlement(grant.tier);
         return { ...identity, tier: grant.tier };
       }
       return identity;
@@ -71,12 +85,17 @@ export function applyOfficialProfileGrant(identity: Identity): Identity {
       goalsCompleted: Math.max(rec.goalsCompleted, grant.goalsCompleted),
     };
     saveRecord(nextRec);
-    writeEntitlement(grant.tier);
-    done[clean] = true;
+    done[key] = true;
     window.localStorage.setItem(FLAG, JSON.stringify(done));
 
     return { ...identity, tier: grant.tier };
   } catch {
-    return identity;
+    return { ...identity, tier: grant.tier };
   }
+}
+
+/** True when username is on the official grant list. */
+export function isOfficialGrantedUsername(username: string): boolean {
+  const clean = username.toLowerCase().replace(/^@/, "");
+  return Boolean(OFFICIAL[clean]);
 }
