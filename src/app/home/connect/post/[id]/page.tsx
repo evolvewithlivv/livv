@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, Heart, MessageCircle, Send, Share2 } from "lucide-react";
+import { ArrowLeft, Heart, MessageCircle, MoreHorizontal, Send, Share2 } from "lucide-react";
 import { useParams } from "next/navigation";
 import { Avatar } from "@/components/identity/avatar";
 import { loadIdentity, type Identity } from "@/lib/identity";
