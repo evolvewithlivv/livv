@@ -363,7 +363,7 @@ export default function SocialPage() {
                   </div>
 
                   {post.replies.length > 0 ? (
-                    <div className="livv-connect-replies">
+                    <div className="livv-connect-replies !ml-0 !pl-0">
                       <p className="mb-3 text-[9px] font-semibold uppercase tracking-[.18em] text-[var(--livv-pro-muted)]">
                         Latest replies
                       </p>
