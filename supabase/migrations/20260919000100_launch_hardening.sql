@@ -1,49 +1,37 @@
--- LIVV launch hardening: billing RLS + EVALA rate limiting.
--- Idempotent. Reconciles environments where billing policy changes were applied manually.
+-- LIVV launch hardening: billing RLS + EVALA rate limiting + Stripe webhook claims.
+-- Idempotent and safe to rerun.
 --
--- Rate-limit design notes:
--- * Table is NOT directly writable by clients (revoked).
--- * consume_evala_rate_limit is SECURITY DEFINER so it can write the table while still
---   binding strictly to auth.uid() — this is required correctness, not convenience:
---   with SECURITY INVOKER + UPDATE-own policies, a client could zero request_count and
---   bypass the limiter entirely.
--- * Client-supplied p_limit / p_window_seconds are clamped server-side.
+-- EVALA limiter:
+-- * state lives in the non-exposed private schema
+-- * private SECURITY DEFINER function uses search_path=''
+-- * public RPC wrapper is SECURITY INVOKER
+-- * client roles have no table access
+-- * identity comes only from auth.uid(); anonymous users are rejected
+-- * limit is clamped to <=20 requests / >=600 seconds
+
+create schema if not exists private;
 
 drop function if exists public.consume_evala_rate_limit(integer, integer);
-drop table if exists private.evala_rate_limits;
-drop table if exists public.evala_rate_limits;
+drop function if exists private.consume_evala_rate_limit(integer, integer);
 
-create table public.evala_rate_limits (
+create table if not exists private.evala_rate_limits (
   user_id uuid primary key references auth.users(id) on delete cascade,
   window_started_at timestamptz not null default now(),
   request_count integer not null default 0,
-  constraint evala_rate_limits_count_nonnegative check (request_count >= 0)
+  constraint private_evala_rate_limits_count_nonnegative check (request_count >= 0)
 );
 
-alter table public.evala_rate_limits enable row level security;
-alter table public.evala_rate_limits force row level security;
+create index if not exists private_evala_rate_limits_window_idx
+  on private.evala_rate_limits (window_started_at);
 
--- No client policies: clients must not read or write this table directly.
-drop policy if exists "evala_rate_limits_select_own" on public.evala_rate_limits;
-drop policy if exists "evala_rate_limits_insert_own" on public.evala_rate_limits;
-drop policy if exists "evala_rate_limits_update_own" on public.evala_rate_limits;
-
-create index if not exists evala_rate_limits_window_idx
-  on public.evala_rate_limits (window_started_at);
-
--- Table privileges: nobody on the client roles.
-revoke all on table public.evala_rate_limits from public;
-revoke all on table public.evala_rate_limits from anon;
-revoke all on table public.evala_rate_limits from authenticated;
-
-create or replace function public.consume_evala_rate_limit(
+create or replace function private.consume_evala_rate_limit(
   p_limit integer default 20,
   p_window_seconds integer default 600
 )
 returns boolean
 language plpgsql
 security definer
-set search_path = public
+set search_path = ''
 as $$
 declare
   v_user_id uuid;
@@ -61,17 +49,16 @@ begin
     return false;
   end if;
 
-  -- Clamp so a direct RPC call cannot request an unlimited window.
   v_limit := least(greatest(coalesce(p_limit, 20), 1), 20);
   v_window := greatest(coalesce(p_window_seconds, 600), 600);
 
-  insert into public.evala_rate_limits (user_id, window_started_at, request_count)
+  insert into private.evala_rate_limits (user_id, window_started_at, request_count)
   values (v_user_id, v_now, 1)
   on conflict (user_id) do nothing;
 
   select window_started_at, request_count
     into v_started, v_count
-    from public.evala_rate_limits
+    from private.evala_rate_limits
    where user_id = v_user_id
    for update;
 
@@ -80,7 +67,7 @@ begin
   end if;
 
   if v_now >= v_started + make_interval(secs => v_window) then
-    update public.evala_rate_limits
+    update private.evala_rate_limits
        set window_started_at = v_now,
            request_count = 1
      where user_id = v_user_id;
@@ -91,7 +78,7 @@ begin
     return false;
   end if;
 
-  update public.evala_rate_limits
+  update private.evala_rate_limits
      set request_count = request_count + 1
    where user_id = v_user_id;
 
@@ -99,11 +86,31 @@ begin
 end;
 $$;
 
-revoke execute on function public.consume_evala_rate_limit(integer, integer) from public;
-revoke execute on function public.consume_evala_rate_limit(integer, integer) from anon;
+revoke all on schema private from public;
+grant usage on schema private to authenticated;
+revoke all on table private.evala_rate_limits from public, anon, authenticated;
+revoke execute on function private.consume_evala_rate_limit(integer, integer) from public, anon;
+grant execute on function private.consume_evala_rate_limit(integer, integer) to authenticated;
+
+create or replace function public.consume_evala_rate_limit(
+  p_limit integer default 20,
+  p_window_seconds integer default 600
+)
+returns boolean
+language sql
+security invoker
+set search_path = ''
+as $$
+  select private.consume_evala_rate_limit(
+    least(greatest(coalesce(p_limit, 20), 1), 20),
+    greatest(coalesce(p_window_seconds, 600), 600)
+  );
+$$;
+
+revoke execute on function public.consume_evala_rate_limit(integer, integer) from public, anon;
 grant execute on function public.consume_evala_rate_limit(integer, integer) to authenticated;
 
--- Billing reads: permanent authenticated users only (reject anonymous JWT role).
+-- Billing reads: permanent authenticated users only.
 drop policy if exists "entitlements_select_own" on public.entitlements;
 create policy "entitlements_select_own" on public.entitlements
 for select to authenticated
@@ -120,3 +127,14 @@ using (
   (select auth.uid()) = user_id
   and coalesce((select (auth.jwt() ->> 'is_anonymous')::boolean), false) = false
 );
+
+-- Stripe webhook claim ledger.
+alter table public.stripe_webhook_events
+  add column if not exists status text not null default 'processed';
+alter table public.stripe_webhook_events
+  add column if not exists claimed_at timestamptz;
+alter table public.stripe_webhook_events
+  add constraint stripe_webhook_events_status_check
+  check (status in ('processing', 'processed'));
+create index if not exists stripe_webhook_events_processing_idx
+  on public.stripe_webhook_events (status, claimed_at);
