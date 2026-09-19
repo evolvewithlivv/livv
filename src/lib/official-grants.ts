@@ -1,14 +1,15 @@
 /**
  * Official account grants (allowlisted usernames only).
  * Applied when identity loads. Safe to call repeatedly — no event loops.
+ * Does not import record.ts (avoids identity ↔ record circular dependency).
  * LIMITATION: localStorage can still be edited manually — product seeding, not security.
  */
 
 import type { Identity, LivvTier } from "./identity";
-import { loadRecord, saveRecord, type LivvRecord } from "./record";
 
 const FLAG = "livv-official-profile-grants-v2";
 const ENTITLEMENTS_KEY = "livv-entitlements-v1";
+const RECORD_KEY = "livv-record-v1";
 
 type OfficialGrant = {
   tier: LivvTier;
@@ -57,16 +58,15 @@ function readStoredTier(): LivvTier | null {
   return null;
 }
 
-/** Write entitlement silently unless the tier actually changed. */
-function ensureEntitlement(tier: LivvTier): boolean {
-  if (typeof window === "undefined") return false;
-  if (readStoredTier() === tier) return false;
+/** Write entitlement only when tier changes. Defer events to avoid re-entry. */
+function ensureEntitlement(tier: LivvTier): void {
+  if (typeof window === "undefined") return;
+  if (readStoredTier() === tier) return;
   try {
     window.localStorage.setItem(
       ENTITLEMENTS_KEY,
       JSON.stringify({ tier, source: "demo", expiresAt: null }),
     );
-    // Defer event so we never re-enter loadIdentity synchronously.
     window.setTimeout(() => {
       try {
         window.dispatchEvent(new Event("livv-billing"));
@@ -74,9 +74,35 @@ function ensureEntitlement(tier: LivvTier): boolean {
         /* ignore */
       }
     }, 0);
-    return true;
   } catch {
-    return false;
+    /* ignore */
+  }
+}
+
+function boostRecord(grant: OfficialGrant): void {
+  if (typeof window === "undefined") return;
+  try {
+    const raw = window.localStorage.getItem(RECORD_KEY);
+    const rec = raw ? (JSON.parse(raw) as Record<string, unknown>) : {};
+    const next = {
+      ...rec,
+      level: Math.max(Number(rec.level) || 0, grant.level),
+      currentXp: Math.max(Number(rec.currentXp) || 0, grant.currentXp),
+      xpToNext: grant.xpToNext,
+      streak: Math.max(Number(rec.streak) || 0, grant.streak),
+      workoutsCompleted: Math.max(Number(rec.workoutsCompleted) || 0, grant.workoutsCompleted),
+      goalsCompleted: Math.max(Number(rec.goalsCompleted) || 0, grant.goalsCompleted),
+    };
+    window.localStorage.setItem(RECORD_KEY, JSON.stringify(next));
+    window.setTimeout(() => {
+      try {
+        window.dispatchEvent(new Event("livv-record"));
+      } catch {
+        /* ignore */
+      }
+    }, 0);
+  } catch {
+    /* ignore */
   }
 }
 
@@ -95,31 +121,9 @@ export function applyOfficialProfileGrant(identity: Identity): Identity {
     ensureEntitlement(grant.tier);
 
     if (!done[key]) {
-      const rec = loadRecord();
-      const nextRec: LivvRecord = {
-        ...rec,
-        level: Math.max(rec.level ?? 0, grant.level),
-        currentXp: Math.max(rec.currentXp ?? 0, grant.currentXp),
-        xpToNext: grant.xpToNext,
-        streak: Math.max(rec.streak ?? 0, grant.streak),
-        workoutsCompleted: Math.max(rec.workoutsCompleted ?? 0, grant.workoutsCompleted),
-        goalsCompleted: Math.max(rec.goalsCompleted ?? 0, grant.goalsCompleted),
-      };
       done[key] = true;
       window.localStorage.setItem(FLAG, JSON.stringify(done));
-      // Defer record save event to avoid sync re-entry via livv-record listeners.
-      try {
-        window.localStorage.setItem("livv-record-v1", JSON.stringify(nextRec));
-        window.setTimeout(() => {
-          try {
-            window.dispatchEvent(new Event("livv-record"));
-          } catch {
-            /* ignore */
-          }
-        }, 0);
-      } catch {
-        saveRecord(nextRec);
-      }
+      boostRecord(grant);
     }
 
     if (identity.tier === grant.tier) return identity;
