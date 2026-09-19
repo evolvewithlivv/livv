@@ -7,12 +7,15 @@ export function Avatar({
   size = 40,
   className,
   showTierRing = false,
+  fit = "cover",
 }: {
   identity: Pick<Identity, "displayName" | "photo" | "accent"> & { tier?: LivvTier };
   size?: number;
   className?: string;
   /** Glowing ring matching membership tier color */
   showTierRing?: boolean;
+  /** Image fit mode for avatars where the full source photo should remain visible. */
+  fit?: "cover" | "contain";
 }) {
   const initial = (identity.displayName?.[0] || "L").toUpperCase();
   const tier = identity.tier || "spark";
@@ -51,7 +54,7 @@ export function Avatar({
       >
         {identity.photo ? (
           // eslint-disable-next-line @next/next/no-img-element
-          <img src={identity.photo} alt="" className="h-full w-full object-cover" />
+          <img src={identity.photo} alt="" className={`h-full w-full object-${fit}`} />
         ) : (
           <span
             className="flex h-full w-full items-center justify-center"
