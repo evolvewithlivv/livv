@@ -98,3 +98,8 @@ html [class*="border-[#1769ff]"],html [class*="border-[#0F7FFF]"],html [class*="
   padding-left:.5rem;
   padding-right:.75rem;
 }
+
+/* Connect composer: borderless social input, like a native timeline composer. */
+.livv-social-page .livv-connect-composer-input,
+.livv-social-page .livv-connect-composer-input:focus,
+.livv-social-page .livv-connect-composer-input:hover{border:0!important;outline:0!important;box-shadow:none!important;background:transparent!important}
