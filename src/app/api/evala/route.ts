@@ -135,6 +135,9 @@ export async function POST(req: NextRequest) {
       if (!verified) {
         return json({ error: "Authenticated session required" }, { status: 401 });
       }
+      if (verified.isAnonymous) {
+        return json({ error: "Sign in with a permanent account to use EVALA." }, { status: 403 });
+      }
     }
 
     const contentLength = Number(req.headers.get("content-length") || 0);
