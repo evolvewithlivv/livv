@@ -146,7 +146,10 @@ export default function SocialPostPage() {
         </article>
 
         <section className="py-5">
-          <div className="flex items-center justify-between gap-3">\n            <p className="text-[10px] font-semibold uppercase tracking-[.18em] text-[var(--livv-pro-muted)]">Replies</p>\n            <span className="text-[10px] text-[var(--livv-pro-muted)]">{post.replies.length}</span>\n          </div>
+          <div className="flex items-center justify-between gap-3">
+            <p className="text-[10px] font-semibold uppercase tracking-[.18em] text-[var(--livv-pro-muted)]">Replies</p>
+            <span className="text-[10px] text-[var(--livv-pro-muted)]">{post.replies.length}</span>
+          </div>
           <div className="mt-5 space-y-5">
             {post.replies.length ? post.replies.map((item) => (
               <div key={item.id} className="flex items-start gap-3">
