@@ -1,6 +1,6 @@
 /**
  * Official account grants (allowlisted usernames only).
- * Applied once per device when identity loads.
+ * Applied when identity loads. Safe to call repeatedly — no event loops.
  * LIMITATION: localStorage can still be edited manually — product seeding, not security.
  */
 
@@ -42,54 +42,87 @@ const OFFICIAL: Record<string, OfficialGrant> = {
   },
 };
 
-function writeEntitlement(tier: LivvTier) {
-  if (typeof window === "undefined") return;
-  const e = {
-    tier,
-    source: "demo" as const,
-    expiresAt: null,
-  };
-  window.localStorage.setItem(ENTITLEMENTS_KEY, JSON.stringify(e));
-  window.dispatchEvent(new Event("livv-billing"));
+function readStoredTier(): LivvTier | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = window.localStorage.getItem(ENTITLEMENTS_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as { tier?: string };
+    if (parsed.tier === "spark" || parsed.tier === "rise" || parsed.tier === "apex" || parsed.tier === "circle") {
+      return parsed.tier;
+    }
+  } catch {
+    /* ignore */
+  }
+  return null;
+}
+
+/** Write entitlement silently unless the tier actually changed. */
+function ensureEntitlement(tier: LivvTier): boolean {
+  if (typeof window === "undefined") return false;
+  if (readStoredTier() === tier) return false;
+  try {
+    window.localStorage.setItem(
+      ENTITLEMENTS_KEY,
+      JSON.stringify({ tier, source: "demo", expiresAt: null }),
+    );
+    // Defer event so we never re-enter loadIdentity synchronously.
+    window.setTimeout(() => {
+      try {
+        window.dispatchEvent(new Event("livv-billing"));
+      } catch {
+        /* ignore */
+      }
+    }, 0);
+    return true;
+  } catch {
+    return false;
+  }
 }
 
 export function applyOfficialProfileGrant(identity: Identity): Identity {
   if (typeof window === "undefined") return identity;
-  const clean = identity.username.toLowerCase().replace(/^@/, "");
+  const clean = (identity.username || "").toLowerCase().replace(/^@/, "");
+  if (!clean) return identity;
   const grant = OFFICIAL[clean];
   if (!grant) return identity;
 
   try {
     const raw = window.localStorage.getItem(FLAG);
     const done = raw ? (JSON.parse(raw) as Record<string, boolean>) : {};
-    const key = clean + ":" + grant.tier + ":v2";
+    const key = `${clean}:${grant.tier}:v2`;
 
-    // Always keep entitlement + identity tier aligned for allowlisted accounts.
-    writeEntitlement(grant.tier);
+    ensureEntitlement(grant.tier);
 
-    if (done[key]) {
-      if (identity.tier !== grant.tier) {
-        return { ...identity, tier: grant.tier };
+    if (!done[key]) {
+      const rec = loadRecord();
+      const nextRec: LivvRecord = {
+        ...rec,
+        level: Math.max(rec.level ?? 0, grant.level),
+        currentXp: Math.max(rec.currentXp ?? 0, grant.currentXp),
+        xpToNext: grant.xpToNext,
+        streak: Math.max(rec.streak ?? 0, grant.streak),
+        workoutsCompleted: Math.max(rec.workoutsCompleted ?? 0, grant.workoutsCompleted),
+        goalsCompleted: Math.max(rec.goalsCompleted ?? 0, grant.goalsCompleted),
+      };
+      done[key] = true;
+      window.localStorage.setItem(FLAG, JSON.stringify(done));
+      // Defer record save event to avoid sync re-entry via livv-record listeners.
+      try {
+        window.localStorage.setItem("livv-record-v1", JSON.stringify(nextRec));
+        window.setTimeout(() => {
+          try {
+            window.dispatchEvent(new Event("livv-record"));
+          } catch {
+            /* ignore */
+          }
+        }, 0);
+      } catch {
+        saveRecord(nextRec);
       }
-      return identity;
     }
 
-    const rec = loadRecord();
-    const nextRec: LivvRecord = {
-      ...rec,
-      level: Math.max(rec.level, grant.level),
-      currentXp: Math.max(rec.currentXp, grant.currentXp),
-      xpToNext: grant.xpToNext,
-      streak: Math.max(rec.streak, grant.streak),
-      workoutsCompleted: Math.max(rec.workoutsCompleted, grant.workoutsCompleted),
-      goalsCompleted: Math.max(rec.goalsCompleted, grant.goalsCompleted),
-    };
-    // Mark the grant complete before saveRecord() can trigger milestone listeners.
-    // This prevents loadIdentity() from re-entering the grant while the record is saving.
-    done[key] = true;
-    window.localStorage.setItem(FLAG, JSON.stringify(done));
-    saveRecord(nextRec);
-
+    if (identity.tier === grant.tier) return identity;
     return { ...identity, tier: grant.tier };
   } catch {
     return { ...identity, tier: grant.tier };
@@ -98,6 +131,6 @@ export function applyOfficialProfileGrant(identity: Identity): Identity {
 
 /** True when username is on the official grant list. */
 export function isOfficialGrantedUsername(username: string): boolean {
-  const clean = username.toLowerCase().replace(/^@/, "");
+  const clean = (username || "").toLowerCase().replace(/^@/, "");
   return Boolean(OFFICIAL[clean]);
 }
