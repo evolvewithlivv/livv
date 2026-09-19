@@ -3,3 +3,46 @@
 @tailwind utilities;
 @import "./pack-rip.css";
 @import "./livv-page-header.css";
+
+:root,
+html[data-theme="dark"] {
+  --livv-accent: 15 127 255;
+  --livv-accent-soft: 252 249 39;
+  --livv-accent-hex: #0F7FFF;
+  --livv-blue: #0F7FFF;
+  --livv-yellow: #FCF927;
+  --livv-red: #0F7FFF;
+  --livv-pink: #F61981;
+  --livv-purple: #9A00FF;
+  --livv-green: #4DFF00;
+  --livv-orange: #FF9D23;
+  --livv-bg: #030405;
+  --livv-nav: transparent;
+  --livv-surface: 15 17 22;
+  --livv-border: 38 41 48;
+  --livv-muted: 138 141 151;
+  --livv-fg: 255 255 255;
+  --livv-ink: 255 255 255;
+  --livv-glass: 255 255 255;
+  --livv-glass-a: 0.035;
+  --livv-line: 255 255 255;
+  --livv-line-a: 0.1;
+  --livv-shadow: 0 18px 50px rgba(0, 0, 0, 0.55);
+}
+
+html[data-theme="light"] {
+  --livv-bg: #f5f6f8;
+  --livv-nav: transparent;
+  --livv-surface: 255 255 255;
+  --livv-border: 145 149 158;
+  --livv-muted: 45 48 56;
+  --livv-fg: 17 17 20;
+  --livv-ink: 17 17 20;
+  --livv-glass: 17 17 20;
+  --livv-glass-a: 0.045;
+  --livv-line: 17 17 20;
+  --livv-line-a: 0.2;
+  --livv-accent-soft: 252 249 39;
+  --livv-shadow: 0 18px 40px rgba(17, 17, 20, 0.08);
+  color-scheme: light;
+}
