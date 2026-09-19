@@ -52,3 +52,24 @@ html [class*="border-[#1769ff]"],html [class*="border-[#0F7FFF]"],html [class*="
 .profile-identity a[href="/home/share"]{transition:transform .16s ease,background-color .16s ease,color .16s ease}
 .profile-identity a[href="/home/share"]:active{transform:scale(.985)}
 @media(max-width:767px){.profile-identity{border-radius:24px!important}.profile-identity-visual{padding-top:2rem!important}.profile-identity h1{font-size:30px!important}}
+
+
+/* Connect — social-feed presentation and touch-first composition. */
+.livv-social-page .livv-page-hero{border-bottom:0!important}
+.livv-connect-tabs{border:0!important;margin-top:.25rem}
+.livv-connect-composer{display:flex;align-items:flex-start;gap:.75rem;padding:1.25rem 0;border:0!important}
+.livv-connect-composer-input{display:block;width:100%;min-height:44px!important;resize:none;border:0!important;border-radius:0!important;background:transparent!important;padding:.55rem 0!important;box-shadow:none!important;font-size:15px;line-height:1.45;color:var(--livv-pro-ink);outline:none!important}
+.livv-connect-composer-input::placeholder{color:var(--livv-pro-muted)}
+.livv-connect-media-button{display:inline-flex;min-height:38px;align-items:center;gap:.45rem;border:1px solid var(--livv-pro-line);border-radius:999px;padding:.55rem .8rem;font-size:11px;color:var(--livv-pro-muted)}
+.livv-connect-post{margin:0 0 .9rem;padding:1.25rem!important;border:0!important;border-radius:22px!important;background:var(--livv-pro-surface)!important}
+.livv-connect-post:last-child{margin-bottom:0}
+.livv-connect-action{display:flex;min-height:40px;align-items:center;gap:.45rem;border-radius:999px;padding:0 .65rem;font-size:11px;color:var(--livv-pro-muted)}
+.livv-connect-action.is-liked{color:var(--livv-pro-accent)}
+.livv-connect-replies{margin-top:1rem;padding:1rem 0 0 2.75rem;border-top:1px solid var(--livv-pro-line)}
+.livv-connect-reply-composer{display:flex;align-items:center;gap:.5rem;margin-top:1rem}
+.livv-connect-reply-input{min-width:0;flex:1;min-height:40px!important;border:1px solid var(--livv-pro-line)!important;border-radius:999px!important;background:var(--livv-pro-surface-2)!important;padding:.6rem .9rem!important;font-size:12px}
+.livv-connect-reply-input:focus{border-color:color-mix(in srgb,var(--livv-pro-accent) 55%,var(--livv-pro-line))!important;box-shadow:0 0 0 3px var(--livv-pro-accent-soft)!important}
+@media(max-width:767px){
+  .livv-connect-post{border-radius:20px!important}
+  .livv-connect-replies{padding-left:2.5rem}
+}
