@@ -1,8 +1,6 @@
-"use client";
-import { useEffect,useState } from "react";
-import Link from "next/link";
-import { PageHero } from "@/components/layout/page-hero";
-import { Avatar } from "@/components/identity/avatar";
-import { loadThreads,type DmThread } from "@/lib/messages";
-export default function MessagesPage(){const[threads,setThreads]=useState<DmThread[]>([]);useEffect(()=>{const sync=()=>setThreads(loadThreads().sort((a,b)=>b.updatedAt-a.updatedAt));sync();window.addEventListener("livv-dms",sync);return()=>window.removeEventListener("livv-dms",sync)},[]);return <main className="livv-page min-h-full overflow-hidden pb-12 text-white"><div className="mx-auto max-w-lg px-5 pt-5"><PageHero eyebrow="Inbox" title="Messages" subtitle="Private messages on this device." accent="#4DFF00" right={<Link href="/home/connect" aria-label="Open Social" className="min-h-11 py-3 text-[11px] font-semibold text-[#4DFF00]">Connect</Link>}/><div className="mt-5 rounded-[24px] border border-white/10 bg-white/[.025] px-4 py-4"><p className="text-[10px] font-semibold uppercase tracking-[.2em] text-white/35">V1 note</p><p className="mt-1 text-[12px] leading-relaxed text-white/45">Messages are local in this V1 build. They are not yet delivered between different LIVV members.</p></div><div className="mt-6 space-y-2">{threads.map(t=>{const last=t.messages[t.messages.length-1];return <Link key={t.id} href={`/home/messages/${t.id}`} className="flex min-h-[72px] items-center gap-3 rounded-[22px] border border-white/10 bg-white/[.025] px-3 py-3 transition hover:border-white/15 active:scale-[.99]"><Avatar identity={{displayName:t.peerName,photo:t.peerPhoto,accent:t.peerAccent}} size={48}/><div className="min-w-0 flex-1"><div className="flex items-baseline justify-between gap-2"><p className="truncate text-[15px] font-semibold">{t.peerName}</p><p className="shrink-0 text-[10px] text-white/35">{formatWhen(last?.at||t.updatedAt)}</p></div><p className="mt-1 truncate text-[12px] text-white/45">{last?(last.fromMe?`You: ${last.text}`:last.text):"No messages"}</p></div><span className="text-white/25">›</span></Link>})}</div>{threads.length===0&&<div className="mt-12 rounded-[28px] border border-dashed border-white/10 p-8 text-center"><p className="font-display text-[20px]">No conversations yet.</p><p className="mt-2 text-[12px] text-white/40">Find people in Social and start from there.</p><Link href="/home/connect" className="mt-5 inline-flex min-h-11 items-center text-[12px] font-semibold text-[#4DFF00]">Open Social →</Link></div>}</div></main>}
-function formatWhen(at:number){const d=Date.now()-at;if(d<60000)return"now";if(d<3600000)return`${Math.floor(d/60000)}m`;if(d<86400000)return`${Math.floor(d/3600000)}h`;return`${Math.floor(d/86400000)}d`}
+import { redirect } from "next/navigation";
+
+/** Direct messages removed from LIVV V1 product scope. */
+export default function MessagesRemovedPage() {
+  redirect("/home");
+}

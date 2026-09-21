@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { Bell, Search } from "lucide-react";
+import { Search } from "lucide-react";
 import { Avatar } from "@/components/identity/avatar";
 import { loadIdentity, type Identity } from "@/lib/identity";
 import { LIVV_ICON_BLACK, LIVV_ICON_WHITE } from "@/lib/header-logo";
@@ -49,9 +49,6 @@ export function AppHeader() {
         <div className="flex items-center gap-1">
           <Link href="/home/mind" aria-label="Search" className="livv-icon-button" title="Search">
             <Search size={20} strokeWidth={1.8} />
-          </Link>
-          <Link href="/home/messages" aria-label="Notifications" className="livv-icon-button" title="Notifications">
-            <Bell size={20} strokeWidth={1.8} />
           </Link>
           {me && (
             <Link href="/home/profile" aria-label="Profile" className="ml-1 rounded-full">
