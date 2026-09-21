@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { ArrowRight, Check, ChevronRight, Flame, Plus } from "lucide-react";
+import { ArrowRight, Check, ChevronRight, Plus } from "lucide-react";
 import { addEmbers, loadIdentity, type Identity } from "@/lib/identity";
 import { getTier } from "@/lib/membership";
 import { getEffectiveTier } from "@/lib/billing";
@@ -17,7 +17,7 @@ const AREAS = [
   { id: "mind", label: "Mind", href: "/home/mind", description: "Read, reflect, learn." },
   { id: "career", label: "Work", href: "/home/evala", description: "Build what matters." },
   { id: "finance", label: "Money", href: "/home/evala", description: "Make a useful move." },
-  { id: "social", label: "People", href: "/home/connect", description: "Stay connected." },
+  { id: "social", label: "People", href: "/home/daily", description: "Show up for someone real." },
   { id: "life", label: "Life", href: "/home/daily", description: "Handle real life." },
 ] as const;
 
