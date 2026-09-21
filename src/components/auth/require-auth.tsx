@@ -2,11 +2,12 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { resolveHomeAccess } from "@/lib/auth";
+import { getAuthenticatedUser } from "@/lib/supabase/real-auth";
 
 /**
- * Protects member routes using the real local LIVV account session.
+ * Protects member routes using the authoritative Supabase session.
  * Anonymous Supabase sessions never count as authenticated access.
+ * Local account state is treated as a cache, not the auth authority.
  */
 export function RequireAuth({ children }: { children: React.ReactNode }) {
   const router = useRouter();
@@ -16,13 +17,13 @@ export function RequireAuth({ children }: { children: React.ReactNode }) {
     let cancelled = false;
 
     const check = async () => {
-      const timeout = new Promise<"timeout">((resolve) => {
-        window.setTimeout(() => resolve("timeout"), 8000);
+      const timeout = new Promise<null>((resolve) => {
+        window.setTimeout(() => resolve(null), 8000);
       });
-      const access = await Promise.race([resolveHomeAccess(), timeout]);
+      const user = await Promise.race([getAuthenticatedUser(), timeout]);
       if (cancelled) return;
 
-      if (access === "ok") {
+      if (user && !user.is_anonymous) {
         setState("allowed");
         return;
       }
