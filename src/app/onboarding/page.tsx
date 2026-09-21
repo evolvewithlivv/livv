@@ -18,14 +18,14 @@ const GOALS = [
   { id: "fitness", label: "Get stronger & leaner" },
   { id: "mindset", label: "Build better habits" },
   { id: "identity", label: "Define who I want to become" },
-  { id: "community", label: "Connect with like-minded people" },
+  { id: "capability", label: "Build practical capability" },
   { id: "progress", label: "Track my growth over time" },
   { id: "premium", label: "Access premium tools & products" },
 ];
 
 const INTERESTS = [
   "Training", "Nutrition", "Mindset", "Recovery",
-  "Style", "Longevity", "Discipline", "Community",
+  "Style", "Longevity", "Discipline", "Capability",
 ];
 
 type Step = "why" | "goals" | "interests" | "profile";

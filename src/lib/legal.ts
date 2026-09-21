@@ -37,7 +37,7 @@ export const LEGAL_DOCS: LegalDoc[] = [
       {
         h: "3. What LIVV is (and is not)",
         p: [
-          "LIVV is a self-improvement product. It tracks habits, training, reading, social check-ins, and a collectible pack layer. It is software, not a coach sitting next to you.",
+          "LIVV is a self-improvement product. It tracks habits, training, reading, daily check-ins, and a collectible pack layer. It is software, not a coach sitting next to you.",
           "LIVV is not medical advice, therapy, financial advice, legal advice, or a licensed professional service. Training pages are general fitness tools. Money pages are general education. Evala is an in-app assistant that can be wrong.",
           "You use LIVV at your own risk. Talk to a qualified professional before you change diet, training, sleep, or money in a way that could affect your health or finances.",
         ],
@@ -46,7 +46,7 @@ export const LEGAL_DOCS: LegalDoc[] = [
         h: "4. Your content",
         p: [
           "You keep ownership of the words, photos, and other material you put into LIVV.",
-          "You give us a worldwide, non-exclusive license to host, store, display, and process that material so the product can work. That includes showing your profile to people you connect with and operating backups when sync exists.",
+          "You give us a worldwide, non-exclusive license to host, store, display, and process that material so the product can work. That includes showing your profile inside features you choose to use and operating backups when sync exists.",
           "Do not post anything illegal, hateful, sexual involving minors, or that you do not have the right to share. We can remove content and close accounts that break this.",
         ],
       },
@@ -128,7 +128,7 @@ export const LEGAL_DOCS: LegalDoc[] = [
         h: "2. Information we collect",
         p: [
           "Account: display name, username, photo you upload, login provider, and contact email if you give one.",
-          "Product data: streaks, levels, Embers, workouts you log, Daily answers, wiki actions, pack inventory, messages you send in Connect, and settings.",
+          "Product data: streaks, levels, Embers, workouts you log, Daily answers, wiki actions, pack inventory, and settings.",
           "Payments: handled by Stripe, Apple, or Google. We receive confirmation that you paid, the product you bought, and a customer id. We do not store full card numbers.",
           "Device and usage: app version, basic device type, crash logs, and pages you open, if analytics is turned on.",
           "Support: whatever you email us.",
@@ -148,7 +148,7 @@ export const LEGAL_DOCS: LegalDoc[] = [
         h: "4. Who we share with",
         p: [
           "Processors who help us run LIVV: hosting (Vercel), payments (Stripe, Apple, Google), and model providers for Evala (for example xAI or OpenAI) when that layer is on.",
-          "Other users, only what you choose to show on your profile or send in messages.",
+          "Information you choose to share through profile and sharing features you explicitly use.",
           "The law, if we are required to, or to protect people from serious harm.",
           "We do not sell your personal information.",
         ],
@@ -192,49 +192,6 @@ export const LEGAL_DOCS: LegalDoc[] = [
         h: "10. Contact",
         p: [
           "Privacy questions: evolvewithlivv@gmail.com",
-        ],
-      },
-    ],
-  },
-  {
-    slug: "community",
-    title: "Community Guidelines",
-    blurb: "How people are expected to treat each other inside LIVV.",
-    sections: [
-      {
-        h: "Be specific, not cruel",
-        p: [
-          "Challenge people. Do not degrade them. Jokes that punch down, slurs, and pile-ons are out.",
-        ],
-      },
-      {
-        h: "No harassment",
-        p: [
-          "Do not stalk, threaten, sexualize, or flood someone who asked you to stop. One clear no is enough.",
-        ],
-      },
-      {
-        h: "No illegal or dangerous content",
-        p: [
-          "Do not share content that exploits minors, glorifies self-harm as instruction, or sells illegal activity. Fitness talk is fine. Coaching someone into an eating disorder is not.",
-        ],
-      },
-      {
-        h: "No spam or farms",
-        p: [
-          "Do not run bots, fake streaks, or pack farms. Do not drop links in every chat.",
-        ],
-      },
-      {
-        h: "Own your face",
-        p: [
-          "Do not impersonate LIVV staff or another member. Photo and name should be you, or clearly a character, not a stolen identity.",
-        ],
-      },
-      {
-        h: "What we do",
-        p: [
-          "We can hide content, mute, or close an account. Report a problem to evolvewithlivv@gmail.com with screenshots if you have them.",
         ],
       },
     ],
