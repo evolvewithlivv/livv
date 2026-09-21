@@ -39,5 +39,5 @@ export async function GET(req: NextRequest) {
     if(!tier){const linePrice=session.line_items?.data?.[0]?.price?.id;tier=tierFromPriceId(linePrice||null);}
     if(!tier)return json({error:"Could not resolve purchase"},{status:422});
     return json({kind:"tier",tier,customerId:typeof session.customer==="string"?session.customer:session.customer?.id,subscriptionId:typeof session.subscription==="string"?session.subscription:session.subscription?.id,email:session.customer_details?.email||session.customer_email});
-  }catch(err){const message=err instanceof Error?err.message:"Session lookup failed";console.error("[stripe/session]",message);return json({error:message},{status:500});}
+  }catch(err){console.error("[stripe/session]",err instanceof Error?err.message:err);return json({error:"Could not confirm this payment session."},{status:500});}
 }
