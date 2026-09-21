@@ -1,6 +1,5 @@
 import { loadIdentity } from "./identity";
 import { isStripeConfigured } from "./billing";
-import { ensureAnonymousSession } from "./supabase/anon-session";
 import { getSupabaseBrowserClient, isSupabaseConfigured } from "./supabase/client";
 import { loadPacks, savePacks, type PackGrade, type PackState } from "./packs";
 
@@ -29,7 +28,6 @@ export function grantPurchasedPack(grade: PackGrade, qty = 1): PackState {
 async function checkoutAuthHeader(): Promise<Record<string, string>> {
   if (!isSupabaseConfigured()) return {};
   try {
-    await ensureAnonymousSession();
     const client = getSupabaseBrowserClient();
     if (!client) return {};
     const { data } = await client.auth.getSession();
