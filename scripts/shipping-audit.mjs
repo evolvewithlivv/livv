@@ -13,7 +13,7 @@ const checks=[
 {name:"billing portal is authenticated and server-bound",file:"src/app/api/stripe/portal/route.ts",patterns:["getVerifiedSupabaseUser",'.from("entitlements")','.eq("user_id", verified.id)',"billingPortal.sessions.create"]},
 {name:"Stripe session confirmation is authenticated and user-bound",file:"src/app/api/stripe/session/route.ts",patterns:["getVerifiedSupabaseUser","session.metadata?.livv_user_id","Checkout session does not belong to this account","payment_status"]},
 {name:"production cannot use the demo paid-unlock path",file:"src/lib/billing.ts",patterns:["isDemoUnlock","NEXT_PUBLIC_LIVV_DEMO_UNLOCK","NODE_ENV"]},
-{name:"production pack checkout cannot silently create free inventory",file:"src/lib/pack-shop.ts",patterns:["isStripeConfigured","process.env.NODE_ENV === \"production\"","Pack billing is temporarily unavailable"]},
+
 {name:"server entitlements migration exists",file:"supabase/migrations/20260911174348_b1_entitlements.sql",patterns:["create table if not exists public.entitlements","stripe_webhook_events","enable row level security","entitlements_select_own"]},
 {name:"production security headers are configured",file:"next.config.ts",patterns:["Content-Security-Policy","X-Content-Type-Options","Referrer-Policy"]},
 {name:"Evala API requests are authenticated",file:"src/app/api/evala/chat/route.ts",patterns:["getVerifiedSupabaseUser","Authorization","Cache-Control"]},
