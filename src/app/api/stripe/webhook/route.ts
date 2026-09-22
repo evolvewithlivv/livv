@@ -7,6 +7,7 @@ import {
   findUserIdBySubscriptionId,
   mapSubscriptionStatus,
   markWebhookEventProcessed,
+  resolveLivvUserId,
   tierFromSubscription,
   upsertEntitlement,
 } from "@/lib/stripe-entitlements";
@@ -220,20 +221,3 @@ async function handleSubscriptionDeleted(sub: Stripe.Subscription) {
   });
 }
 
-function resolveLivvUserId(input: {
-  metadata?: Stripe.Metadata | null;
-  clientReferenceId?: string | null;
-}) {
-  const fromMeta = input.metadata?.livv_user_id;
-  if (isUuid(fromMeta)) return fromMeta;
-
-  if (isUuid(input.clientReferenceId)) return input.clientReferenceId;
-  return null;
-}
-
-function isUuid(value: string | null | undefined): value is string {
-  return Boolean(
-    value &&
-      /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(value),
-  );
-}
