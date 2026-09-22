@@ -9,6 +9,9 @@ import { fileToPhoto, loadIdentity, patchIdentity, type Identity } from "@/lib/i
 import { loadRecord } from "@/lib/record";
 import { evolutionTitle } from "@/lib/levels";
 import { feedback } from "@/lib/sensory";
+import { getEffectiveTier } from "@/lib/billing";
+import { getTier } from "@/lib/membership";
+import { syncIdentityToCloud } from "@/lib/auth";
 
 const PROFILE_ACCENT = "#1769ff";
 
@@ -39,13 +42,17 @@ export default function ProfilePage() {
   }, []);
 
   if (!me || !rec) return <main className="min-h-dvh" />;
+  const effectiveTier = getEffectiveTier();
+  const tierDef = getTier(effectiveTier);
   const evo = evolutionTitle(rec.level);
   const xpToNext = Math.max(1, rec.xpToNext || 1);
   const pct = Math.min(100, Math.round((rec.currentXp / xpToNext) * 100));
   const photo = async (file?: File) => {
     if (!file) return;
     try {
-      setMe(patchIdentity({ photo: await fileToPhoto(file) }));
+      const next = patchIdentity({ photo: await fileToPhoto(file) });
+      setMe(next);
+      void syncIdentityToCloud(next);
       setStatus("");
       feedback("tick");
     } catch {
@@ -75,7 +82,7 @@ export default function ProfilePage() {
         <section className="profile-identity mt-6 overflow-hidden rounded-[28px] border border-[var(--livv-pro-line)] bg-[var(--livv-pro-surface)] text-center">
           <div className="profile-identity-visual px-5 pb-7 pt-8">
             <button type="button" onClick={() => fileRef.current?.click()} className="relative mx-auto block rounded-full" aria-label="Change profile photo">
-              <Avatar identity={me} size={144} fit="contain" className="profile-avatar" />
+              <Avatar identity={{...me,tier:effectiveTier}} size={144} fit="contain" className="profile-avatar" showTierRing={effectiveTier==="circle"} />
               <span className="absolute bottom-1 right-1 grid h-9 w-9 place-items-center rounded-full border-4 border-[var(--livv-pro-surface)] bg-[var(--livv-pro-ink)] text-[var(--livv-pro-bg)]">
                 <Pencil size={14} />
               </span>
@@ -83,6 +90,7 @@ export default function ProfilePage() {
             <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={(e) => void photo(e.target.files?.[0])} />
             <h1 className="mt-5 text-[28px] font-semibold tracking-tight">{me.displayName || me.username || "Member"}</h1>
             <p className="mt-1 text-[13px] account-muted">@{me.username || "livv"}</p>
+            <div className="mt-3 flex justify-center"><span className="rounded-full border account-divider px-3 py-1 text-[9px] font-semibold uppercase tracking-[.16em] account-muted">{tierDef.name}</span>{effectiveTier==="circle"&&<span className="ml-2 rounded-full border border-[var(--livv-pro-accent)] bg-[var(--livv-pro-accent-soft)] px-3 py-1 text-[9px] font-semibold uppercase tracking-[.16em] account-accent">Inner Circle</span>}</div>
             {me.bio ? <p className="mx-auto mt-3 max-w-[34ch] text-[13px] leading-relaxed account-muted">{me.bio}</p> : null}
             {status ? <p className="mt-2 text-[12px] text-red-500">{status}</p> : null}
           </div>
@@ -131,7 +139,7 @@ export default function ProfilePage() {
           <div className="mt-2 flex items-center justify-between gap-4">
             <div>
               <h2 className="text-[24px] font-semibold">
-                {me.tier === "circle" ? "Inner Circle" : me.tier === "apex" ? "Apex" : me.tier === "rise" ? "Rise" : "Spark"}
+                {tierDef.name}
               </h2>
               <p className="mt-1 max-w-[33ch] text-[11px] leading-relaxed account-muted">
                 Access to the parts of LIVV you have earned or purchased.
