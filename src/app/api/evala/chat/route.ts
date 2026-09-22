@@ -1,5 +1,6 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { createClient } from "@supabase/supabase-js";
+import { getVerifiedSupabaseUser } from "@/lib/supabase/server-auth";
 
 export const runtime = "nodejs";
 
@@ -21,20 +22,29 @@ Principles:
 - You are EVALA, inside LIVV. Do not claim to be human or conscious.`;
 
 function jsonError(message: string, status: number) {
-  return NextResponse.json({ error: message }, { status });
+  return NextResponse.json(
+    { error: message },
+    { status, headers: { "Cache-Control": "private, no-store, max-age=0" } },
+  );
 }
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
   try {
     if (!url || !anonKey) return jsonError("LIVV authentication is not configured.", 503);
+
+    const verified = await getVerifiedSupabaseUser(req);
+    if (!verified || verified.isAnonymous) return jsonError("Sign in to use EVALA.", 401);
 
     const auth = req.headers.get("authorization") || "";
     const token = auth.startsWith("Bearer ") ? auth.slice(7).trim() : "";
     if (!token) return jsonError("Sign in to use EVALA.", 401);
 
     const supabase = createClient(url, anonKey, { auth: { persistSession: false, autoRefreshToken: false } });
+    // Bind the user JWT so rate-limit RPC evaluates as this authenticated member.
     const { data: authData, error } = await supabase.auth.getUser(token);
-    if (error || !authData.user || authData.user.is_anonymous) return jsonError("Sign in to use EVALA.", 401);
+    if (error || !authData.user || authData.user.id !== verified.id || authData.user.is_anonymous) {
+      return jsonError("Sign in to use EVALA.", 401);
+    }
 
     const body = await req.json();
     const messages = Array.isArray(body?.messages) ? body.messages : [];
@@ -63,7 +73,7 @@ export async function POST(req: Request) {
     if (allowed !== true) {
       return NextResponse.json(
         { error: "EVALA request limit reached. Try again in a few minutes." },
-        { status: 429, headers: { "Retry-After": "600" } }
+        { status: 429, headers: { "Retry-After": "600", "Cache-Control": "private, no-store, max-age=0" } }
       );
     }
 
@@ -96,7 +106,7 @@ export async function POST(req: Request) {
     const message = providerData?.choices?.[0]?.message?.content;
     if (typeof message !== "string" || !message.trim()) return jsonError("EVALA returned an empty response.", 502);
 
-    return NextResponse.json({ message: message.trim(), model });
+    return NextResponse.json({ message: message.trim(), model }, { headers: { "Cache-Control": "private, no-store, max-age=0" } });
   } catch (error) {
     console.error("[EVALA] request error", error);
     return jsonError("Something went wrong while talking to EVALA.", 500);
