@@ -254,3 +254,11 @@ html[data-livv-theme="bone"] [class*="text-white/"]{
     0 .45px rgba(17,16,13,.72),
     0 -.45px rgba(17,16,13,.72);
 }
+
+/* Bone theme: preserve the premium white type treatment while adding a restrained dark keyline for contrast. */
+html[data-livv-theme="bone"] .text-white,
+html[data-livv-theme="bone"] [class*="text-white/"]{
+  color:#fff !important;
+  -webkit-text-stroke:0.45px #111;
+  text-shadow:0 1px 1px rgba(0,0,0,.22);
+}
