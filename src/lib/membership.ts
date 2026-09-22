@@ -23,7 +23,7 @@ export const TIERS: TierDef[] = [
       "Daily home that changes every morning",
       "Train, Evolve, Progress",
       "Photo identity across the app",
-      "Embers earned at 1x",
+      "Embers earned at 1×",
     ],
   },
   {
@@ -35,10 +35,9 @@ export const TIERS: TierDef[] = [
     multiplier: 2,
     featured: true,
     perks: [
-      "Weekly training planner PDF, generated for your week",
-      "Identity frames and accent colors",
-      "Embers at 2x on every check-in",
-      "Private Rise drops before they hit merch",
+      "Accent color customization",
+      "Embers at 2× on standard Ember awards",
+      "Rise membership identity",
     ],
   },
   {
@@ -49,10 +48,8 @@ export const TIERS: TierDef[] = [
     blurb: "The body and the system, written for you.",
     multiplier: 4,
     perks: [
-      "Personalized meal architecture, not a random grocery list",
+      "Embers at 4× on standard Ember awards",
       "App themes: Ember, Midnight, Bone",
-      "Monthly review PDF you can actually print",
-      "Embers at 4x. This is how people bank gear later.",
     ],
   },
   {
@@ -64,9 +61,8 @@ export const TIERS: TierDef[] = [
     multiplier: 6,
     perks: [
       "Everything in Apex",
-      "Yearly Ember allotment toward future LIVV gear",
-      "First access when merch and custom pieces go live",
-      "A mark on your profile nobody else can buy aesthetically",
+      "Embers at 6× on standard Ember awards",
+      "Exclusive Inner Circle profile mark",
     ],
   },
 ];
