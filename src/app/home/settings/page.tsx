@@ -9,7 +9,7 @@ import { changeUsername,getCurrentAccount,signOut } from "@/lib/auth";
 import { loadPrefs,patchPrefs,type LivvPrefs } from "@/lib/prefs";
 import { feedback } from "@/lib/sensory";
 import { countManagedKeysPresent,deleteAllLivvData,downloadBackup,importBackup,parseBackupFile } from "@/lib/data-portability";
-import { getTier,hasTier } from "@/lib/membership";
+import { TIERS,getTier,hasTier } from "@/lib/membership";
 import { getEffectiveTier, openBillingPortal, startCheckout } from "@/lib/billing";
 import { isSupabaseConfigured } from "@/lib/supabase/client";
 import { deleteSupabaseAccount } from "@/lib/supabase/account-deletion";
