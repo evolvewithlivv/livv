@@ -147,3 +147,29 @@ html [class*="border-[#1769ff]"],html [class*="border-[#0F7FFF]"],html [class*="
 .livv-page-subtitle {
   margin-top: 1rem !important;
 }
+
+/* Membership themes — real surface tokens, intentionally small for V1. */
+html[data-livv-theme="ember"][data-theme="dark"]{
+  --livv-pro-bg:#090807;
+  --livv-pro-surface:#15110d;
+  --livv-pro-surface-2:#201812;
+  --livv-pro-ink:#fff8ef;
+  --livv-pro-muted:#a79b8e;
+  --livv-pro-line:#35291f;
+}
+html[data-livv-theme="midnight"][data-theme="dark"]{
+  --livv-pro-bg:#050914;
+  --livv-pro-surface:#0b1220;
+  --livv-pro-surface-2:#121c2e;
+  --livv-pro-ink:#f3f7ff;
+  --livv-pro-muted:#8996aa;
+  --livv-pro-line:#1d2a40;
+}
+html[data-livv-theme="bone"]{
+  --livv-pro-bg:#eee9df;
+  --livv-pro-surface:#faf7f0;
+  --livv-pro-surface-2:#e5dfd4;
+  --livv-pro-ink:#171613;
+  --livv-pro-muted:#69645b;
+  --livv-pro-line:#d1c9bc;
+}
