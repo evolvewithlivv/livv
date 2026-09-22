@@ -43,8 +43,8 @@ declare
   v_total integer := 0;
 begin
   if p_user_id is null then raise exception 'user id required'; end if;
-  if p_event_key is null or length(trim(p_event_key)) < 8 or length(p_event_key) > 120 then raise exception 'invalid event key'; end if;
-  if p_base_amount is null or p_base_amount <= 0 or p_base_amount > 150 then raise exception 'invalid ember amount'; end if;
+  if p_event_key is null or length(trim(p_event_key)) < 12 or length(p_event_key) > 120 then raise exception 'invalid event key'; end if;
+  if p_base_amount is null or p_base_amount not in (4,6,8,10,12,15,16,20,25,30,40,50,75,150) then raise exception 'invalid ember award'; end if;
 
   select coalesce(e.tier, 'spark'), coalesce(e.status, 'none')
     into v_tier, v_status
