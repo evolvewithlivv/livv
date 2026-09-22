@@ -6,7 +6,6 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { url: base, changeFrequency: "weekly", priority: 1 },
     { url: `${base}/legal/terms`, changeFrequency: "yearly", priority: 0.4 },
     { url: `${base}/legal/privacy`, changeFrequency: "yearly", priority: 0.4 },
-    { url: `${base}/legal/community`, changeFrequency: "yearly", priority: 0.3 },
     { url: `${base}/legal/refunds`, changeFrequency: "yearly", priority: 0.3 },
   ];
 }
