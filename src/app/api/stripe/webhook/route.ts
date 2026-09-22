@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { getStripe, tierFromPriceId, type PaidTier } from "@/lib/stripe-server";
-import { claimWebhookEvent, effectiveTier, findUserIdByCustomerId, findUserIdBySubscriptionId, mapSubscriptionStatus, markWebhookEventProcessed, recordPackPurchase, resolveLivvUserId, tierFromSubscription, upsertEntitlement } from "@/lib/stripe-entitlements";
+import { claimWebhookEvent, effectiveTier, findUserIdByCustomerId, findUserIdBySubscriptionId, mapSubscriptionStatus, markWebhookEventProcessed, tierFromSubscription, upsertEntitlement } from "@/lib/stripe-entitlements";
 import { isSupabaseAdminConfigured } from "@/lib/supabase/admin";
 import type Stripe from "stripe";
 export const runtime="nodejs";
