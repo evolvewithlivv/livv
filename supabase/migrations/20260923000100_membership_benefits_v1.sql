@@ -96,6 +96,14 @@ declare
 begin
   if v_uid is null then return new; end if;
 
+  if tg_op = 'INSERT' then
+    new.tier := 'spark';
+    new.embers := 0;
+    new.theme := 'ember';
+    new.accent := '#0F7FFF';
+    return new;
+  end if;
+
   if new.tier is distinct from old.tier or new.embers is distinct from old.embers then
     raise exception 'membership-controlled fields are server managed';
   end if;
@@ -106,8 +114,8 @@ begin
     from public.entitlements e where e.user_id=v_uid;
 
     if v_status not in ('active','trialing','past_due') then v_tier := 'spark'; end if;
-
     v_rank := case v_tier when 'circle' then 3 when 'apex' then 2 when 'rise' then 1 else 0 end;
+
     if new.accent is distinct from old.accent and v_rank < 1 then
       raise exception 'accent customization requires Rise or above';
     end if;
@@ -122,7 +130,7 @@ $$;
 
 drop trigger if exists protect_membership_fields on public.profiles;
 create trigger protect_membership_fields
-before update on public.profiles
+before insert or update on public.profiles
 for each row execute function private.protect_membership_fields();
 
 revoke execute on function private.protect_membership_fields() from public, anon, authenticated;
