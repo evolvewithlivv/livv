@@ -243,3 +243,13 @@ html[data-livv-theme="bone"]{
   .membership-tabs{grid-template-columns:repeat(2,minmax(0,1fr))}
   .membership-featured-top{align-items:flex-start}
 }
+
+/* Bone readability: white/hard-coded light text needs a subtle dark keyline on the light canvas. */
+html[data-livv-theme="bone"] :is(h1,h2,h3,h4,h5,h6,p,span,a,button,label,strong,em){
+  -webkit-text-stroke:.32px rgba(17,16,13,.78);
+  text-shadow:
+    .5px 0 rgba(17,16,13,.62),
+    -.5px 0 rgba(17,16,13,.62),
+    0 .5px rgba(17,16,13,.62),
+    0 -.5px rgba(17,16,13,.62);
+}
