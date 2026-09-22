@@ -11,6 +11,7 @@ import { evolutionTitle } from "@/lib/levels";
 import { feedback } from "@/lib/sensory";
 import { getEffectiveTier } from "@/lib/billing";
 import { getTier } from "@/lib/membership";
+import { syncIdentityToCloud } from "@/lib/auth";
 
 const PROFILE_ACCENT = "#1769ff";
 
@@ -49,7 +50,9 @@ export default function ProfilePage() {
   const photo = async (file?: File) => {
     if (!file) return;
     try {
-      setMe(patchIdentity({ photo: await fileToPhoto(file) }));
+      const next = patchIdentity({ photo: await fileToPhoto(file) });
+      setMe(next);
+      void syncIdentityToCloud(next);
       setStatus("");
       feedback("tick");
     } catch {
