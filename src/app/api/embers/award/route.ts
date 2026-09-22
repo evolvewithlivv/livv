@@ -25,7 +25,7 @@ export async function POST(req: NextRequest) {
     if (!eventKey.startsWith("ember-") || eventKey.length < 12 || eventKey.length > 120) {
       return json({ error: "Invalid Ember event." }, 400);
     }
-    if (baseAmount < 1 || baseAmount > 150) {
+    if (![4, 6, 8, 10, 12, 15, 16, 20, 25, 30, 40, 50, 75, 150].includes(baseAmount)) {
       return json({ error: "Invalid Ember award." }, 400);
     }
 
