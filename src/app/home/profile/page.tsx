@@ -145,7 +145,7 @@ export default function ProfilePage() {
                 Access to the parts of LIVV you have earned or purchased.
               </p>
             </div>
-            <Link href="/home/settings" className="grid h-10 w-10 shrink-0 place-items-center rounded-full border account-divider account-muted">
+            <Link href="/home/settings#membership" className="grid h-10 w-10 shrink-0 place-items-center rounded-full border account-divider account-muted" aria-label="View membership tiers">
               <ChevronRight size={16} />
             </Link>
           </div>
