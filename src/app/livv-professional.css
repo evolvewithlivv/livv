@@ -243,3 +243,14 @@ html[data-livv-theme="bone"]{
   .membership-tabs{grid-template-columns:repeat(2,minmax(0,1fr))}
   .membership-featured-top{align-items:flex-start}
 }
+
+/* Bone theme contrast: preserve LIVV's white type where it is intentionally used, but give it a restrained dark keyline so it stays legible on the light bone canvas. Other themes are untouched. */
+html[data-livv-theme="bone"] [class~="text-white"],
+html[data-livv-theme="bone"] [class*="text-white/"]{
+  -webkit-text-stroke:.28px rgba(17,16,13,.82);
+  text-shadow:
+    .45px 0 rgba(17,16,13,.72),
+    -.45px 0 rgba(17,16,13,.72),
+    0 .45px rgba(17,16,13,.72),
+    0 -.45px rgba(17,16,13,.72);
+}
