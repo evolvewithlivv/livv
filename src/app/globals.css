@@ -2,6 +2,7 @@
 @tailwind components;
 @tailwind utilities;
 @import "./livv-page-header.css";
+@import "./livv-header-icon-fix.css";
 
 :root,
 html[data-theme="dark"] {

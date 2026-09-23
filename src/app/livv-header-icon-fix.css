@@ -1,0 +1,8 @@
+/* Header icon theme fix — force correct mark per mode */
+.livv-header-icon{filter:none !important;opacity:1 !important;mix-blend-mode:normal !important}
+html[data-theme="dark"] .livv-header-icon-light{display:none !important}
+html[data-theme="dark"] .livv-header-icon-dark{display:block !important}
+html[data-theme="light"] .livv-header-icon-light{display:block !important}
+html[data-theme="light"] .livv-header-icon-dark{display:none !important}
+html[data-livv-theme="bone"] .livv-header-icon-light{display:block !important}
+html[data-livv-theme="bone"] .livv-header-icon-dark{display:none !important}
