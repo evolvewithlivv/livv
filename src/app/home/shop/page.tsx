@@ -7,6 +7,8 @@ const SHOP_URL = "https://n8tv6p-pu.myshopify.com";
 const PRODUCTS = [
   { name: "Essential Long Sleeve Tee", subtitle: "Black / White Logo", price: "$44.99", image: "https://cdn.shopify.com/s/files/1/1091/3644/5726/files/unisex-long-sleeve-tee-black-heather-front-6a9eead841a4c.png?v=1788799728", href: `${SHOP_URL}/products/livv-essential-long-sleeve-tee-1` },
   { name: "Essential Long Sleeve Tee", subtitle: "White / Black Logo", price: "$44.99", image: "https://cdn.shopify.com/s/files/1/1091/3644/5726/files/unisex-long-sleeve-tee-white-front-6a9ee93df3eae.png?v=1788799311", href: `${SHOP_URL}/products/livv-essential-long-sleeve-tee` },
+  { name: "Essential Hoodie", subtitle: "Black / White Logo", price: "$59.99", image: "https://cdn.shopify.com/s/files/1/1091/3644/5726/files/unisex-premium-pullover-hoodie-black-front-6aa80abe54914.png?v=1789397724", href: `${SHOP_URL}/products/unisex-hoodie` },
+  { name: "Essential Hoodie", subtitle: "White / Black Logo", price: "$59.99", image: "https://cdn.shopify.com/s/files/1/1091/3644/5726/files/unisex-premium-pullover-hoodie-white-front-6aa80b26d646e.png?v=1789397841", href: `${SHOP_URL}/products/unisex-hoodie-1` },
 ];
 
 export default function ShopPage() {
