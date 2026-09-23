@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
-import { CalendarCheck, ChevronRight, Flame, Pencil, Share2, Trophy, Zap } from "lucide-react";
+import { ChevronRight, Flame, Pencil, Share2, Trophy, Zap } from "lucide-react";
 import { Avatar } from "@/components/identity/avatar";
 import { PageHero } from "@/components/layout/page-hero";
 import { fileToPhoto, loadIdentity, patchIdentity, type Identity } from "@/lib/identity";
@@ -11,6 +11,7 @@ import { evolutionTitle } from "@/lib/levels";
 import { feedback } from "@/lib/sensory";
 import { getEffectiveTier } from "@/lib/billing";
 import { getTier } from "@/lib/membership";
+import { tierColor } from "@/lib/tier-style";
 import { syncIdentityToCloud } from "@/lib/auth";
 
 const PROFILE_ACCENT = "#1769ff";
@@ -44,6 +45,7 @@ export default function ProfilePage() {
   if (!me || !rec) return <main className="min-h-dvh" />;
   const effectiveTier = getEffectiveTier();
   const tierDef = getTier(effectiveTier);
+  const tierStyle = tierColor(effectiveTier);
   const evo = evolutionTitle(rec.level);
   const xpToNext = Math.max(1, rec.xpToNext || 1);
   const pct = Math.min(100, Math.round((rec.currentXp / xpToNext) * 100));
@@ -82,7 +84,7 @@ export default function ProfilePage() {
         <section className="profile-identity mt-6 overflow-hidden rounded-[28px] border border-[var(--livv-pro-line)] bg-[var(--livv-pro-surface)] text-center">
           <div className="profile-identity-visual px-5 pb-7 pt-8">
             <button type="button" onClick={() => fileRef.current?.click()} className="relative mx-auto block rounded-full" aria-label="Change profile photo">
-              <Avatar identity={{...me,tier:effectiveTier}} size={144} fit="contain" className="profile-avatar" showTierRing={effectiveTier==="circle"} />
+              <Avatar identity={{...me,tier:effectiveTier}} size={144} fit="contain" className="profile-avatar" showTierRing />
               <span className="absolute bottom-1 right-1 grid h-9 w-9 place-items-center rounded-full border-4 border-[var(--livv-pro-surface)] bg-[var(--livv-pro-ink)] text-[var(--livv-pro-bg)]">
                 <Pencil size={14} />
               </span>
@@ -90,7 +92,7 @@ export default function ProfilePage() {
             <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={(e) => void photo(e.target.files?.[0])} />
             <h1 className="mt-5 text-[28px] font-semibold tracking-tight">{me.displayName || me.username || "Member"}</h1>
             <p className="mt-1 text-[13px] account-muted">@{me.username || "livv"}</p>
-            <div className="mt-3 flex justify-center"><span className="rounded-full border account-divider px-3 py-1 text-[9px] font-semibold uppercase tracking-[.16em] account-muted">{tierDef.name}</span>{effectiveTier==="circle"&&<span className="ml-2 rounded-full border border-[var(--livv-pro-accent)] bg-[var(--livv-pro-accent-soft)] px-3 py-1 text-[9px] font-semibold uppercase tracking-[.16em] account-accent">Inner Circle</span>}</div>
+            <div className="mt-3 flex justify-center"><span className="rounded-full px-3 py-1 text-[9px] font-semibold uppercase tracking-[.16em]" style={{ color: tierStyle.hex, background: `color-mix(in srgb, ${tierStyle.hex} 16%, transparent)`, border: `1px solid color-mix(in srgb, ${tierStyle.hex} 42%, transparent)` }}>{tierDef.name}</span></div>
             {me.bio ? <p className="mx-auto mt-3 max-w-[34ch] text-[13px] leading-relaxed account-muted">{me.bio}</p> : null}
             {status ? <p className="mt-2 text-[12px] text-red-500">{status}</p> : null}
           </div>
@@ -112,28 +114,6 @@ export default function ProfilePage() {
           </div>
         </section>
 
-        <section className="profile-section mt-2">
-          <Link href="/home/daily" className="account-row flex items-center gap-4 py-5">
-            <span className="grid h-10 w-10 place-items-center rounded-[14px] bg-[var(--livv-pro-surface-2)] account-accent">
-              <CalendarCheck size={17} />
-            </span>
-            <span className="min-w-0 flex-1">
-              <b className="block text-[14px]">Daily</b>
-              <span className="mt-1 block text-[11px] account-muted">Check-ins, focus, and today’s work</span>
-            </span>
-            <ChevronRight size={16} className="account-muted" />
-          </Link>
-          <Link href="/home/progress" className="account-row flex items-center gap-4 border-t py-5">
-            <span className="grid h-10 w-10 place-items-center rounded-[14px] bg-[var(--livv-pro-surface-2)] account-accent">
-              <Trophy size={17} />
-            </span>
-            <span className="min-w-0 flex-1">
-              <b className="block text-[14px]">Progress</b>
-              <span className="mt-1 block text-[11px] account-muted">Chapters, milestones, and recent evidence</span>
-            </span>
-            <ChevronRight size={16} className="account-muted" />
-          </Link>
-        </section>
         <section className="profile-section border-t account-divider py-7">
           <p className="text-[10px] font-semibold uppercase tracking-[.2em] account-accent">Membership</p>
           <div className="mt-2 flex items-center justify-between gap-4">
@@ -145,7 +125,7 @@ export default function ProfilePage() {
                 Access to the parts of LIVV you have earned or purchased.
               </p>
             </div>
-            <Link href="/home/settings#membership" className="grid h-10 w-10 shrink-0 place-items-center rounded-full border account-divider account-muted" aria-label="View membership tiers">
+            <Link href="/home/tiers" className="grid h-10 w-10 shrink-0 place-items-center rounded-full border account-divider account-muted" aria-label="View membership tiers">
               <ChevronRight size={16} />
             </Link>
           </div>
