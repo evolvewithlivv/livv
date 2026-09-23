@@ -1,6 +1,6 @@
 /**
  * First-party behavioral event bus (local-first).
- * Powers reports, Evala evidence, personalization — not a remote analytics product yet.
+ * Powers reports and personalization — not a remote analytics product yet.
  * LIMITATION: stored on-device; not cloud-synced.
  */
 
@@ -19,7 +19,6 @@ export type LivvEventName =
   | "streak_started"
   | "streak_broken"
   | "streak_recovered"
-  | "evala_insight_viewed"
   | "onboarding_completed"
   | "pack_opened"
   | "day_reviewed";
