@@ -14,7 +14,7 @@ Run this on the current Production deployment after each release candidate. This
 - Complete onboarding with realistic values.
 - Confirm the user lands in Home.
 - Refresh the page. Confirm identity/progression survives.
-- Navigate Home → Daily → Train → Mind → Evala → Connect → Profile → Settings → Shop/Packs.
+- Navigate Home → Daily → Train → Mind → Profile → Settings → Shop.
 - Confirm every primary route loads and the bottom navigation remains usable on a phone-sized viewport.
 
 ## 2. Identity/session bootstrap
@@ -52,13 +52,6 @@ Run this on the current Production deployment after each release candidate. This
 - Complete one Train session and verify it records.
 - Confirm streak/level/Ember changes appear where expected.
 - Leave and return to the page; confirm the completed state persists.
-
-## 4. Evala
-
-- Ask a short question.
-- Confirm a response arrives or the deterministic fallback appears if the model service is unavailable.
-- Confirm loading/error states recover without a stuck screen.
-- Confirm the request does not expose secrets in the browser response.
 
 ## 5. Settings + data safety
 
@@ -111,7 +104,6 @@ These should fail safely, not unlock anything:
 - Call `/api/stripe/session` without the authenticated bearer session. Confirm it is rejected.
 - Change a checkout `session_id` to a malformed value. Confirm it is rejected.
 - Call `/api/stripe/portal` without authentication. Confirm it is rejected.
-- Send an oversized JSON body to Evala/Checkout. Confirm it is rejected.
 
 Do not use another customer's Stripe session or customer id in testing.
 
@@ -130,7 +122,6 @@ Ship only when:
 - [ ] Opening/onboarding works.
 - [ ] Core routes load.
 - [ ] Daily/Train/progression persist.
-- [ ] Evala responds and recovers from failure.
 - [ ] Settings/data export/import/delete work.
 - [ ] Email OTP authentication works end-to-end.
 - [ ] Email account change requires verification.

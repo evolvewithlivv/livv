@@ -15,8 +15,8 @@ import { dailySummary } from "@/lib/daily";
 const AREAS = [
   { id: "body", label: "Body", href: "/home/train", description: "Train, recover, move." },
   { id: "mind", label: "Mind", href: "/home/mind", description: "Read, reflect, learn." },
-  { id: "career", label: "Work", href: "/home/evala", description: "Build what matters." },
-  { id: "finance", label: "Money", href: "/home/evala", description: "Make a useful move." },
+  { id: "career", label: "Work", href: "/home/daily", description: "Build what matters." },
+  { id: "finance", label: "Money", href: "/home/daily", description: "Make a useful move." },
   { id: "social", label: "People", href: "/home/daily", description: "Show up for someone real." },
   { id: "life", label: "Life", href: "/home/daily", description: "Handle real life." },
 ] as const;

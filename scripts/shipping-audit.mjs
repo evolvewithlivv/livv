@@ -16,7 +16,6 @@ const checks=[
 
 {name:"server entitlements migration exists",file:"supabase/migrations/20260911174348_b1_entitlements.sql",patterns:["create table if not exists public.entitlements","stripe_webhook_events","enable row level security","entitlements_select_own"]},
 {name:"production security headers are configured",file:"next.config.ts",patterns:["Content-Security-Policy","X-Content-Type-Options","Referrer-Policy"]},
-{name:"Evala API requests are authenticated",file:"src/app/api/evala/chat/route.ts",patterns:["getVerifiedSupabaseUser","Authorization","Cache-Control"]},
 {name:"cross-device member state is cloud-backed",file:"src/lib/supabase/cloud-state.ts",patterns:["member_state","bootstrapCloudMemberState","mergeOnlyChanged","notifyStateHydrated"]},
 {name:"cloud sync is serialized to prevent stale concurrent writes",file:"src/lib/supabase/cloud-state.ts",patterns:["syncInFlight","return syncInFlight"]},
 {name:"cloud sync stops during sign-out",file:"src/lib/supabase/cloud-state.ts",patterns:["SIGNING_OUT_KEY","canSync","clearLocalCloudSyncedState"]},
