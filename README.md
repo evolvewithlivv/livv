@@ -1,6 +1,6 @@
 # LIVV
 
-LIVV is a personal evolution ecosystem built around daily action, training, reflection, progress, connection, packs, and the six life pillars.
+LIVV is a personal evolution ecosystem built around daily action, training, reflection, progress, and the six life pillars.
 
 ## Stack
 
@@ -22,15 +22,13 @@ LIVV is a personal evolution ecosystem built around daily action, training, refl
 - Secure email confirmation callback handling
 - Returning-account profile hydration across browsers/devices
 - Cross-device synchronization for member-owned LIVV local state
-- Daily, Train, Mind, Evala, Connect, Profile, Settings, Progress, Shop, Packs, and Vault surfaces
-- Evolution Packs with local collection state and paid Stripe Checkout
+- Daily, Train, Mind, Profile, Settings, Progress, Shop, and the six life-pillar surfaces
 - Stripe subscription tiers: Spark, Rise, Apex, Inner Circle
 - Server-side Stripe entitlements with webhook idempotency
 - Client dual-read entitlement resolver with safe offline/local fallback
 - Authenticated Stripe Customer Portal ownership
 - Authenticated and user-bound Checkout session confirmation
-- Production-safe demo unlock and paid-pack fallback behavior
-- Production security headers and authenticated Evala API
+- Production security headers
 - Local JSON export/import and full device-data wipe
 - Installable PWA manifest and mobile-safe viewport metadata
 - Native App Store / Play Store packaging via Capacitor live-server shell
@@ -66,7 +64,7 @@ The Stripe Customer Portal and Checkout session confirmation require the authent
 
 ## Native App Store path
 
-LIVV ships as a **Capacitor live-server shell**. The native iOS/Android containers load the production site (`https://evolvewithlivv.com`). This preserves every server feature (Auth OTP, Stripe ownership, entitlements, Evala, API routes) while giving a true App Store binary.
+LIVV ships as a **Capacitor live-server shell**. The native iOS/Android containers load the production site (`https://evolvewithlivv.com`). This preserves every server feature (Auth OTP, Stripe ownership, entitlements, and API routes) while giving a true App Store binary.
 
 See **[docs/APP_STORE.md](docs/APP_STORE.md)** for the full checklist, Xcode/Android Studio steps, and App Store Connect requirements.
 
@@ -101,7 +99,7 @@ Important production variables include:
 - `STRIPE_PRICE_APEX`
 - `STRIPE_PRICE_CIRCLE`
 - `NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY`
-- `XAI_API_KEY` and/or `OPENAI_API_KEY` for live Evala responses
+- No AI-provider key is required by the current V1 app
 
 `NEXT_PUBLIC_LIVV_DEMO_UNLOCK` is a non-production QA flag and is ignored by production builds.
 
@@ -122,7 +120,7 @@ npm run shipping:audit
 npm run build
 ```
 
-`shipping:audit` is a dependency-free static guard for critical production invariants across authentication, billing ownership, server entitlements, pack safety, security headers, and Evala authentication. It runs in GitHub CI for Node 20 and Node 22 so future changes cannot silently remove these protections.
+`shipping:audit` is a dependency-free static guard for critical production invariants across authentication, billing ownership, server entitlements, security headers, and route safety. It runs in GitHub CI for Node 20 and Node 22 so future changes cannot silently remove these protections.
 
 ## Operations
 
