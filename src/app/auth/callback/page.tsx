@@ -3,7 +3,8 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { finishSupabaseCallback } from "@/lib/supabase/real-auth";
-import { isOnboardingComplete } from "@/lib/onboarding";
+import { isOnboardingComplete, markOnboardingComplete } from "@/lib/onboarding";
+import { isCloudOnboardingComplete } from "@/lib/supabase/onboarding-state";
 
 export default function AuthCallbackPage() {
   const router = useRouter();
@@ -18,7 +19,17 @@ export default function AuthCallbackPage() {
         const authErrorDescription = params.get("error_description");
         if (authError) throw new Error(authErrorDescription || `Authentication request returned ${authError}.`);
         await finishSupabaseCallback(params.get("code") || undefined);
-        if (active) router.replace(isOnboardingComplete() ? "/home" : "/onboarding");
+
+        let complete = isOnboardingComplete();
+        if (!complete) {
+          try {
+            complete = await isCloudOnboardingComplete();
+            if (complete) markOnboardingComplete();
+          } catch {
+            /* fall through */
+          }
+        }
+        if (active) router.replace(complete ? "/home" : "/onboarding");
       } catch (err) {
         if (active) setError(err instanceof Error ? err.message : "Authentication could not be completed.");
       }
@@ -38,7 +49,7 @@ export default function AuthCallbackPage() {
           </>
         ) : (
           <>
-            <h1 className="text-xl font-semibold">We couldn&apos;t finish that sign-in</h1>
+            <h1 className="text-xl font-semibold">We couldn't finish that sign-in</h1>
             <p className="mt-3 text-sm leading-6 text-red-300">{error}</p>
             <button type="button" onClick={() => router.replace("/auth")} className="mt-6 rounded-2xl border border-white/10 bg-white/[0.05] px-5 py-3 text-sm text-white/75">Back to sign in</button>
           </>
