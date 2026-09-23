@@ -6,7 +6,7 @@ export function Avatar({
   identity,
   size = 40,
   className,
-  showTierRing = false,
+  showTierRing = true,
   fit = "cover",
 }: {
   identity: Pick<Identity, "displayName" | "photo" | "accent"> & { tier?: LivvTier };
