@@ -142,7 +142,7 @@ export const LEGAL_DOCS: LegalDoc[] = [
         p: [
           "To run your account and sync progress across devices when that feature is on.",
           "To process memberships.",
-          "To operate Evala. When Evala is connected to a model provider, we send the question you typed plus a small snapshot of your record (level, streak, open tasks, last workout). Do not type secrets you would not want a processor to see.",
+          "To operate app features. Some features process the information you enter so the requested feature can respond. Do not type secrets you would not want a processor to see.",
           "To fix bugs, prevent abuse, and improve LIVV.",
           "To send service messages about your account. Marketing is optional and separate when it exists.",
         ],
@@ -156,7 +156,7 @@ export const LEGAL_DOCS: LegalDoc[] = [
       {
         h: "5. Sharing",
         p: [
-          "We use processors such as Supabase (auth and database), Stripe (payments), hosting providers, and the model provider behind Evala when that feature is on.",
+          "We use processors such as Supabase (auth and database), Stripe (payments), and hosting providers.",
           "We do not sell your personal information.",
           "We may disclose information if required by law or to protect users, our rights, or safety.",
         ],
@@ -178,7 +178,7 @@ export const LEGAL_DOCS: LegalDoc[] = [
       {
         h: "8. Security and transfers",
         p: [
-          "We use standard industry protections. No app is perfectly secure. Do not store passwords or bank details inside Daily answers or Evala chats.",
+          "We use standard industry protections. No app is perfectly secure. Do not store passwords or bank details inside app input fields or journal-like entries.",
           "Servers may sit in the United States. If you use LIVV from another country, you understand your data can be processed there.",
         ],
       },
