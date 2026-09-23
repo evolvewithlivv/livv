@@ -17,6 +17,7 @@ export default function AuthPage() {
   const [resendIn, setResendIn] = useState(0);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
+  const [mode, setMode] = useState<"signin" | "signup">("signin");
 
   useEffect(() => {
     if (resendIn <= 0) return;
@@ -39,7 +40,7 @@ export default function AuthPage() {
     setPending(true);
     setOtp("");
     setResendIn(RESEND_SECONDS);
-    setNotice("Enter the 8-digit code from your email.");
+    setNotice(mode === "signin" ? "Welcome back. Enter the 8-digit code from your email." : "Welcome to LIVV. Enter the 8-digit code from your email to get started.");
   });
 
   const verifyEmail = () => void run(async () => {
@@ -61,16 +62,22 @@ export default function AuthPage() {
         <div className="mb-9 flex flex-col items-center">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={LOGO} alt="LIVV" className="h-14 w-14 object-contain" />
-          <h1 className="mt-5 text-center text-[28px] font-semibold tracking-tight">Enter LIVV</h1>
-          <p className="mt-2 text-center text-[13px] text-white/40">Sign in or create your account with email.</p>
+          <h1 className="mt-5 text-center text-[28px] font-semibold tracking-tight">{mode === "signin" ? "Welcome back." : "Welcome to LIVV."}</h1>
+          <p className="mt-2 text-center text-[13px] text-white/40">{mode === "signin" ? "Sign in to continue your journey." : "Create your account and start evolving."}</p>
         </div>
 
-        <div className="space-y-4">
+        <div className="space-y-5">
+          {!pending && (
+            <div className="grid grid-cols-2 gap-2 rounded-2xl border border-white/10 bg-white/[0.03] p-1">
+              <button type="button" onClick={() => { setMode("signin"); setError(""); setNotice(""); }} className={`rounded-xl px-3 py-2.5 text-[12px] font-medium transition ${mode === "signin" ? "bg-white text-black" : "text-white/45 hover:text-white/70"}`}>Sign in</button>
+              <button type="button" onClick={() => { setMode("signup"); setError(""); setNotice(""); }} className={`rounded-xl px-3 py-2.5 text-[12px] font-medium transition ${mode === "signup" ? "bg-white text-black" : "text-white/45 hover:text-white/70"}`}>Create account</button>
+            </div>
+          )}
           {!pending ? (
             <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); sendEmail(); }}>
               <Field label="Email" value={email} onChange={setEmail} type="email" autoComplete="email" placeholder="you@example.com" />
               <Button className="w-full" disabled={busy || !email.includes("@")} type="submit">
-                {busy ? "Sending…" : "Continue with email"}
+                {busy ? "Sending…" : mode === "signin" ? "Sign in with email" : "Create account with email"}
               </Button>
             </form>
           ) : (
@@ -90,6 +97,7 @@ export default function AuthPage() {
           )}
           {notice && <Notice>{notice}</Notice>}
           {error && <ErrorMessage>{error}</ErrorMessage>}
+          {!pending && <div className="pt-2 text-center text-[10px] uppercase tracking-[0.14em] text-white/25"><a href="/legal/privacy" className="hover:text-white/50">Privacy</a><span className="mx-2">·</span><a href="/legal/terms" className="hover:text-white/50">Terms</a></div>}
         </div>
       </div>
     </main>
