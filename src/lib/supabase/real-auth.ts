@@ -11,7 +11,7 @@ const CLOUD_MAP_KEY = "livv-cloud-account-v1";
 const USERNAMES_KEY = "livv-usernames-v1";
 
 function saveAccounts(accounts: Account[]) { window.localStorage.setItem(ACCOUNTS_KEY, JSON.stringify(accounts)); }
-function saveIdentity(account: Account) { const identity: Identity = { displayName: account.displayName, username: account.username, bio: account.bio, goal: account.goal || "", photo: account.photo, accent: account.accent, appearance: account.appearance, tier: account.tier, theme: account.theme, embers: account.embers }; window.localStorage.setItem(IDENTITY_KEY, JSON.stringify(identity)); applyAppearance(account.appearance, account.accent); }
+function saveIdentity(account: Account) { const identity: Identity = { displayName: account.displayName, username: account.username, bio: account.bio, goal: account.goal || "", photo: account.photo, accent: account.accent, appearance: account.appearance, tier: account.tier, theme: account.theme, embers: account.embers }; window.localStorage.setItem(IDENTITY_KEY, JSON.stringify(identity)); applyAppearance(account.appearance, account.accent, account.theme || "ember"); window.dispatchEvent(new Event("livv-identity")); }
 function saveSession(accountId: string) { window.localStorage.setItem(SESSION_KEY, JSON.stringify({ accountId, signedInAt: Date.now() })); window.dispatchEvent(new Event("livv-auth")); window.dispatchEvent(new Event("livv-identity")); }
 function loadCloudMap(): Record<string, string> { try { const raw = window.localStorage.getItem(CLOUD_MAP_KEY); return raw ? (JSON.parse(raw) as Record<string, string>) : {}; } catch { return {}; } }
 function saveCloudMap(map: Record<string, string>) { window.localStorage.setItem(CLOUD_MAP_KEY, JSON.stringify(map)); }
@@ -21,7 +21,63 @@ function metadataName(user: User) { const m = user.user_metadata || {}; return (
 function metadataUsername(user: User) { const m = user.user_metadata || {}; return (m.preferred_username || m.username || metadataName(user)).toString(); }
 function photoForUser(user: User) { const m = user.user_metadata || {}; const value = m.avatar_url || m.picture || m.photo_url || null; return typeof value === "string" && value.startsWith("http") ? value : null; }
 
-async function hydrateCloudProfile(user: User, account: Account): Promise<Account> { const client = getSupabaseBrowserClient(); if (!client) return account; const { data: profile, error } = await client.from("profiles").select("username, display_name, bio, photo_url, accent, appearance, tier, embers, onboarding_completed_at").eq("id", user.id).maybeSingle(); if (error || !profile) { if (error) console.warn("[LIVV profile] cloud read deferred", error); return account; } const placeholder = typeof profile.username === "string" && profile.username.startsWith("anon_"); const hydrated: Account = { ...account, username: placeholder ? account.username : profile.username || account.username, displayName: profile.display_name || account.displayName, bio: profile.bio || account.bio, photo: profile.photo_url || account.photo, accent: profile.accent || account.accent, appearance: profile.appearance === "light" || profile.appearance === "system" ? profile.appearance : account.appearance, tier: profile.tier || account.tier, embers: typeof profile.embers === "number" ? profile.embers : account.embers }; if (placeholder) { const { error: updateError } = await client.from("profiles").update({ username: hydrated.username, display_name: hydrated.displayName, bio: hydrated.bio, photo_url: hydrated.photo, accent: hydrated.accent, appearance: hydrated.appearance }).eq("id", user.id); if (updateError) console.warn("[LIVV profile] cloud identity write deferred", updateError); } return hydrated; }
+async function hydrateCloudProfile(user: User, account: Account): Promise<Account> {
+  const client = getSupabaseBrowserClient();
+  if (!client) return account;
+  const { data: profile, error } = await client
+    .from("profiles")
+    .select("username, display_name, bio, goal, photo_url, accent, appearance, theme, tier, embers, onboarding_completed_at")
+    .eq("id", user.id)
+    .maybeSingle();
+  if (error || !profile) {
+    if (error) console.warn("[LIVV profile] cloud read deferred", error);
+    return account;
+  }
+  const placeholder = typeof profile.username === "string" && profile.username.startsWith("anon_");
+  const appearance =
+    profile.appearance === "light" || profile.appearance === "system" || profile.appearance === "dark"
+      ? profile.appearance
+      : account.appearance;
+  const theme =
+    profile.theme === "ember" || profile.theme === "midnight" || profile.theme === "bone"
+      ? profile.theme
+      : account.theme;
+  const hydrated: Account = {
+    ...account,
+    username: placeholder ? account.username : profile.username || account.username,
+    displayName: profile.display_name || account.displayName,
+    bio: profile.bio || account.bio,
+    goal: typeof profile.goal === "string" ? profile.goal : account.goal,
+    photo: profile.photo_url || account.photo,
+    accent: profile.accent || account.accent,
+    appearance,
+    theme,
+    tier: profile.tier || account.tier,
+    embers: typeof profile.embers === "number" ? profile.embers : account.embers,
+  };
+  if (profile.onboarding_completed_at && typeof window !== "undefined") {
+    try {
+      const { markOnboardingComplete, isOnboardingComplete } = await import("@/lib/onboarding");
+      if (!isOnboardingComplete()) markOnboardingComplete();
+    } catch { /* non-fatal */ }
+  }
+  if (placeholder) {
+    const { error: updateError } = await client
+      .from("profiles")
+      .update({
+        username: hydrated.username,
+        display_name: hydrated.displayName,
+        bio: hydrated.bio,
+        photo_url: hydrated.photo,
+        accent: hydrated.accent,
+        appearance: hydrated.appearance,
+        theme: hydrated.theme,
+      })
+      .eq("id", user.id);
+    if (updateError) console.warn("[LIVV profile] cloud identity write deferred", updateError);
+  }
+  return hydrated;
+}
 function syncUsernameOwnership(account: Account, previousUsername?: string) { const map = loadUsernameMap(); if (previousUsername && map[previousUsername] === account.id) delete map[previousUsername]; if (account.username) map[normalizeUsername(account.username)] = account.id; saveUsernameMap(map); }
 
 export function mapSupabaseAuthError(error: unknown): Error { if (!(error instanceof Error) && typeof error !== "object") return new Error("Authentication failed. Try again."); const err = error as AuthError & { message?: string; status?: number; code?: string }; const message = (err.message || "").toLowerCase(); const code = (err.code || "").toLowerCase(); const status = err.status; if (!isSupabaseConfigured()) return new Error("LIVV authentication is temporarily unavailable. Please try again later."); if (message.includes("rate limit") || message.includes("email rate limit") || code.includes("over_email_send_rate_limit")) return new Error("Too many codes requested. Wait a minute, then try again."); if (message.includes("error sending") || message.includes("confirmation email") || message.includes("magic link") || message.includes("error sending otp")) return new Error("We couldn't send your LIVV code. Please try again in a moment."); if (message.includes("otp_expired") || message.includes("token has expired") || code === "otp_expired") return new Error("That code expired or is invalid. Request a new code and try again."); if (message.includes("invalid") && (message.includes("otp") || message.includes("token") || message.includes("code"))) return new Error("That code is incorrect. Check the 8 digits and try again."); if (status === 429) return new Error("Too many attempts. Wait a minute, then try again."); return new Error("We couldn't complete email verification. Check your code and try again."); }
