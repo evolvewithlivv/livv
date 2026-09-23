@@ -1,8 +1,6 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import Link from "next/link";
-import { ArrowRight } from "lucide-react";
 import { livePillars, loadRecord, weekBars, weekHitCount, type LivvRecord } from "@/lib/record";
 import { evolutionTitle } from "@/lib/levels";
 import { buildProgressInsights } from "@/lib/progress-insights";
@@ -74,7 +72,6 @@ export default function ProgressPage() {
           </div>
         </section>
 
-        <Link href="/home/evala" className="mt-9 flex items-center justify-between border-y border-livv-border py-5"><div><p className="text-[9px] font-semibold uppercase tracking-[.18em] text-livv-accent">Next step</p><p className="mt-1 text-[15px] font-semibold">Ask Evala what to improve next.</p></div><span className="grid h-9 w-9 place-items-center rounded-full border border-livv-border"><ArrowRight size={15} /></span></Link>
       </div>
     </main>
   );
