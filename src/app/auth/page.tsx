@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { startEmailAuth, verifyEmailAuth } from "@/lib/supabase/real-auth";
-import { isOnboardingComplete } from "@/lib/onboarding";
+import { isOnboardingComplete, markOnboardingComplete } from "@/lib/onboarding";
 import { isCloudOnboardingComplete, markCloudOnboardingComplete } from "@/lib/supabase/onboarding-state";
 
 const LOGO = "/livv-logo.png";
@@ -47,12 +47,18 @@ export default function AuthPage() {
     await verifyEmailAuth(email, otp);
     const localComplete = isOnboardingComplete();
     if (localComplete) {
-      await markCloudOnboardingComplete("");
+      try { await markCloudOnboardingComplete(""); } catch { /* local gate already satisfied */ }
       window.location.replace("/home");
       return;
     }
-    const cloudComplete = await isCloudOnboardingComplete();
-    window.location.replace(cloudComplete ? "/home" : "/onboarding");
+    let cloudComplete = false;
+    try { cloudComplete = await isCloudOnboardingComplete(); } catch { cloudComplete = false; }
+    if (cloudComplete) {
+      markOnboardingComplete();
+      window.location.replace("/home");
+      return;
+    }
+    window.location.replace("/onboarding");
   });
 
   return (
