@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Search } from "lucide-react";
 import { Avatar } from "@/components/identity/avatar";
 import { loadIdentity, type Identity } from "@/lib/identity";
+import { getEffectiveTier } from "@/lib/billing";
 import { LIVV_ICON_BLACK, LIVV_ICON_WHITE } from "@/lib/header-logo";
 import { useEffect, useState } from "react";
 
@@ -13,9 +14,11 @@ export function AppHeader() {
     const sync = () => setMe(loadIdentity());
     sync();
     window.addEventListener("livv-identity", sync);
+    window.addEventListener("livv-billing", sync);
     window.addEventListener("storage", sync);
     return () => {
       window.removeEventListener("livv-identity", sync);
+      window.removeEventListener("livv-billing", sync);
       window.removeEventListener("storage", sync);
     };
   }, []);
@@ -52,7 +55,7 @@ export function AppHeader() {
           </Link>
           {me && (
             <Link href="/home/profile" aria-label="Profile" className="ml-1 rounded-full">
-              <Avatar identity={me} size={34} />
+              <Avatar identity={{ ...me, tier: getEffectiveTier() }} size={34} />
             </Link>
           )}
         </div>
