@@ -251,3 +251,7 @@ html[data-livv-theme="bone"] body :not(svg):not(path):not(circle):not(rect):not(
   -webkit-text-stroke:0 !important;
   text-shadow:none !important;
 }
+
+/* Bone theme uses the black Pillars logo regardless of the underlying light/dark mode. */
+html[data-livv-theme="bone"] .livv-footer-logo-light{display:block}
+html[data-livv-theme="bone"] .livv-footer-logo-dark{display:none}
