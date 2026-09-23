@@ -7,7 +7,7 @@ LIVV is a production-grade Next.js 15 + Supabase + Stripe PWA that is also packa
 **Live-server Capacitor shell** (recommended for this product):
 
 - The native container loads `https://evolvewithlivv.com` (or a preview URL).
-- All App Router pages, `/api/*` routes, Stripe webhooks/checkout, Supabase Auth OTP, server entitlements, and Evala remain fully functional.
+- All App Router pages, `/api/*` routes, Stripe webhooks/checkout, Supabase Auth OTP, server entitlements, remain fully functional.
 - No static export, no loss of SSR/edge features, no dual codepaths for billing or auth.
 - Updates ship by deploying to Vercel; users get the new web surface on next app open (or via forced reload).
 
