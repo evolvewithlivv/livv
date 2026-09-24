@@ -21,7 +21,7 @@ export const TIERS: TierDef[] = [
     multiplier: 1,
     perks: [
       "Daily home that changes every morning",
-      "Train, Evolve, Progress",
+      "Training, Mind, and Progress",
       "Photo identity across the app",
       "Embers earned at 1×",
     ],
