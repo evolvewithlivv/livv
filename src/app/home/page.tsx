@@ -11,23 +11,31 @@ import { dailyPillarStatus } from "@/lib/command";
 import { buildBehaviorLoop } from "@/lib/behavior-loop";
 import { feedback } from "@/lib/sensory";
 import { dailySummary } from "@/lib/daily";
+import { quoteForSession, type Quote } from "@/lib/quotes";
 
 const AREAS = [
   { id: "body", label: "Body", href: "/home/train", description: "Train, recover, move." },
   { id: "mind", label: "Mind", href: "/home/mind", description: "Read, reflect, learn." },
   { id: "career", label: "Work", href: "/home/daily", description: "Build what matters." },
   { id: "finance", label: "Money", href: "/home/daily", description: "Make a useful move." },
-  { id: "social", label: "People", href: "/home/daily", description: "Show up for someone real." },
-  { id: "life", label: "Life", href: "/home/daily", description: "Handle real life." },
+  { id: "home", label: "Home", href: "/home/daily", description: "Keep your environment working for you." },
+  { id: "capability", label: "Capability", href: "/home/daily", description: "Build skills that make life easier." },
 ] as const;
 
 export default function HomePage() {
   const [rec, setRec] = useState<LivvRecord | null>(null);
   const [me, setMe] = useState<Identity | null>(null);
   const [daily, setDaily] = useState<ReturnType<typeof dailySummary> | null>(null);
+  const [quote, setQuote] = useState<Quote | null>(null);
 
   const pull = () => { setRec(loadRecord()); setMe(loadIdentity()); setDaily(dailySummary()); };
-  useEffect(() => { pull(); const events = ["livv-identity", "livv-record", "livv-daily", "livv-billing"]; events.forEach((e) => window.addEventListener(e, pull)); return () => events.forEach((e) => window.removeEventListener(e, pull)); }, []);
+  useEffect(() => {
+    pull();
+    setQuote(quoteForSession());
+    const events = ["livv-identity", "livv-record", "livv-daily", "livv-billing"];
+    events.forEach((e) => window.addEventListener(e, pull));
+    return () => events.forEach((e) => window.removeEventListener(e, pull));
+  }, []);
 
   const status = useMemo(() => rec ? dailyPillarStatus(rec) : [], [rec]);
   const loop = useMemo(() => rec ? buildBehaviorLoop(rec, new Date()) : null, [rec]);
@@ -37,6 +45,9 @@ export default function HomePage() {
   const complete = (id: string) => id === "life" ? checkedIn : Boolean(status.find((x) => x.id === id)?.done);
   const done = AREAS.filter((x) => complete(x.id)).length;
   const xp = Math.min(100, Math.round((rec.currentXp / Math.max(rec.xpToNext, 1)) * 100));
+  const displayName = me.displayName || "there";
+  const hour = new Date().getHours();
+  const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
 
   const checkIn = () => {
     if (checkedIn) return;
@@ -54,13 +65,21 @@ export default function HomePage() {
         <header className="livv-page-hero">
           <div className="livv-page-hero-main">
             <p className="livv-page-eyebrow">Today</p>
-            <p className="livv-page-subtitle" style={{ marginTop: "0.625rem" }}>Good to see you, {me.displayName || "there"}.</p>
-            <h1 className="livv-page-title" style={{ marginTop: "0.35rem", maxWidth: "34rem" }}>{daily?.world.line || "What are you building today?"}</h1>
-          </div>
-          <div className="livv-page-hero-right">
-            <span className="text-[11px] font-medium">Level {rec.level}</span>
+            <p className="livv-page-subtitle" style={{ marginTop: "0.625rem" }}>{greeting}, {displayName}.</p>
+            <h1 className="livv-page-title" style={{ marginTop: "0.35rem", maxWidth: "34rem" }}>What are you building today?</h1>
           </div>
         </header>
+
+        <section className="mt-8 border-y border-livv-border py-6">
+          <p className="text-[10px] font-semibold uppercase tracking-[.2em] text-livv-muted">Perspective</p>
+          {quote && (
+            <>
+              <blockquote className="mt-3 max-w-[39ch] text-[22px] font-medium leading-[1.22] tracking-[-.025em]">“{quote.text}”</blockquote>
+              <p className="mt-4 text-[12px] font-semibold">{quote.author}</p>
+              <p className="mt-1 text-[10px] text-livv-muted">{quote.source}</p>
+            </>
+          )}
+        </section>
 
         <section className="mt-8 border-y border-livv-border py-5">
           <div className="flex items-center justify-between gap-4">
