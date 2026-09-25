@@ -77,7 +77,7 @@ export async function POST(req: NextRequest) {
       case "customer.subscription.updated":
       case "customer.subscription.paused":
       case "customer.subscription.resumed":
-        await handleSubscriptionUpdated(event.data.object as Stripe.Subscription);
+        await handleSubscriptionUpdated(stripe, event.data.object as Stripe.Subscription);
         break;
       case "customer.subscription.deleted":
         await handleSubscriptionDeleted(event.data.object as Stripe.Subscription);
@@ -173,7 +173,11 @@ async function resolveSubscriptionUserId(sub: Stripe.Subscription) {
   return userId;
 }
 
-async function handleSubscriptionUpdated(sub: Stripe.Subscription) {
+async function handleSubscriptionUpdated(stripe: Stripe, eventSub: Stripe.Subscription) {
+  // Stripe can deliver subscription events out of order. Read the current
+  // subscription state before changing entitlements so an older event cannot
+  // downgrade a newer paid state.
+  const sub = await stripe.subscriptions.retrieve(eventSub.id);
   const userId = await resolveSubscriptionUserId(sub);
   if (!userId) return;
 
