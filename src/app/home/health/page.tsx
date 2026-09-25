@@ -108,7 +108,7 @@ export default function HealthPage() {
           }
         />
 
-        <section className="mt-8 border-y border-livv-border py-6">
+        <section className="mt-8 border-t border-livv-border py-6">
           <div className="flex items-center gap-5">
             <div
               className="grid h-[82px] w-[82px] shrink-0 place-items-center rounded-full"
