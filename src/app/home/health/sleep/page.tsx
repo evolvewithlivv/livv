@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { ChevronLeft, Moon, Star, Sun, TimerReset } from "lucide-react";
 
 const KEY = "livv-sleep-v2";
@@ -87,5 +87,5 @@ export default function SleepPage() {
 }
 function SectionHead({label,title,sub}:{label:string;title:string;sub?:string}){return <div><p className="text-[10px] font-semibold uppercase tracking-[.19em] text-livv-muted">{label}</p><h2 className="mt-1 text-[26px] font-semibold tracking-[-.045em]">{title}</h2>{sub&&<p className="mt-2 max-w-[42ch] text-[12px] leading-5 text-livv-muted">{sub}</p>}</div>}
 function Stat({label,value}:{label:string;value:string}){return <div><p className="text-[9px] font-semibold uppercase tracking-[.16em] text-livv-muted">{label}</p><p className="mt-2 text-[29px] font-semibold tracking-[-.05em]">{value}</p></div>}
-function Field({label,children}:{label:string;children:React.ReactNode}){return <label className="px-4 py-5 first:pl-0 last:pr-0"><span className="block text-[10px] font-semibold uppercase tracking-[.15em] text-livv-muted">{label}</span><div className="mt-3">{children}</div></label>}
-function Guide({icon,title,text}:{icon:React.ReactNode;title:string;text:string}){return <div className="flex gap-4 border-b border-livv-border pb-4"><span className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-livv-border text-livv-muted">{icon}</span><div><h3 className="text-[14px] font-semibold">{title}</h3><p className="mt-1 text-[12px] leading-5 text-livv-muted">{text}</p></div></div>}
+function Field({label,children}:{label:string;children:ReactNode}){return <label className="px-4 py-5 first:pl-0 last:pr-0"><span className="block text-[10px] font-semibold uppercase tracking-[.15em] text-livv-muted">{label}</span><div className="mt-3">{children}</div></label>}
+function Guide({icon,title,text}:{icon:ReactNode;title:string;text:string}){return <div className="flex gap-4 border-b border-livv-border pb-4"><span className="grid h-9 w-9 shrink-0 place-items-center rounded-full border border-livv-border text-livv-muted">{icon}</span><div><h3 className="text-[14px] font-semibold">{title}</h3><p className="mt-1 text-[12px] leading-5 text-livv-muted">{text}</p></div></div>}
