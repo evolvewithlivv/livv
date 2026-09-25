@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { feedback } from "@/lib/sensory";
 import { PageHero } from "@/components/layout/page-hero";
-import { claimDailyDrop, completeDailyTask, dailyDrop, dailyQuestion, dailySummary, dailyTasks, journalHistory, loadBuffs, loadDailyState, saveDailyJournal, type DailyDrop, type DailyJournalEntry } from "@/lib/daily";
+import { completeDailyTask, dailyQuestion, dailySummary, dailyTasks, journalHistory, loadBuffs, loadDailyState, saveDailyJournal, type DailyJournalEntry } from "@/lib/daily";
 
 const TRACKER_KEY = "livv-daily-trackers-v1";
 
@@ -16,21 +16,17 @@ export default function DailyPage() {
   const [completed, setCompleted] = useState<string[]>([]);
   const [answer, setAnswer] = useState("");
   const [journal, setJournal] = useState<DailyJournalEntry[]>([]);
-  const [claimed, setClaimed] = useState(false);
-  const [lastDrop, setLastDrop] = useState<DailyDrop | null>(null);
   const [doubleXp, setDoubleXp] = useState(false);
   const [trackers, setTrackers] = useState<Trackers>(DEFAULT_TRACKERS);
 
   const tasks = useMemo(() => dailyTasks(now), [now]);
   const question = useMemo(() => dailyQuestion(now), [now]);
   const summary = useMemo(() => dailySummary(now), [now]);
-  const drop = useMemo(() => dailyDrop(now), [now]);
 
   const refresh = () => {
     const state = loadDailyState(now);
     setCompleted(state.completed);
     setJournal(state.journal);
-    setClaimed(state.dropClaimed);
     const today = state.journal.find((item) => item.key === state.key);
     if (today) setAnswer(today.answer);
     setDoubleXp(Boolean(loadBuffs().doubleXpUntil));
@@ -72,17 +68,6 @@ export default function DailyPage() {
     feedback("tick");
     completeDailyTask(id, now);
     refresh();
-  };
-
-  const claim = () => {
-    if (!allDone || claimed) return;
-    feedback("unlock");
-    const result = claimDailyDrop(now);
-    if (result.claimed) {
-      setLastDrop(result.drop);
-      setClaimed(true);
-      refresh();
-    }
   };
 
   const toggle = (key: "movement" | "reset") => {
@@ -166,22 +151,6 @@ export default function DailyPage() {
             <span className="text-[10px] uppercase tracking-[.16em] text-[var(--livv-pro-muted)]">Private journal</span>
             <button type="button" onClick={saveAnswer} disabled={!answer.trim()} className="rounded-full bg-[var(--livv-pro-ink)] px-4 py-2.5 text-[10px] font-semibold uppercase tracking-[.14em] text-[var(--livv-pro-bg)] disabled:opacity-30">{completed.includes("mind") ? "Save changes" : "Save and complete"}</button>
           </div>
-        </section>
-
-        <section className="mt-8 border-b border-[var(--livv-pro-line)] pb-7">
-          <div className="flex items-end justify-between">
-            <SectionHead label="Earn" title="Daily Drop" />
-            <span className="text-[10px] uppercase tracking-[.16em] text-[var(--livv-pro-muted)]">{claimed ? "Claimed" : allDone ? "Ready" : `${3 - doneCount} left`}</span>
-          </div>
-          <div className="mt-5 flex items-center gap-4">
-            <div className="grid h-14 w-14 shrink-0 place-items-center rounded-2xl border border-[var(--livv-pro-line)] bg-[var(--livv-pro-surface-2)] text-xl">{allDone || claimed ? drop.icon : "?"}</div>
-            <div className="min-w-0 flex-1">
-              <p className="text-[16px] font-semibold">{allDone || claimed ? drop.name : "Locked"}</p>
-              <p className="mt-1 text-[11px] leading-relaxed text-[var(--livv-pro-muted)]">{allDone || claimed ? drop.description : "Complete all three actions first."}</p>
-            </div>
-          </div>
-          <button type="button" onClick={claim} disabled={!allDone || claimed} className="mt-5 w-full rounded-full bg-[var(--livv-pro-ink)] py-3.5 text-[10px] font-semibold uppercase tracking-[.14em] text-[var(--livv-pro-bg)] disabled:bg-[var(--livv-pro-surface-2)] disabled:text-[var(--livv-pro-muted)]">{claimed ? "Claimed" : allDone ? "Open Drop" : "Locked"}</button>
-          {lastDrop && claimed && <p className="mt-3 text-[11px] font-medium text-[var(--livv-pro-accent)]">Unlocked: {lastDrop.name}. Your reward has been added.</p>}
         </section>
 
         {summary.callback && <section className="mt-7 border-b border-[var(--livv-pro-line)] pb-6">
