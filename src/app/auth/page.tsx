@@ -36,7 +36,7 @@ export default function AuthPage() {
 
   const sendEmail = (resend = false) => void run(async () => {
     if (resend && resendIn > 0) return;
-    await startEmailAuth(email);
+    await startEmailAuth(email, mode === "signup");
     setPending(true);
     setOtp("");
     setResendIn(RESEND_SECONDS);
