@@ -139,22 +139,19 @@ async function drawAvatar(
 
 async function renderIdentityCard(c: CanvasRenderingContext2D, d: ShareCardData) {
   const accent = d.tierColor || "#1769ff";
-  const bgSrc = d.backgroundSrc || null;
   const photoSrc = d.customPhoto || null;
 
-  c.fillStyle = "#0a0c10";
+  c.fillStyle = "#080a0d";
   c.fillRect(0, 0, W, H);
 
-  // Prefer landscape library; fall back to profile photo as atmospheric full-bleed
-  let bgDrawn = false;
-  for (const src of [bgSrc, photoSrc]) {
-    if (!src || bgDrawn) continue;
+  // The identity card is the member's identity: their own profile photo becomes
+  // the full-bleed atmospheric background. Do not use the old background library.
+  if (photoSrc) {
     try {
-      const image = await loadImage(src);
+      const image = await loadImage(photoSrc);
       cover(c, image, image.naturalWidth, image.naturalHeight);
-      bgDrawn = true;
     } catch {
-      /* try next */
+      /* keep the clean dark fallback */
     }
   }
 
@@ -166,36 +163,42 @@ async function renderIdentityCard(c: CanvasRenderingContext2D, d: ShareCardData)
   c.fillStyle = dim;
   c.fillRect(0, 0, W, H);
 
-  const wash = c.createRadialGradient(W / 2, 400, 20, W / 2, 400, 480);
-  wash.addColorStop(0, accent + "40");
-  wash.addColorStop(0.55, accent + "14");
+  // Subtle tier atmosphere behind the identity, kept intentionally quiet.
+  const wash = c.createRadialGradient(W / 2, 390, 10, W / 2, 390, 500);
+  wash.addColorStop(0, accent + "24");
+  wash.addColorStop(0.55, accent + "08");
   wash.addColorStop(1, "transparent");
   c.fillStyle = wash;
-  c.fillRect(0, 80, W, 720);
+  c.fillRect(0, 80, W, 760);
 
+  // Official LIVV icon, centered. No "LIVV Identity" label and no avatar circle.
   try {
     const mark = await loadImage("/livv-logo.png");
-    const maxW = 160;
-    const maxH = 56;
+    const maxW = 92;
+    const maxH = 92;
     const scale = Math.min(maxW / mark.naturalWidth, maxH / mark.naturalHeight);
-    c.drawImage(mark, 72, 52, mark.naturalWidth * scale, mark.naturalHeight * scale);
+    c.drawImage(
+      mark,
+      W / 2 - (mark.naturalWidth * scale) / 2,
+      70,
+      mark.naturalWidth * scale,
+      mark.naturalHeight * scale,
+    );
   } catch {
-    await logo(c, "white", bgSrc);
+    // The production asset is expected to exist; keep a minimal fallback if it does not.
+    put(c, "L", W / 2, 132, 54, 800, "#FFFFFF", "sans", "center");
   }
 
   const name = d.displayName || d.username || "Member";
-  await drawAvatar(c, photoSrc, W / 2, 430, 168, accent, name);
-
-  track(c, "LIVV IDENTITY", W / 2, 660, 18, "rgba(255,255,255,.55)", "sans", "center");
-  put(c, name.slice(0, 22), W / 2, 740, 58, 750, "#ffffff", "sans", "center");
-  put(c, `@${(d.username || "livv").slice(0, 28)}`, W / 2, 788, 24, 500, "rgba(255,255,255,.55)", "sans", "center");
+  put(c, name.slice(0, 22), W / 2, 360, 58, 750, "#ffffff", "sans", "center");
+  put(c, `@${(d.username || "livv").slice(0, 28)}`, W / 2, 408, 24, 500, "rgba(255,255,255,.55)", "sans", "center");
 
   const tier = (d.tierLabel || "Spark").toUpperCase();
   c.font = `700 18px Arial,Helvetica,sans-serif`;
   const tw = c.measureText(tier).width;
   const pillW = tw + 56;
   const pillX = W / 2 - pillW / 2;
-  const pillY = 820;
+  const pillY = 440;
   c.beginPath();
   const pr = 22;
   c.moveTo(pillX + pr, pillY);
@@ -209,13 +212,13 @@ async function renderIdentityCard(c: CanvasRenderingContext2D, d: ShareCardData)
   c.strokeStyle = accent + "99";
   c.lineWidth = 2;
   c.stroke();
-  put(c, tier, W / 2, 850, 18, 700, accent, "sans", "center");
+  put(c, tier, W / 2, 470, 18, 700, accent, "sans", "center");
 
   if (d.evolutionName) {
-    put(c, d.evolutionName, W / 2, 920, 28, 600, "rgba(255,255,255,.72)", "sans", "center");
+    put(c, d.evolutionName, W / 2, 545, 28, 600, "rgba(255,255,255,.78)", "sans", "center");
   }
 
-  const panelY = 1000;
+  const panelY = 720;
   const panelH = 200;
   c.fillStyle = "rgba(255,255,255,.06)";
   c.strokeStyle = "rgba(255,255,255,.12)";
