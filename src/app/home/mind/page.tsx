@@ -4,6 +4,7 @@ import type { ReactNode } from "react";
 
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import { useSearchParams } from "next/navigation";
 import { Bookmark, Search, X } from "lucide-react";
 import { DESKS, WIKI, deskMeta, type WikiArticle, type WikiDesk } from "@/lib/wiki";
 
@@ -27,6 +28,7 @@ function persistSaved(slugs: string[]) {
 }
 
 export default function MindPage() {
+  const searchParams = useSearchParams();
   const [desk, setDesk] = useState<WikiDesk | "all">("all");
   const [query, setQuery] = useState("");
   const [saved, setSaved] = useState<string[]>([]);
@@ -34,6 +36,15 @@ export default function MindPage() {
   const [searchOpen, setSearchOpen] = useState(false);
 
   useEffect(() => setSaved(readSaved()), []);
+
+  useEffect(() => {
+    const raw = (searchParams.get("desk") || "").toLowerCase();
+    const valid = DESKS.some((d) => d.id === raw);
+    if (valid) {
+      setDesk(raw as WikiDesk);
+      setSavedOnly(false);
+    }
+  }, [searchParams]);
 
   const list = useMemo(() => {
     const q = query.trim().toLowerCase();
