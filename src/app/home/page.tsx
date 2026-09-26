@@ -4,7 +4,6 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { ArrowRight, Check, ChevronRight, Plus } from "lucide-react";
 import { addEmbers, loadIdentity, type Identity } from "@/lib/identity";
-import { getTier } from "@/lib/membership";
 import { getEffectiveTier } from "@/lib/billing";
 import { checkInRecord, isCheckedInToday, loadRecord, type LivvRecord } from "@/lib/record";
 import { dailyPillarStatus } from "@/lib/command";
@@ -12,6 +11,7 @@ import { buildBehaviorLoop } from "@/lib/behavior-loop";
 import { feedback } from "@/lib/sensory";
 import { dailySummary } from "@/lib/daily";
 import { quoteForSession, type Quote } from "@/lib/quotes";
+import { embersFromAction } from "@/lib/embers";
 
 /** Each area routes to a distinct product surface — no shared dump destination. */
 const AREAS = [
@@ -56,13 +56,12 @@ const AREAS = [
 export default function HomePage() {
   const [rec, setRec] = useState<LivvRecord | null>(null);
   const [me, setMe] = useState<Identity | null>(null);
-  const [daily, setDaily] = useState<ReturnType<typeof dailySummary> | null>(null);
   const [quote, setQuote] = useState<Quote | null>(null);
 
   const pull = () => {
     setRec(loadRecord());
     setMe(loadIdentity());
-    setDaily(dailySummary());
+    dailySummary();
   };
   useEffect(() => {
     pull();
@@ -89,9 +88,16 @@ export default function HomePage() {
     if (checkedIn) return;
     const result = checkInRecord();
     if (result.already) return;
-    const tier = getTier(getEffectiveTier());
     feedback("checkin");
-    addEmbers(10 * tier.multiplier + (result.emberBonus || 0));
+    // Base only — server applies tier multiplier. Do not pre-multiply.
+    const base = embersFromAction("checkin");
+    const bonus =
+      result.emberBonus && [4, 6, 8, 10, 12, 15].includes(result.emberBonus)
+        ? result.emberBonus
+        : 0;
+    addEmbers(base);
+    if (bonus) addEmbers(bonus, `ember-checkin-bonus-${Date.now()}`);
+    void getEffectiveTier();
     pull();
   };
 
@@ -110,7 +116,6 @@ export default function HomePage() {
           </div>
         </header>
 
-        {/* Perspective — no heavy border-y cage */}
         <section className="mt-10">
           <p className="text-[10px] font-semibold uppercase tracking-[.2em] text-livv-muted">
             Perspective
@@ -126,7 +131,6 @@ export default function HomePage() {
           )}
         </section>
 
-        {/* Life-area progress — one clear system on Home */}
         <section className="mt-12 rounded-[22px] border border-livv-border bg-[color-mix(in_srgb,rgb(var(--livv-ink))_2.5%,transparent)] px-5 py-5">
           <div className="flex items-center justify-between gap-4">
             <div>
@@ -162,7 +166,6 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* Six areas */}
         <section className="mt-12">
           <div className="mb-5 flex items-end justify-between gap-4">
             <div>
@@ -222,7 +225,6 @@ export default function HomePage() {
           </div>
         </section>
 
-        {/* Next move */}
         <section className="mt-12 pb-2">
           <div className="flex items-start justify-between gap-4">
             <div>

@@ -1,4 +1,5 @@
 import type { LivvTier } from "./identity";
+import { EMBERS_PER_DOLLAR, MIN_REDEEM_EMBERS } from "./ember-economy";
 
 export type TierDef = {
   id: LivvTier;
@@ -20,10 +21,10 @@ export const TIERS: TierDef[] = [
     blurb: "The rooms. The daily page. Enough to start.",
     multiplier: 1,
     perks: [
-      "Daily home that changes every morning",
-      "Training, Mind, and Progress",
+      "Full Daily, Train, Mind, Health, and Progress",
       "Photo identity across the app",
-      "Embers earned at 1×",
+      "Embers at 1× — redeem on Collection when ready",
+      `${EMBERS_PER_DOLLAR} Embers = $1 off (min ${MIN_REDEEM_EMBERS.toLocaleString()})`,
     ],
   },
   {
@@ -31,13 +32,14 @@ export const TIERS: TierDef[] = [
     name: "Rise",
     price: "$12",
     cadence: "/mo",
-    blurb: "The operating system. Not another content dump.",
+    blurb: "Make LIVV yours. Earn Embers faster.",
     multiplier: 2,
     featured: true,
     perks: [
       "Accent color customization",
-      "Embers at 2× on standard Ember awards",
-      "Rise membership identity",
+      "Embers at 2× on standard awards",
+      "Rise membership on your profile",
+      "Same Collection redemption rate — faster earn path",
     ],
   },
   {
@@ -45,11 +47,13 @@ export const TIERS: TierDef[] = [
     name: "Apex",
     price: "$29",
     cadence: "/mo",
-    blurb: "The body and the system, written for you.",
+    blurb: "Own the look of the system.",
     multiplier: 4,
     perks: [
-      "Embers at 4× on standard Ember awards",
-      "App themes: Ember, Midnight, Bone",
+      "Everything in Rise",
+      "Embers at 4× on standard awards",
+      "App themes: Midnight and Bone",
+      "Faster path to Collection credit",
     ],
   },
   {
@@ -61,8 +65,9 @@ export const TIERS: TierDef[] = [
     multiplier: 6,
     perks: [
       "Everything in Apex",
-      "Embers at 6× on standard Ember awards",
+      "Embers at 6× on standard awards",
       "Exclusive Inner Circle profile mark",
+      "Fastest Ember path toward Collection",
     ],
   },
 ];
