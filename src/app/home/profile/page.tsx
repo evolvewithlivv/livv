@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
-import { ChevronRight, Flame, Pencil, Share2, Trophy, Zap } from "lucide-react";
+import { ChevronRight, Flame, Pencil, SquareUserRound, Trophy, Zap } from "lucide-react";
 import { Avatar } from "@/components/identity/avatar";
 import { PageHero } from "@/components/layout/page-hero";
 import { fileToPhoto, loadIdentity, patchIdentity, type Identity } from "@/lib/identity";
@@ -80,8 +80,8 @@ export default function ProfilePage() {
           accent={PROFILE_ACCENT}
           right={
             <div className="flex items-center gap-2">
-              <Link href="/home/share" aria-label="Share profile" className="profile-share-action">
-                <Share2 size={17} />
+              <Link href="/home/profile/card" aria-label="Open LIVV identity card" className="profile-share-action">
+                <SquareUserRound size={17} />
               </Link>
               <Link href="/home/settings" aria-label="Settings" className="profile-edit-action">
                 <Pencil size={16} />
@@ -207,23 +207,6 @@ export default function ProfilePage() {
           </div>
         </section>
       </div>
-      <footer className="livv-brand-footer" aria-label="LIVV">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src="/share-backgrounds/LIVV%20Pillars%20Logo%20-%20BLACK.PNG"
-          alt="LIVV pillars"
-          className="livv-footer-logo livv-footer-logo-light"
-          draggable={false}
-        />
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img
-          src="/share-backgrounds/LIVV%20Pillars%20Logo%20-%20WHITE.PNG"
-          alt=""
-          aria-hidden="true"
-          className="livv-footer-logo livv-footer-logo-dark"
-          draggable={false}
-        />
-      </footer>
     </main>
   );
 }
