@@ -71,7 +71,6 @@ async function logo(c:CanvasRenderingContext2D,mode:ShareLogo,backgroundSrc:stri
 function line(c:CanvasRenderingContext2D,y:number,col:string){c.strokeStyle=col;c.lineWidth=1.5;c.beginPath();c.moveTo(72,y);c.lineTo(W-72,y);c.stroke();}
 function metric(c:CanvasRenderingContext2D,l:string,v:string,x:number,y:number,col:string,f:ShareFont){track(c,l,x,y,12,col,f);put(c,v,x,y+47,34,650,col,f);}
 
-/** Draw circular avatar with tier ring. Falls back to initial on failure. */
 async function drawAvatar(
   c: CanvasRenderingContext2D,
   src: string | null | undefined,
@@ -138,7 +137,6 @@ async function drawAvatar(
   c.restore();
 }
 
-/** Premium profile identity card — photo, tier ring, stats. */
 async function renderIdentityCard(c: CanvasRenderingContext2D, d: ShareCardData) {
   const accent = d.tierColor || "#1769ff";
   const bgSrc = d.backgroundSrc || null;
@@ -146,35 +144,44 @@ async function renderIdentityCard(c: CanvasRenderingContext2D, d: ShareCardData)
 
   c.fillStyle = "#0a0c10";
   c.fillRect(0, 0, W, H);
-  if (bgSrc) {
+
+  // Prefer landscape library; fall back to profile photo as atmospheric full-bleed
+  let bgDrawn = false;
+  for (const src of [bgSrc, photoSrc]) {
+    if (!src || bgDrawn) continue;
     try {
-      const image = await loadImage(bgSrc);
+      const image = await loadImage(src);
       cover(c, image, image.naturalWidth, image.naturalHeight);
+      bgDrawn = true;
     } catch {
-      /* keep base */
+      /* try next */
     }
   }
 
-  const topFade = c.createLinearGradient(0, 0, 0, 420);
-  topFade.addColorStop(0, "rgba(0,0,0,.55)");
-  topFade.addColorStop(1, "transparent");
-  c.fillStyle = topFade;
-  c.fillRect(0, 0, W, 420);
+  const dim = c.createLinearGradient(0, 0, 0, H);
+  dim.addColorStop(0, "rgba(0,0,0,.62)");
+  dim.addColorStop(0.35, "rgba(0,0,0,.48)");
+  dim.addColorStop(0.55, "rgba(0,0,0,.58)");
+  dim.addColorStop(1, "rgba(0,0,0,.9)");
+  c.fillStyle = dim;
+  c.fillRect(0, 0, W, H);
 
-  const bottomFade = c.createLinearGradient(0, 520, 0, H);
-  bottomFade.addColorStop(0, "transparent");
-  bottomFade.addColorStop(0.35, "rgba(0,0,0,.55)");
-  bottomFade.addColorStop(1, "rgba(0,0,0,.92)");
-  c.fillStyle = bottomFade;
-  c.fillRect(0, 520, W, H - 520);
-
-  const wash = c.createRadialGradient(W / 2, 380, 40, W / 2, 380, 520);
-  wash.addColorStop(0, accent + "33");
+  const wash = c.createRadialGradient(W / 2, 400, 20, W / 2, 400, 480);
+  wash.addColorStop(0, accent + "40");
+  wash.addColorStop(0.55, accent + "14");
   wash.addColorStop(1, "transparent");
   c.fillStyle = wash;
-  c.fillRect(0, 120, W, 700);
+  c.fillRect(0, 80, W, 720);
 
-  await logo(c, "white", bgSrc);
+  try {
+    const mark = await loadImage("/livv-logo.png");
+    const maxW = 160;
+    const maxH = 56;
+    const scale = Math.min(maxW / mark.naturalWidth, maxH / mark.naturalHeight);
+    c.drawImage(mark, 72, 52, mark.naturalWidth * scale, mark.naturalHeight * scale);
+  } catch {
+    await logo(c, "white", bgSrc);
+  }
 
   const name = d.displayName || d.username || "Member";
   await drawAvatar(c, photoSrc, W / 2, 430, 168, accent, name);
