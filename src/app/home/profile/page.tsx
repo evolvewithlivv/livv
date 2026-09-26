@@ -13,6 +13,11 @@ import { getEffectiveTier } from "@/lib/billing";
 import { getTier } from "@/lib/membership";
 import { tierColor } from "@/lib/tier-style";
 import { syncIdentityToCloud } from "@/lib/auth";
+import {
+  MIN_REDEEM_EMBERS,
+  embersToDollars,
+  formatEmberValue,
+} from "@/lib/ember-economy";
 
 const PROFILE_ACCENT = "#1769ff";
 
@@ -28,7 +33,7 @@ export default function ProfilePage() {
         setMe(loadIdentity());
         setRec(loadRecord());
       } catch {
-        /* keep last good state — never blank the tab on a grant/sync glitch */
+        /* keep last good state */
       }
     };
     sync();
@@ -49,6 +54,9 @@ export default function ProfilePage() {
   const evo = evolutionTitle(rec.level);
   const xpToNext = Math.max(1, rec.xpToNext || 1);
   const pct = Math.min(100, Math.round((rec.currentXp / xpToNext) * 100));
+  const embers = me.embers || 0;
+  const emberDollars = embersToDollars(embers);
+
   const photo = async (file?: File) => {
     if (!file) return;
     try {
@@ -83,17 +91,51 @@ export default function ProfilePage() {
         />
         <section className="profile-identity mt-6 overflow-hidden rounded-[28px] border border-[var(--livv-pro-line)] bg-[var(--livv-pro-surface)] text-center">
           <div className="profile-identity-visual px-5 pb-7 pt-8">
-            <button type="button" onClick={() => fileRef.current?.click()} className="relative mx-auto block rounded-full" aria-label="Change profile photo">
-              <Avatar identity={{...me,tier:effectiveTier}} size={144} fit="contain" className="profile-avatar" showTierRing />
+            <button
+              type="button"
+              onClick={() => fileRef.current?.click()}
+              className="relative mx-auto block rounded-full"
+              aria-label="Change profile photo"
+            >
+              <Avatar
+                identity={{ ...me, tier: effectiveTier }}
+                size={144}
+                fit="contain"
+                className="profile-avatar"
+                showTierRing
+              />
               <span className="absolute bottom-1 right-1 grid h-9 w-9 place-items-center rounded-full border-4 border-[var(--livv-pro-surface)] bg-[var(--livv-pro-ink)] text-[var(--livv-pro-bg)]">
                 <Pencil size={14} />
               </span>
             </button>
-            <input ref={fileRef} type="file" accept="image/*" className="hidden" onChange={(e) => void photo(e.target.files?.[0])} />
-            <h1 className="mt-5 text-[28px] font-semibold tracking-tight">{me.displayName || me.username || "Member"}</h1>
+            <input
+              ref={fileRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={(e) => void photo(e.target.files?.[0])}
+            />
+            <h1 className="mt-5 text-[28px] font-semibold tracking-tight">
+              {me.displayName || me.username || "Member"}
+            </h1>
             <p className="mt-1 text-[13px] account-muted">@{me.username || "livv"}</p>
-            <div className="mt-3 flex justify-center"><span className="rounded-full px-3 py-1 text-[9px] font-semibold uppercase tracking-[.16em]" style={{ color: tierStyle.hex, background: `color-mix(in srgb, ${tierStyle.hex} 16%, transparent)`, border: `1px solid color-mix(in srgb, ${tierStyle.hex} 42%, transparent)` }}>{tierDef.name}</span></div>
-            {me.bio ? <p className="mx-auto mt-3 max-w-[34ch] text-[13px] leading-relaxed account-muted">{me.bio}</p> : null}
+            <div className="mt-3 flex justify-center">
+              <span
+                className="rounded-full px-3 py-1 text-[9px] font-semibold uppercase tracking-[.16em]"
+                style={{
+                  color: tierStyle.hex,
+                  background: `color-mix(in srgb, ${tierStyle.hex} 16%, transparent)`,
+                  border: `1px solid color-mix(in srgb, ${tierStyle.hex} 42%, transparent)`,
+                }}
+              >
+                {tierDef.name}
+              </span>
+            </div>
+            {me.bio ? (
+              <p className="mx-auto mt-3 max-w-[34ch] text-[13px] leading-relaxed account-muted">
+                {me.bio}
+              </p>
+            ) : null}
             {status ? <p className="mt-2 text-[12px] text-red-500">{status}</p> : null}
           </div>
           <div className="grid grid-cols-3 gap-2 border-t border-[var(--livv-pro-line)] px-3 py-5">
@@ -103,40 +145,84 @@ export default function ProfilePage() {
           </div>
           <div className="border-t border-[var(--livv-pro-line)] px-5 py-4 text-left">
             <div className="flex items-center justify-between gap-3">
-              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] account-muted">{evo.name}</p>
+              <p className="text-[11px] font-semibold uppercase tracking-[0.14em] account-muted">
+                {evo.name}
+              </p>
               <p className="text-[11px] tabular-nums account-muted">
                 {rec.currentXp} / {xpToNext} XP
               </p>
             </div>
             <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-[var(--livv-pro-surface-2)]">
-              <div className="h-full rounded-full bg-[var(--livv-pro-accent)]" style={{ width: `${pct}%` }} />
+              <div
+                className="h-full rounded-full bg-[var(--livv-pro-accent)]"
+                style={{ width: `${pct}%` }}
+              />
             </div>
           </div>
         </section>
 
         <section className="profile-section border-t account-divider py-7">
-          <p className="text-[10px] font-semibold uppercase tracking-[.2em] account-accent">Membership</p>
+          <p className="text-[10px] font-semibold uppercase tracking-[.2em] account-accent">
+            Embers
+          </p>
           <div className="mt-2 flex items-center justify-between gap-4">
             <div>
-              <h2 className="text-[24px] font-semibold">
-                {tierDef.name}
+              <h2 className="text-[24px] font-semibold tabular-nums">
+                {embers.toLocaleString()}
               </h2>
+              <p className="mt-1 max-w-[33ch] text-[11px] leading-relaxed account-muted">
+                {emberDollars >= 1
+                  ? `≈ $${emberDollars} toward Collection · min redeem ${MIN_REDEEM_EMBERS.toLocaleString()}`
+                  : `Earn ${MIN_REDEEM_EMBERS.toLocaleString()} Embers to unlock $10+ off Collection`}
+              </p>
+            </div>
+            <Link
+              href="/home/shop"
+              className="grid h-10 w-10 shrink-0 place-items-center rounded-full border account-divider account-muted"
+              aria-label="Open shop"
+            >
+              <ChevronRight size={16} />
+            </Link>
+          </div>
+        </section>
+
+        <section className="profile-section border-t account-divider py-7">
+          <p className="text-[10px] font-semibold uppercase tracking-[.2em] account-accent">
+            Membership
+          </p>
+          <div className="mt-2 flex items-center justify-between gap-4">
+            <div>
+              <h2 className="text-[24px] font-semibold">{tierDef.name}</h2>
               <p className="mt-1 max-w-[33ch] text-[11px] leading-relaxed account-muted">
                 Access to the parts of LIVV you have earned or purchased.
               </p>
             </div>
-            <Link href="/home/tiers" className="grid h-10 w-10 shrink-0 place-items-center rounded-full border account-divider account-muted" aria-label="View membership tiers">
+            <Link
+              href="/home/tiers"
+              className="grid h-10 w-10 shrink-0 place-items-center rounded-full border account-divider account-muted"
+              aria-label="View membership tiers"
+            >
               <ChevronRight size={16} />
             </Link>
           </div>
         </section>
       </div>
       <footer className="livv-brand-footer" aria-label="LIVV">
-        {/* Official LIVV Pillars logo — intentionally exclusive to Profile. */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/share-backgrounds/LIVV%20Pillars%20Logo%20-%20BLACK.PNG" alt="LIVV pillars" className="livv-footer-logo livv-footer-logo-light" draggable={false} />
+        <img
+          src="/share-backgrounds/LIVV%20Pillars%20Logo%20-%20BLACK.PNG"
+          alt="LIVV pillars"
+          className="livv-footer-logo livv-footer-logo-light"
+          draggable={false}
+        />
         {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/share-backgrounds/LIVV%20Pillars%20Logo%20-%20WHITE.PNG" alt="" aria-hidden="true" className="livv-footer-logo livv-footer-logo-dark" draggable={false} />
+        <img
+          src="/share-backgrounds/LIVV%20Pillars%20Logo%20-%20WHITE.PNG"
+          alt=""
+          aria-hidden="true"
+          className="livv-footer-logo livv-footer-logo-dark"
+          draggable={false}
+        />
       </footer>
     </main>
   );
