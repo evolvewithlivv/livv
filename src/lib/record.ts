@@ -228,7 +228,8 @@ export function checkInRecord() {
   rec.days[today] = day;
   applyStreak(rec, today);
   evaluateAchievements(rec);
-  const emberBonus = Math.random() < 0.28 ? [5, 8, 12, 15][Math.floor(Math.random() * 4)] : 0;
+  // Rare small bonus only — must be in server allow-list; keep scarce
+  const emberBonus = Math.random() < 0.12 ? [4, 6, 8][Math.floor(Math.random() * 3)] : 0;
   saveRecord(rec);
   return { record: rec, already: false as const, emberBonus };
 }
