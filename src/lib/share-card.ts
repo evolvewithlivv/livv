@@ -71,10 +71,197 @@ async function logo(c:CanvasRenderingContext2D,mode:ShareLogo,backgroundSrc:stri
 function line(c:CanvasRenderingContext2D,y:number,col:string){c.strokeStyle=col;c.lineWidth=1.5;c.beginPath();c.moveTo(72,y);c.lineTo(W-72,y);c.stroke();}
 function metric(c:CanvasRenderingContext2D,l:string,v:string,x:number,y:number,col:string,f:ShareFont){track(c,l,x,y,12,col,f);put(c,v,x,y+47,34,650,col,f);}
 
+/** Draw circular avatar with tier ring. Falls back to initial on failure. */
+async function drawAvatar(
+  c: CanvasRenderingContext2D,
+  src: string | null | undefined,
+  cx: number,
+  cy: number,
+  r: number,
+  ring: string,
+  name: string,
+) {
+  const glow = c.createRadialGradient(cx, cy, r * 0.6, cx, cy, r * 1.35);
+  glow.addColorStop(0, "transparent");
+  glow.addColorStop(0.55, "transparent");
+  glow.addColorStop(1, ring + "55");
+  c.fillStyle = glow;
+  c.beginPath();
+  c.arc(cx, cy, r * 1.35, 0, Math.PI * 2);
+  c.fill();
+
+  c.beginPath();
+  c.arc(cx, cy, r + 10, 0, Math.PI * 2);
+  c.strokeStyle = ring;
+  c.lineWidth = 8;
+  c.stroke();
+
+  c.save();
+  c.beginPath();
+  c.arc(cx, cy, r, 0, Math.PI * 2);
+  c.closePath();
+  c.clip();
+  c.fillStyle = "#1a1c20";
+  c.fillRect(cx - r, cy - r, r * 2, r * 2);
+
+  let drew = false;
+  if (src) {
+    try {
+      const image = await loadImage(src);
+      const scale = Math.max((r * 2) / image.naturalWidth, (r * 2) / image.naturalHeight);
+      const sw = (r * 2) / scale;
+      const sh = (r * 2) / scale;
+      c.drawImage(
+        image,
+        (image.naturalWidth - sw) / 2,
+        (image.naturalHeight - sh) / 2,
+        sw,
+        sh,
+        cx - r,
+        cy - r,
+        r * 2,
+        r * 2,
+      );
+      drew = true;
+    } catch {
+      /* fall through */
+    }
+  }
+  if (!drew) {
+    const initial = (name || "L").trim().charAt(0).toUpperCase() || "L";
+    c.fillStyle = "#f5f5f2";
+    c.font = `700 ${Math.round(r * 0.9)}px Arial,Helvetica,sans-serif`;
+    c.textAlign = "center";
+    c.textBaseline = "middle";
+    c.fillText(initial, cx, cy + 4);
+  }
+  c.restore();
+}
+
+/** Premium profile identity card — photo, tier ring, stats. */
+async function renderIdentityCard(c: CanvasRenderingContext2D, d: ShareCardData) {
+  const accent = d.tierColor || "#1769ff";
+  const bgSrc = d.backgroundSrc || null;
+  const photoSrc = d.customPhoto || null;
+
+  c.fillStyle = "#0a0c10";
+  c.fillRect(0, 0, W, H);
+  if (bgSrc) {
+    try {
+      const image = await loadImage(bgSrc);
+      cover(c, image, image.naturalWidth, image.naturalHeight);
+    } catch {
+      /* keep base */
+    }
+  }
+
+  const topFade = c.createLinearGradient(0, 0, 0, 420);
+  topFade.addColorStop(0, "rgba(0,0,0,.55)");
+  topFade.addColorStop(1, "transparent");
+  c.fillStyle = topFade;
+  c.fillRect(0, 0, W, 420);
+
+  const bottomFade = c.createLinearGradient(0, 520, 0, H);
+  bottomFade.addColorStop(0, "transparent");
+  bottomFade.addColorStop(0.35, "rgba(0,0,0,.55)");
+  bottomFade.addColorStop(1, "rgba(0,0,0,.92)");
+  c.fillStyle = bottomFade;
+  c.fillRect(0, 520, W, H - 520);
+
+  const wash = c.createRadialGradient(W / 2, 380, 40, W / 2, 380, 520);
+  wash.addColorStop(0, accent + "33");
+  wash.addColorStop(1, "transparent");
+  c.fillStyle = wash;
+  c.fillRect(0, 120, W, 700);
+
+  await logo(c, "white", bgSrc);
+
+  const name = d.displayName || d.username || "Member";
+  await drawAvatar(c, photoSrc, W / 2, 430, 168, accent, name);
+
+  track(c, "LIVV IDENTITY", W / 2, 660, 18, "rgba(255,255,255,.55)", "sans", "center");
+  put(c, name.slice(0, 22), W / 2, 740, 58, 750, "#ffffff", "sans", "center");
+  put(c, `@${(d.username || "livv").slice(0, 28)}`, W / 2, 788, 24, 500, "rgba(255,255,255,.55)", "sans", "center");
+
+  const tier = (d.tierLabel || "Spark").toUpperCase();
+  c.font = `700 18px Arial,Helvetica,sans-serif`;
+  const tw = c.measureText(tier).width;
+  const pillW = tw + 56;
+  const pillX = W / 2 - pillW / 2;
+  const pillY = 820;
+  c.beginPath();
+  const pr = 22;
+  c.moveTo(pillX + pr, pillY);
+  c.arcTo(pillX + pillW, pillY, pillX + pillW, pillY + 44, pr);
+  c.arcTo(pillX + pillW, pillY + 44, pillX, pillY + 44, pr);
+  c.arcTo(pillX, pillY + 44, pillX, pillY, pr);
+  c.arcTo(pillX, pillY, pillX + pillW, pillY, pr);
+  c.closePath();
+  c.fillStyle = accent + "28";
+  c.fill();
+  c.strokeStyle = accent + "99";
+  c.lineWidth = 2;
+  c.stroke();
+  put(c, tier, W / 2, 850, 18, 700, accent, "sans", "center");
+
+  if (d.evolutionName) {
+    put(c, d.evolutionName, W / 2, 920, 28, 600, "rgba(255,255,255,.72)", "sans", "center");
+  }
+
+  const panelY = 1000;
+  const panelH = 200;
+  c.fillStyle = "rgba(255,255,255,.06)";
+  c.strokeStyle = "rgba(255,255,255,.12)";
+  c.lineWidth = 1.5;
+  roundRect(c, 72, panelY, W - 144, panelH, 28);
+  c.fill();
+  c.stroke();
+
+  const stats: [string, string][] = [
+    ["LEVEL", String(d.level || 1)],
+    ["STREAK", `${d.streak || 0}D`],
+    ["WORKOUTS", String(d.workoutsCompleted || 0)],
+    ["XP", `${d.dailyScore || 0}%`],
+  ];
+  const colW = (W - 144) / 4;
+  stats.forEach(([label, value], i) => {
+    const x = 72 + colW * i + colW / 2;
+    track(c, label, x, panelY + 58, 14, "rgba(255,255,255,.4)", "sans", "center");
+    put(c, value, x, panelY + 128, 42, 700, "#ffffff", "sans", "center");
+  });
+
+  put(c, "Evolve with purpose.", W / 2, 1288, 22, 500, "rgba(255,255,255,.35)", "sans", "center");
+}
+
+function roundRect(
+  c: CanvasRenderingContext2D,
+  x: number,
+  y: number,
+  w: number,
+  h: number,
+  r: number,
+) {
+  c.beginPath();
+  c.moveTo(x + r, y);
+  c.arcTo(x + w, y, x + w, y + h, r);
+  c.arcTo(x + w, y + h, x, y + h, r);
+  c.arcTo(x, y + h, x, y, r);
+  c.arcTo(x, y, x + w, y, r);
+  c.closePath();
+}
+
 export async function renderLIVVShareCard(t:ShareTemplate,d:ShareCardData):Promise<Blob>{
   const canvas=document.createElement("canvas"); canvas.width=W; canvas.height=H;
   const c=canvas.getContext("2d"); if(!c) throw Error("canvas");
   const f=d.font||"sans", col=d.textColor||"#fff";
+
+  if (t === "identity") {
+    await renderIdentityCard(c, d);
+    return new Promise((resolve, reject) =>
+      canvas.toBlob((blob) => (blob ? resolve(blob) : reject(Error("blob"))), "image/png"),
+    );
+  }
+
   await background(c,d.backgroundSrc||d.customPhoto||null,d.tierColor||"#1769ff");
   await logo(c,d.logo||"auto",d.backgroundSrc||d.customPhoto||null);
 
@@ -85,8 +272,9 @@ export async function renderLIVVShareCard(t:ShareTemplate,d:ShareCardData):Promi
     metric(c,"STREAK",`${d.streak} DAYS`,96,1250,col,f); metric(c,"WORKOUTS",String(d.workoutsCompleted),360,1250,col,f);
     metric(c,"MIND",String(d.mindSessions),620,1250,col,f); metric(c,"LIFE",`${d.bodyScore}%`,835,1250,col,f);
   } else if(t==="daily"){
-    track(c,"DAILY",72,300,22,col,f); put(c,"TODAY'S WORK",72,400,64,800,col,f); line(c,470,col);
-    metric(c,"BODY",d.bodyScore?"✓":"—",92,715,col,f); metric(c,"MIND",d.mindSessions?"✓":"—",330,715,col,f);
+    track(c,"TODAY",W/2,270,30,col,f,"center"); put(c,String(d.dailyScore),W/2,525,300,800,col,f,"center");
+    track(c,"DAILY SCORE",W/2,580,25,col,f,"center"); line(c,650,col);
+    metric(c,"MOVEMENT",d.weeklyWorkouts?"✓":"—",100,715,col,f); metric(c,"MIND",d.mindSessions?"✓":"—",330,715,col,f);
     metric(c,"NUTRITION",`${d.dailyScore}%`,560,715,col,f); metric(c,"DISCIPLINE",d.streak?"✓":"—",800,715,col,f);
   } else if(t==="workout"){
     track(c,"TRAIN",72,300,22,col,f); put(c,d.workoutName.slice(0,28),72,425,72,800,col,f);
@@ -109,11 +297,6 @@ export async function renderLIVVShareCard(t:ShareTemplate,d:ShareCardData):Promi
   } else if(t==="milestone"){
     track(c,"MILESTONE",W/2,350,24,col,f,"center"); const m=d.streak>=100?100:d.streak>=30?30:7;
     put(c,String(m),W/2,760,360,800,col,f,"center"); track(c,"DAYS OF SHOWING UP",W/2,850,24,col,f,"center");
-  } else if(t==="identity"){
-    track(c,"LIVV IDENTITY",72,310,18,col,f); put(c,d.displayName.slice(0,24),72,400,48,750,col,f);
-    put(c,`@${d.username}`.slice(0,30),72,435,18,500,col,f); line(c,500,col);
-    metric(c,"LIVV LEVEL",String(d.level),92,585,col,f); metric(c,"TIER",d.tierLabel.toUpperCase(),380,585,col,f);
-    metric(c,"STREAK",`${d.streak} DAYS`,92,730,col,f); metric(c,"EVOLUTION SCORE",String(d.dailyScore),380,730,col,f);
   } else {
     track(c,"PROGRESS",72,365,18,col,f); put(c,"LOOKS GOOD",72,450,70,800,col,f); put(c,"ON YOU.",72,520,70,800,col,f); line(c,930,col);
   }
