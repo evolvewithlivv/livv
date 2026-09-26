@@ -148,7 +148,11 @@ export default function HomePage() {
               type="button"
               onClick={checkIn}
               disabled={checkedIn}
-              className="flex min-h-10 shrink-0 items-center gap-2 rounded-full bg-livv-ink px-4 text-[11px] font-semibold text-livv-bg disabled:opacity-45"
+              className={
+                checkedIn
+                  ? "flex min-h-10 shrink-0 items-center gap-2 rounded-full border border-livv-border bg-transparent px-4 text-[11px] font-semibold text-livv-muted"
+                  : "flex min-h-10 shrink-0 items-center gap-2 rounded-full bg-livv-ink px-4 text-[11px] font-semibold text-livv-bg"
+              }
             >
               {checkedIn ? <Check size={14} /> : <Plus size={14} />}
               {checkedIn ? "Checked in" : "Check in"}
