@@ -17,9 +17,9 @@ const AREAS = [
   { id: "body", label: "Body", href: "/home/train", description: "Train, recover, move." },
   { id: "mind", label: "Mind", href: "/home/mind", description: "Read, reflect, learn." },
   { id: "career", label: "Work", href: "/home/daily", description: "Build what matters." },
-  { id: "finance", label: "Money", href: "/home/daily", description: "Make a useful move." },
-  { id: "home", label: "Home", href: "/home/daily", description: "Keep your environment working for you." },
-  { id: "capability", label: "Capability", href: "/home/daily", description: "Build skills that make life easier." },
+  { id: "finance", label: "Money", href: "/home/mind?desk=finance", description: "Make a useful move." },
+  { id: "home", label: "Home", href: "/home/health", description: "Keep your environment working for you." },
+  { id: "capability", label: "Capability", href: "/home/health/dictionary", description: "Build skills that make life easier." },
 ] as const;
 
 export default function HomePage() {
