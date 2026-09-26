@@ -10,8 +10,9 @@ import {
   markOnboardingComplete,
   saveOnboardingDraft,
 } from "@/lib/onboarding";
-import { markCloudOnboardingComplete } from "@/lib/supabase/onboarding-state";
+import { isCloudOnboardingComplete, markCloudOnboardingComplete } from "@/lib/supabase/onboarding-state";
 import { getSupabaseBrowserClient, isSupabaseConfigured } from "@/lib/supabase/client";
+import { getAuthenticatedUser } from "@/lib/supabase/real-auth";
 import { cn } from "@/lib/utils";
 
 const GOALS = [
@@ -51,13 +52,10 @@ export default function OnboardingPage() {
         }
         return;
       }
-      const client = getSupabaseBrowserClient();
-      const { data, error: authError } = client
-        ? await client.auth.getUser()
-        : { data: { user: null }, error: new Error("Supabase client unavailable") };
-      const user = data?.user;
+      // Prefer session restore (iOS PWA cold start) over a bare getUser() race.
+      const user = await getAuthenticatedUser();
       if (cancelled) return;
-      if (authError || !user || user.is_anonymous || !user.email) {
+      if (!user || user.is_anonymous || !user.email) {
         router.replace("/auth");
         return;
       }
@@ -69,6 +67,20 @@ export default function OnboardingPage() {
       if (draft.completedAt) {
         router.replace("/home");
         return;
+      }
+      // Durable gate is cloud profile. Local draft can be missing after iOS
+      // storage eviction or a fresh PWA container while the account is complete.
+      try {
+        const cloudComplete = await isCloudOnboardingComplete();
+        if (cancelled) return;
+        if (cloudComplete) {
+          markOnboardingComplete();
+          router.replace("/home");
+          return;
+        }
+      } catch {
+        if (cancelled) return;
+        // Fall through to wizard; user can still finish if cloud is unreachable.
       }
       setCheckingAccess(false);
     };
@@ -118,8 +130,8 @@ export default function OnboardingPage() {
         </h1>
         {step === "why" && <div className="mt-8"><textarea value={why} onChange={e => {setWhy(e.target.value);persist({why:e.target.value});}} rows={5} placeholder="One honest sentence." className="w-full rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-[15px] text-white outline-none placeholder:text-white/25 focus:border-white/25"/><Button className="mt-6 w-full" onClick={() => setStep("goals")}>Continue</Button></div>}
         {step === "goals" && <div className="mt-8 space-y-2">{GOALS.map(g => <button key={g.id} type="button" onClick={() => {const next=selectedGoals.includes(g.id)?selectedGoals.filter(x=>x!==g.id):[...selectedGoals,g.id];setSelectedGoals(next);persist({goals:next});}} className={cn("flex w-full items-center rounded-2xl border px-4 py-3.5 text-left text-[14px] transition",selectedGoals.includes(g.id)?"border-livv-accent/50 bg-livv-accent/10 text-white":"border-white/10 bg-white/[0.03] text-white/70")}>{g.label}</button>)}<div className="flex gap-2 pt-4"><Button variant="ghost" className="flex-1" onClick={() => setStep("why")}>Back</Button><Button className="flex-1" onClick={() => setStep("interests")}>Continue</Button></div></div>}
-        {step === "interests" && <div className="mt-8"><div className="flex flex-wrap gap-2">{INTERESTS.map(label => <button key={label} type="button" onClick={() => {const next=selectedInterests.includes(label)?selectedInterests.filter(x=>x!==label):[...selectedInterests,label];setSelectedInterests(next);persist({interests:next});}} className={cn("rounded-full border px-3.5 py-2 text-[12px] font-medium transition",selectedInterests.includes(label)?"border-white/30 bg-white text-black":"border-white/10 bg-white/[0.03] text-white/60")}>{label}</button>)}</div><div className="mt-6 flex gap-2"><Button variant="ghost" className="flex-1" onClick={() => setStep("goals")}>Back</Button><Button className="flex-1" onClick={() => setStep("profile")}>Continue</Button></div></div>}
-        {step === "profile" && <div className="mt-8"><input value={displayName} onChange={e => {setDisplayName(e.target.value);persist({displayName:e.target.value});}} placeholder="Display name" className="w-full rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3.5 text-[15px] text-white outline-none placeholder:text-white/25 focus:border-white/25"/>{error&&<p className="mt-3 text-[13px] text-red-400">{error}</p>}<div className="mt-6 flex gap-2"><Button variant="ghost" className="flex-1" onClick={() => setStep("interests")}>Back</Button><Button className="flex-1" disabled={busy} onClick={() => void finish()}>{busy?"Entering…":"Enter LIVV"}</Button></div></div>}
+        {step === "interests" && <div className="mt-8"><div className="flex flex-wrap gap-2">{INTERESTS.map(item => <button key={item} type="button" onClick={() => {const next=selectedInterests.includes(item)?selectedInterests.filter(x=>x!==item):[...selectedInterests,item];setSelectedInterests(next);persist({interests:next});}} className={cn("rounded-full border px-3.5 py-2 text-[12px] transition",selectedInterests.includes(item)?"border-livv-accent/50 bg-livv-accent/10 text-white":"border-white/10 bg-white/[0.03] text-white/65")}>{item}</button>)}</div><div className="flex gap-2 pt-6"><Button variant="ghost" className="flex-1" onClick={() => setStep("goals")}>Back</Button><Button className="flex-1" onClick={() => setStep("profile")}>Continue</Button></div></div>}
+        {step === "profile" && <div className="mt-8"><input value={displayName} onChange={e => {setDisplayName(e.target.value);persist({displayName:e.target.value});}} placeholder="Display name" className="w-full rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3.5 text-[15px] text-white outline-none placeholder:text-white/25 focus:border-white/25"/>{error && <p className="mt-3 text-[13px] text-red-400">{error}</p>}<div className="flex gap-2 pt-6"><Button variant="ghost" className="flex-1" onClick={() => setStep("interests")} disabled={busy}>Back</Button><Button className="flex-1" onClick={() => void finish()} disabled={busy}>{busy ? "Saving…" : "Enter LIVV"}</Button></div></div>}
       </div>
     </main>
   );
