@@ -1,4 +1,3 @@
-import { addEmbers } from "./identity";
 import { logCustomAction } from "./record";
 
 export type CanonSession = {
@@ -83,12 +82,12 @@ export function sitWithVolume(minutes: number, stolen: string) {
     stolen: stolen.trim(),
   });
   save(state);
+  // Embers come only from logCustomAction (server-authoritative base amounts).
   logCustomAction({
     title: `Sat with ${vol.title} · ${mins}m`,
     pillar: "Mind",
     size: mins >= 40 ? "major" : mins >= 20 ? "standard" : "small",
   });
-  addEmbers(mins >= 40 ? 6 : 3);
   return state;
 }
 
@@ -100,12 +99,12 @@ export function closeVolume(scar: string) {
   vol.scar = scar.trim();
   state.activeId = null;
   save(state);
+  // Embers come only from logCustomAction (server-authoritative base amounts).
   logCustomAction({
     title: `Closed ${vol.title}`,
     pillar: "Mind",
     size: "major",
   });
-  addEmbers(8);
   return state;
 }
 

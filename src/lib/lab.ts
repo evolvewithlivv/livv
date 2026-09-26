@@ -1,4 +1,3 @@
-import { addEmbers } from "./identity";
 import { logCustomAction } from "./record";
 
 export type HuntStatus = "hunting" | "forming" | "locked";
@@ -77,12 +76,12 @@ export function addSignal(huntId: string, source: string, proof: string) {
   });
   if (hunt.signals.length >= 2) hunt.status = "forming";
   save(state);
+  // Embers come only from logCustomAction (server-authoritative base amounts).
   logCustomAction({
     title: `Signal · ${hunt.question.slice(0, 42)}`,
     pillar: "Mind",
     size: "standard",
   });
-  addEmbers(4);
   return state;
 }
 
@@ -94,11 +93,11 @@ export function lockHunt(huntId: string, verdict: string) {
   hunt.lockedAt = Date.now();
   hunt.verdict = verdict.trim();
   save(state);
+  // Embers come only from logCustomAction (server-authoritative base amounts).
   logCustomAction({
     title: `Locked hunt · ${hunt.question.slice(0, 42)}`,
     pillar: "Mind",
     size: "major",
   });
-  addEmbers(10);
   return state;
 }
