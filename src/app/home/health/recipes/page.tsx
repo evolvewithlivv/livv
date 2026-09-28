@@ -7,10 +7,10 @@ import {
   BookmarkCheck,
   ChevronLeft,
   Clock3,
-  Search,
   Users,
   Utensils,
 } from "lucide-react";
+import { SearchField } from "@/components/ui/search-field";
 
 type MealCategory = "Breakfast" | "Lunch" | "Dinner" | "Quick";
 
@@ -258,16 +258,13 @@ export default function RecipesPage() {
           </p>
         </header>
 
-        <label className="relative mt-8 flex items-center gap-3 rounded-full border border-livv-border bg-[color-mix(in_srgb,rgb(var(--livv-ink))_4%,transparent)] px-4 py-3.5 focus-within:border-[color-mix(in_srgb,rgb(var(--livv-ink))_28%,transparent)]">
-          <Search size={16} strokeWidth={1.8} className="shrink-0 text-livv-muted" aria-hidden />
-          <input
-            value={q}
-            onChange={(e) => setQ(e.target.value)}
-            placeholder="Search recipes or ingredients…"
-            className="min-w-0 flex-1 bg-transparent text-[14px] leading-none text-[rgb(var(--livv-ink))] outline-none placeholder:text-livv-muted"
-            aria-label="Search recipes"
-          />
-        </label>
+        <SearchField
+          value={q}
+          onChange={setQ}
+          placeholder="Search recipes or ingredients…"
+          aria-label="Search recipes"
+          className="mt-8"
+        />
 
         <div className="mt-5 flex gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {CATEGORIES.map((c) => {
