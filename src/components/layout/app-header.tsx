@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import { Search } from "lucide-react";
 import { Avatar } from "@/components/identity/avatar";
 import { loadIdentity, type Identity } from "@/lib/identity";
 import { getEffectiveTier } from "@/lib/billing";
@@ -49,16 +48,11 @@ export function AppHeader() {
             draggable={false}
           />
         </Link>
-        <div className="flex items-center gap-1">
-          <Link href="/home/mind" aria-label="Search" className="livv-icon-button" title="Search">
-            <Search size={20} strokeWidth={1.8} />
+        {me && (
+          <Link href="/home/profile" aria-label="Profile" className="rounded-full">
+            <Avatar identity={{ ...me, tier: getEffectiveTier() }} size={34} />
           </Link>
-          {me && (
-            <Link href="/home/profile" aria-label="Profile" className="ml-1 rounded-full">
-              <Avatar identity={{ ...me, tier: getEffectiveTier() }} size={34} />
-            </Link>
-          )}
-        </div>
+        )}
       </div>
     </header>
   );
