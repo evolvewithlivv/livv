@@ -2,7 +2,8 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
-import { BookOpen, ChevronLeft, Search } from "lucide-react";
+import { BookOpen, ChevronLeft } from "lucide-react";
+import { SearchField } from "@/components/ui/search-field";
 
 type Entry = { word: string; meaning: string; practice: string; why: string };
 
@@ -152,16 +153,13 @@ export default function DictionaryPage() {
           </p>
         </header>
 
-        <label className="relative mt-9 flex items-center gap-3 rounded-full border border-livv-border bg-[color-mix(in_srgb,rgb(var(--livv-ink))_4%,transparent)] px-4 py-3.5 focus-within:border-[color-mix(in_srgb,rgb(var(--livv-ink))_28%,transparent)]">
-          <Search size={16} strokeWidth={1.8} className="shrink-0 text-livv-muted" aria-hidden />
-          <input
-            value={q}
-            onChange={(e) => setQ(e.target.value)}
-            placeholder="Search the dictionary..."
-            className="min-w-0 flex-1 bg-transparent text-[14px] leading-none text-[rgb(var(--livv-ink))] outline-none placeholder:text-livv-muted"
-            aria-label="Search dictionary"
-          />
-        </label>
+        <SearchField
+          value={q}
+          onChange={setQ}
+          placeholder="Search the dictionary..."
+          aria-label="Search dictionary"
+          className="mt-9"
+        />
 
         <section className="mt-10">
           <div className="flex items-end justify-between gap-4">
