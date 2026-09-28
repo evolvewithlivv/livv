@@ -6,6 +6,7 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { Bookmark, Search, X } from "lucide-react";
+import { SearchField } from "@/components/ui/search-field";
 import { DESKS, WIKI, deskMeta, type WikiArticle, type WikiDesk } from "@/lib/wiki";
 
 const SAVED_KEY = "livv-mind-saved-v1";
@@ -130,19 +131,14 @@ export default function MindPage() {
         </header>
 
         {searchOpen ? (
-          <div className="mt-4">
-            <label className="sr-only" htmlFor="mind-search">
-              Search articles
-            </label>
-            <input
-              id="mind-search"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Search titles and ideas"
-              autoFocus
-              className="w-full border-b border-[var(--livv-pro-line)] bg-transparent py-3 text-[16px] text-[var(--livv-pro-ink)] outline-none placeholder:text-[var(--livv-pro-muted)] focus:border-[var(--livv-pro-ink)]"
-            />
-          </div>
+          <SearchField
+            value={query}
+            onChange={setQuery}
+            placeholder="Search titles and ideas"
+            aria-label="Search articles"
+            autoFocus
+            className="mt-4"
+          />
         ) : null}
 
         <nav
