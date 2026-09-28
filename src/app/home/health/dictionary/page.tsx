@@ -152,16 +152,16 @@ export default function DictionaryPage() {
           </p>
         </header>
 
-        <div className="relative mt-9 rounded-2xl border border-livv-border bg-[color-mix(in_srgb,rgb(var(--livv-ink))_3%,transparent)] px-3">
-          <Search size={16} className="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-livv-muted" />
+        <label className="relative mt-9 flex items-center gap-3 rounded-full border border-livv-border bg-[color-mix(in_srgb,rgb(var(--livv-ink))_4%,transparent)] px-4 py-3.5 focus-within:border-[color-mix(in_srgb,rgb(var(--livv-ink))_28%,transparent)]">
+          <Search size={16} strokeWidth={1.8} className="shrink-0 text-livv-muted" aria-hidden />
           <input
             value={q}
             onChange={(e) => setQ(e.target.value)}
             placeholder="Search the dictionary..."
-            className="w-full bg-transparent py-3.5 pl-7 pr-2 text-[13px] outline-none placeholder:text-livv-muted"
+            className="min-w-0 flex-1 bg-transparent text-[14px] leading-none text-[rgb(var(--livv-ink))] outline-none placeholder:text-livv-muted"
             aria-label="Search dictionary"
           />
-        </div>
+        </label>
 
         <section className="mt-10">
           <div className="flex items-end justify-between gap-4">
