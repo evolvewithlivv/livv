@@ -12,8 +12,8 @@ type SearchFieldProps = {
 };
 
 /**
- * Responsive search field — full-width pill on mobile, refined on larger screens.
- * 16px text on mobile avoids iOS zoom; clear control appears when value is set.
+ * Clean single-pill search — Google-style.
+ * type="text" + appearance-none so iOS never draws a nested search field.
  */
 export function SearchField({
   value,
@@ -26,23 +26,18 @@ export function SearchField({
   return (
     <label
       className={
-        "group relative flex w-full min-h-11 items-center gap-2.5 rounded-full border border-livv-border " +
-        "bg-[color-mix(in_srgb,rgb(var(--livv-ink))_4%,transparent)] " +
-        "px-3.5 py-2.5 sm:min-h-12 sm:gap-3 sm:px-4 sm:py-3 " +
-        "transition-[border-color,background-color] " +
-        "focus-within:border-[color-mix(in_srgb,rgb(var(--livv-ink))_28%,transparent)] " +
-        "focus-within:bg-[color-mix(in_srgb,rgb(var(--livv-ink))_6%,transparent)] " +
+        "flex w-full items-center gap-3 rounded-full " +
+        "bg-[color-mix(in_srgb,rgb(var(--livv-ink))_8%,transparent)] " +
+        "px-4 py-3 " +
+        "transition-colors " +
+        "focus-within:bg-[color-mix(in_srgb,rgb(var(--livv-ink))_12%,transparent)] " +
         (className ? ` ${className}` : "")
       }
     >
-      <Search
-        size={16}
-        strokeWidth={1.8}
-        className="shrink-0 text-livv-muted sm:size-[17px]"
-        aria-hidden
-      />
+      <Search size={18} strokeWidth={1.75} className="shrink-0 text-livv-muted" aria-hidden />
       <input
-        type="search"
+        type="text"
+        inputMode="search"
         value={value}
         onChange={(e) => onChange(e.target.value)}
         placeholder={placeholder}
@@ -53,25 +48,21 @@ export function SearchField({
         spellCheck={false}
         enterKeyHint="search"
         className={
-          "min-w-0 flex-1 bg-transparent text-[16px] leading-none tracking-[-.01em] " +
-          "text-[rgb(var(--livv-ink))] outline-none " +
+          "min-w-0 flex-1 appearance-none border-0 bg-transparent " +
+          "p-0 text-[16px] leading-normal tracking-[-.01em] " +
+          "text-[rgb(var(--livv-ink))] outline-none ring-0 " +
           "placeholder:text-livv-muted " +
-          "sm:text-[15px] " +
-          "[&::-webkit-search-cancel-button]:hidden [&::-webkit-search-decoration]:hidden"
+          "shadow-none [-webkit-appearance:none]"
         }
       />
       {value ? (
         <button
           type="button"
           onClick={() => onChange("")}
-          className={
-            "grid h-7 w-7 shrink-0 place-items-center rounded-full " +
-            "text-livv-muted transition hover:bg-[color-mix(in_srgb,rgb(var(--livv-ink))_8%,transparent)] " +
-            "hover:text-[rgb(var(--livv-ink))] sm:h-8 sm:w-8"
-          }
+          className="grid h-7 w-7 shrink-0 place-items-center rounded-full text-livv-muted transition active:bg-[color-mix(in_srgb,rgb(var(--livv-ink))_10%,transparent)]"
           aria-label="Clear search"
         >
-          <X size={14} strokeWidth={2} />
+          <X size={15} strokeWidth={2} />
         </button>
       ) : null}
     </label>
