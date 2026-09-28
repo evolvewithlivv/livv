@@ -1,8 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
-import { BookOpen, ChevronLeft, Search, X } from "lucide-react";
+import { useMemo, useState } from "react";
+import { BookOpen, ChevronLeft, Search } from "lucide-react";
 
 type Entry = { word: string; meaning: string; practice: string; why: string };
 
@@ -130,16 +130,6 @@ export default function DictionaryPage() {
     () => WORDS.filter((x) => (x.word + " " + x.meaning + " " + x.practice).toLowerCase().includes(q.toLowerCase())),
     [q]
   );
-  const active = WORDS.find((x) => x.word === selected) || null;
-
-  useEffect(() => {
-    if (!active) return;
-    const prev = document.body.style.overflow;
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = prev;
-    };
-  }, [active]);
 
   return (
     <main className="livv-page min-h-full">
@@ -182,23 +172,49 @@ export default function DictionaryPage() {
             <span className="text-[10px] uppercase tracking-[.14em] text-livv-muted">{list.length} words</span>
           </div>
           <div className="mt-5 divide-y divide-livv-border border-y border-livv-border">
-            {list.map((x, i) => (
-              <button
-                key={x.word}
-                type="button"
-                onClick={() => setSelected(x.word)}
-                className="flex w-full items-start gap-4 py-5 text-left"
-              >
-                <span className="w-7 shrink-0 pt-1 text-[9px] font-semibold tabular-nums text-livv-accent">
-                  {String(i + 1).padStart(2, "0")}
-                </span>
-                <span className="min-w-0 flex-1">
-                  <span className="block text-[16px] font-semibold">{x.word}</span>
-                  <span className="mt-1.5 block text-[12px] leading-5 text-livv-muted">{x.meaning}</span>
-                </span>
-                <span className="pt-1 text-[11px] text-livv-muted">Open</span>
-              </button>
-            ))}
+            {list.map((x, i) => {
+              const open = selected === x.word;
+              return (
+                <div key={x.word} className="py-1">
+                  <button
+                    type="button"
+                    onClick={() => setSelected(open ? null : x.word)}
+                    className="flex w-full items-start gap-4 py-4 text-left"
+                    aria-expanded={open}
+                  >
+                    <span className="w-7 shrink-0 pt-1 text-[9px] font-semibold tabular-nums text-livv-accent">
+                      {String(i + 1).padStart(2, "0")}
+                    </span>
+                    <span className="min-w-0 flex-1">
+                      <span className="block text-[16px] font-semibold">{x.word}</span>
+                      {!open && (
+                        <span className="mt-1.5 block text-[12px] leading-5 text-livv-muted">{x.meaning}</span>
+                      )}
+                    </span>
+                    <span className="pt-1 text-[11px] text-livv-muted">{open ? "Close" : "Open"}</span>
+                  </button>
+                  {open && (
+                    <div className="ml-11 border-l-2 border-livv-accent/40 pb-5 pl-4">
+                      <p className="text-[15px] leading-7">{x.meaning}</p>
+                      <div className="mt-5 grid gap-5 sm:grid-cols-2">
+                        <div>
+                          <p className="text-[10px] font-semibold uppercase tracking-[.18em] text-livv-muted">
+                            Put it into practice
+                          </p>
+                          <p className="mt-2 text-[13px] leading-6">{x.practice}</p>
+                        </div>
+                        <div>
+                          <p className="text-[10px] font-semibold uppercase tracking-[.18em] text-livv-muted">
+                            Why LIVV cares
+                          </p>
+                          <p className="mt-2 text-[13px] leading-6 text-livv-muted">{x.why}</p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
           </div>
           {!list.length && <p className="py-10 text-center text-[13px] text-livv-muted">No word matched that search.</p>}
         </section>
@@ -212,49 +228,6 @@ export default function DictionaryPage() {
           </p>
         </section>
       </div>
-
-      {active && (
-        <div
-          className="fixed inset-0 z-[60] flex items-end justify-center bg-black/45 px-0 sm:items-center sm:px-4"
-          role="dialog"
-          aria-modal="true"
-          aria-label={active.word}
-          onClick={() => setSelected(null)}
-        >
-          <div
-            className="flex max-h-[92dvh] w-full max-w-xl flex-col overflow-hidden rounded-t-[28px] border border-livv-border bg-[var(--livv-bg)] shadow-2xl sm:max-h-[88dvh] sm:rounded-[28px]"
-            onClick={(e) => e.stopPropagation()}
-          >
-            <div className="flex items-start justify-between gap-4 border-b border-livv-border px-5 pb-4 pt-5">
-              <div className="min-w-0">
-                <p className="text-[10px] font-semibold uppercase tracking-[.18em] text-livv-accent">Definition</p>
-                <h2 className="mt-2 text-[28px] font-semibold tracking-[-.04em] sm:text-[32px]">{active.word}</h2>
-              </div>
-              <button
-                type="button"
-                onClick={() => setSelected(null)}
-                className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-livv-border text-livv-muted"
-                aria-label="Close definition"
-              >
-                <X size={16} />
-              </button>
-            </div>
-            <div className="overflow-y-auto px-5 pb-10 pt-6">
-              <p className="text-[16px] leading-7">{active.meaning}</p>
-              <div className="mt-7 grid gap-6 sm:grid-cols-2">
-                <div>
-                  <p className="text-[10px] font-semibold uppercase tracking-[.18em] text-livv-muted">Put it into practice</p>
-                  <p className="mt-2 text-[13px] leading-6">{active.practice}</p>
-                </div>
-                <div>
-                  <p className="text-[10px] font-semibold uppercase tracking-[.18em] text-livv-muted">Why LIVV cares</p>
-                  <p className="mt-2 text-[13px] leading-6 text-livv-muted">{active.why}</p>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
     </main>
   );
 }
