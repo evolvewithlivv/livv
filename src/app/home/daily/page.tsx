@@ -18,8 +18,34 @@ import {
 const TRACKER_KEY = "livv-daily-trackers-v1";
 
 type Trackers = { water: number; meals: number; movement: boolean; reset: boolean };
+type StoredTrackers = Trackers & { date: string };
 
 const DEFAULT_TRACKERS: Trackers = { water: 0, meals: 0, movement: false, reset: false };
+
+function localDayKey(d = new Date()) {
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+  return `${y}-${m}-${day}`;
+}
+
+function loadTrackersForToday(): Trackers {
+  try {
+    const raw = window.localStorage.getItem(TRACKER_KEY);
+    if (!raw) return { ...DEFAULT_TRACKERS };
+    const saved = JSON.parse(raw) as Partial<StoredTrackers>;
+    // Reset at local midnight — anything from a prior calendar day is discarded
+    if (saved.date !== localDayKey()) return { ...DEFAULT_TRACKERS };
+    return {
+      water: typeof saved.water === "number" ? saved.water : 0,
+      meals: typeof saved.meals === "number" ? saved.meals : 0,
+      movement: Boolean(saved.movement),
+      reset: Boolean(saved.reset),
+    };
+  } catch {
+    return { ...DEFAULT_TRACKERS };
+  }
+}
 
 export default function DailyPage() {
   const [now] = useState(() => new Date());
@@ -44,16 +70,31 @@ export default function DailyPage() {
 
   useEffect(() => {
     refresh();
-    try {
-      const raw = window.localStorage.getItem(TRACKER_KEY);
-      if (raw) {
-        const saved = JSON.parse(raw) as Partial<Trackers>;
-        setTrackers({ ...DEFAULT_TRACKERS, ...saved });
-      }
-    } catch {}
+    setTrackers(loadTrackersForToday());
+
+    // If the tab stays open past midnight, re-check and clear
+    const id = window.setInterval(() => {
+      setTrackers((prev) => {
+        try {
+          const raw = window.localStorage.getItem(TRACKER_KEY);
+          if (!raw) return prev;
+          const saved = JSON.parse(raw) as Partial<StoredTrackers>;
+          if (saved.date && saved.date !== localDayKey()) {
+            window.localStorage.setItem(
+              TRACKER_KEY,
+              JSON.stringify({ ...DEFAULT_TRACKERS, date: localDayKey() }),
+            );
+            return { ...DEFAULT_TRACKERS };
+          }
+        } catch {}
+        return prev;
+      });
+    }, 60_000);
+
     for (const event of ["livv-daily", "livv-record", "livv-buffs"])
       window.addEventListener(event, refresh);
     return () => {
+      window.clearInterval(id);
       for (const event of ["livv-daily", "livv-record", "livv-buffs"])
         window.removeEventListener(event, refresh);
     };
@@ -62,7 +103,8 @@ export default function DailyPage() {
   const saveTrackers = (next: Trackers) => {
     setTrackers(next);
     try {
-      window.localStorage.setItem(TRACKER_KEY, JSON.stringify(next));
+      const payload: StoredTrackers = { ...next, date: localDayKey() };
+      window.localStorage.setItem(TRACKER_KEY, JSON.stringify(payload));
     } catch {}
   };
 
@@ -113,7 +155,6 @@ export default function DailyPage() {
           }
         />
 
-        {/* Actions progress — distinct from Home life areas & Health baseline */}
         <section className="mt-8 rounded-[22px] border border-[var(--livv-pro-line)] bg-[color-mix(in_srgb,rgb(var(--livv-ink))_2.5%,transparent)] px-5 py-5">
           <div className="flex items-end justify-between gap-4">
             <div>
@@ -145,7 +186,7 @@ export default function DailyPage() {
           <SectionHead
             label="Quick trackers"
             title="Keep tabs on the basics."
-            sub="Not tied to a clock. Check in whenever it fits."
+            sub="Resets every day at midnight."
           />
           <div className="mt-5 overflow-hidden rounded-[22px] border border-[var(--livv-pro-line)]">
             <TrackerRow
