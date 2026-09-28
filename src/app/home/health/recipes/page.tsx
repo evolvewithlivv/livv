@@ -258,19 +258,16 @@ export default function RecipesPage() {
           </p>
         </header>
 
-        <div className="relative mt-8 rounded-2xl border border-livv-border bg-[color-mix(in_srgb,rgb(var(--livv-ink))_3%,transparent)] px-3">
-          <Search
-            size={16}
-            className="pointer-events-none absolute left-3.5 top-1/2 -translate-y-1/2 text-livv-muted"
-          />
+        <label className="relative mt-8 flex items-center gap-3 rounded-full border border-livv-border bg-[color-mix(in_srgb,rgb(var(--livv-ink))_4%,transparent)] px-4 py-3.5 focus-within:border-[color-mix(in_srgb,rgb(var(--livv-ink))_28%,transparent)]">
+          <Search size={16} strokeWidth={1.8} className="shrink-0 text-livv-muted" aria-hidden />
           <input
             value={q}
             onChange={(e) => setQ(e.target.value)}
             placeholder="Search recipes or ingredients…"
-            className="w-full bg-transparent py-3.5 pl-8 pr-2 text-[13px] outline-none placeholder:text-livv-muted"
+            className="min-w-0 flex-1 bg-transparent text-[14px] leading-none text-[rgb(var(--livv-ink))] outline-none placeholder:text-livv-muted"
             aria-label="Search recipes"
           />
-        </div>
+        </label>
 
         <div className="mt-5 flex gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {CATEGORIES.map((c) => {
