@@ -23,7 +23,7 @@ export const TIERS: TierDef[] = [
     perks: [
       "Full Daily, Train, Mind, Health, and Progress",
       "Photo identity across the app",
-      "Embers at 1× — redeem on Collection when ready",
+      "Embers at 1x - redeem on Collection when ready",
       `${EMBERS_PER_DOLLAR} Embers = $1 off (min ${MIN_REDEEM_EMBERS.toLocaleString()})`,
     ],
   },
@@ -37,9 +37,9 @@ export const TIERS: TierDef[] = [
     featured: true,
     perks: [
       "Accent color customization",
-      "Embers at 2× on standard awards",
+      "Embers at 2x on standard awards",
       "Rise membership on your profile",
-      "Same Collection redemption rate — faster earn path",
+      "Same Collection redemption rate - faster earn path",
     ],
   },
   {
@@ -51,7 +51,7 @@ export const TIERS: TierDef[] = [
     multiplier: 4,
     perks: [
       "Everything in Rise",
-      "Embers at 4× on standard awards",
+      "Embers at 4x on standard awards",
       "App themes: Midnight and Bone",
       "Faster path to Collection credit",
     ],
@@ -65,7 +65,7 @@ export const TIERS: TierDef[] = [
     multiplier: 6,
     perks: [
       "Everything in Apex",
-      "Embers at 6× on standard awards",
+      "Embers at 6x on standard awards",
       "Exclusive Inner Circle profile mark",
       "Fastest Ember path toward Collection",
     ],
