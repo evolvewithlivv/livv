@@ -13,7 +13,7 @@ type SearchFieldProps = {
 
 /**
  * Clean single-pill search — Google-style.
- * type="text" + appearance-none so iOS never draws a nested search field.
+ * Overrides global .livv-page input border/background so only the outer pill shows.
  */
 export function SearchField({
   value,
@@ -26,7 +26,7 @@ export function SearchField({
   return (
     <label
       className={
-        "flex w-full items-center gap-3 rounded-full " +
+        "livv-search-field flex w-full items-center gap-3 rounded-full " +
         "bg-[color-mix(in_srgb,rgb(var(--livv-ink))_8%,transparent)] " +
         "px-4 py-3 " +
         "transition-colors " +
@@ -47,13 +47,7 @@ export function SearchField({
         autoCorrect="off"
         spellCheck={false}
         enterKeyHint="search"
-        className={
-          "min-w-0 flex-1 appearance-none border-0 bg-transparent " +
-          "p-0 text-[16px] leading-normal tracking-[-.01em] " +
-          "text-[rgb(var(--livv-ink))] outline-none ring-0 " +
-          "placeholder:text-livv-muted " +
-          "shadow-none [-webkit-appearance:none]"
-        }
+        className="livv-search-input min-w-0 flex-1 p-0 text-[16px] leading-normal tracking-[-.01em] text-[rgb(var(--livv-ink))] placeholder:text-livv-muted"
       />
       {value ? (
         <button
