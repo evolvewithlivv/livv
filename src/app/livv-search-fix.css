@@ -27,3 +27,25 @@ html[data-livv-theme="bone"] .livv-page .livv-search-input {
   border: 0 !important;
   color: inherit !important;
 }
+
+/*
+  Tab bar is now in flex layout flow (not position:fixed).
+  Drop the old overlay bottom padding so pages don't leave a huge empty gap.
+*/
+.livv-page,
+.livv-social-page {
+  padding-bottom: 1.5rem !important;
+}
+.livv-app-shell {
+  height: 100dvh !important;
+  max-height: 100dvh !important;
+  overflow: hidden !important;
+}
+.livv-tabbar {
+  position: relative !important;
+  bottom: auto !important;
+  left: auto !important;
+  right: auto !important;
+  transform: none !important;
+  flex-shrink: 0 !important;
+}
