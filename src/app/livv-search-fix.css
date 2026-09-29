@@ -1,0 +1,29 @@
+/* SearchField: single outer pill only — kill global input chrome */
+.livv-page .livv-search-input,
+.livv-social-page .livv-search-input {
+  min-height: 0 !important;
+  height: auto !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: transparent !important;
+  box-shadow: none !important;
+  outline: none !important;
+  padding: 0 !important;
+  -webkit-appearance: none !important;
+  appearance: none !important;
+}
+.livv-page .livv-search-input:focus,
+.livv-page .livv-search-input:focus-visible,
+.livv-social-page .livv-search-input:focus,
+.livv-social-page .livv-search-input:focus-visible {
+  border: 0 !important;
+  box-shadow: none !important;
+  outline: none !important;
+}
+html[data-theme="light"] .livv-page .livv-search-input,
+html[data-theme="light"] .livv-social-page .livv-search-input,
+html[data-livv-theme="bone"] .livv-page .livv-search-input {
+  background: transparent !important;
+  border: 0 !important;
+  color: inherit !important;
+}

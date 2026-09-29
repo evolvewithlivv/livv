@@ -5,6 +5,7 @@ import "./livv-background.css";
 import "./livv-final-pass.css";
 import "./livv-visual-redesign.css";
 import "./livv-professional.css";
+import "./livv-search-fix.css";
 import { ThemeShell } from "@/components/layout/theme-shell";
 
 const body=Plus_Jakarta_Sans({subsets:["latin"],variable:"--font-body",display:"swap"});
