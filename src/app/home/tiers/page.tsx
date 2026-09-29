@@ -97,7 +97,6 @@ export default function TiersPage() {
           </p>
         </header>
 
-        {/* Current tier summary */}
         <section className="mt-8 rounded-[22px] border border-livv-accent/30 bg-livv-accent-soft/40 px-5 py-4">
           <div className="flex items-center justify-between gap-3">
             <div>
@@ -127,7 +126,6 @@ export default function TiersPage() {
           )}
         </section>
 
-        {/* All tiers vertical list */}
         <section className="mt-8 space-y-4">
           {TIERS.map((tier) => {
             const Icon = TIER_ICONS[tier.id];
@@ -210,7 +208,7 @@ export default function TiersPage() {
                         void checkout(tier.id as (typeof PAID_TIERS)[number])
                       }
                       disabled={billingBusy}
-                      className="flex w-full items-center justify-center gap-2 rounded-full bg-[rgb(var(--livv-ink))] py-3.5 text-[12px] font-semibold uppercase tracking-[.12em] text-[rgb(var(--livv-bg))] disabled:opacity-50"
+                      className="livv-tier-unlock flex w-full items-center justify-center gap-2 rounded-full py-3.5 text-[12px] font-semibold uppercase tracking-[.12em] disabled:opacity-50"
                     >
                       {billingBusy ? "Opening checkout..." : `Unlock ${tier.name}`}
                       <ArrowUpRight size={14} />

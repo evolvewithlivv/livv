@@ -1,0 +1,18 @@
+/* Membership unlock CTA — forced contrast so label never disappears */
+.livv-tier-unlock {
+  background: #f4f4f5 !important;
+  color: #0a0a0b !important;
+  border: none !important;
+}
+.livv-tier-unlock svg {
+  color: #0a0a0b !important;
+  stroke: #0a0a0b !important;
+}
+html[data-livv-theme="bone"] .livv-tier-unlock {
+  background: #171613 !important;
+  color: #f5f2ea !important;
+}
+html[data-livv-theme="bone"] .livv-tier-unlock svg {
+  color: #f5f2ea !important;
+  stroke: #f5f2ea !important;
+}
