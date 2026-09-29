@@ -34,6 +34,14 @@ export default function ProgressPage() {
   const pillars = livePillars(rec);
   const evo = evolutionTitle(rec.level);
   const pct = Math.min(100, Math.round((rec.currentXp / Math.max(1, rec.xpToNext)) * 100));
+  const bestRun =
+    insights.longestActiveRun <= 0
+      ? "0d"
+      : `${insights.longestActiveRun}d`;
+  const actions =
+    insights.objectivesCompletedInWindow +
+    insights.checkInDays +
+    insights.workoutDays;
 
   return (
     <main className="livv-page min-h-full pb-14">
@@ -57,7 +65,6 @@ export default function ProgressPage() {
           </div>
         </header>
 
-        {/* Evolution */}
         <section className="mt-8 overflow-hidden rounded-[22px] border border-livv-border bg-[color-mix(in_srgb,rgb(var(--livv-ink))_2.5%,transparent)] p-5 sm:p-6">
           <div className="flex items-start justify-between gap-4">
             <div className="min-w-0">
@@ -89,15 +96,13 @@ export default function ProgressPage() {
           </div>
         </section>
 
-        {/* Stats */}
         <section className="mt-6 grid grid-cols-2 gap-3">
-          <Stat value={`${insights.activePct14d}%`} label="14d active" />
-          <Stat value={insights.bestRunLabel} label="Best run" />
-          <Stat value={String(insights.actionCount14d)} label="Actions" />
-          <Stat value={`${insights.areasActivePct}%`} label="Areas active" />
+          <Stat value={`${insights.consistencyPct}%`} label="14d active" />
+          <Stat value={bestRun} label="Best run" />
+          <Stat value={String(actions)} label="Actions" />
+          <Stat value={`${insights.balancePct}%`} label="Areas active" />
         </section>
 
-        {/* Week consistency */}
         <section className="mt-10">
           <div className="flex items-end justify-between gap-4">
             <div>
@@ -126,7 +131,6 @@ export default function ProgressPage() {
           </div>
         </section>
 
-        {/* Six areas */}
         <section className="mt-10">
           <p className="text-[10px] font-semibold uppercase tracking-[.18em] text-livv-muted">
             Six areas
@@ -162,7 +166,6 @@ export default function ProgressPage() {
           </div>
         </section>
 
-        {/* Evidence */}
         {insights.bullets.length > 0 && (
           <section className="mt-10 pb-4">
             <p className="text-[10px] font-semibold uppercase tracking-[.18em] text-livv-muted">
