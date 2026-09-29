@@ -26,6 +26,8 @@ export type Recipe = {
   tip: string;
   macros?: RecipeMacros;
   diet?: string[]; // high-protein | mediterranean | meal-prep | quick | plant-forward
+  /** Optional explicit banner URL — otherwise resolved via recipeImage() */
+  image?: string;
 };
 
 export const CATEGORIES = [

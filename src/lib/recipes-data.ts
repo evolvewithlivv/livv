@@ -5,4 +5,4 @@ export type {
   DietFilter,
   RecipeMacros,
 } from "./recipes";
-export { CATEGORIES, DIET_FILTERS, RECIPES } from "./recipes";
+export { CATEGORIES, DIET_FILTERS, RECIPES, recipeImage } from "./recipes";

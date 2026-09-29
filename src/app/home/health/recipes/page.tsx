@@ -14,6 +14,7 @@ import { SearchField } from "@/components/ui/search-field";
 import {
   CATEGORIES,
   RECIPES,
+  recipeImage,
   type CategoryFilter,
   type MealCategory,
 } from "@/lib/recipes-data";
@@ -34,23 +35,6 @@ function loadSaved(): string[] {
 
 function persistSaved(ids: string[]) {
   localStorage.setItem(SAVED_KEY, JSON.stringify(ids));
-}
-
-function categoryTone(category: MealCategory): string {
-  switch (category) {
-    case "Breakfast":
-      return "from-[color-mix(in_srgb,rgb(var(--livv-ink))_8%,transparent)] to-[color-mix(in_srgb,rgb(var(--livv-ink))_2%,transparent)]";
-    case "Lunch":
-      return "from-[color-mix(in_srgb,#0F7FFF_14%,transparent)] to-[color-mix(in_srgb,rgb(var(--livv-ink))_3%,transparent)]";
-    case "Dinner":
-      return "from-[color-mix(in_srgb,#9A00FF_12%,transparent)] to-[color-mix(in_srgb,rgb(var(--livv-ink))_3%,transparent)]";
-    case "Quick":
-      return "from-[color-mix(in_srgb,#4DFF00_10%,transparent)] to-[color-mix(in_srgb,rgb(var(--livv-ink))_3%,transparent)]";
-    case "Snacks":
-      return "from-[color-mix(in_srgb,#FF9D23_12%,transparent)] to-[color-mix(in_srgb,rgb(var(--livv-ink))_3%,transparent)]";
-    case "Dessert":
-      return "from-[color-mix(in_srgb,#F61981_12%,transparent)] to-[color-mix(in_srgb,rgb(var(--livv-ink))_3%,transparent)]";
-  }
 }
 
 export default function RecipesPage() {
@@ -152,6 +136,7 @@ export default function RecipesPage() {
             {list.map((r) => {
               const isSaved = saved.includes(r.id);
               const open = selId === r.id;
+              const img = r.image ?? recipeImage({ id: r.id, title: r.title, category: r.category });
               return (
                 <div
                   key={r.id}
@@ -163,12 +148,26 @@ export default function RecipesPage() {
                     className="group w-full text-left"
                     aria-expanded={open}
                   >
-                    <div
-                      className={`relative flex h-[88px] items-end bg-gradient-to-br px-5 pb-4 ${categoryTone(r.category)}`}
-                    >
-                      <span className="rounded-full border border-livv-border bg-[color-mix(in_srgb,var(--livv-bg)_70%,transparent)] px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[.12em] text-livv-muted backdrop-blur-sm">
-                        {r.category}
-                      </span>
+                    <div className="relative h-[132px] overflow-hidden sm:h-[148px]">
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img
+                        src={img}
+                        alt=""
+                        loading="lazy"
+                        decoding="async"
+                        className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/15 to-transparent" />
+                      <div className="absolute bottom-3 left-4 right-4 flex items-end justify-between gap-3">
+                        <span className="rounded-full border border-white/20 bg-black/35 px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[.12em] text-white backdrop-blur-sm">
+                          {r.category}
+                        </span>
+                        {r.macros && (
+                          <span className="rounded-full border border-white/15 bg-black/30 px-2.5 py-1 text-[10px] font-medium tabular-nums text-white/90 backdrop-blur-sm">
+                            {r.macros.calories} kcal · {r.macros.protein}g P
+                          </span>
+                        )}
+                      </div>
                     </div>
                     <div className="px-5 pb-5 pt-4">
                       <div className="flex items-start justify-between gap-3">

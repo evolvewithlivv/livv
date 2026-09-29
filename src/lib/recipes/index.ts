@@ -8,8 +8,8 @@ import { DESSERT_RECIPES } from "./dessert";
 
 export type { MealCategory, Recipe, CategoryFilter, DietFilter, RecipeMacros } from "./types";
 export { CATEGORIES, DIET_FILTERS } from "./types";
+export { recipeImage } from "./images";
 
-/** Live: Breakfast 50 + Lunch 50. Others fill as catalogs upload. */
 export const RECIPES: Recipe[] = [
   ...BREAKFAST_RECIPES,
   ...LUNCH_RECIPES,
