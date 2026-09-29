@@ -2,20 +2,31 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { ArrowUpRight, Check, ChevronLeft, Crown, Flame, LockKeyhole, Sparkles, Zap } from "lucide-react";
-import { PageHero } from "@/components/layout/page-hero";
+import {
+  ArrowUpRight,
+  Check,
+  ChevronLeft,
+  Crown,
+  Flame,
+  LockKeyhole,
+  Sparkles,
+  Zap,
+} from "lucide-react";
 import { loadIdentity, type Identity } from "@/lib/identity";
 import { TIERS, getTier, hasTier } from "@/lib/membership";
 import { getEffectiveTier, openBillingPortal, startCheckout } from "@/lib/billing";
-import { feedback } from "@/lib/sensory";
 
 const PAID_TIERS = ["rise", "apex", "circle"] as const;
-const TIER_ICONS = { spark: Flame, rise: Zap, apex: Sparkles, circle: Crown } as const;
+const TIER_ICONS = {
+  spark: Flame,
+  rise: Zap,
+  apex: Sparkles,
+  circle: Crown,
+} as const;
 
 export default function TiersPage() {
   const [me, setMe] = useState<Identity | null>(null);
   const [effectiveTier, setEffectiveTier] = useState(getEffectiveTier());
-  const [selected, setSelected] = useState<Identity["tier"]>(getEffectiveTier());
   const [billingBusy, setBillingBusy] = useState(false);
   const [error, setError] = useState("");
 
@@ -29,9 +40,13 @@ export default function TiersPage() {
       }
     };
     sync();
-    for (const event of ["livv-identity", "livv-billing"]) window.addEventListener(event, sync);
+    for (const event of ["livv-identity", "livv-billing"]) {
+      window.addEventListener(event, sync);
+    }
     return () => {
-      for (const event of ["livv-identity", "livv-billing"]) window.removeEventListener(event, sync);
+      for (const event of ["livv-identity", "livv-billing"]) {
+        window.removeEventListener(event, sync);
+      }
     };
   }, []);
 
@@ -57,130 +72,165 @@ export default function TiersPage() {
     }
   };
 
-  if (!me) return <main className="min-h-dvh" />;
+  if (!me) return <main className="livv-page min-h-full" />;
 
-  const selectedDef = getTier(selected);
-  const Icon = TIER_ICONS[selected];
-  const isCurrent = selected === effectiveTier;
-  const canAccess = hasTier(effectiveTier, selected);
+  const current = getTier(effectiveTier);
 
   return (
-    <main className="livv-account-page livv-page min-h-full pb-28">
-      <div className="account-inner mx-auto max-w-xl px-5 pt-5">
-        <div className="mb-2">
-          <Link href="/home/profile" className="inline-flex items-center gap-1 text-[12px] account-muted">
-            <ChevronLeft size={16} /> Profile
+    <main className="livv-page min-h-full pb-14">
+      <div className="mx-auto w-full max-w-xl px-5 pt-6 sm:px-6">
+        <header>
+          <Link
+            href="/home/profile"
+            className="inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-[.18em] text-livv-muted"
+          >
+            <ChevronLeft size={13} /> Profile
           </Link>
-        </div>
-        <PageHero
-          eyebrow="Membership"
-          title="Choose your tier."
-          subtitle="Unlock more of LIVV as you grow. Your tier travels with your account."
-          accent="#1769ff"
-        />
-        <section className="membership-panel mt-6 overflow-hidden">
-          <div className="membership-tabs flex gap-2 overflow-x-auto pb-1">
-            {TIERS.map((t) => {
-              const active = selected === t.id;
-              return (
-                <button
-                  key={t.id}
-                  type="button"
-                  onClick={() => {
-                    setSelected(t.id);
-                    feedback("tick");
-                  }}
-                  className={`membership-tab shrink-0 ${active ? "membership-tab-active" : ""}`}
-                >
-                  <span>{t.name}</span>
-                  {t.featured && <span className="membership-tab-dot" />}
-                </button>
-              );
-            })}
-          </div>
-          <div className="membership-featured mt-4">
-            <div className="membership-featured-top">
-              <div className="membership-tier-mark">
-                <Icon size={19} />
-              </div>
-              <div className="min-w-0 flex-1">
-                <div className="flex items-center gap-2">
-                  <p className="text-[18px] font-semibold">{selectedDef.name}</p>
-                  {selectedDef.featured && <span className="membership-featured-pill">Featured</span>}
-                  {isCurrent && <span className="membership-current-pill">Your tier</span>}
-                </div>
-                <p className="mt-1 text-[11px] account-muted">{selectedDef.blurb}</p>
-              </div>
-              <div className="text-right">
-                <p className="text-[20px] font-semibold">{selectedDef.price}</p>
-                <p className="text-[10px] account-muted">
-                  {selectedDef.cadence === "forever" ? "No card required" : selectedDef.cadence}
-                </p>
-              </div>
+          <p className="mt-7 text-[10px] font-semibold uppercase tracking-[.2em] text-livv-muted">
+            Membership
+          </p>
+          <h1 className="mt-2 text-[34px] font-semibold leading-[.96] tracking-[-.055em] sm:text-[40px]">
+            Choose your tier.
+          </h1>
+          <p className="mt-3 max-w-[40ch] text-[13px] leading-6 text-livv-muted">
+            Unlock more of LIVV as you grow. Your tier travels with your account.
+          </p>
+        </header>
+
+        {/* Current tier summary */}
+        <section className="mt-8 rounded-[22px] border border-livv-accent/30 bg-livv-accent-soft/40 px-5 py-4">
+          <div className="flex items-center justify-between gap-3">
+            <div>
+              <p className="text-[10px] font-semibold uppercase tracking-[.16em] text-livv-muted">
+                Your tier
+              </p>
+              <p className="mt-1 text-[18px] font-semibold tracking-[-.03em]">{current.name}</p>
             </div>
-            <div className="membership-benefit-grid">
-              {selectedDef.perks.map((perk) => (
-                <div key={perk} className="membership-benefit">
-                  <span className="membership-check">
-                    <Check size={12} />
-                  </span>
-                  <span>{perk}</span>
-                </div>
-              ))}
-            </div>
-            <div className="membership-multiplier">
-              <div>
-                <p className="text-[10px] font-semibold uppercase tracking-[.16em] account-muted">Ember multiplier</p>
-                <p className="mt-1 text-[24px] font-semibold">
-                  {selectedDef.multiplier}x{" "}
-                  <span className="text-[11px] font-normal account-muted">on standard Ember awards</span>
-                </p>
-              </div>
-              <div className="membership-multiplier-bar">
-                <span style={{ width: `${Math.min(100, (selectedDef.multiplier / 6) * 100)}%` }} />
-              </div>
-            </div>
-            <div className="membership-action-row">
-              {isCurrent ? (
-                <button type="button" onClick={() => void onPortal()} disabled={billingBusy} className="membership-secondary">
-                  {effectiveTier === "spark" ? "You are on Spark" : "Manage membership"}
-                  <ArrowUpRight size={14} />
-                </button>
-              ) : canAccess ? (
-                <div className="membership-unlocked">
-                  <Check size={14} /> Included with your membership
-                </div>
-              ) : (
-                <button
-                  type="button"
-                  onClick={() => {
-                    if (selected === "rise" || selected === "apex" || selected === "circle") void checkout(selected);
-                  }}
-                  disabled={billingBusy}
-                  className="membership-primary"
-                >
-                  {billingBusy ? "Opening checkout..." : `Unlock ${selectedDef.name}`}
-                  <ArrowUpRight size={15} />
-                </button>
-              )}
-              <span className="membership-next-hint">
-                {selected === "spark"
-                  ? "Start free, then unlock more when you are ready."
-                  : selected === "circle"
-                    ? "Annual membership with the full LIVV tier stack."
-                    : `Next: ${getTier(selected === "rise" ? "apex" : "circle").name}`}
-              </span>
+            <div className="text-right">
+              <p className="text-[18px] font-semibold tabular-nums">
+                {current.price}
+                <span className="text-[11px] font-normal text-livv-muted">{current.cadence}</span>
+              </p>
+              <p className="mt-0.5 text-[11px] text-livv-muted">{current.multiplier}x Embers</p>
             </div>
           </div>
-          {error && (
-            <p className="mt-3 text-[12px] text-red-500" role="status">
-              {error}
-            </p>
+          {effectiveTier !== "spark" && (
+            <button
+              type="button"
+              onClick={() => void onPortal()}
+              disabled={billingBusy}
+              className="mt-4 flex w-full items-center justify-center gap-2 rounded-full border border-livv-border py-3 text-[12px] font-semibold uppercase tracking-[.12em] text-livv-muted disabled:opacity-50"
+            >
+              Manage membership
+              <ArrowUpRight size={14} />
+            </button>
           )}
-          <div className="membership-footnote">
-            <LockKeyhole size={12} /> Membership status follows your account across devices.
-          </div>
         </section>
+
+        {/* All tiers vertical list */}
+        <section className="mt-8 space-y-4">
+          {TIERS.map((tier) => {
+            const Icon = TIER_ICONS[tier.id];
+            const isCurrent = tier.id === effectiveTier;
+            const unlocked = hasTier(effectiveTier, tier.id);
+            const isPaid = PAID_TIERS.includes(tier.id as (typeof PAID_TIERS)[number]);
+
+            return (
+              <article
+                key={tier.id}
+                className={
+                  "overflow-hidden rounded-[22px] border px-5 py-5 transition " +
+                  (isCurrent
+                    ? "border-livv-accent bg-[color-mix(in_srgb,rgb(var(--livv-accent))_8%,transparent)]"
+                    : "border-livv-border bg-[color-mix(in_srgb,rgb(var(--livv-ink))_2%,transparent)]")
+                }
+              >
+                <div className="flex items-start justify-between gap-3">
+                  <div className="flex min-w-0 items-start gap-3">
+                    <span
+                      className={
+                        "grid h-10 w-10 shrink-0 place-items-center rounded-2xl border " +
+                        (isCurrent
+                          ? "border-livv-accent/40 bg-livv-accent-soft text-livv-accent"
+                          : "border-livv-border text-livv-muted")
+                      }
+                    >
+                      <Icon size={18} />
+                    </span>
+                    <div className="min-w-0">
+                      <div className="flex flex-wrap items-center gap-2">
+                        <h2 className="text-[17px] font-semibold tracking-[-.03em]">{tier.name}</h2>
+                        {isCurrent && (
+                          <span className="rounded-full border border-livv-accent/40 bg-livv-accent-soft px-2 py-0.5 text-[9px] font-bold uppercase tracking-[.12em] text-livv-accent">
+                            Your tier
+                          </span>
+                        )}
+                        {tier.featured && !isCurrent && (
+                          <span className="rounded-full border border-livv-border px-2 py-0.5 text-[9px] font-bold uppercase tracking-[.12em] text-livv-muted">
+                            Popular
+                          </span>
+                        )}
+                      </div>
+                      <p className="mt-1 text-[12px] leading-5 text-livv-muted">{tier.blurb}</p>
+                    </div>
+                  </div>
+                  <div className="shrink-0 text-right">
+                    <p className="text-[17px] font-semibold tabular-nums">
+                      {tier.price}
+                      <span className="text-[11px] font-normal text-livv-muted">{tier.cadence}</span>
+                    </p>
+                    <p className="mt-0.5 text-[11px] text-livv-muted">{tier.multiplier}x Embers</p>
+                  </div>
+                </div>
+
+                <ul className="mt-4 space-y-2.5">
+                  {tier.perks.map((perk) => (
+                    <li key={perk} className="flex gap-2.5 text-[12px] leading-5">
+                      <span className="mt-0.5 grid h-4 w-4 shrink-0 place-items-center rounded-full bg-livv-accent-soft text-livv-accent">
+                        <Check size={10} strokeWidth={3} />
+                      </span>
+                      <span>{perk}</span>
+                    </li>
+                  ))}
+                </ul>
+
+                <div className="mt-5">
+                  {isCurrent ? (
+                    <div className="flex items-center justify-center gap-2 rounded-full border border-livv-border py-3 text-[11px] font-semibold uppercase tracking-[.12em] text-livv-muted">
+                      <Check size={14} className="text-livv-accent" /> Current plan
+                    </div>
+                  ) : unlocked ? (
+                    <div className="flex items-center justify-center gap-2 rounded-full border border-livv-border py-3 text-[11px] font-semibold uppercase tracking-[.12em] text-livv-accent">
+                      <Check size={14} /> Included with your membership
+                    </div>
+                  ) : isPaid ? (
+                    <button
+                      type="button"
+                      onClick={() =>
+                        void checkout(tier.id as (typeof PAID_TIERS)[number])
+                      }
+                      disabled={billingBusy}
+                      className="flex w-full items-center justify-center gap-2 rounded-full bg-[rgb(var(--livv-ink))] py-3.5 text-[12px] font-semibold uppercase tracking-[.12em] text-[rgb(var(--livv-bg))] disabled:opacity-50"
+                    >
+                      {billingBusy ? "Opening checkout..." : `Unlock ${tier.name}`}
+                      <ArrowUpRight size={14} />
+                    </button>
+                  ) : null}
+                </div>
+              </article>
+            );
+          })}
+        </section>
+
+        {error && (
+          <p className="mt-4 text-center text-[12px] text-red-500" role="status">
+            {error}
+          </p>
+        )}
+
+        <p className="mt-8 flex items-center justify-center gap-1.5 pb-4 text-[10px] text-livv-muted">
+          <LockKeyhole size={12} /> Membership follows your account across devices.
+        </p>
       </div>
     </main>
   );
