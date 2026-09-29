@@ -5,7 +5,7 @@ import { LUNCH_RECIPES } from "./lunch";
 export type { MealCategory, Recipe, CategoryFilter, DietFilter, RecipeMacros } from "./types";
 export { CATEGORIES, DIET_FILTERS } from "./types";
 
-// Rolling upload: Breakfast (50) live; Lunch parts 0–2 live (30); remaining catalogs next.
+/** 100 recipes live (50 Breakfast + 50 Lunch). Dinner / Quick / Snacks / Dessert uploading next. */
 export const RECIPES: Recipe[] = [
   ...BREAKFAST_RECIPES,
   ...LUNCH_RECIPES,
