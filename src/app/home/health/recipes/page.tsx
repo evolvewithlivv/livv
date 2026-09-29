@@ -11,171 +11,12 @@ import {
   Utensils,
 } from "lucide-react";
 import { SearchField } from "@/components/ui/search-field";
-
-type MealCategory = "Breakfast" | "Lunch" | "Dinner" | "Quick";
-
-type Recipe = {
-  id: string;
-  title: string;
-  time: number;
-  tag: string;
-  category: MealCategory;
-  servings: string;
-  blurb: string;
-  ingredients: string[];
-  steps: string[];
-  tip: string;
-};
-
-const RECIPES: Recipe[] = [
-  {
-    id: "chicken-rice-bowl",
-    title: "LIVV Chicken Rice Bowl",
-    time: 30,
-    tag: "High protein",
-    category: "Dinner",
-    servings: "1 generous bowl",
-    blurb: "Clean protein, rice, and greens — the weekday default that actually sticks.",
-    ingredients: [
-      "8 oz boneless chicken breast",
-      "1 cup cooked rice",
-      "1 cup broccoli",
-      "1 tsp olive oil",
-      "1 garlic clove, minced",
-      "Salt and black pepper",
-      "Optional: lemon, chili flakes",
-    ],
-    steps: [
-      "Pat the chicken dry. Season both sides with salt, pepper, and garlic.",
-      "Heat a skillet over medium-high. Add oil, cook chicken 5–7 min per side until 165°F.",
-      "Rest 3–5 minutes. Slice against the grain.",
-      "Steam broccoli until bright green. Season lightly.",
-      "Build the bowl: rice, broccoli, sliced chicken. Finish with lemon if you want.",
-    ],
-    tip: "Cook two or three portions at once and refrigerate extras for the next day.",
-  },
-  {
-    id: "steak-egg-plate",
-    title: "Steak & Egg Plate",
-    time: 20,
-    tag: "Protein",
-    category: "Lunch",
-    servings: "1 plate",
-    blurb: "Steak, eggs, and potatoes — simple fuel without the noise.",
-    ingredients: [
-      "5–6 oz lean steak",
-      "2 eggs",
-      "1 cup diced potatoes",
-      "1 tsp olive oil",
-      "Salt and black pepper",
-      "Optional: spinach or greens",
-    ],
-    steps: [
-      "Dice potatoes small. Toss with half the oil, salt, and pepper.",
-      "Cook potatoes 10–14 min until browned and tender.",
-      "Sear steak to preferred doneness. Rest before slicing.",
-      "Cook eggs. Add greens if using. Plate everything together.",
-    ],
-    tip: "Resting the steak before slicing keeps more moisture in the meat.",
-  },
-  {
-    id: "overnight-oats",
-    title: "Overnight Oats",
-    time: 5,
-    tag: "Breakfast",
-    category: "Breakfast",
-    servings: "1 jar",
-    blurb: "Prep once, eat for days. No morning decision fatigue.",
-    ingredients: [
-      "1/2 cup rolled oats",
-      "3/4 cup milk",
-      "1/3 cup Greek yogurt",
-      "1/2 banana",
-      "1/2 cup berries",
-      "1 tsp chia seeds",
-      "Cinnamon",
-    ],
-    steps: [
-      "Add oats, milk, yogurt, chia, and cinnamon to a jar.",
-      "Stir well. Refrigerate at least 4 hours or overnight.",
-      "Top with banana and berries in the morning.",
-    ],
-    tip: "Prep three jars at once for a simple weekday breakfast.",
-  },
-  {
-    id: "salmon-green-bowl",
-    title: "Salmon Green Bowl",
-    time: 25,
-    tag: "Omega-3",
-    category: "Dinner",
-    servings: "1 bowl",
-    blurb: "Salmon, greens, and lemon — recovery food that still tastes like a meal.",
-    ingredients: [
-      "6 oz salmon fillet",
-      "1 cup cooked rice or quinoa",
-      "2 cups spinach",
-      "1/2 cucumber",
-      "1/2 lemon",
-      "1 tsp olive oil",
-      "Salt, pepper, garlic powder",
-    ],
-    steps: [
-      "Season salmon with salt, pepper, and garlic powder.",
-      "Cook in oil over medium heat until center reaches 145°F.",
-      "Build bowl with rice, spinach, cucumber, and salmon. Lemon on top.",
-    ],
-    tip: "Keep components separate in the fridge if meal-prepping.",
-  },
-  {
-    id: "turkey-power-wrap",
-    title: "Turkey Power Wrap",
-    time: 10,
-    tag: "Quick",
-    category: "Quick",
-    servings: "1 wrap",
-    blurb: "Ten minutes, real protein, zero excuse to skip a meal.",
-    ingredients: [
-      "1 whole-grain wrap",
-      "4 oz sliced turkey",
-      "1/2 cup spinach",
-      "1/2 tomato",
-      "1/4 cucumber",
-      "2 tbsp Greek yogurt or hummus",
-      "Black pepper",
-    ],
-    steps: [
-      "Spread yogurt or hummus on the wrap.",
-      "Layer turkey, spinach, tomato, cucumber. Season.",
-      "Fold sides in, roll tightly, slice in half.",
-    ],
-    tip: "Keep wet ingredients away from the outer edge so the wrap stays tight.",
-  },
-  {
-    id: "recovery-smoothie",
-    title: "Recovery Smoothie",
-    time: 5,
-    tag: "Recovery",
-    category: "Quick",
-    servings: "1 large smoothie",
-    blurb: "Post-training fuel you can drink standing up.",
-    ingredients: [
-      "1 banana",
-      "3/4 cup Greek yogurt",
-      "3/4 cup milk",
-      "1 cup frozen berries",
-      "1/4 cup oats",
-      "Ice if needed",
-    ],
-    steps: [
-      "Add milk first, then yogurt, banana, berries, and oats.",
-      "Blend 30–60 seconds until smooth. Adjust thickness with milk.",
-    ],
-    tip: "Use frozen fruit for a cold, thick smoothie without much ice.",
-  },
-];
-
-const CATEGORIES = ["All", "Breakfast", "Lunch", "Dinner", "Quick"] as const;
-type CategoryFilter = (typeof CATEGORIES)[number];
+import {
+  CATEGORIES,
+  RECIPES,
+  type CategoryFilter,
+  type MealCategory,
+} from "@/lib/recipes-data";
 
 const SAVED_KEY = "livv-recipes-saved-v1";
 
@@ -205,6 +46,10 @@ function categoryTone(category: MealCategory): string {
       return "from-[color-mix(in_srgb,#9A00FF_12%,transparent)] to-[color-mix(in_srgb,rgb(var(--livv-ink))_3%,transparent)]";
     case "Quick":
       return "from-[color-mix(in_srgb,#4DFF00_10%,transparent)] to-[color-mix(in_srgb,rgb(var(--livv-ink))_3%,transparent)]";
+    case "Snacks":
+      return "from-[color-mix(in_srgb,#FF9D23_12%,transparent)] to-[color-mix(in_srgb,rgb(var(--livv-ink))_3%,transparent)]";
+    case "Dessert":
+      return "from-[color-mix(in_srgb,#F61981_12%,transparent)] to-[color-mix(in_srgb,rgb(var(--livv-ink))_3%,transparent)]";
   }
 }
 
@@ -254,7 +99,7 @@ export default function RecipesPage() {
             Cook real food.
           </h1>
           <p className="mt-4 max-w-[42ch] text-[13px] leading-6 text-livv-muted">
-            Simple meals you can actually make. Tap a recipe to open the method right here.
+            Real-food recipes across breakfast, meals, snacks, and dessert. Tap one to open the method right here.
           </p>
         </header>
 
@@ -338,9 +183,7 @@ export default function RecipesPage() {
                           )}
                         </span>
                       </div>
-                      <p className="mt-2 line-clamp-2 text-[12px] leading-5 text-livv-muted">
-                        {r.blurb}
-                      </p>
+                      <p className="mt-2 line-clamp-2 text-[12px] leading-5 text-livv-muted">{r.blurb}</p>
                       <div className="mt-3.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-livv-muted">
                         <span className="font-medium text-[rgb(var(--livv-ink)/0.75)]">{r.tag}</span>
                         <span className="flex items-center gap-1">
@@ -373,15 +216,11 @@ export default function RecipesPage() {
                           </ul>
                         </div>
                         <div>
-                          <h3 className="text-[10px] font-semibold uppercase tracking-[.18em] text-livv-muted">
-                            Method
-                          </h3>
+                          <h3 className="text-[10px] font-semibold uppercase tracking-[.18em] text-livv-muted">Method</h3>
                           <ol className="mt-4 space-y-4">
                             {r.steps.map((x, i) => (
                               <li key={x} className="flex gap-3 text-[13px] leading-6">
-                                <span className="font-semibold tabular-nums text-livv-accent">
-                                  {i + 1}.
-                                </span>
+                                <span className="font-semibold tabular-nums text-livv-accent">{i + 1}.</span>
                                 <span>{x}</span>
                               </li>
                             ))}
@@ -423,9 +262,7 @@ export default function RecipesPage() {
           </div>
 
           {!list.length && (
-            <p className="py-14 text-center text-[13px] text-livv-muted">
-              Nothing matched that search.
-            </p>
+            <p className="py-14 text-center text-[13px] text-livv-muted">Nothing matched that search.</p>
           )}
         </section>
       </div>
