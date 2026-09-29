@@ -6,6 +6,13 @@ export type MealCategory =
   | "Snacks"
   | "Dessert";
 
+export type RecipeMacros = {
+  protein: number; // grams
+  carbs: number;
+  fat: number;
+  calories: number;
+};
+
 export type Recipe = {
   id: string;
   title: string;
@@ -17,6 +24,8 @@ export type Recipe = {
   ingredients: string[];
   steps: string[];
   tip: string;
+  macros?: RecipeMacros;
+  diet?: string[]; // high-protein | mediterranean | meal-prep | quick | plant-forward
 };
 
 export const CATEGORIES = [
@@ -29,4 +38,14 @@ export const CATEGORIES = [
   "Dessert",
 ] as const;
 
+export const DIET_FILTERS = [
+  "All",
+  "High protein",
+  "Mediterranean",
+  "Meal prep",
+  "Quick",
+  "Plant-forward",
+] as const;
+
 export type CategoryFilter = (typeof CATEGORIES)[number];
+export type DietFilter = (typeof DIET_FILTERS)[number];
