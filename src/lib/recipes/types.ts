@@ -7,7 +7,7 @@ export type MealCategory =
   | "Dessert";
 
 export type RecipeMacros = {
-  protein: number; // grams
+  protein: number;
   carbs: number;
   fat: number;
   calories: number;
@@ -24,10 +24,12 @@ export type Recipe = {
   ingredients: string[];
   steps: string[];
   tip: string;
-  macros?: RecipeMacros;
-  diet?: string[]; // high-protein | mediterranean | meal-prep | quick | plant-forward
-  /** Optional explicit banner URL — otherwise resolved via recipeImage() */
+  /** Unique photo for this specific recipe (from source) */
   image?: string;
+  source?: string;
+  sourceUrl?: string;
+  macros?: RecipeMacros;
+  diet?: string[];
 };
 
 export const CATEGORIES = [

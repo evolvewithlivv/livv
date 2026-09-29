@@ -4,5 +4,8 @@ export type {
   CategoryFilter,
   DietFilter,
   RecipeMacros,
-} from "./recipes";
-export { CATEGORIES, DIET_FILTERS, RECIPES, recipeImage } from "./recipes";
+} from "./recipes/types";
+export { CATEGORIES, DIET_FILTERS } from "./recipes/types";
+
+/** @deprecated Local catalog retired — page loads real recipes from /api/recipes */
+export const RECIPES: import("./recipes/types").Recipe[] = [];
