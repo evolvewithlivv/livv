@@ -26,18 +26,6 @@ function persistSaved(slugs: string[]) {
   }
 }
 
-function deskTint(desk: WikiDesk): string {
-  const map: Record<WikiDesk, string> = {
-    body: "from-[#1a3a2a] to-[#0d1f16]",
-    mind: "from-[#2a1a3a] to-[#140d1f]",
-    career: "from-[#1a2a3a] to-[#0d1520]",
-    finance: "from-[#2a2a14] to-[#1a1a0a]",
-    social: "from-[#3a1a24] to-[#1f0d14]",
-    system: "from-[#1a2a2a] to-[#0d1818]",
-  };
-  return map[desk] || "from-[#1a1a1a] to-[#0a0a0a]";
-}
-
 function deskAccent(desk: WikiDesk): string {
   const map: Record<WikiDesk, string> = {
     body: "#3ecf8e",
@@ -111,13 +99,13 @@ export default function MindPage() {
 
   return (
     <main className="livv-page min-h-full pb-24">
-      <div className="mx-auto w-full max-w-[42rem] px-4 pt-4 sm:px-6">
-        <header className="flex items-center justify-between gap-3 pb-3">
+      <div className="mx-auto w-full max-w-[40rem] px-5 pt-5 sm:px-6">
+        <header className="flex items-center justify-between gap-3 pb-2">
           <div>
-            <h1 className="text-[28px] font-bold tracking-[-0.04em] text-[rgb(var(--livv-ink))] sm:text-[32px]">
+            <h1 className="text-[30px] font-bold tracking-[-0.04em] text-[rgb(var(--livv-ink))] sm:text-[34px]">
               Mind
             </h1>
-            <p className="mt-0.5 text-[13px] text-livv-muted">Ideas worth carrying.</p>
+            <p className="mt-1 text-[13px] text-livv-muted">Ideas worth carrying.</p>
           </div>
           <div className="flex shrink-0 items-center gap-1.5">
             <button
@@ -131,7 +119,7 @@ export default function MindPage() {
               className={`grid h-9 w-9 place-items-center rounded-full transition ${
                 savedOnly
                   ? "bg-[rgb(var(--livv-ink))] text-[rgb(var(--livv-bg))]"
-                  : "bg-[color-mix(in_srgb,rgb(var(--livv-ink))_6%,transparent)] text-livv-muted"
+                  : "text-livv-muted"
               }`}
             >
               <Bookmark size={15} fill={savedOnly ? "currentColor" : "none"} />
@@ -144,7 +132,7 @@ export default function MindPage() {
               className={`grid h-9 w-9 place-items-center rounded-full transition ${
                 searchOpen
                   ? "bg-[rgb(var(--livv-ink))] text-[rgb(var(--livv-bg))]"
-                  : "bg-[color-mix(in_srgb,rgb(var(--livv-ink))_6%,transparent)] text-livv-muted"
+                  : "text-livv-muted"
               }`}
             >
               {searchOpen ? <X size={15} /> : <Search size={15} />}
@@ -153,7 +141,7 @@ export default function MindPage() {
         </header>
 
         {searchOpen ? (
-          <div className="mb-4">
+          <div className="mb-5 mt-3">
             <SearchField
               value={query}
               onChange={setQuery}
@@ -163,7 +151,7 @@ export default function MindPage() {
           </div>
         ) : null}
 
-        <nav className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-4 scrollbar-none">
+        <nav className="-mx-1 mt-4 flex gap-2 overflow-x-auto px-1 pb-5 scrollbar-none">
           <DeskChip
             active={desk === "all" && !savedOnly}
             onClick={() => {
@@ -197,7 +185,7 @@ export default function MindPage() {
         ) : (
           <>
             {!savedOnly && !query ? (
-              <h2 className="mb-3 text-[22px] font-bold tracking-[-0.03em] text-[#ff2d55] sm:text-[24px]">
+              <h2 className="mb-4 text-[13px] font-semibold uppercase tracking-[0.16em] text-livv-muted">
                 {desk === "all" ? "Top Stories" : deskMeta(desk).label}
               </h2>
             ) : null}
@@ -211,7 +199,7 @@ export default function MindPage() {
             ) : null}
 
             {secondary.length > 0 ? (
-              <section className="mt-2 divide-y divide-livv-border">
+              <section className="divide-y divide-livv-border border-t border-livv-border">
                 {secondary.map((article) => (
                   <StoryRow
                     key={article.slug}
@@ -224,7 +212,7 @@ export default function MindPage() {
             ) : null}
 
             {rest.length > 0 ? (
-              <section className="mt-1 divide-y divide-livv-border border-t border-livv-border">
+              <section className="divide-y divide-livv-border border-t border-livv-border">
                 {rest.map((article) => (
                   <StoryRow
                     key={article.slug}
@@ -238,11 +226,11 @@ export default function MindPage() {
             ) : null}
 
             {!savedOnly && !query && desk === "all" && byDesk.length > 0 ? (
-              <section className="mt-10 space-y-8">
+              <section className="mt-12 space-y-10">
                 {byDesk.map(({ desk: d, articles }) => (
                   <div key={d.id}>
-                    <div className="mb-3 flex items-center justify-between">
-                      <h2 className="text-[18px] font-bold tracking-[-0.02em] text-[rgb(var(--livv-ink))]">
+                    <div className="mb-1 flex items-baseline justify-between gap-3">
+                      <h2 className="text-[20px] font-bold tracking-[-0.03em] text-[rgb(var(--livv-ink))]">
                         {d.label}
                       </h2>
                       <Link
@@ -252,7 +240,7 @@ export default function MindPage() {
                         See all
                       </Link>
                     </div>
-                    <div className="divide-y divide-livv-border overflow-hidden rounded-2xl border border-livv-border">
+                    <div className="divide-y divide-livv-border border-t border-livv-border">
                       {articles.slice(0, 3).map((article) => (
                         <StoryRow
                           key={article.slug}
@@ -260,7 +248,6 @@ export default function MindPage() {
                           saved={saved.includes(article.slug)}
                           onToggleSave={() => toggleSave(article.slug)}
                           compact
-                          inCard
                         />
                       ))}
                     </div>
@@ -270,11 +257,11 @@ export default function MindPage() {
             ) : null}
 
             {!savedOnly && !query && desk === "all" && savedArticles.length > 0 ? (
-              <section className="mt-10">
-                <h2 className="mb-3 text-[18px] font-bold tracking-[-0.02em] text-[rgb(var(--livv-ink))]">
+              <section className="mt-12">
+                <h2 className="mb-1 text-[20px] font-bold tracking-[-0.03em] text-[rgb(var(--livv-ink))]">
                   Saved
                 </h2>
-                <div className="divide-y divide-livv-border">
+                <div className="divide-y divide-livv-border border-t border-livv-border">
                   {savedArticles.slice(0, 5).map((article) => (
                     <StoryRow
                       key={article.slug}
@@ -310,7 +297,7 @@ function DeskChip({
       className={`shrink-0 rounded-full px-3.5 py-1.5 text-[13px] font-semibold transition ${
         active
           ? "bg-[rgb(var(--livv-ink))] text-[rgb(var(--livv-bg))]"
-          : "bg-[color-mix(in_srgb,rgb(var(--livv-ink))_8%,transparent)] text-[rgb(var(--livv-ink))]"
+          : "text-[rgb(var(--livv-ink))]"
       }`}
     >
       {children}
@@ -328,44 +315,32 @@ function FeaturedStory({
   onToggleSave: () => void;
 }) {
   const meta = deskMeta(article.desk);
-  const tint = deskTint(article.desk);
   const accent = deskAccent(article.desk);
 
   return (
-    <article className="overflow-hidden rounded-[20px] border border-livv-border bg-[color-mix(in_srgb,rgb(var(--livv-ink))_3%,transparent)]">
-      <Link href={`/home/mind/${article.slug}`} className="block">
-        <div className={`relative aspect-[16/10] bg-gradient-to-br ${tint} px-5 pb-5 pt-6`}>
-          <span
-            className="inline-block rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-[0.12em]"
-            style={{ background: `${accent}22`, color: accent }}
-          >
-            {meta.label}
-          </span>
-          <h3 className="mt-4 max-w-[20ch] text-[26px] font-bold leading-[1.15] tracking-[-0.035em] text-white sm:text-[30px]">
-            {article.title}
-          </h3>
-        </div>
-        <div className="px-4 py-3.5">
-          <p className="line-clamp-2 text-[14px] leading-snug text-livv-muted">{article.hook}</p>
-          <p className="mt-2 text-[11px] text-livv-muted">
-            {meta.label} · {article.readMins} min read
-          </p>
-        </div>
+    <article className="relative pb-8">
+      <Link href={`/home/mind/${article.slug}`} className="block pr-10">
+        <p className="text-[13px] font-semibold tracking-[-0.01em]" style={{ color: accent }}>
+          {meta.label}
+        </p>
+        <h3 className="mt-2 max-w-[22ch] text-[28px] font-bold leading-[1.12] tracking-[-0.04em] text-[rgb(var(--livv-ink))] sm:text-[32px]">
+          {article.title}
+        </h3>
+        <p className="mt-3 max-w-[38ch] text-[15px] leading-relaxed text-livv-muted">{article.hook}</p>
+        <p className="mt-3 text-[12px] text-livv-muted">{article.readMins} min read</p>
       </Link>
-      <div className="flex justify-end border-t border-livv-border px-2 py-1">
-        <button
-          type="button"
-          onClick={(e) => {
-            e.preventDefault();
-            onToggleSave();
-          }}
-          aria-label={saved ? "Remove bookmark" : "Save article"}
-          aria-pressed={saved}
-          className="grid h-9 w-9 place-items-center rounded-full text-livv-muted"
-        >
-          <Bookmark size={15} fill={saved ? "currentColor" : "none"} />
-        </button>
-      </div>
+      <button
+        type="button"
+        onClick={(e) => {
+          e.preventDefault();
+          onToggleSave();
+        }}
+        aria-label={saved ? "Remove bookmark" : "Save article"}
+        aria-pressed={saved}
+        className="absolute right-0 top-0 grid h-9 w-9 place-items-center text-livv-muted"
+      >
+        <Bookmark size={15} fill={saved ? "currentColor" : "none"} />
+      </button>
     </article>
   );
 }
@@ -375,57 +350,41 @@ function StoryRow({
   saved,
   onToggleSave,
   compact = false,
-  inCard = false,
 }: {
   article: WikiArticle;
   saved: boolean;
   onToggleSave: () => void;
   compact?: boolean;
-  inCard?: boolean;
 }) {
   const meta = deskMeta(article.desk);
-  const tint = deskTint(article.desk);
   const accent = deskAccent(article.desk);
 
   return (
-    <article className={`flex gap-3 ${inCard ? "px-3.5 py-3.5" : "py-4"}`}>
-      <div className="min-w-0 flex-1">
-        <p className="text-[11px] font-semibold text-livv-muted">
-          <span style={{ color: accent }}>{meta.label}</span>
-          <span className="text-livv-muted"> · {article.readMins} min</span>
-        </p>
-        <Link href={`/home/mind/${article.slug}`} className="mt-1 block">
-          <h3
-            className={`font-bold leading-snug tracking-[-0.025em] text-[rgb(var(--livv-ink))] ${
-              compact ? "text-[15px]" : "text-[16px] sm:text-[17px]"
-            }`}
-          >
-            {article.title}
-          </h3>
-          {!compact ? (
-            <p className="mt-1.5 line-clamp-2 text-[13px] leading-snug text-livv-muted">
-              {article.hook}
-            </p>
-          ) : null}
-        </Link>
-      </div>
-      <Link
-        href={`/home/mind/${article.slug}`}
-        className={`relative shrink-0 overflow-hidden rounded-xl bg-gradient-to-br ${tint} ${
-          compact ? "h-[64px] w-[64px]" : "h-[72px] w-[72px] sm:h-[80px] sm:w-[80px]"
-        }`}
-        aria-hidden
-      >
-        <span className="absolute bottom-1.5 left-1.5 text-[9px] font-bold uppercase tracking-wider text-white/70">
-          {meta.label.slice(0, 4)}
-        </span>
+    <article className="relative py-5">
+      <p className="text-[11px] font-semibold tracking-[-0.01em]">
+        <span style={{ color: accent }}>{meta.label}</span>
+        <span className="text-livv-muted"> · {article.readMins} min</span>
+      </p>
+      <Link href={`/home/mind/${article.slug}`} className="mt-1.5 block pr-10">
+        <h3
+          className={`font-bold leading-snug tracking-[-0.03em] text-[rgb(var(--livv-ink))] ${
+            compact ? "text-[16px]" : "text-[17px] sm:text-[18px]"
+          }`}
+        >
+          {article.title}
+        </h3>
+        {!compact ? (
+          <p className="mt-1.5 line-clamp-2 text-[13px] leading-relaxed text-livv-muted">
+            {article.hook}
+          </p>
+        ) : null}
       </Link>
       <button
         type="button"
         onClick={onToggleSave}
         aria-label={saved ? "Remove bookmark" : "Save article"}
         aria-pressed={saved}
-        className="mt-0.5 grid h-8 w-8 shrink-0 place-items-center self-start rounded-full text-livv-muted"
+        className="absolute right-0 top-5 grid h-8 w-8 place-items-center text-livv-muted"
       >
         <Bookmark size={14} fill={saved ? "currentColor" : "none"} />
       </button>
