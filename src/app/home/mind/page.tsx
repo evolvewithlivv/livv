@@ -1,7 +1,5 @@
 "use client";
 
-import type { ReactNode } from "react";
-
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -26,6 +24,31 @@ function persistSaved(slugs: string[]) {
   } catch {
     /* ignore */
   }
+}
+
+/** Soft desk color for story art blocks (no external images). */
+function deskTint(desk: WikiDesk): string {
+  const map: Record<WikiDesk, string> = {
+    body: "from-[#1a3a2a] to-[#0d1f16]",
+    mind: "from-[#2a1a3a] to-[#140d1f]",
+    career: "from-[#1a2a3a] to-[#0d1520]",
+    money: "from-[#2a2a14] to-[#1a1a0a]",
+    people: "from-[#3a1a24] to-[#1f0d14]",
+    system: "from-[#1a2a2a] to-[#0d1818]",
+  };
+  return map[desk] || "from-[#1a1a1a] to-[#0a0a0a]";
+}
+
+function deskAccent(desk: WikiDesk): string {
+  const map: Record<WikiDesk, string> = {
+    body: "#3ecf8e",
+    mind: "#b794f6",
+    career: "#63b3ed",
+    money: "#f6e05e",
+    people: "#fc8181",
+    system: "#4fd1c5",
+  };
+  return map[desk] || "#a0aec0";
 }
 
 export default function MindPage() {
@@ -53,13 +76,16 @@ export default function MindPage() {
       (a) =>
         (desk === "all" || a.desk === desk) &&
         (!savedOnly || saved.includes(a.slug)) &&
-        (!q || a.title.toLowerCase().includes(q) || a.hook.toLowerCase().includes(q) || a.desk.includes(q))
+        (!q ||
+          a.title.toLowerCase().includes(q) ||
+          a.hook.toLowerCase().includes(q) ||
+          a.desk.includes(q)),
     );
   }, [desk, query, saved, savedOnly]);
 
   const featured = list[0] ?? null;
-  const secondary = list.slice(1, 4);
-  const rest = list.slice(4);
+  const secondary = list.slice(1, 5);
+  const rest = list.slice(5);
 
   const byDesk = useMemo(() => {
     if (desk !== "all" || query || savedOnly) return [];
@@ -71,12 +97,14 @@ export default function MindPage() {
 
   const savedArticles = useMemo(
     () => WIKI.filter((a) => saved.includes(a.slug)),
-    [saved]
+    [saved],
   );
 
   const toggleSave = (slug: string) => {
     setSaved((current) => {
-      const next = current.includes(slug) ? current.filter((x) => x !== slug) : [slug, ...current];
+      const next = current.includes(slug)
+        ? current.filter((x) => x !== slug)
+        : [slug, ...current];
       persistSaved(next);
       return next;
     });
@@ -84,20 +112,16 @@ export default function MindPage() {
 
   return (
     <main className="livv-page min-h-full pb-24">
-      <div className="mx-auto w-full max-w-[42rem] px-5 pt-5 sm:px-6">
-        <header className="flex items-end justify-between gap-4 border-b border-[var(--livv-pro-line)] pb-5">
+      <div className="mx-auto w-full max-w-[42rem] px-4 pt-4 sm:px-6">
+        {/* Header — Today-style */}
+        <header className="flex items-center justify-between gap-3 pb-3">
           <div>
-            <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-[var(--livv-pro-muted)]">
+            <h1 className="text-[28px] font-bold tracking-[-0.04em] text-[rgb(var(--livv-ink))] sm:text-[32px]">
               Mind
-            </p>
-            <h1 className="mt-1.5 text-[32px] font-semibold leading-none tracking-[-0.045em] text-[var(--livv-pro-ink)] sm:text-[36px]">
-              The Field
             </h1>
-            <p className="mt-2 max-w-[22rem] text-[13px] leading-relaxed text-[var(--livv-pro-muted)]">
-              Ideas worth carrying with you.
-            </p>
+            <p className="mt-0.5 text-[13px] text-livv-muted">Ideas worth carrying.</p>
           </div>
-          <div className="flex shrink-0 items-center gap-1.5 pb-0.5">
+          <div className="flex shrink-0 items-center gap-1.5">
             <button
               type="button"
               onClick={() => {
@@ -106,47 +130,51 @@ export default function MindPage() {
               }}
               aria-pressed={savedOnly}
               aria-label={savedOnly ? "Show all articles" : "Show saved articles"}
-              className={`grid h-10 w-10 place-items-center rounded-full border transition ${
+              className={`grid h-9 w-9 place-items-center rounded-full transition ${
                 savedOnly
-                  ? "border-[var(--livv-pro-ink)] bg-[var(--livv-pro-ink)] text-[var(--livv-pro-bg)]"
-                  : "border-[var(--livv-pro-line)] text-[var(--livv-pro-muted)]"
+                  ? "bg-[rgb(var(--livv-ink))] text-[rgb(var(--livv-bg))]"
+                  : "bg-[color-mix(in_srgb,rgb(var(--livv-ink))_6%,transparent)] text-livv-muted"
               }`}
             >
-              <Bookmark size={16} fill={savedOnly ? "currentColor" : "none"} />
+              <Bookmark size={15} fill={savedOnly ? "currentColor" : "none"} />
             </button>
             <button
               type="button"
               onClick={() => setSearchOpen((v) => !v)}
               aria-expanded={searchOpen}
               aria-label={searchOpen ? "Close search" : "Search articles"}
-              className={`grid h-10 w-10 place-items-center rounded-full border transition ${
+              className={`grid h-9 w-9 place-items-center rounded-full transition ${
                 searchOpen
-                  ? "border-[var(--livv-pro-ink)] bg-[var(--livv-pro-ink)] text-[var(--livv-pro-bg)]"
-                  : "border-[var(--livv-pro-line)] text-[var(--livv-pro-muted)]"
+                  ? "bg-[rgb(var(--livv-ink))] text-[rgb(var(--livv-bg))]"
+                  : "bg-[color-mix(in_srgb,rgb(var(--livv-ink))_6%,transparent)] text-livv-muted"
               }`}
             >
-              {searchOpen ? <X size={16} /> : <Search size={16} />}
+              {searchOpen ? <X size={15} /> : <Search size={15} />}
             </button>
           </div>
         </header>
 
         {searchOpen ? (
-          <SearchField
-            value={query}
-            onChange={setQuery}
-            placeholder="Search titles and ideas"
-            aria-label="Search articles"
-            autoFocus
-            className="mt-4"
-          />
+          <div className="mb-4">
+            <SearchField
+              value={query}
+              onChange={setQuery}
+              placeholder="Search titles and ideas"
+              aria-label="Search articles"
+            />
+          </div>
         ) : null}
 
-        <nav
-          className="mt-5 -mx-5 flex gap-1 overflow-x-auto px-5 pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
-          aria-label="Article sections"
-        >
-          <DeskChip active={desk === "all" && !savedOnly} onClick={() => { setDesk("all"); setSavedOnly(false); }}>
-            All
+        {/* Desk chips — like Sports / Puzzles pills */}
+        <nav className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-4 scrollbar-none">
+          <DeskChip
+            active={desk === "all" && !savedOnly}
+            onClick={() => {
+              setDesk("all");
+              setSavedOnly(false);
+            }}
+          >
+            Top Stories
           </DeskChip>
           {DESKS.map((d) => (
             <DeskChip
@@ -171,6 +199,13 @@ export default function MindPage() {
           <EmptyState title="No matches" body="Try another search or clear the section filter." />
         ) : (
           <>
+            {/* Top Stories label */}
+            {!savedOnly && !query ? (
+              <h2 className="mb-3 text-[22px] font-bold tracking-[-0.03em] text-[#ff2d55] sm:text-[24px]">
+                {desk === "all" ? "Top Stories" : deskMeta(desk).label}
+              </h2>
+            ) : null}
+
             {featured ? (
               <FeaturedStory
                 article={featured}
@@ -179,89 +214,83 @@ export default function MindPage() {
               />
             ) : null}
 
+            {/* Secondary story cards — image right, text left */}
             {secondary.length > 0 ? (
-              <section className="mt-10 border-t border-[var(--livv-pro-line)] pt-8">
-                <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[var(--livv-pro-muted)]">
-                  More to read
-                </p>
-                <div className="mt-5 divide-y divide-[var(--livv-pro-line)]">
-                  {secondary.map((article, i) => (
-                    <SecondaryStory
-                      key={article.slug}
-                      article={article}
-                      index={i}
-                      saved={saved.includes(article.slug)}
-                      onToggleSave={() => toggleSave(article.slug)}
-                    />
-                  ))}
-                </div>
+              <section className="mt-2 divide-y divide-livv-border">
+                {secondary.map((article) => (
+                  <StoryRow
+                    key={article.slug}
+                    article={article}
+                    saved={saved.includes(article.slug)}
+                    onToggleSave={() => toggleSave(article.slug)}
+                  />
+                ))}
               </section>
             ) : null}
 
             {rest.length > 0 ? (
-              <section className="mt-4 divide-y divide-[var(--livv-pro-line)] border-t border-[var(--livv-pro-line)]">
+              <section className="mt-1 divide-y divide-livv-border border-t border-livv-border">
                 {rest.map((article) => (
-                  <TextStory key={article.slug} article={article} />
+                  <StoryRow
+                    key={article.slug}
+                    article={article}
+                    saved={saved.includes(article.slug)}
+                    onToggleSave={() => toggleSave(article.slug)}
+                    compact
+                  />
+                ))}
+              </section>
+            ) : null}
+
+            {!savedOnly && !query && desk === "all" && byDesk.length > 0 ? (
+              <section className="mt-10 space-y-8">
+                {byDesk.map(({ desk: d, articles }) => (
+                  <div key={d.id}>
+                    <div className="mb-3 flex items-center justify-between">
+                      <h2 className="text-[18px] font-bold tracking-[-0.02em] text-[rgb(var(--livv-ink))]">
+                        {d.label}
+                      </h2>
+                      <Link
+                        href={`/home/mind?desk=${d.id}`}
+                        className="text-[12px] font-semibold text-livv-muted"
+                      >
+                        See all
+                      </Link>
+                    </div>
+                    <div className="divide-y divide-livv-border rounded-2xl border border-livv-border overflow-hidden">
+                      {articles.slice(0, 3).map((article) => (
+                        <StoryRow
+                          key={article.slug}
+                          article={article}
+                          saved={saved.includes(article.slug)}
+                          onToggleSave={() => toggleSave(article.slug)}
+                          compact
+                          inCard
+                        />
+                      ))}
+                    </div>
+                  </div>
                 ))}
               </section>
             ) : null}
 
             {!savedOnly && !query && desk === "all" && savedArticles.length > 0 ? (
-              <section className="mt-12 border-t border-[var(--livv-pro-line)] pt-8">
-                <div className="flex items-end justify-between gap-3">
-                  <div>
-                    <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[var(--livv-pro-muted)]">
-                      Saved
-                    </p>
-                    <h2 className="mt-1 text-[22px] font-semibold tracking-[-0.03em] text-[var(--livv-pro-ink)]">
-                      For later.
-                    </h2>
-                  </div>
-                  <button
-                    type="button"
-                    onClick={() => setSavedOnly(true)}
-                    className="text-[12px] font-medium text-[var(--livv-pro-muted)] underline-offset-2 hover:underline"
-                  >
-                    View all
-                  </button>
-                </div>
-                <div className="mt-5 divide-y divide-[var(--livv-pro-line)] border-y border-[var(--livv-pro-line)]">
-                  {savedArticles.slice(0, 4).map((article) => (
-                    <TextStory key={article.slug} article={article} />
+              <section className="mt-10">
+                <h2 className="mb-3 text-[18px] font-bold tracking-[-0.02em] text-[rgb(var(--livv-ink))]">
+                  Saved
+                </h2>
+                <div className="divide-y divide-livv-border">
+                  {savedArticles.slice(0, 5).map((article) => (
+                    <StoryRow
+                      key={article.slug}
+                      article={article}
+                      saved
+                      onToggleSave={() => toggleSave(article.slug)}
+                      compact
+                    />
                   ))}
                 </div>
               </section>
-            ) : null}
-
-            {byDesk.length > 0 ? (
-              <div className="mt-12 space-y-12">
-                {byDesk.map(({ desk: d, articles }) => (
-                  <section key={d.id} className="border-t border-[var(--livv-pro-line)] pt-8">
-                    <div className="flex items-end justify-between gap-4">
-                      <div>
-                        <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[var(--livv-pro-muted)]">
-                          {d.label}
-                        </p>
-                        <h2 className="mt-1 text-[22px] font-semibold tracking-[-0.03em] text-[var(--livv-pro-ink)]">
-                          {d.line}
-                        </h2>
-                      </div>
-                      <button
-                        type="button"
-                        onClick={() => setDesk(d.id)}
-                        className="shrink-0 text-[12px] font-medium text-[var(--livv-pro-muted)] underline-offset-2 hover:underline"
-                      >
-                        See all
-                      </button>
-                    </div>
-                    <div className="mt-5 divide-y divide-[var(--livv-pro-line)] border-y border-[var(--livv-pro-line)]">
-                      {articles.slice(0, 3).map((article) => (
-                        <TextStory key={article.slug} article={article} />
-                      ))}
-                    </div>
-                  </section>
-                ))}
-              </div>
             ) : null}
           </>
         )}
@@ -277,16 +306,16 @@ function DeskChip({
 }: {
   active: boolean;
   onClick: () => void;
-  children: ReactNode;
+  children: React.ReactNode;
 }) {
   return (
     <button
       type="button"
       onClick={onClick}
-      className={`shrink-0 rounded-full px-3.5 py-2 text-[12px] font-medium transition ${
+      className={`shrink-0 rounded-full px-3.5 py-1.5 text-[13px] font-semibold transition ${
         active
-          ? "bg-[var(--livv-pro-ink)] text-[var(--livv-pro-bg)]"
-          : "text-[var(--livv-pro-muted)] hover:text-[var(--livv-pro-ink)]"
+          ? "bg-[rgb(var(--livv-ink))] text-[rgb(var(--livv-bg))]"
+          : "bg-[color-mix(in_srgb,rgb(var(--livv-ink))_8%,transparent)] text-[rgb(var(--livv-ink))]"
       }`}
     >
       {children}
@@ -304,88 +333,42 @@ function FeaturedStory({
   onToggleSave: () => void;
 }) {
   const meta = deskMeta(article.desk);
-  return (
-    <article className="mt-8">
-      <div className="relative overflow-hidden rounded-2xl border border-[var(--livv-pro-line)] bg-[var(--livv-pro-surface-2)]">
-        <div
-          className="relative flex min-h-[11.5rem] flex-col justify-end px-5 pb-5 pt-10 sm:min-h-[13rem] sm:px-6"
-          style={{
-            background: `linear-gradient(165deg, color-mix(in srgb, ${meta.hex} 22%, var(--livv-pro-surface-2)) 0%, var(--livv-pro-surface-2) 72%)`,
-          }}
-        >
-          <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[var(--livv-pro-muted)]">
-            Cover · {meta.label}
-          </p>
-          <Link href={`/home/mind/${article.slug}`} className="mt-3 block">
-            <h2 className="max-w-[20rem] text-[28px] font-semibold leading-[1.08] tracking-[-0.04em] text-[var(--livv-pro-ink)] sm:text-[32px]">
-              {article.title}
-            </h2>
-          </Link>
-        </div>
-        <div className="border-t border-[var(--livv-pro-line)] px-5 py-5 sm:px-6">
-          <p className="text-[15px] leading-relaxed text-[var(--livv-pro-muted)]">{article.hook}</p>
-          <div className="mt-5 flex items-center justify-between gap-3">
-            <Link
-              href={`/home/mind/${article.slug}`}
-              className="text-[13px] font-semibold text-[var(--livv-pro-ink)] underline-offset-4 hover:underline"
-            >
-              Read · {article.readMins} min
-            </Link>
-            <button
-              type="button"
-              onClick={onToggleSave}
-              aria-label={saved ? "Remove bookmark" : "Save article"}
-              aria-pressed={saved}
-              className="grid h-10 w-10 place-items-center rounded-full border border-[var(--livv-pro-line)] text-[var(--livv-pro-muted)]"
-            >
-              <Bookmark size={15} fill={saved ? "currentColor" : "none"} />
-            </button>
-          </div>
-        </div>
-      </div>
-    </article>
-  );
-}
+  const tint = deskTint(article.desk);
+  const accent = deskAccent(article.desk);
 
-function SecondaryStory({
-  article,
-  index,
-  saved,
-  onToggleSave,
-}: {
-  article: WikiArticle;
-  index: number;
-  saved: boolean;
-  onToggleSave: () => void;
-}) {
-  const meta = deskMeta(article.desk);
-  const large = index === 0;
   return (
-    <article className={`py-6 ${large ? "sm:py-7" : ""}`}>
-      <div className="flex items-start gap-3">
-        <div className="min-w-0 flex-1">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-[var(--livv-pro-muted)]">
-            {meta.label} · {article.readMins} min
-          </p>
-          <Link href={`/home/mind/${article.slug}`} className="mt-2 block">
-            <h3
-              className={`font-semibold leading-snug tracking-[-0.03em] text-[var(--livv-pro-ink)] ${
-                large ? "text-[22px] sm:text-[24px]" : "text-[17px]"
-              }`}
-            >
-              {article.title}
-            </h3>
-          </Link>
-          <p className={`mt-2 leading-relaxed text-[var(--livv-pro-muted)] ${large ? "text-[14px]" : "text-[13px]"}`}>
-            {article.hook}
+    <article className="overflow-hidden rounded-[20px] border border-livv-border bg-[color-mix(in_srgb,rgb(var(--livv-ink))_3%,transparent)]">
+      <Link href={`/home/mind/${article.slug}`} className="block">
+        <div
+          className={`relative aspect-[16/10] bg-gradient-to-br ${tint} px-5 pb-5 pt-6`}
+        >
+          <span
+            className="inline-block rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-[0.12em]"
+            style={{ background: `${accent}22`, color: accent }}
+          >
+            {meta.label}
+          </span>
+          <h3 className="mt-4 max-w-[20ch] text-[26px] font-bold leading-[1.15] tracking-[-0.035em] text-white sm:text-[30px]">
+            {article.title}
+          </h3>
+        </div>
+        <div className="px-4 py-3.5">
+          <p className="text-[14px] leading-snug text-livv-muted line-clamp-2">{article.hook}</p>
+          <p className="mt-2 text-[11px] text-livv-muted">
+            {meta.label} · {article.readMins} min read
           </p>
         </div>
+      </Link>
+      <div className="flex justify-end border-t border-livv-border px-2 py-1">
         <button
           type="button"
-          onClick={onToggleSave}
+          onClick={(e) => {
+            e.preventDefault();
+            onToggleSave();
+          }}
           aria-label={saved ? "Remove bookmark" : "Save article"}
           aria-pressed={saved}
-          className="mt-1 grid h-10 w-10 shrink-0 place-items-center rounded-full border border-[var(--livv-pro-line)] text-[var(--livv-pro-muted)]"
+          className="grid h-9 w-9 place-items-center rounded-full text-livv-muted"
         >
           <Bookmark size={15} fill={saved ? "currentColor" : "none"} />
         </button>
@@ -394,21 +377,67 @@ function SecondaryStory({
   );
 }
 
-function TextStory({ article }: { article: WikiArticle }) {
+function StoryRow({
+  article,
+  saved,
+  onToggleSave,
+  compact = false,
+  inCard = false,
+}: {
+  article: WikiArticle;
+  saved: boolean;
+  onToggleSave: () => void;
+  compact?: boolean;
+  inCard?: boolean;
+}) {
   const meta = deskMeta(article.desk);
+  const tint = deskTint(article.desk);
+  const accent = deskAccent(article.desk);
+
   return (
-    <article className="py-4">
-      <Link href={`/home/mind/${article.slug}`} className="block">
-        <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-[var(--livv-pro-muted)]">
-          {meta.label} · {article.readMins} min
+    <article className={`flex gap-3 ${inCard ? "px-3.5 py-3.5" : "py-4"}`}>
+      <div className="min-w-0 flex-1">
+        <p className="text-[11px] font-semibold text-livv-muted">
+          <span style={{ color: accent }}>{meta.label}</span>
+          <span className="text-livv-muted"> · {article.readMins} min</span>
         </p>
-        <h3 className="mt-1.5 text-[16px] font-semibold leading-snug tracking-[-0.02em] text-[var(--livv-pro-ink)]">
-          {article.title}
-        </h3>
-        <p className="mt-1.5 line-clamp-2 text-[13px] leading-relaxed text-[var(--livv-pro-muted)]">
-          {article.hook}
-        </p>
+        <Link href={`/home/mind/${article.slug}`} className="mt-1 block">
+          <h3
+            className={`font-bold leading-snug tracking-[-0.025em] text-[rgb(var(--livv-ink))] ${
+              compact ? "text-[15px]" : "text-[16px] sm:text-[17px]"
+            }`}
+          >
+            {article.title}
+          </h3>
+          {!compact ? (
+            <p className="mt-1.5 line-clamp-2 text-[13px] leading-snug text-livv-muted">
+              {article.hook}
+            </p>
+          ) : null}
+        </Link>
+      </div>
+      <Link
+        href={`/home/mind/${article.slug}`}
+        className={`relative shrink-0 overflow-hidden rounded-xl bg-gradient-to-br ${tint} ${
+          compact ? "h-[64px] w-[64px]" : "h-[72px] w-[72px] sm:h-[80px] sm:w-[80px]"
+        }`}
+        aria-hidden
+      >
+        <span
+          className="absolute bottom-1.5 left-1.5 text-[9px] font-bold uppercase tracking-wider text-white/70"
+        >
+          {meta.label.slice(0, 4)}
+        </span>
       </Link>
+      <button
+        type="button"
+        onClick={onToggleSave}
+        aria-label={saved ? "Remove bookmark" : "Save article"}
+        aria-pressed={saved}
+        className="mt-0.5 grid h-8 w-8 shrink-0 place-items-center self-start rounded-full text-livv-muted"
+      >
+        <Bookmark size={14} fill={saved ? "currentColor" : "none"} />
+      </button>
     </article>
   );
 }
@@ -416,8 +445,8 @@ function TextStory({ article }: { article: WikiArticle }) {
 function EmptyState({ title, body }: { title: string; body: string }) {
   return (
     <div className="mt-16 px-2 text-center">
-      <p className="text-[20px] font-semibold tracking-[-0.03em] text-[var(--livv-pro-ink)]">{title}</p>
-      <p className="mx-auto mt-2 max-w-[18rem] text-[13px] leading-relaxed text-[var(--livv-pro-muted)]">{body}</p>
+      <p className="text-[20px] font-semibold tracking-[-0.03em] text-[rgb(var(--livv-ink))]">{title}</p>
+      <p className="mx-auto mt-2 max-w-[18rem] text-[13px] leading-relaxed text-livv-muted">{body}</p>
     </div>
   );
 }
