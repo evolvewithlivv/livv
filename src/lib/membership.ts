@@ -12,19 +12,23 @@ export type TierDef = {
   perks: string[];
 };
 
+/**
+ * Paid tiers unlock depth: tools, protocols, downloads, programs.
+ * Spark stays a complete product. Cosmetics are side perks only.
+ */
 export const TIERS: TierDef[] = [
   {
     id: "spark",
     name: "Spark",
     price: "Free",
     cadence: "forever",
-    blurb: "The rooms. The daily page. Enough to start.",
+    blurb: "The full core system. Enough to build the habit.",
     multiplier: 1,
     perks: [
-      "Full Daily, Train, Mind, Health, and Progress",
-      "Photo identity across the app",
+      "Daily, Train, Mind, Health, and Progress",
+      "Photo identity and cloud-backed account",
       "Embers at 1x - redeem on Collection when ready",
-      `${EMBERS_PER_DOLLAR} Embers = $1 off (min ${MIN_REDEEM_EMBERS.toLocaleString()})`,
+      `${EMBERS_PER_DOLLAR} Embers = $1 off Collection (min ${MIN_REDEEM_EMBERS.toLocaleString()})`,
     ],
   },
   {
@@ -32,14 +36,15 @@ export const TIERS: TierDef[] = [
     name: "Rise",
     price: "$12",
     cadence: "/mo",
-    blurb: "Make LIVV yours. Earn Embers faster.",
+    blurb: "Unlock the Member Vault - protocols, tools, and downloads.",
     multiplier: 2,
     featured: true,
     perks: [
-      "Accent color customization",
+      "Member Vault access",
+      "7-day protocol packs with printable PDFs",
+      "Advanced Daily trackers and tools",
+      "Member-only Mind series",
       "Embers at 2x on standard awards",
-      "Rise membership on your profile",
-      "Same Collection redemption rate - faster earn path",
     ],
   },
   {
@@ -47,13 +52,14 @@ export const TIERS: TierDef[] = [
     name: "Apex",
     price: "$29",
     cadence: "/mo",
-    blurb: "Own the look of the system.",
+    blurb: "Full programs, deeper tools, and the complete Vault.",
     multiplier: 4,
     perks: [
       "Everything in Rise",
+      "4-week transformation programs",
+      "Progress Lab - patterns and weak-link insights",
+      "Meal plan builder and export packs",
       "Embers at 4x on standard awards",
-      "App themes: Midnight and Bone",
-      "Faster path to Collection credit",
     ],
   },
   {
@@ -61,13 +67,14 @@ export const TIERS: TierDef[] = [
     name: "Inner Circle",
     price: "$149",
     cadence: "/yr",
-    blurb: "The room most people will never be in.",
+    blurb: "The complete operating system - closest seat to LIVV.",
     multiplier: 6,
     perks: [
       "Everything in Apex",
       "Embers at 6x on standard awards",
-      "Exclusive Inner Circle profile mark",
-      "Fastest Ember path toward Collection",
+      "Collection early access when drops go live",
+      "Inner Circle mark on your profile",
+      "Best yearly rate for the full Vault",
     ],
   },
 ];
