@@ -27,8 +27,6 @@ import {
   type HealthDay,
 } from "@/lib/health";
 
-import { PageHero } from "@/components/layout/page-hero";
-
 const TOOLS = [
   {
     href: "/home/health/sleep",
@@ -96,20 +94,17 @@ export default function HealthPage() {
   return (
     <main className="livv-page min-h-full pb-20">
       <div className="mx-auto w-full max-w-xl px-5 pb-12 sm:px-6">
-        <PageHero
-          eyebrow="Health"
-          title="Build the baseline."
-          subtitle="Track what keeps you rested, fueled, moving, and capable. This is the foundation under everything else."
-          right={
-            <span className="flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[.16em] text-livv-muted">
-              <HeartPulse size={13} />
-              Baseline
-            </span>
-          }
-        />
+        <header className="pt-6">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-livv-muted">Health</p>
+          <h1 className="mt-2 max-w-[18ch] text-[30px] font-semibold leading-[1.1] tracking-[-0.045em] sm:text-[34px]">
+            The baseline that holds everything else.
+          </h1>
+          <p className="mt-3 max-w-[36ch] text-[14px] leading-relaxed text-livv-muted">
+            Sleep, fuel, movement, and calm. Small systems that compound.
+          </p>
+        </header>
 
-        {/* Today ring — card, not border-y strip */}
-        <section className="mt-10 rounded-[22px] border border-livv-border bg-[color-mix(in_srgb,rgb(var(--livv-ink))_2.5%,transparent)] px-5 py-6">
+        <section className="mt-10">
           <div className="flex items-center gap-5">
             <div
               className="grid h-[82px] w-[82px] shrink-0 place-items-center rounded-full"
@@ -134,7 +129,7 @@ export default function HealthPage() {
               <p className="mt-1.5 text-[11px] leading-relaxed text-livv-muted">
                 {completion.count === 4
                   ? "Baseline checked. Keep the standard."
-                  : "Log what is true — not what looks perfect."}
+                  : "Log what is true, not what looks perfect."}
               </p>
             </div>
           </div>
@@ -147,14 +142,13 @@ export default function HealthPage() {
           </div>
         </section>
 
-        {/* Check in */}
         <section className="mt-12">
           <SectionHead
             label="Check in"
             title="The four basics."
             sub="No schedule. Log each one when you actually do it."
           />
-          <div className="mt-5 overflow-hidden rounded-[22px] border border-livv-border">
+          <div className="mt-5 divide-y divide-livv-border border-t border-livv-border">
             <LogRow
               icon={<Moon size={16} />}
               label="Sleep"
@@ -175,7 +169,6 @@ export default function HealthPage() {
                 />
               }
             />
-            <div className="border-t border-livv-border" />
             <LogRow
               icon={<Droplets size={16} />}
               label="Water"
@@ -188,7 +181,6 @@ export default function HealthPage() {
                 />
               }
             />
-            <div className="border-t border-livv-border" />
             <LogRow
               icon={<Utensils size={16} />}
               label="Meals"
@@ -201,8 +193,7 @@ export default function HealthPage() {
                 />
               }
             />
-            <div className="border-t border-livv-border" />
-            <div className="flex items-center gap-4 px-4 py-4">
+            <div className="flex items-center gap-4 py-4">
               <IconBubble icon={<Footprints size={16} />} />
               <div className="min-w-0 flex-1">
                 <p className="text-[14px] font-semibold">Movement</p>
@@ -227,7 +218,6 @@ export default function HealthPage() {
           </div>
         </section>
 
-        {/* Tools */}
         <section className="mt-12">
           <div className="flex items-end justify-between gap-4">
             <SectionHead
@@ -239,16 +229,9 @@ export default function HealthPage() {
               {TOOLS.length} tools
             </span>
           </div>
-          <div className="mt-5 overflow-hidden rounded-[22px] border border-livv-border">
-            {TOOLS.map(({ href, label, detail, Icon }, i) => (
-              <Link
-                key={href}
-                href={href}
-                className={
-                  "group flex items-center gap-4 px-4 py-4 " +
-                  (i < TOOLS.length - 1 ? "border-b border-livv-border" : "")
-                }
-              >
+          <div className="mt-5 divide-y divide-livv-border border-t border-livv-border">
+            {TOOLS.map(({ href, label, detail, Icon }) => (
+              <Link key={href} href={href} className="group flex items-center gap-4 py-4">
                 <IconBubble icon={<Icon size={17} />} />
                 <span className="min-w-0 flex-1">
                   <span className="block text-[14px] font-semibold">{label}</span>
@@ -265,7 +248,6 @@ export default function HealthPage() {
           </div>
         </section>
 
-        {/* Seven day signal */}
         <section className="mt-12">
           <div className="flex items-end justify-between gap-4">
             <SectionHead
@@ -377,7 +359,7 @@ function LogRow({
   controls: ReactNode;
 }) {
   return (
-    <div className="flex items-center gap-3 px-4 py-4">
+    <div className="flex items-center gap-3 py-4">
       <IconBubble icon={icon} />
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2">
