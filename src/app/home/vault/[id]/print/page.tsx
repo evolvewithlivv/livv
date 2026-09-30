@@ -26,14 +26,13 @@ export default function VaultPrintPage() {
   }, []);
 
   useEffect(() => {
-    // Auto-open print dialog once content is ready and allowed
     if (!mod) return;
     if (!hasTier(tier, mod.minTier)) return;
     const t = window.setTimeout(() => {
       try {
         window.print();
       } catch {
-        /* user can print manually */
+        /* manual print */
       }
     }, 600);
     return () => window.clearTimeout(t);
@@ -58,8 +57,8 @@ export default function VaultPrintPage() {
   }
 
   return (
-    <main className="mx-auto max-w-[640px] bg-white px-8 py-10 text-black print:px-0 print:py-0">
-      <div className="no-print mb-6 flex gap-3 print:hidden">
+    <main className="mx-auto max-w-[640px] bg-white px-8 py-10 text-black">
+      <div className="mb-6 flex gap-3 print:hidden">
         <button
           type="button"
           onClick={() => window.print()}
@@ -101,18 +100,6 @@ export default function VaultPrintPage() {
       <p className="mt-12 border-t border-neutral-200 pt-4 text-[11px] text-neutral-400">
         evolvewithlivv.com · For personal use by LIVV members
       </p>
-
-      <style jsx global>{`
-        @media print {
-          .no-print,
-          .print\\:hidden {
-            display: none !important;
-          }
-          body {
-            background: white !important;
-          }
-        }
-      `}</style>
     </main>
   );
 }
