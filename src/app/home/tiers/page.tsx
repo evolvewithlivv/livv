@@ -89,15 +89,16 @@ export default function TiersPage() {
           <p className="mt-7 text-[10px] font-semibold uppercase tracking-[.2em] text-livv-muted">
             Membership
           </p>
-          <h1 className="mt-2 text-[34px] font-semibold leading-[.96] tracking-[-.055em] sm:text-[40px]">
-            Choose your tier.
+          <h1 className="mt-2 text-[32px] font-semibold leading-[1.02] tracking-[-.05em] sm:text-[38px]">
+            How far do you want the system to go with you?
           </h1>
           <p className="mt-3 max-w-[40ch] text-[13px] leading-6 text-livv-muted">
-            Unlock more of LIVV as you grow. Your tier travels with your account.
+            Spark is the full core. Rise and above open the Vault: protocols, tools, and downloads.
+            Your tier travels with your account.
           </p>
         </header>
 
-        <section className="mt-8 rounded-[22px] border border-livv-accent/30 bg-livv-accent-soft/40 px-5 py-4">
+        <section className="mt-8 border-y border-livv-border py-5">
           <div className="flex items-center justify-between gap-3">
             <div>
               <p className="text-[10px] font-semibold uppercase tracking-[.16em] text-livv-muted">
@@ -126,7 +127,7 @@ export default function TiersPage() {
           )}
         </section>
 
-        <section className="mt-8 space-y-4">
+        <section className="mt-8 space-y-6">
           {TIERS.map((tier) => {
             const Icon = TIER_ICONS[tier.id];
             const isCurrent = tier.id === effectiveTier;
@@ -137,17 +138,15 @@ export default function TiersPage() {
               <article
                 key={tier.id}
                 className={
-                  "overflow-hidden rounded-[22px] border px-5 py-5 transition " +
-                  (isCurrent
-                    ? "border-livv-accent bg-[color-mix(in_srgb,rgb(var(--livv-accent))_8%,transparent)]"
-                    : "border-livv-border bg-[color-mix(in_srgb,rgb(var(--livv-ink))_2%,transparent)]")
+                  "border-t border-livv-border pt-5 " +
+                  (isCurrent ? "" : "")
                 }
               >
                 <div className="flex items-start justify-between gap-3">
                   <div className="flex min-w-0 items-start gap-3">
                     <span
                       className={
-                        "grid h-10 w-10 shrink-0 place-items-center rounded-2xl border " +
+                        "grid h-10 w-10 shrink-0 place-items-center rounded-full border " +
                         (isCurrent
                           ? "border-livv-accent/40 bg-livv-accent-soft text-livv-accent"
                           : "border-livv-border text-livv-muted")
@@ -159,13 +158,13 @@ export default function TiersPage() {
                       <div className="flex flex-wrap items-center gap-2">
                         <h2 className="text-[17px] font-semibold tracking-[-.03em]">{tier.name}</h2>
                         {isCurrent && (
-                          <span className="rounded-full border border-livv-accent/40 bg-livv-accent-soft px-2 py-0.5 text-[9px] font-bold uppercase tracking-[.12em] text-livv-accent">
-                            Your tier
+                          <span className="text-[9px] font-bold uppercase tracking-[.12em] text-livv-accent">
+                            Current
                           </span>
                         )}
                         {tier.featured && !isCurrent && (
-                          <span className="rounded-full border border-livv-border px-2 py-0.5 text-[9px] font-bold uppercase tracking-[.12em] text-livv-muted">
-                            Popular
+                          <span className="text-[9px] font-bold uppercase tracking-[.12em] text-livv-muted">
+                            Most chosen
                           </span>
                         )}
                       </div>
@@ -210,7 +209,7 @@ export default function TiersPage() {
                       disabled={billingBusy}
                       className="livv-tier-unlock flex w-full items-center justify-center gap-2 rounded-full py-3.5 text-[12px] font-semibold uppercase tracking-[.12em] disabled:opacity-50"
                     >
-                      {billingBusy ? "Opening checkout..." : `Unlock ${tier.name}`}
+                      {billingBusy ? "Opening checkout..." : `Continue with ${tier.name}`}
                       <ArrowUpRight size={14} />
                     </button>
                   ) : null}
