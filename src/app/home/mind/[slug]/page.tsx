@@ -117,9 +117,9 @@ export default function MindArticlePage() {
   const markDone = () => {
     if (done) return;
     logCustomAction({
+      title: `Read: ${article.title}`,
+      pillar: "Mind",
       size: "small",
-      label: `Read: ${article.title}`,
-      note: article.move,
     });
     feedback("tick");
     setDone(true);
