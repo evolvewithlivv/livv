@@ -83,7 +83,6 @@ export default function ProfilePage() {
     }
   };
 
-  /** Render identity card → iOS share sheet (Save Image) or download PNG. */
   const shareProfileCard = async () => {
     if (sharing) return;
     setSharing(true);
@@ -130,7 +129,7 @@ export default function ProfilePage() {
           : "Profile card saved to your device.",
       );
     } catch {
-      setStatus("Couldn’t create the profile card.");
+      setStatus("Could not create the profile card.");
     } finally {
       setSharing(false);
     }
@@ -165,7 +164,6 @@ export default function ProfilePage() {
           }
         />
 
-        {/* Identity */}
         <section className="mt-8 overflow-hidden rounded-[22px] border border-livv-border bg-[color-mix(in_srgb,rgb(var(--livv-ink))_2.5%,transparent)]">
           <div className="px-5 pb-6 pt-7 text-center">
             <button
@@ -181,7 +179,6 @@ export default function ProfilePage() {
                 className="profile-avatar"
                 showTierRing
               />
-              {/* High-contrast edit chip — readable on bone, light, and dark */}
               <span
                 className="absolute bottom-0.5 right-0.5 grid h-8 w-8 place-items-center rounded-full border-2 border-[var(--livv-pro-surface)] bg-[var(--livv-pro-ink)] text-[var(--livv-pro-bg)] shadow-[0_2px_8px_rgba(0,0,0,.28)]"
                 aria-hidden
@@ -259,7 +256,6 @@ export default function ProfilePage() {
           </div>
         </section>
 
-        {/* Embers */}
         <section className="mt-5 rounded-[22px] border border-livv-border bg-[color-mix(in_srgb,rgb(var(--livv-ink))_2.5%,transparent)] px-5 py-5">
           <div className="flex items-center justify-between gap-4">
             <div className="min-w-0">
@@ -285,7 +281,6 @@ export default function ProfilePage() {
           </div>
         </section>
 
-        {/* Membership */}
         <section className="mt-3 rounded-[22px] border border-livv-border bg-[color-mix(in_srgb,rgb(var(--livv-ink))_2.5%,transparent)] px-5 py-5">
           <div className="flex items-center justify-between gap-4">
             <div className="min-w-0">
@@ -296,7 +291,7 @@ export default function ProfilePage() {
                 {tierDef.name}
               </p>
               <p className="mt-1 max-w-[34ch] text-[12px] leading-relaxed text-livv-muted">
-                Access to the parts of LIVV you have earned or purchased.
+                Core app is free. Vault tools unlock with Rise and above.
               </p>
             </div>
             <Link
@@ -309,7 +304,28 @@ export default function ProfilePage() {
           </div>
         </section>
 
-        {/* Record */}
+        <section className="mt-3">
+          <Link
+            href="/home/vault"
+            className="flex items-center justify-between gap-4 rounded-[22px] border border-livv-border bg-[color-mix(in_srgb,rgb(var(--livv-ink))_2.5%,transparent)] px-5 py-5 transition hover:border-[color-mix(in_srgb,rgb(var(--livv-ink))_18%,transparent)]"
+          >
+            <div>
+              <p className="text-[10px] font-semibold uppercase tracking-[.18em] text-livv-muted">
+                Member Vault
+              </p>
+              <p className="mt-1.5 text-[17px] font-semibold tracking-[-.02em]">
+                Protocols, tools, downloads
+              </p>
+              <p className="mt-1 text-[12px] text-livv-muted">
+                The deeper half of LIVV. Unlock with Rise.
+              </p>
+            </div>
+            <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-livv-border text-livv-muted">
+              <ChevronRight size={16} />
+            </span>
+          </Link>
+        </section>
+
         <section className="mt-3">
           <Link
             href="/home/progress"
@@ -320,7 +336,7 @@ export default function ProfilePage() {
                 The record
               </p>
               <p className="mt-1.5 text-[17px] font-semibold tracking-[-.02em]">
-                How you're moving
+                How you are moving
               </p>
               <p className="mt-1 text-[12px] text-livv-muted">
                 Actions, streaks, and the areas you touch.
