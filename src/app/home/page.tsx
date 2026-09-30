@@ -13,7 +13,6 @@ import { dailySummary } from "@/lib/daily";
 import { quoteForSession, type Quote } from "@/lib/quotes";
 import { embersFromAction } from "@/lib/embers";
 
-/** Each area routes to a distinct product surface — no shared dump destination. */
 const AREAS = [
   {
     id: "body",
@@ -89,7 +88,6 @@ export default function HomePage() {
     const result = checkInRecord();
     if (result.already) return;
     feedback("checkin");
-    // Base only — server applies tier multiplier. Do not pre-multiply.
     const base = embersFromAction("checkin");
     const bonus =
       result.emberBonus && [4, 6, 8, 10, 12, 15].includes(result.emberBonus)
@@ -104,41 +102,36 @@ export default function HomePage() {
   return (
     <main className="livv-page min-h-full pb-24">
       <div className="mx-auto w-full max-w-xl px-5 pb-12 sm:px-6">
-        <header className="livv-page-hero">
-          <div className="livv-page-hero-main">
-            <p className="livv-page-eyebrow">Today</p>
-            <h1 className="livv-page-title" style={{ marginTop: "0.5rem", maxWidth: "34rem" }}>
-              {greeting}, {displayName}.
-            </h1>
-          </div>
+        <header className="pt-6">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-livv-muted">Today</p>
+          <h1 className="mt-2 text-[30px] font-semibold tracking-[-0.045em] text-[rgb(var(--livv-ink))] sm:text-[34px]">
+            {greeting}, {displayName}.
+          </h1>
         </header>
 
         <section className="mt-10">
-          <p className="text-[10px] font-semibold uppercase tracking-[.2em] text-livv-muted">
-            Perspective
-          </p>
           {quote && (
             <>
-              <blockquote className="mt-4 max-w-[39ch] text-[22px] font-medium leading-[1.28] tracking-[-.025em]">
+              <blockquote className="max-w-[34ch] text-[24px] font-medium leading-[1.25] tracking-[-0.03em] text-[rgb(var(--livv-ink))]">
                 “{quote.text}”
               </blockquote>
-              <p className="mt-5 text-[12px] font-semibold">{quote.author}</p>
+              <p className="mt-5 text-[12px] font-semibold text-[rgb(var(--livv-ink))]">{quote.author}</p>
               <p className="mt-1 text-[10px] text-livv-muted">{quote.source}</p>
             </>
           )}
         </section>
 
-        <section className="mt-12 rounded-[22px] border border-livv-border bg-[color-mix(in_srgb,rgb(var(--livv-ink))_2.5%,transparent)] px-5 py-5">
+        <section className="mt-12">
           <div className="flex items-center justify-between gap-4">
-            <div>
-              <p className="text-[10px] font-semibold uppercase tracking-[.18em] text-livv-muted">
-                Life areas
+            <div className="min-w-0">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-livv-muted">
+                Progress
               </p>
-              <p className="mt-1.5 text-[25px] font-semibold tracking-[-.04em]">
-                {done} / {AREAS.length}
-              </p>
-              <p className="mt-1 text-[11px] text-livv-muted">
-                Touched today across the six areas
+              <p className="mt-1.5 text-[15px] text-livv-muted">
+                <span className="font-semibold tabular-nums text-[rgb(var(--livv-ink))]">
+                  {done}/{AREAS.length}
+                </span>{" "}
+                areas · {rec.streak} day streak · {xp}% to next level
               </p>
             </div>
             <button
@@ -147,7 +140,7 @@ export default function HomePage() {
               disabled={checkedIn}
               className={
                 checkedIn
-                  ? "flex min-h-10 shrink-0 items-center gap-2 rounded-full border border-livv-border bg-transparent px-4 text-[11px] font-semibold text-livv-muted"
+                  ? "flex min-h-10 shrink-0 items-center gap-2 rounded-full border border-livv-border px-4 text-[11px] font-semibold text-livv-muted"
                   : "flex min-h-10 shrink-0 items-center gap-2 rounded-full bg-livv-ink px-4 text-[11px] font-semibold text-livv-bg"
               }
             >
@@ -155,44 +148,32 @@ export default function HomePage() {
               {checkedIn ? "Checked in" : "Check in"}
             </button>
           </div>
-          <div className="mt-5 h-1.5 overflow-hidden rounded-full bg-livv-border">
+          <div className="mt-4 h-1 overflow-hidden rounded-full bg-livv-border">
             <div
               className="h-full rounded-full bg-livv-accent transition-all"
               style={{ width: `${(done / AREAS.length) * 100}%` }}
             />
           </div>
-          <div className="mt-3 flex items-center justify-between text-[10px] text-livv-muted">
-            <span>{rec.streak} day streak</span>
-            <span>{xp}% toward next level</span>
-          </div>
         </section>
 
         <section className="mt-12">
-          <div className="mb-5 flex items-end justify-between gap-4">
+          <div className="mb-2 flex items-end justify-between gap-4">
             <div>
-              <p className="text-[10px] font-semibold uppercase tracking-[.18em] text-livv-muted">
-                Life
-              </p>
-              <h2 className="mt-1.5 text-[24px] font-semibold tracking-[-.04em]">
-                Six areas. One life.
-              </h2>
+              <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-livv-muted">Life</p>
+              <h2 className="mt-1.5 text-[24px] font-semibold tracking-[-0.04em]">Six areas. One life.</h2>
             </div>
             <Link href="/home/progress" className="text-[11px] font-semibold text-livv-muted">
               Progress
             </Link>
           </div>
-          <div className="overflow-hidden rounded-[22px] border border-livv-border">
+          <div className="divide-y divide-livv-border border-t border-livv-border">
             {AREAS.map((area, i) => {
               const isDone = complete(area.id);
-              const last = i === AREAS.length - 1;
               return (
                 <Link
                   key={area.id}
                   href={area.href}
-                  className={
-                    "group flex items-center gap-4 px-4 py-4 " +
-                    (last ? "" : "border-b border-livv-border")
-                  }
+                  className="group flex items-center gap-4 py-4"
                 >
                   <span
                     className={
@@ -226,16 +207,14 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section className="mt-12 pb-2">
+        <section className="mt-12 border-t border-livv-border pt-8 pb-2">
           <div className="flex items-start justify-between gap-4">
             <div>
-              <p className="text-[10px] font-semibold uppercase tracking-[.18em] text-livv-muted">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-livv-muted">
                 Next move
               </p>
-              <h2 className="mt-1.5 text-[23px] font-semibold tracking-[-.035em]">
-                {loop.move.title}
-              </h2>
-              <p className="mt-2 max-w-[38ch] text-[12px] leading-relaxed text-livv-muted">
+              <h2 className="mt-1.5 text-[23px] font-semibold tracking-[-0.035em]">{loop.move.title}</h2>
+              <p className="mt-2 max-w-[38ch] text-[13px] leading-relaxed text-livv-muted">
                 {loop.move.reason}
               </p>
             </div>
