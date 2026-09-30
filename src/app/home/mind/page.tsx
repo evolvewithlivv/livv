@@ -26,14 +26,13 @@ function persistSaved(slugs: string[]) {
   }
 }
 
-/** Soft desk color for story art blocks (no external images). */
 function deskTint(desk: WikiDesk): string {
   const map: Record<WikiDesk, string> = {
     body: "from-[#1a3a2a] to-[#0d1f16]",
     mind: "from-[#2a1a3a] to-[#140d1f]",
     career: "from-[#1a2a3a] to-[#0d1520]",
-    money: "from-[#2a2a14] to-[#1a1a0a]",
-    people: "from-[#3a1a24] to-[#1f0d14]",
+    finance: "from-[#2a2a14] to-[#1a1a0a]",
+    social: "from-[#3a1a24] to-[#1f0d14]",
     system: "from-[#1a2a2a] to-[#0d1818]",
   };
   return map[desk] || "from-[#1a1a1a] to-[#0a0a0a]";
@@ -44,8 +43,8 @@ function deskAccent(desk: WikiDesk): string {
     body: "#3ecf8e",
     mind: "#b794f6",
     career: "#63b3ed",
-    money: "#f6e05e",
-    people: "#fc8181",
+    finance: "#f6e05e",
+    social: "#fc8181",
     system: "#4fd1c5",
   };
   return map[desk] || "#a0aec0";
@@ -113,7 +112,6 @@ export default function MindPage() {
   return (
     <main className="livv-page min-h-full pb-24">
       <div className="mx-auto w-full max-w-[42rem] px-4 pt-4 sm:px-6">
-        {/* Header — Today-style */}
         <header className="flex items-center justify-between gap-3 pb-3">
           <div>
             <h1 className="text-[28px] font-bold tracking-[-0.04em] text-[rgb(var(--livv-ink))] sm:text-[32px]">
@@ -165,7 +163,6 @@ export default function MindPage() {
           </div>
         ) : null}
 
-        {/* Desk chips — like Sports / Puzzles pills */}
         <nav className="-mx-1 flex gap-2 overflow-x-auto px-1 pb-4 scrollbar-none">
           <DeskChip
             active={desk === "all" && !savedOnly}
@@ -199,7 +196,6 @@ export default function MindPage() {
           <EmptyState title="No matches" body="Try another search or clear the section filter." />
         ) : (
           <>
-            {/* Top Stories label */}
             {!savedOnly && !query ? (
               <h2 className="mb-3 text-[22px] font-bold tracking-[-0.03em] text-[#ff2d55] sm:text-[24px]">
                 {desk === "all" ? "Top Stories" : deskMeta(desk).label}
@@ -214,7 +210,6 @@ export default function MindPage() {
               />
             ) : null}
 
-            {/* Secondary story cards — image right, text left */}
             {secondary.length > 0 ? (
               <section className="mt-2 divide-y divide-livv-border">
                 {secondary.map((article) => (
@@ -257,7 +252,7 @@ export default function MindPage() {
                         See all
                       </Link>
                     </div>
-                    <div className="divide-y divide-livv-border rounded-2xl border border-livv-border overflow-hidden">
+                    <div className="divide-y divide-livv-border overflow-hidden rounded-2xl border border-livv-border">
                       {articles.slice(0, 3).map((article) => (
                         <StoryRow
                           key={article.slug}
@@ -339,9 +334,7 @@ function FeaturedStory({
   return (
     <article className="overflow-hidden rounded-[20px] border border-livv-border bg-[color-mix(in_srgb,rgb(var(--livv-ink))_3%,transparent)]">
       <Link href={`/home/mind/${article.slug}`} className="block">
-        <div
-          className={`relative aspect-[16/10] bg-gradient-to-br ${tint} px-5 pb-5 pt-6`}
-        >
+        <div className={`relative aspect-[16/10] bg-gradient-to-br ${tint} px-5 pb-5 pt-6`}>
           <span
             className="inline-block rounded-full px-2.5 py-0.5 text-[10px] font-bold uppercase tracking-[0.12em]"
             style={{ background: `${accent}22`, color: accent }}
@@ -353,7 +346,7 @@ function FeaturedStory({
           </h3>
         </div>
         <div className="px-4 py-3.5">
-          <p className="text-[14px] leading-snug text-livv-muted line-clamp-2">{article.hook}</p>
+          <p className="line-clamp-2 text-[14px] leading-snug text-livv-muted">{article.hook}</p>
           <p className="mt-2 text-[11px] text-livv-muted">
             {meta.label} · {article.readMins} min read
           </p>
@@ -423,9 +416,7 @@ function StoryRow({
         }`}
         aria-hidden
       >
-        <span
-          className="absolute bottom-1.5 left-1.5 text-[9px] font-bold uppercase tracking-wider text-white/70"
-        >
+        <span className="absolute bottom-1.5 left-1.5 text-[9px] font-bold uppercase tracking-wider text-white/70">
           {meta.label.slice(0, 4)}
         </span>
       </Link>
