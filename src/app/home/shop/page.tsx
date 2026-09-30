@@ -2,15 +2,13 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { Flame, ShoppingBag } from "lucide-react";
-import { PageHero } from "@/components/layout/page-hero";
+import { Flame } from "lucide-react";
 import { loadIdentity } from "@/lib/identity";
 import {
   EMBERS_PER_DOLLAR,
   MIN_REDEEM_EMBERS,
   MAX_CREDIT_DOLLARS,
   REDEEM_RULES_COPY,
-  formatEmberValue,
   embersToDollars,
 } from "@/lib/ember-economy";
 
@@ -30,19 +28,19 @@ export default function ShopPage() {
   return (
     <main className="livv-page min-h-full text-livv-ink">
       <div className="mx-auto w-full max-w-2xl px-5 pb-12 pt-6 sm:px-6">
-        <PageHero
-          eyebrow="LIVV / Shop"
-          title="Wear the standard."
-          subtitle="The physical side of LIVV. Earn Embers in the app. Redeem them here when Collection drops."
-          right={
-            <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full text-livv-muted">
-              <ShoppingBag size={19} strokeWidth={1.7} />
-            </div>
-          }
-        />
+        <header className="pt-2">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-livv-muted">
+            Collection
+          </p>
+          <h1 className="mt-2 max-w-[14ch] text-[30px] font-semibold leading-[1.08] tracking-[-0.045em] sm:text-[34px]">
+            Wear the standard.
+          </h1>
+          <p className="mt-3 max-w-[36ch] text-[14px] leading-relaxed text-livv-muted">
+            Physical goods from LIVV. Earn Embers in the app. Redeem when Collection drops.
+          </p>
+        </header>
 
-        {/* Ember wallet */}
-        <section className="mt-8 rounded-[22px] border border-livv-border bg-[color-mix(in_srgb,rgb(var(--livv-ink))_2.5%,transparent)] px-5 py-5">
+        <section className="mt-10">
           <div className="flex items-start gap-3">
             <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-livv-border text-livv-accent">
               <Flame size={18} />
@@ -61,7 +59,7 @@ export default function ShopPage() {
               </p>
             </div>
           </div>
-          <div className="mt-4 h-1.5 overflow-hidden rounded-full bg-livv-border">
+          <div className="mt-4 h-1 overflow-hidden rounded-full bg-livv-border">
             <div
               className="h-full rounded-full bg-livv-accent transition-all"
               style={{ width: `${towardMin}%` }}
@@ -74,46 +72,25 @@ export default function ShopPage() {
           </p>
         </section>
 
-        <section className="mt-8 border-y border-livv-border py-12 text-center">
+        <section className="mt-12 border-t border-livv-border pt-10 text-center">
           <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-livv-muted">
             Collection 001
           </p>
-          <h2 className="mt-2 text-2xl font-semibold tracking-[-0.03em]">
-            Nothing to sell yet.
-          </h2>
-          <p className="mx-auto mt-3 max-w-sm text-[13px] leading-relaxed text-livv-muted">
-            LIVV only lists products when they are actually available. When Collection drops,
-            Embers apply at checkout — not as cash, not as giveaways.
+          <h2 className="mt-3 text-[26px] font-semibold tracking-[-0.03em]">Nothing to sell yet.</h2>
+          <p className="mx-auto mt-3 max-w-[32ch] text-[13px] leading-relaxed text-livv-muted">
+            When pieces drop, they live here. Embers convert to credit at{" "}
+            {EMBERS_PER_DOLLAR} Embers per dollar (max ${MAX_CREDIT_DOLLARS}).
+          </p>
+          <p className="mx-auto mt-6 max-w-[40ch] text-[11px] leading-relaxed text-livv-muted">
+            {REDEEM_RULES_COPY}
           </p>
         </section>
 
-        <section className="mt-8 rounded-[22px] border border-livv-border px-5 py-5">
-          <p className="text-[10px] font-semibold uppercase tracking-[.18em] text-livv-muted">
-            Redemption rules
-          </p>
-          <ul className="mt-4 space-y-3">
-            {REDEEM_RULES_COPY.map((line) => (
-              <li key={line} className="flex gap-2.5 text-[12px] leading-5 text-livv-muted">
-                <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-livv-accent" />
-                <span>{line}</span>
-              </li>
-            ))}
-          </ul>
-          <p className="mt-5 text-[11px] leading-relaxed text-livv-muted">
-            Higher membership tiers earn Embers faster. The burn rate is the same for everyone so
-            discounts stay honest.
-          </p>
-          <Link
-            href="/home/tiers"
-            className="mt-4 inline-flex text-[11px] font-semibold text-livv-accent"
-          >
-            View membership tiers →
+        <section className="mt-10 pb-4 text-center">
+          <Link href="/home/tiers" className="text-[12px] font-semibold text-livv-muted underline-offset-4 hover:underline">
+            Membership accelerates Embers
           </Link>
         </section>
-
-        <p className="mt-7 text-center text-[9px] uppercase tracking-[0.2em] text-livv-muted">
-          Built to evolve with you · Max ${MAX_CREDIT_DOLLARS} Ember credit per order
-        </p>
       </div>
     </main>
   );
