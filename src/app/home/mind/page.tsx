@@ -25,7 +25,7 @@ export default function MindPage() {
         </header>
 
         <section className="mt-12 overflow-hidden border border-livv-border bg-[color-mix(in_srgb,rgb(var(--livv-ink))_2.5%,transparent)]">
-          <div className="aspect-[1.55] bg-[radial-gradient(circle_at_75%_25%,color-mix(in_srgb,rgb(var(--livv-accent))_28%,transparent),transparent_48%),linear-gradient(145deg,color-mix(in_srgb,rgb(var(--livv-ink))_9%,transparent),transparent)]" />
+          <div className="aspect-[1.55] bg-[color-mix(in_srgb,rgb(var(--livv-ink))_8%,transparent)]" />
           <div className="px-5 pb-6 pt-6 sm:px-7 sm:pb-8">
             <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-livv-accent">Featured</p>
             <h2 className="mt-3 max-w-[18ch] text-[27px] font-semibold leading-[1.05] tracking-[-0.045em]">The point is not to know more.</h2>
