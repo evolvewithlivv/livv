@@ -1,13 +1,10 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { ArrowLeft, Download, Lock } from "lucide-react";
-import { getEffectiveTier, hydrateServerEntitlement } from "@/lib/billing";
-import { hasTier } from "@/lib/membership";
 import { moduleById } from "@/lib/vault";
-import type { LivvTier } from "@/lib/identity";
 
 export default function VaultModulePage() {
   const params = useParams();
@@ -19,15 +16,6 @@ export default function VaultModulePage() {
         : "";
 
   const mod = useMemo(() => (id ? moduleById(id) : null), [id]);
-  const [tier, setTier] = useState<LivvTier>("spark");
-
-  useEffect(() => {
-    const sync = () => setTier(getEffectiveTier());
-    sync();
-    void hydrateServerEntitlement().then(sync);
-    window.addEventListener("livv-billing", sync);
-    return () => window.removeEventListener("livv-billing", sync);
-  }, []);
 
   if (!mod) {
     return (
@@ -40,35 +28,6 @@ export default function VaultModulePage() {
     );
   }
 
-  const allowed = hasTier(tier, mod.minTier);
-
-  if (!allowed) {
-    return (
-      <main className="livv-page min-h-full pb-24">
-        <div className="mx-auto w-full max-w-xl px-5 pt-6">
-          <Link
-            href="/home/vault"
-            className="inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-[0.16em] text-livv-muted"
-          >
-            <ArrowLeft size={12} /> Vault
-          </Link>
-          <div className="mt-10 rounded-[22px] border border-livv-border px-5 py-8 text-center">
-            <Lock size={22} className="mx-auto text-livv-muted" />
-            <h1 className="mt-4 text-[22px] font-semibold tracking-[-0.03em]">{mod.title}</h1>
-            <p className="mt-2 text-[13px] text-livv-muted">
-              Requires {mod.minTier === "apex" ? "Apex" : "Rise"} or higher.
-            </p>
-            <Link
-              href="/home/tiers"
-              className="mt-6 inline-flex rounded-full bg-[rgb(var(--livv-ink))] px-6 py-3 text-[13px] font-semibold text-[rgb(var(--livv-bg))]"
-            >
-              View tiers
-            </Link>
-          </div>
-        </div>
-      </main>
-    );
-  }
 
   return (
     <main className="livv-page min-h-full pb-24">
