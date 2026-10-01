@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { ArrowRight, Check, ChevronRight, Plus } from "lucide-react";
+import { ArrowRight, Check, Plus } from "lucide-react";
 import { addEmbers, loadIdentity, type Identity } from "@/lib/identity";
 import { checkInRecord, isCheckedInToday, loadRecord, type LivvRecord } from "@/lib/record";
 import { dailyPillarStatus } from "@/lib/command";
@@ -12,44 +12,7 @@ import { dailySummary } from "@/lib/daily";
 import { quoteForSession, type Quote } from "@/lib/quotes";
 import { embersFromAction } from "@/lib/embers";
 
-const AREAS = [
-  {
-    id: "body",
-    label: "Body",
-    href: "/home/train",
-    description: "Train, recover, move.",
-  },
-  {
-    id: "mind",
-    label: "Mind",
-    href: "/home/mind",
-    description: "Read, reflect, learn.",
-  },
-  {
-    id: "career",
-    label: "Work",
-    href: "/home/daily",
-    description: "Priorities, focus, and follow-through.",
-  },
-  {
-    id: "finance",
-    label: "Money",
-    href: "/home/mind?desk=finance",
-    description: "Decisions that protect and grow resources.",
-  },
-  {
-    id: "home",
-    label: "Home",
-    href: "/home/health",
-    description: "Sleep, fuel, space, and baseline health.",
-  },
-  {
-    id: "capability",
-    label: "Capability",
-    href: "/home/health/dictionary",
-    description: "Language and principles that change how you act.",
-  },
-] as const;
+
 
 export default function HomePage() {
   const [rec, setRec] = useState<LivvRecord | null>(null);
@@ -69,15 +32,10 @@ export default function HomePage() {
     return () => events.forEach((e) => window.removeEventListener(e, pull));
   }, []);
 
-  const status = useMemo(() => (rec ? dailyPillarStatus(rec) : []), [rec]);
   const loop = useMemo(() => (rec ? buildBehaviorLoop(rec, new Date()) : null), [rec]);
   if (!rec || !me || !loop) return <main className="min-h-dvh" />;
 
   const checkedIn = isCheckedInToday(rec);
-  const complete = (id: string) =>
-    id === "life" ? checkedIn : Boolean(status.find((x) => x.id === id)?.done);
-  const done = AREAS.filter((x) => complete(x.id)).length;
-  const xp = Math.min(100, Math.round((rec.currentXp / Math.max(rec.xpToNext, 1)) * 100));
   const displayName = me.displayName || "there";
   const hour = new Date().getHours();
   const greeting = hour < 12 ? "Good morning" : hour < 17 ? "Good afternoon" : "Good evening";
@@ -198,6 +156,57 @@ export default function HomePage() {
                 </Link>
               );
             })}
+          </div>
+        </section>
+
+        <section className="mt-12 border-t border-livv-border pt-8 pb-2">
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-livv-muted">
+                Next move
+              </p>
+              <h2 className="mt-1.5 text-[23px] font-semibold tracking-[-0.035em]">{loop.move.title}</h2>
+              <p className="mt-2 max-w-[38ch] text-[13px] leading-relaxed text-livv-muted">
+                {loop.move.reason}
+              </p>
+            </div>
+            <Link
+              href={loop.move.href}
+              className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-livv-border"
+              aria-label={loop.move.title}
+            >
+              <ArrowRight size={16} />
+            </Link>
+          </div>
+        </section>
+      </div>
+    </main>
+  );
+}        <section className="mt-12">
+          <div className="flex items-center justify-between gap-4">
+            <div className="min-w-0">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-livv-muted">
+                Today
+              </p>
+              <p className="mt-1.5 text-[15px] text-livv-muted">
+                <span className="font-semibold tabular-nums text-[rgb(var(--livv-ink))]">
+                  {rec.streak}
+                </span>{" "}day streak
+              </p>
+            </div>
+            <button
+              type="button"
+              onClick={checkIn}
+              disabled={checkedIn}
+              className={
+                checkedIn
+                  ? "flex min-h-10 shrink-0 items-center gap-2 rounded-full border border-livv-border px-4 text-[11px] font-semibold text-livv-muted"
+                  : "flex min-h-10 shrink-0 items-center gap-2 rounded-full bg-livv-ink px-4 text-[11px] font-semibold text-livv-bg"
+              }
+            >
+              {checkedIn ? <Check size={14} /> : <Plus size={14} />}
+              {checkedIn ? "Checked in" : "Check in"}
+            </button>
           </div>
         </section>
 
