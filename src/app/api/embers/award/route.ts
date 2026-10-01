@@ -62,8 +62,7 @@ export async function POST(req: NextRequest) {
     return json({
       awarded: Number(row?.awarded || 0),
       total: Number(row?.total || 0),
-      tier: String(row?.tier || "spark"),
-      multiplier: Number(row?.multiplier || 1),
+      multiplier: 1,
     });
   } catch (error) {
     console.error("[embers] request failed", error);
