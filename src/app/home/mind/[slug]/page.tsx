@@ -27,6 +27,7 @@ function deskAccent(desk: WikiDesk): string {
     finance: "#f6e05e",
     social: "#fc8181",
     system: "#4fd1c5",
+    sufficiency: "#c4a574",
   };
   return map[desk] || "#a0aec0";
 }
