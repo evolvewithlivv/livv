@@ -10,6 +10,8 @@ import {
   Upload,
   Volume2,
   Vibrate,
+  UserRound,
+  Crown,
 } from "lucide-react";
 import { PageHero } from "@/components/layout/page-hero";
 import {
@@ -41,10 +43,10 @@ type LookOption = {
 };
 
 const LOOK_OPTIONS: LookOption[] = [
-  { id: "device", label: "Device", hint: "Follow system light or dark", appearance: "system", theme: "ember" },
-  { id: "ember", label: "Ember", hint: "Warm dark — original LIVV", appearance: "dark", theme: "ember" },
-  { id: "daylight", label: "Daylight", hint: "Clean light mode", appearance: "light", theme: "ember" },
-  { id: "midnight", label: "Midnight", hint: "Deep, cool, quiet", appearance: "dark", theme: "midnight" },
+  { id: "device", label: "Device", hint: "Match system", appearance: "system", theme: "ember" },
+  { id: "ember", label: "Ember", hint: "Warm dark", appearance: "dark", theme: "ember" },
+  { id: "daylight", label: "Daylight", hint: "Clean light", appearance: "light", theme: "ember" },
+  { id: "midnight", label: "Midnight", hint: "Deep cool", appearance: "dark", theme: "midnight" },
 ];
 
 function isLookActive(me: Identity, opt: LookOption): boolean {
@@ -162,128 +164,144 @@ export default function SettingsPage() {
     window.location.href = "/";
   };
 
+  const username = me?.username ? `@${me.username}` : "Member";
+
   return (
-    <main className="livv-account-page livv-page min-h-full pb-32">
-      <div className="account-inner mx-auto max-w-xl px-5 pt-5">
+    <main className="livv-page min-h-full text-livv-ink pb-32">
+      <div className="mx-auto w-full max-w-2xl px-5 pt-6 sm:px-6">
         <PageHero
           eyebrow="Settings"
           title="Control the system."
           subtitle="Account, look, data, and how LIVV behaves on this device."
         />
 
-        <section className="mt-10">
-          <h2 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-livv-muted">
-            Account
-          </h2>
-          <div className="mt-3 divide-y divide-[var(--livv-pro-border)] border-y border-[var(--livv-pro-border)]">
-            <Row label="Signed in" value={accountEmail || "Local only"} />
-            <Row label="Membership" value={tierLabel} href="/home/tiers" />
-            <button
-              type="button"
-              onClick={onSignOut}
-              className="flex w-full items-center justify-between py-3.5 text-left"
+        <section className="mt-8 overflow-hidden rounded-[22px] border border-livv-border bg-[color-mix(in_srgb,rgb(var(--livv-ink))_2.5%,transparent)]">
+          <div className="flex items-center gap-4 px-5 py-5">
+            <div className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl border border-livv-border text-livv-muted">
+              <UserRound size={20} strokeWidth={1.7} />
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-livv-muted">
+                Signed in as
+              </p>
+              <p className="mt-1 truncate text-[16px] font-semibold tracking-tight">{username}</p>
+              <p className="mt-0.5 truncate text-[12px] text-livv-muted">
+                {accountEmail || "Local account on this device"}
+              </p>
+            </div>
+            <Link
+              href="/home/profile"
+              aria-label="Open profile"
+              className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-livv-border text-livv-muted transition hover:text-livv-ink"
             >
-              <span className="flex items-center gap-2 text-[15px]">
-                <LogOut className="h-4 w-4 opacity-60" />
-                Sign out
-              </span>
-              <ChevronRight className="h-4 w-4 opacity-40" />
-            </button>
+              <ChevronRight size={16} strokeWidth={1.8} />
+            </Link>
           </div>
         </section>
 
-        <section className="mt-10">
-          <h2 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-livv-muted">
-            Look
-          </h2>
-          <div className="mt-3 divide-y divide-[var(--livv-pro-border)] border-y border-[var(--livv-pro-border)]">
-            {LOOK_OPTIONS.map((opt) => {
+        <Link
+          href="/home/tiers"
+          className="mt-4 flex items-center gap-4 overflow-hidden rounded-[22px] border border-livv-border bg-[color-mix(in_srgb,rgb(var(--livv-ink))_2.5%,transparent)] px-5 py-4 transition hover:bg-[color-mix(in_srgb,rgb(var(--livv-ink))_4%,transparent)]"
+        >
+          <div className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl border border-livv-border text-livv-muted">
+            <Crown size={18} strokeWidth={1.7} />
+          </div>
+          <div className="min-w-0 flex-1">
+            <p className="text-[14px] font-semibold tracking-tight">Membership</p>
+            <p className="mt-0.5 text-[12px] text-livv-muted">{tierLabel} · how far the system goes</p>
+          </div>
+          <ChevronRight size={16} strokeWidth={1.8} className="shrink-0 text-livv-muted" />
+        </Link>
+
+        <section className="mt-8">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-livv-muted">Look</p>
+          <div className="mt-3 overflow-hidden rounded-[22px] border border-livv-border">
+            {LOOK_OPTIONS.map((opt, i) => {
               const active = me ? isLookActive(me, opt) : false;
               return (
                 <button
                   key={opt.id}
                   type="button"
                   onClick={() => setLook(opt)}
-                  className="flex w-full items-center justify-between py-3.5 text-left"
+                  className={
+                    "flex w-full items-center justify-between px-5 py-4 text-left transition " +
+                    (i < LOOK_OPTIONS.length - 1 ? "border-b border-livv-border " : "") +
+                    (active ? "bg-[color-mix(in_srgb,rgb(var(--livv-ink))_3.5%,transparent)]" : "")
+                  }
                 >
                   <span>
-                    <span className="block text-[15px]">{opt.label}</span>
-                    <span className="block text-[12px] text-livv-muted">{opt.hint}</span>
+                    <span className="block text-[15px] font-semibold tracking-tight">{opt.label}</span>
+                    <span className="mt-0.5 block text-[12px] text-livv-muted">{opt.hint}</span>
                   </span>
                   <span
-                    className={`h-5 w-5 rounded-full border-2 ${
-                      active
-                        ? "border-[var(--livv-pro-accent)] bg-[var(--livv-pro-accent)]"
-                        : "border-[var(--livv-pro-border)]"
-                    }`}
-                  />
+                    className={
+                      "grid h-5 w-5 place-items-center rounded-full border-2 " +
+                      (active
+                        ? "border-livv-accent bg-livv-accent"
+                        : "border-livv-border bg-transparent")
+                    }
+                  >
+                    {active ? (
+                      <span className="h-1.5 w-1.5 rounded-full bg-[rgb(var(--livv-bg))]" />
+                    ) : null}
+                  </span>
                 </button>
               );
             })}
           </div>
         </section>
 
-        <section className="mt-10">
-          <h2 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-livv-muted">
+        <section className="mt-8">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-livv-muted">
             Feedback
-          </h2>
-          <div className="mt-3 divide-y divide-[var(--livv-pro-border)] border-y border-[var(--livv-pro-border)]">
+          </p>
+          <div className="mt-3 overflow-hidden rounded-[22px] border border-livv-border">
             <ToggleRow
-              icon={<Volume2 className="h-4 w-4 opacity-60" />}
+              icon={<Volume2 size={16} strokeWidth={1.7} />}
               label="Sound"
+              hint="Quiet tones on actions"
               value={!!prefs.sound}
               onToggle={() => togglePref("sound")}
+              last={false}
             />
             <ToggleRow
-              icon={<Vibrate className="h-4 w-4 opacity-60" />}
+              icon={<Vibrate size={16} strokeWidth={1.7} />}
               label="Haptics"
+              hint="Light vibration on confirm"
               value={!!prefs.haptics}
               onToggle={() => togglePref("haptics")}
+              last
             />
           </div>
         </section>
 
-        <section className="mt-10">
-          <h2 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-livv-muted">
-            Data
-          </h2>
-          <p className="mt-2 text-[12px] text-livv-muted">
-            {keyCount} local keys on this device.
-          </p>
-          <div className="mt-3 divide-y divide-[var(--livv-pro-border)] border-y border-[var(--livv-pro-border)]">
-            <button
-              type="button"
+        <section className="mt-8">
+          <div className="flex items-end justify-between gap-3">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-livv-muted">Data</p>
+            <p className="text-[11px] text-livv-muted">{keyCount} keys on this device</p>
+          </div>
+          <div className="mt-3 overflow-hidden rounded-[22px] border border-livv-border">
+            <ActionRow
+              icon={<Download size={16} strokeWidth={1.7} />}
+              label="Export backup"
+              hint="Download a JSON of your progress"
               onClick={onExport}
-              className="flex w-full items-center justify-between py-3.5 text-left"
-            >
-              <span className="flex items-center gap-2 text-[15px]">
-                <Download className="h-4 w-4 opacity-60" />
-                Export backup
-              </span>
-              <ChevronRight className="h-4 w-4 opacity-40" />
-            </button>
-            <button
-              type="button"
-              disabled={busy}
+            />
+            <ActionRow
+              icon={<Upload size={16} strokeWidth={1.7} />}
+              label="Import backup"
+              hint="Restore from a LIVV backup file"
               onClick={() => fileRef.current?.click()}
-              className="flex w-full items-center justify-between py-3.5 text-left disabled:opacity-50"
-            >
-              <span className="flex items-center gap-2 text-[15px]">
-                <Upload className="h-4 w-4 opacity-60" />
-                Import backup
-              </span>
-              <ChevronRight className="h-4 w-4 opacity-40" />
-            </button>
-            <button
-              type="button"
+              disabled={busy}
+            />
+            <ActionRow
+              icon={<Trash2 size={16} strokeWidth={1.7} />}
+              label={confirmDelete ? "Tap again to confirm" : "Delete local data"}
+              hint={confirmDelete ? "This cannot be undone on this device" : "Clears progress stored here"}
               onClick={onDeleteAll}
-              className="flex w-full items-center justify-between py-3.5 text-left"
-            >
-              <span className="flex items-center gap-2 text-[15px] text-red-400">
-                <Trash2 className="h-4 w-4 opacity-80" />
-                {confirmDelete ? "Tap again to confirm delete" : "Delete local data"}
-              </span>
-            </button>
+              danger
+              last
+            />
           </div>
           <input
             ref={fileRef}
@@ -296,91 +314,134 @@ export default function SettingsPage() {
               e.target.value = "";
             }}
           />
-          {status ? <p className="mt-3 text-[13px] text-livv-muted">{status}</p> : null}
-          {error ? <p className="mt-3 text-[13px] text-red-400">{error}</p> : null}
+          {status ? <p className="mt-3 text-[12px] text-livv-muted">{status}</p> : null}
+          {error ? <p className="mt-3 text-[12px] text-red-400">{error}</p> : null}
         </section>
 
-        <section className="mt-10 pb-8">
-          <h2 className="text-[11px] font-semibold uppercase tracking-[0.14em] text-livv-muted">
-            About
-          </h2>
-          <div className="mt-3 divide-y divide-[var(--livv-pro-border)] border-y border-[var(--livv-pro-border)]">
-            <Row label="LIVV" value="Evolve with purpose." />
-            <Link
-              href="/home/profile"
-              className="flex w-full items-center justify-between py-3.5 text-left"
+        <section className="mt-8 mb-6">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-livv-muted">
+            Session
+          </p>
+          <div className="mt-3 overflow-hidden rounded-[22px] border border-livv-border">
+            <button
+              type="button"
+              onClick={onSignOut}
+              className="flex w-full items-center gap-3 px-5 py-4 text-left transition hover:bg-[color-mix(in_srgb,rgb(var(--livv-ink))_3%,transparent)]"
             >
-              <span className="text-[15px]">Back to Profile</span>
-              <ChevronRight className="h-4 w-4 opacity-40" />
-            </Link>
+              <span className="grid h-9 w-9 place-items-center rounded-xl border border-livv-border text-livv-muted">
+                <LogOut size={16} strokeWidth={1.7} />
+              </span>
+              <span className="flex-1">
+                <span className="block text-[15px] font-semibold tracking-tight">Sign out</span>
+                <span className="mt-0.5 block text-[12px] text-livv-muted">End this session on the device</span>
+              </span>
+            </button>
           </div>
+          <p className="mt-6 text-center text-[11px] tracking-wide text-livv-muted">
+            LIVV · Evolve with purpose
+          </p>
         </section>
       </div>
     </main>
   );
 }
 
-function Row({
-  label,
-  value,
-  href,
-}: {
-  label: string;
-  value: string;
-  href?: string;
-}) {
-  const inner = (
-    <>
-      <span className="text-[15px]">{label}</span>
-      <span className="flex items-center gap-1 text-[13px] text-livv-muted">
-        {value}
-        {href ? <ChevronRight className="h-4 w-4 opacity-40" /> : null}
-      </span>
-    </>
-  );
-  if (href) {
-    return (
-      <Link href={href} className="flex w-full items-center justify-between py-3.5">
-        {inner}
-      </Link>
-    );
-  }
-  return <div className="flex w-full items-center justify-between py-3.5">{inner}</div>;
-}
-
 function ToggleRow({
   icon,
   label,
+  hint,
   value,
   onToggle,
+  last,
 }: {
   icon: ReactNode;
   label: string;
+  hint: string;
   value: boolean;
   onToggle: () => void;
+  last?: boolean;
 }) {
   return (
     <button
       type="button"
       onClick={onToggle}
-      className="flex w-full items-center justify-between py-3.5 text-left"
+      aria-pressed={value}
+      className={
+        "flex w-full items-center gap-3 px-5 py-4 text-left transition hover:bg-[color-mix(in_srgb,rgb(var(--livv-ink))_3%,transparent)] " +
+        (last ? "" : "border-b border-livv-border")
+      }
     >
-      <span className="flex items-center gap-2 text-[15px]">
+      <span className="grid h-9 w-9 place-items-center rounded-xl border border-livv-border text-livv-muted">
         {icon}
-        {label}
+      </span>
+      <span className="min-w-0 flex-1">
+        <span className="block text-[15px] font-semibold tracking-tight">{label}</span>
+        <span className="mt-0.5 block text-[12px] text-livv-muted">{hint}</span>
       </span>
       <span
         aria-hidden
-        className={`h-6 w-11 rounded-full p-1 transition-colors ${
-          value ? "bg-[var(--livv-pro-accent)]" : "bg-[var(--livv-pro-surface-2)]"
-        }`}
+        className={
+          "relative h-7 w-12 shrink-0 rounded-full p-1 transition-colors " +
+          (value ? "bg-livv-accent" : "bg-[color-mix(in_srgb,rgb(var(--livv-ink))_12%,transparent)]")
+        }
       >
         <span
-          className={`block h-4 w-4 rounded-full bg-white transition-transform ${
-            value ? "translate-x-5" : "translate-x-0"
-          }`}
+          className={
+            "block h-5 w-5 rounded-full bg-white shadow-sm transition-transform " +
+            (value ? "translate-x-5" : "translate-x-0")
+          }
         />
       </span>
+    </button>
+  );
+}
+
+function ActionRow({
+  icon,
+  label,
+  hint,
+  onClick,
+  disabled,
+  danger,
+  last,
+}: {
+  icon: ReactNode;
+  label: string;
+  hint: string;
+  onClick: () => void;
+  disabled?: boolean;
+  danger?: boolean;
+  last?: boolean;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      disabled={disabled}
+      className={
+        "flex w-full items-center gap-3 px-5 py-4 text-left transition disabled:opacity-50 hover:bg-[color-mix(in_srgb,rgb(var(--livv-ink))_3%,transparent)] " +
+        (last ? "" : "border-b border-livv-border")
+      }
+    >
+      <span
+        className={
+          "grid h-9 w-9 place-items-center rounded-xl border border-livv-border " +
+          (danger ? "text-red-400" : "text-livv-muted")
+        }
+      >
+        {icon}
+      </span>
+      <span className="min-w-0 flex-1">
+        <span
+          className={
+            "block text-[15px] font-semibold tracking-tight " + (danger ? "text-red-400" : "")
+          }
+        >
+          {label}
+        </span>
+        <span className="mt-0.5 block text-[12px] text-livv-muted">{hint}</span>
+      </span>
+      {!danger ? <ChevronRight size={16} strokeWidth={1.8} className="shrink-0 text-livv-muted" /> : null}
     </button>
   );
 }
