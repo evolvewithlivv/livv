@@ -65,10 +65,9 @@ html[data-livv-route="home-train"] .livv-page > div > section { border:0 !import
 html[data-livv-route="home-train"] .livv-page > div > section:nth-of-type(2) button { min-height:96px; }
 html[data-livv-route="home-train"] .livv-page button[style*="background: white"] { box-shadow:0 12px 30px rgb(0 0 0 / .32); }
 
-/* Mind: content discovery gets a magazine-like reading hierarchy. */
-html[data-livv-route="home-mind"] .livv-page > div > section { border:0 !important; background:transparent !important; box-shadow:none !important; }
-html[data-livv-route="home-mind"] .livv-page > div > section:nth-of-type(1) { border:1px solid rgb(246 25 129 / .16) !important; border-radius:22px !important; background:linear-gradient(145deg,rgb(246 25 129 / .045),rgb(255 255 255 / .015)) !important; box-shadow:0 20px 55px rgb(0 0 0 / .18) !important; }
-html[data-livv-route="home-mind"] .livv-page > div > section:nth-of-type(n+2) { padding-inline:0 !important; }
+/* Mind: editorial feed — continuous text, no framed card groups. */
+html[data-livv-route="home-mind"] .livv-page > div > section { border:0 !important; background:transparent !important; box-shadow:none !important; border-radius:0 !important; }
+html[data-livv-route="home-mind"] .livv-page > div > section:nth-of-type(n+1) { padding-inline:0 !important; }
 
 /* Shop: product commerce needs stronger product scale and less utility-dashboard density. */
 html[data-livv-route="home-shop"] .livv-page > div > section { border:0 !important; background:transparent !important; box-shadow:none !important; }
