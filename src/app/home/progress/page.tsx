@@ -56,7 +56,7 @@ export default function ProgressPage() {
                 Your record.
               </h1>
               <p className="mt-3 max-w-[36ch] text-[13px] leading-6 text-livv-muted">
-                A clear view of the work you have actually put in.
+                The work you have put in — not the story you tell yourself.
               </p>
             </div>
             <span className="shrink-0 rounded-full border border-livv-border px-3 py-1.5 text-[11px] font-semibold text-livv-muted">
@@ -138,12 +138,9 @@ export default function ProgressPage() {
           <h2 className="mt-1 text-[24px] font-semibold tracking-[-.04em]">
             Where your life is moving.
           </h2>
-          <div className="mt-5 space-y-3">
+          <div className="mt-5 divide-y divide-livv-border border-y border-livv-border">
             {pillars.map((p) => (
-              <div
-                key={p.id}
-                className="rounded-[18px] border border-livv-border px-4 py-4"
-              >
+              <div key={p.id} className="py-4">
                 <div className="flex items-center justify-between gap-3">
                   <div className="min-w-0">
                     <p className="text-[15px] font-semibold tracking-[-.02em]">{p.name}</p>
@@ -171,12 +168,9 @@ export default function ProgressPage() {
             <p className="text-[10px] font-semibold uppercase tracking-[.18em] text-livv-muted">
               Evidence
             </p>
-            <div className="mt-4 space-y-4">
+            <div className="mt-4 divide-y divide-livv-border border-y border-livv-border">
               {insights.bullets.map((b) => (
-                <div
-                  key={b.title}
-                  className="rounded-[18px] border border-livv-border px-4 py-4"
-                >
+                <div key={b.title} className="py-5">
                   <p className="text-[10px] font-semibold uppercase tracking-[.16em] text-livv-accent">
                     {b.title}
                   </p>
