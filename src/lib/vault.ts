@@ -156,17 +156,7 @@ export const VAULT_MODULES: VaultModule[] = [
     ],
     body: ["One quiet hour beats a scattered day. This tool exists to make that hour concrete."],
   },
-  {
-    id: "member-mind-series",
-    title: "Mind Series",
-    blurb: "Deeper reads on attention, standards, and long-game habits.",
-    kind: "series",
-    meta: "Series · Mind",
-    body: [
-      "This series expands on the Mind desk with longer, more practical playbooks.",
-      "Start with attention, standards, and recovery. Open any protocol to put the idea into motion the same week.",
-    ],
-  },
+
   {
     id: "body-rebuild-28",
     title: "28-Day Body Rebuild",
