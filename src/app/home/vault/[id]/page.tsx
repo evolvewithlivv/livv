@@ -3,7 +3,7 @@
 import { useMemo } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { ArrowLeft, Download, Lock } from "lucide-react";
+import { ArrowLeft, Download } from "lucide-react";
 import { moduleById } from "@/lib/vault";
 
 export default function VaultModulePage() {
