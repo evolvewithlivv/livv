@@ -1,12 +1,9 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useMemo } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
-import { getEffectiveTier, hydrateServerEntitlement } from "@/lib/billing";
-import { hasTier } from "@/lib/membership";
 import { moduleById } from "@/lib/vault";
-import type { LivvTier } from "@/lib/identity";
 
 export default function VaultPrintPage() {
   const params = useParams();
@@ -17,41 +14,12 @@ export default function VaultPrintPage() {
         ? params.id[0]
         : "";
   const mod = useMemo(() => (id ? moduleById(id) : null), [id]);
-  const [tier, setTier] = useState<LivvTier>("spark");
-
-  useEffect(() => {
-    const sync = () => setTier(getEffectiveTier());
-    sync();
-    void hydrateServerEntitlement().then(sync);
-  }, []);
-
-  useEffect(() => {
-    if (!mod) return;
-    if (!hasTier(tier, mod.minTier)) return;
-    const t = window.setTimeout(() => {
-      try {
-        window.print();
-      } catch {
-        /* manual print */
-      }
-    }, 600);
-    return () => window.clearTimeout(t);
-  }, [mod, tier]);
 
   if (!mod) {
     return (
       <main className="p-8">
         <p>Not found.</p>
         <Link href="/home/vault">Back</Link>
-      </main>
-    );
-  }
-
-  if (!hasTier(tier, mod.minTier)) {
-    return (
-      <main className="p-8">
-        <p>This download requires a higher membership tier.</p>
-        <Link href="/home/tiers">View tiers</Link>
       </main>
     );
   }
@@ -75,7 +43,7 @@ export default function VaultPrintPage() {
       </div>
 
       <p className="text-[11px] font-semibold uppercase tracking-[0.2em] text-neutral-500">
-        LIVV Member Vault · {mod.kind}
+        LIVV Vault · {mod.kind}
       </p>
       <h1 className="mt-2 text-[28px] font-bold leading-tight tracking-[-0.03em]">{mod.title}</h1>
       <p className="mt-2 text-[15px] text-neutral-600">{mod.blurb}</p>
@@ -98,7 +66,7 @@ export default function VaultPrintPage() {
       ) : null}
 
       <p className="mt-12 border-t border-neutral-200 pt-4 text-[11px] text-neutral-400">
-        evolvewithlivv.com · For personal use by LIVV members
+        evolvewithlivv.com · For personal use by LIVV users
       </p>
     </main>
   );

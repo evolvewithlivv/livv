@@ -3,7 +3,7 @@
  *
  * Design goals:
  * - Not free money: high Embers-per-dollar and min redeem floor
- * - Same burn rate for every tier (fair); paid tiers only earn faster
+ * - Same earning and redemption rules for every user
  * - Server is authoritative for burns; client only displays quotes
  */
 
@@ -120,6 +120,6 @@ export const REDEEM_RULES_COPY = [
   `${EMBERS_PER_DOLLAR} Embers = $1 off Collection`,
   `Minimum redeem: ${MIN_REDEEM_EMBERS.toLocaleString()} Embers ($10)`,
   `Max per order: 10% of item price or $${MAX_CREDIT_DOLLARS}, whichever is lower`,
-  "Same redemption rate for every tier — higher tiers only earn faster",
+  "Same earning and redemption rules for every user",
   "Embers are not cash and cannot be withdrawn",
 ] as const;
