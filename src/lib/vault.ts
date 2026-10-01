@@ -1,11 +1,8 @@
-import type { LivvTier } from "./identity";
-
 export type VaultModule = {
   id: string;
   title: string;
   blurb: string;
   kind: "protocol" | "tool" | "program" | "series" | "lab";
-  minTier: LivvTier;
   meta: string;
   downloadable?: boolean;
   steps?: string[];
@@ -18,7 +15,6 @@ export const VAULT_MODULES: VaultModule[] = [
     title: "7-Day Sleep Reset",
     blurb: "One anchor time, less negotiation, better mornings.",
     kind: "protocol",
-    minTier: "rise",
     meta: "7 days · printable",
     downloadable: true,
     steps: [
@@ -40,7 +36,6 @@ export const VAULT_MODULES: VaultModule[] = [
     title: "7-Day Money Baseline",
     blurb: "See where money actually goes before you try to optimize it.",
     kind: "protocol",
-    minTier: "rise",
     meta: "7 days · printable",
     downloadable: true,
     steps: [
@@ -59,7 +54,6 @@ export const VAULT_MODULES: VaultModule[] = [
     title: "7-Day Discipline Stack",
     blurb: "Three non-negotiables a day. Nothing heroic. Everything repeatable.",
     kind: "protocol",
-    minTier: "rise",
     meta: "7 days · printable",
     downloadable: true,
     steps: [
@@ -77,7 +71,6 @@ export const VAULT_MODULES: VaultModule[] = [
     title: "7-Day Water Baseline",
     blurb: "Know your need. Store what you rotate. Practice once.",
     kind: "protocol",
-    minTier: "rise",
     meta: "7 days · printable",
     downloadable: true,
     steps: [
@@ -96,7 +89,6 @@ export const VAULT_MODULES: VaultModule[] = [
     title: "7-Day Garden Start",
     blurb: "One crop you eat. Light, soil, and a watering habit.",
     kind: "protocol",
-    minTier: "rise",
     meta: "7 days · printable",
     downloadable: true,
     steps: [
@@ -115,7 +107,6 @@ export const VAULT_MODULES: VaultModule[] = [
     title: "7-Day Home Ready",
     blurb: "Entries, light, first aid, and a one-page plan.",
     kind: "protocol",
-    minTier: "rise",
     meta: "7 days · printable",
     downloadable: true,
     steps: [
@@ -134,7 +125,6 @@ export const VAULT_MODULES: VaultModule[] = [
     title: "7-Day Awareness Stack",
     blurb: "Exits, distance, and a body that can move - without looking for a fight.",
     kind: "protocol",
-    minTier: "rise",
     meta: "7 days · printable",
     downloadable: true,
     steps: [
@@ -153,7 +143,6 @@ export const VAULT_MODULES: VaultModule[] = [
     title: "Focus Block Planner",
     blurb: "Plan one protected hour. Decide the outcome before the hour starts.",
     kind: "tool",
-    minTier: "rise",
     meta: "Tool · printable",
     downloadable: true,
     steps: [
@@ -170,7 +159,6 @@ export const VAULT_MODULES: VaultModule[] = [
     title: "Member Mind Series",
     blurb: "Deeper reads on attention, standards, and long-game habits.",
     kind: "series",
-    minTier: "rise",
     meta: "Series · in Vault",
     body: [
       "Member series expand on the free Mind desk with longer, more practical playbooks.",
@@ -182,7 +170,6 @@ export const VAULT_MODULES: VaultModule[] = [
     title: "28-Day Body Rebuild",
     blurb: "Training, walking, and recovery in a plan that survives a normal month.",
     kind: "program",
-    minTier: "apex",
     meta: "4 weeks · printable",
     downloadable: true,
     steps: [
@@ -201,7 +188,6 @@ export const VAULT_MODULES: VaultModule[] = [
     title: "28-Day Deep Work Program",
     blurb: "Build a reliable focus practice across four weeks.",
     kind: "program",
-    minTier: "apex",
     meta: "4 weeks · printable",
     downloadable: true,
     steps: [
@@ -218,7 +204,6 @@ export const VAULT_MODULES: VaultModule[] = [
     title: "Weekly Meal Plan Builder",
     blurb: "Turn Health recipes into a simple 7-day plan you can print.",
     kind: "tool",
-    minTier: "apex",
     meta: "Tool · printable",
     downloadable: true,
     steps: [
@@ -234,7 +219,6 @@ export const VAULT_MODULES: VaultModule[] = [
     title: "Progress Lab",
     blurb: "See patterns in consistency, weak days, and which rooms you actually use.",
     kind: "lab",
-    minTier: "apex",
     meta: "Insights",
     body: [
       "Progress Lab turns your record into signal: which days slip, which rooms compound, where to simplify.",
@@ -243,17 +227,3 @@ export const VAULT_MODULES: VaultModule[] = [
   },
 ];
 
-export function modulesForTier(tier: LivvTier): VaultModule[] {
-  const rank = { spark: 0, rise: 1, apex: 2, circle: 3 }[tier] ?? 0;
-  const need = { spark: 0, rise: 1, apex: 2, circle: 3 };
-  return VAULT_MODULES.filter((m) => rank >= need[m.minTier]);
-}
-
-export function moduleById(id: string): VaultModule | null {
-  return VAULT_MODULES.find((m) => m.id === id) || null;
-}
-
-export function lockedModules(tier: LivvTier): VaultModule[] {
-  const open = new Set(modulesForTier(tier).map((m) => m.id));
-  return VAULT_MODULES.filter((m) => !open.has(m.id));
-}
