@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
+import { ArrowRight, Check } from "lucide-react";
 import { addEmbers, loadIdentity, type Identity } from "@/lib/identity";
 import {
   checkInRecord,
@@ -21,20 +22,16 @@ type Phase = "dawn" | "day" | "evening" | "night";
 type Signal = {
   phase: Phase;
   phaseLabel: string;
-  /** The single thing Home exists to say */
   line: string;
-  /** Optional quieter support under the line */
   under?: string;
-  /** One act — not a directory */
   act?: { label: string; href: string };
-  /** Presence mark available */
   canMark: boolean;
 };
 
 function phaseForHour(hour: number): { phase: Phase; phaseLabel: string } {
   if (hour < 5) return { phase: "night", phaseLabel: "Night" };
   if (hour < 11) return { phase: "dawn", phaseLabel: "Morning" };
-  if (hour < 17) return { phase: "day", phaseLabel: "Day" };
+  if (hour < 17) return { phase: "day", phaseLabel: "Afternoon" };
   if (hour < 21) return { phase: "evening", phaseLabel: "Evening" };
   return { phase: "night", phaseLabel: "Night" };
 }
@@ -52,13 +49,12 @@ function buildSignal(rec: LivvRecord, now = new Date()): Signal {
   const thinChain = missedYesterday(rec) && rec.streak > 0;
   const weekActive = weekBars(rec).filter((b) => b.active).length;
 
-  // Empty life in the system — first signal is evidence, not cheerleading
   if (!hasAnyHistory && !trained && !checkedIn && objectivesDone === 0) {
     return {
       phase,
       phaseLabel,
       line: "Nothing is recorded yet.",
-      under: "Capability is evidence. Mark the day or train once — the system starts from that.",
+      under: "Capability is evidence. Train once or mark the day — the system starts from that.",
       act: { label: "Open Train", href: "/home/train" },
       canMark: true,
     };
@@ -100,7 +96,6 @@ function buildSignal(rec: LivvRecord, now = new Date()): Signal {
     };
   }
 
-  // Trained
   if (trained && !checkedIn) {
     return {
       phase,
@@ -121,7 +116,7 @@ function buildSignal(rec: LivvRecord, now = new Date()): Signal {
           weekActive >= 5
             ? "A dense week. Protect recovery — sleep is still training."
             : "Enough for today. Do not invent extra work to feel useful.",
-        act: { label: "Health", href: "/home/health" },
+        act: { label: "Open Health", href: "/home/health" },
         canMark: false,
       };
     }
@@ -130,12 +125,11 @@ function buildSignal(rec: LivvRecord, now = new Date()): Signal {
       phaseLabel,
       line: "You already moved.",
       under: "Keep the rest of the day clean. Attention is a resource.",
-      act: { label: "Daily", href: "/home/daily" },
+      act: { label: "Open Daily", href: "/home/daily" },
       canMark: false,
     };
   }
 
-  // Checked in, not trained
   if (checkedIn && !trained) {
     return {
       phase,
@@ -151,7 +145,7 @@ function buildSignal(rec: LivvRecord, now = new Date()): Signal {
     phase,
     phaseLabel,
     line: "Hold the standard.",
-    under: "Open one room when you need it. Leave the rest alone.",
+    under: "Use Daily, Train, or Health when you need them. Leave the rest alone.",
     canMark: !checkedIn,
   };
 }
@@ -178,6 +172,7 @@ export default function HomePage() {
   const signal = useMemo(() => (rec ? buildSignal(rec, now) : null), [rec, now]);
   const bars = useMemo(() => (rec ? weekBars(rec) : []), [rec]);
   const todayKey = dayKey(now);
+  const activeDays = bars.filter((b) => b.active).length;
 
   if (!rec || !me || !signal) return <main className="min-h-dvh" />;
 
@@ -190,7 +185,6 @@ export default function HomePage() {
     feedback("checkin");
     const base = embersFromAction("checkin");
     addEmbers(base);
-    // Keep optional streak bonus if server still emits it — no tier multiplier
     const bonus =
       result.emberBonus && [4, 6, 8, 10, 12, 15].includes(result.emberBonus)
         ? result.emberBonus
@@ -200,48 +194,69 @@ export default function HomePage() {
   };
 
   return (
-    <main className="livv-page min-h-full pb-28">
-      <div className="mx-auto flex min-h-[calc(100dvh-8rem)] w-full max-w-[40rem] flex-col px-5 sm:px-6">
-        {/* Phase + week pulse — not a greeting/quote stack */}
+    <main className="livv-page min-h-full pb-20">
+      <div className="mx-auto w-full max-w-xl px-5 pb-12 sm:px-6">
+        {/* Same opening language as Health / Train / You */}
         <header className="pt-6">
-          <div className="flex items-baseline justify-between gap-4">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.22em] text-livv-muted">
-              {signal.phaseLabel}
+          <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-livv-muted">
+            Home · {signal.phaseLabel}
+          </p>
+          <h1 className="mt-2 max-w-[18ch] text-[30px] font-semibold leading-[1.1] tracking-[-0.045em] sm:text-[34px]">
+            {signal.line}
+          </h1>
+          {signal.under ? (
+            <p className="mt-3 max-w-[36ch] text-[14px] leading-relaxed text-livv-muted">
+              {signal.under}
             </p>
-            <p className="text-[11px] tabular-nums text-livv-muted">
-              {now.toLocaleDateString(undefined, {
-                weekday: "short",
-                month: "short",
-                day: "numeric",
-              })}
-            </p>
+          ) : null}
+        </header>
+
+        {/* Week presence — same metric rhythm as Health baseline */}
+        <section className="mt-10 border-t border-livv-border pt-8">
+          <div className="flex items-end justify-between gap-4">
+            <div>
+              <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-livv-muted">
+                This week
+              </p>
+              <p className="mt-1.5 text-[15px] text-livv-muted">
+                <span className="font-semibold tabular-nums text-[rgb(var(--livv-ink))]">
+                  {activeDays}
+                </span>{" "}
+                of 7 days with evidence
+              </p>
+            </div>
+            {rec.streak > 0 ? (
+              <p className="text-[12px] tabular-nums text-livv-muted">
+                <span className="font-semibold text-[rgb(var(--livv-ink))]">{rec.streak}</span>{" "}
+                day chain
+              </p>
+            ) : null}
           </div>
 
-          {/* Week as a single instrument — presence, not analytics */}
           <div
-            className="mt-8 flex items-end gap-1.5"
+            className="mt-6 flex items-end gap-2"
             role="img"
-            aria-label={`Week presence: ${bars.filter((b) => b.active).length} of 7 days active`}
+            aria-label={`${activeDays} of 7 days active this week`}
           >
             {bars.map((bar) => {
               const isToday = bar.key === todayKey;
-              const h = bar.active ? Math.max(12, 12 + Math.round(bar.v * 0.2)) : 6;
+              const h = bar.active ? Math.max(14, 14 + Math.round(bar.v * 0.22)) : 8;
               return (
-                <div key={bar.key} className="flex flex-1 flex-col items-center gap-2">
+                <div key={bar.key} className="flex min-w-0 flex-1 flex-col items-center gap-2">
                   <div
-                    className="w-full max-w-[28px] rounded-sm transition-all"
+                    className="w-full max-w-[32px] rounded-[4px]"
                     style={{
                       height: h,
                       background: bar.active
                         ? isToday
                           ? "rgb(var(--livv-ink))"
-                          : "color-mix(in srgb, rgb(var(--livv-ink)) 55%, transparent)"
-                        : "color-mix(in srgb, rgb(var(--livv-ink)) 12%, transparent)",
+                          : "color-mix(in srgb, rgb(var(--livv-ink)) 45%, transparent)"
+                        : "color-mix(in srgb, rgb(var(--livv-ink)) 10%, transparent)",
                     }}
                   />
                   <span
                     className={
-                      "text-[9px] font-medium uppercase tracking-wider " +
+                      "text-[10px] font-medium " +
                       (isToday ? "text-[rgb(var(--livv-ink))]" : "text-livv-muted")
                     }
                   >
@@ -251,64 +266,53 @@ export default function HomePage() {
               );
             })}
           </div>
-        </header>
-
-        {/* The Signal — optical center of the product */}
-        <section className="flex flex-1 flex-col justify-center py-12">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.24em] text-livv-muted">
-            Signal
-          </p>
-          <h1 className="mt-5 max-w-[16ch] text-[32px] font-bold leading-[1.08] tracking-[-0.045em] text-[rgb(var(--livv-ink))] sm:text-[36px]">
-            {signal.line}
-          </h1>
-          {signal.under ? (
-            <p className="mt-5 max-w-[34ch] text-[15px] leading-[1.55] text-livv-muted">
-              {signal.under}
-            </p>
-          ) : null}
-
-          {signal.act ? (
-            <Link
-              href={signal.act.href}
-              className="mt-10 inline-flex h-12 max-w-full items-center justify-center self-start rounded-full bg-[rgb(var(--livv-ink))] px-7 text-[13px] font-semibold text-[rgb(var(--livv-bg))] transition active:opacity-90"
-            >
-              {signal.act.label}
-            </Link>
-          ) : null}
         </section>
 
-        {/* Presence — consequence, not a dashboard row */}
-        <footer className="border-t border-livv-border pb-8 pt-6">
+        {/* Primary act — full-width like Train */}
+        {signal.act ? (
+          <section className="mt-10">
+            <Link
+              href={signal.act.href}
+              className="flex w-full items-center justify-between gap-3 rounded-full bg-[rgb(var(--livv-ink))] px-6 py-4 text-[14px] font-semibold text-[var(--livv-bg)] transition active:opacity-90"
+            >
+              <span>{signal.act.label}</span>
+              <ArrowRight size={16} strokeWidth={2.25} />
+            </Link>
+          </section>
+        ) : null}
+
+        {/* Presence — same row language as Health check-ins */}
+        <section className="mt-10 border-t border-livv-border pt-8">
           <div className="flex items-center justify-between gap-4">
             <div className="min-w-0">
-              <p className="text-[13px] font-medium text-[rgb(var(--livv-ink))]">
-                {checkedIn ? "Marked" : "Presence"}
+              <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-livv-muted">
+                Presence
               </p>
-              <p className="mt-0.5 text-[12px] text-livv-muted">
+              <p className="mt-1.5 text-[15px] font-semibold tracking-[-0.02em] text-[rgb(var(--livv-ink))]">
+                {checkedIn ? "Marked for today" : "Not marked yet"}
+              </p>
+              <p className="mt-1 text-[12px] text-livv-muted">
                 {checkedIn
-                  ? rec.streak > 1
-                    ? `${rec.streak}-day chain`
-                    : "On the record for today"
-                  : "One mark. Optional. Real."}
+                  ? "On the record. Use the tabs for the rest."
+                  : "Optional. One mark when you show up."}
               </p>
             </div>
-            {signal.canMark || checkedIn ? (
-              <button
-                type="button"
-                onClick={markPresence}
-                disabled={checkedIn}
-                aria-label={checkedIn ? "Already marked present" : "Mark presence for today"}
-                className={
-                  checkedIn
-                    ? "h-10 shrink-0 rounded-full border border-livv-border px-4 text-[12px] font-semibold text-livv-muted"
-                    : "h-10 shrink-0 rounded-full border border-[rgb(var(--livv-ink))] px-4 text-[12px] font-semibold text-[rgb(var(--livv-ink))]"
-                }
-              >
-                {checkedIn ? "Done" : "Mark"}
-              </button>
-            ) : null}
+            <button
+              type="button"
+              onClick={markPresence}
+              disabled={checkedIn}
+              aria-label={checkedIn ? "Already marked" : "Mark presence"}
+              className={
+                checkedIn
+                  ? "flex h-11 shrink-0 items-center gap-1.5 rounded-full border border-livv-border px-4 text-[12px] font-semibold text-livv-muted"
+                  : "flex h-11 shrink-0 items-center gap-1.5 rounded-full border border-livv-border px-4 text-[12px] font-semibold text-[rgb(var(--livv-ink))]"
+              }
+            >
+              {checkedIn ? <Check size={14} strokeWidth={2.25} /> : null}
+              {checkedIn ? "Done" : "Mark"}
+            </button>
           </div>
-        </footer>
+        </section>
       </div>
     </main>
   );
