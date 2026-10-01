@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { Check } from "lucide-react";
+import Link from "next/link";
+import { useEffect, useMemo, useState } from "react";
+import { ArrowRight, Check, ChevronRight, Plus } from "lucide-react";
 import { addEmbers, loadIdentity, type Identity } from "@/lib/identity";
 import {
   checkInRecord,
@@ -13,6 +14,8 @@ import { feedback } from "@/lib/sensory";
 import { dailySummary } from "@/lib/daily";
 import { quoteForSession, type Quote } from "@/lib/quotes";
 import { embersFromAction } from "@/lib/embers";
+import { ANNOUNCEMENTS } from "@/lib/announcements";
+import { WIKI, deskMeta } from "@/lib/wiki";
 
 function greetingForHour(hour: number): string {
   if (hour < 5) return "Still up";
@@ -22,13 +25,24 @@ function greetingForHour(hour: number): string {
   return "Wind down";
 }
 
-/** Whatever they set as display name — including LIVV if that is their choice. */
+/** Display name as they set it on Profile. */
 function displayNameForGreeting(me: Identity): string {
   const raw = (me.displayName || "").trim();
   if (raw) return raw.split(/\s+/)[0];
   const user = (me.username || "").trim();
   if (user) return user.startsWith("@") ? user.slice(1) : user;
   return "there";
+}
+
+/** Rotate featured reads by day so Home feels alive without a CMS. */
+function featuredReads(count = 3) {
+  if (WIKI.length === 0) return [];
+  const start = new Date().getDate() % WIKI.length;
+  const out = [];
+  for (let i = 0; i < Math.min(count, WIKI.length); i++) {
+    out.push(WIKI[(start + i) % WIKI.length]);
+  }
+  return out;
 }
 
 export default function HomePage() {
@@ -50,6 +64,8 @@ export default function HomePage() {
     return () => events.forEach((e) => window.removeEventListener(e, pull));
   }, []);
 
+  const reads = useMemo(() => featuredReads(3), []);
+
   if (!rec || !me) return <main className="min-h-dvh" />;
 
   const checkedIn = isCheckedInToday(rec);
@@ -57,7 +73,7 @@ export default function HomePage() {
   const hour = new Date().getHours();
   const hello = greetingForHour(hour);
 
-  const markPresence = () => {
+  const checkIn = () => {
     if (checkedIn) return;
     const result = checkInRecord();
     if (result.already) return;
@@ -73,8 +89,9 @@ export default function HomePage() {
   };
 
   return (
-    <main className="livv-page min-h-full pb-20">
-      <div className="mx-auto flex min-h-[calc(100dvh-8rem)] w-full max-w-xl flex-col px-5 sm:px-6">
+    <main className="livv-page min-h-full pb-24">
+      <div className="mx-auto w-full max-w-xl px-5 pb-12 sm:px-6">
+        {/* Greeting */}
         <header className="pt-6">
           <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-livv-muted">
             Home
@@ -82,62 +99,125 @@ export default function HomePage() {
           <h1 className="mt-2 text-[30px] font-semibold leading-[1.1] tracking-[-0.045em] sm:text-[34px]">
             {hello}, {name}.
           </h1>
-          <p className="mt-3 text-[14px] leading-relaxed text-livv-muted">
-            {checkedIn
-              ? rec.streak > 1
-                ? `On the record · ${rec.streak}-day chain`
-                : "On the record for today"
-              : "Mark when you want today on the record."}
-          </p>
         </header>
 
-        {/* Quote — primary surface of Home, not stranded at the bottom of a void */}
-        <section className="mt-14 flex flex-1 flex-col justify-center border-t border-livv-border pt-12">
-          {quote ? (
-            <>
-              <blockquote className="max-w-[30ch] text-[24px] font-medium leading-[1.28] tracking-[-0.03em] text-[rgb(var(--livv-ink))] sm:text-[26px]">
-                “{quote.text}”
-              </blockquote>
-              <p className="mt-8 text-[13px] font-semibold text-[rgb(var(--livv-ink))]">
-                {quote.author}
-              </p>
-              {quote.source ? (
-                <p className="mt-1 text-[11px] text-livv-muted">{quote.source}</p>
-              ) : null}
-            </>
-          ) : (
-            <p className="max-w-[24ch] text-[24px] font-medium leading-[1.28] tracking-[-0.03em]">
-              Evolve with purpose.
+        {/* Check in — primary daily action on Home */}
+        <section className="mt-8 flex items-center justify-between gap-4 rounded-2xl border border-livv-border px-4 py-4">
+          <div className="min-w-0">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-livv-muted">
+              Check in
             </p>
-          )}
+            <p className="mt-1.5 text-[15px] font-semibold tracking-[-0.02em]">
+              {checkedIn ? "You're checked in" : "Check in for today"}
+            </p>
+            <p className="mt-1 text-[12px] text-livv-muted">
+              {checkedIn
+                ? rec.streak > 1
+                  ? `${rec.streak}-day chain`
+                  : "On the record"
+                : "One tap. Starts the day on the record."}
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={checkIn}
+            disabled={checkedIn}
+            aria-label={checkedIn ? "Already checked in" : "Check in"}
+            className={
+              checkedIn
+                ? "flex h-11 shrink-0 items-center gap-1.5 rounded-full border border-livv-border px-4 text-[12px] font-semibold text-livv-muted"
+                : "flex h-11 shrink-0 items-center gap-1.5 rounded-full bg-[rgb(var(--livv-ink))] px-5 text-[12px] font-semibold text-[var(--livv-bg)]"
+            }
+          >
+            {checkedIn ? <Check size={14} strokeWidth={2.25} /> : <Plus size={14} strokeWidth={2.25} />}
+            {checkedIn ? "Done" : "Check in"}
+          </button>
         </section>
 
-        <footer className="mt-12 border-t border-livv-border pb-10 pt-8">
-          <div className="flex items-center justify-between gap-4">
-            <div className="min-w-0">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-livv-muted">
-                Presence
-              </p>
-              <p className="mt-1.5 text-[15px] font-semibold tracking-[-0.02em]">
-                {checkedIn ? "Marked" : "Not marked yet"}
-              </p>
-            </div>
-            <button
-              type="button"
-              onClick={markPresence}
-              disabled={checkedIn}
-              aria-label={checkedIn ? "Already marked" : "Mark presence"}
-              className={
-                checkedIn
-                  ? "flex h-11 shrink-0 items-center gap-1.5 rounded-full border border-livv-border px-4 text-[12px] font-semibold text-livv-muted"
-                  : "flex h-11 shrink-0 items-center gap-1.5 rounded-full bg-[rgb(var(--livv-ink))] px-5 text-[12px] font-semibold text-[var(--livv-bg)]"
-              }
-            >
-              {checkedIn ? <Check size={14} strokeWidth={2.25} /> : null}
-              {checkedIn ? "Done" : "Mark"}
-            </button>
+        {/* Announcements */}
+        <section className="mt-12">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-livv-muted">
+            Announcements
+          </p>
+          <h2 className="mt-1.5 text-[22px] font-semibold tracking-[-0.035em]">From LIVV</h2>
+          <div className="mt-5 divide-y divide-livv-border border-t border-livv-border">
+            {ANNOUNCEMENTS.map((a) => (
+              <div key={a.id} className="py-5">
+                <p className="text-[11px] text-livv-muted">{a.date}</p>
+                <p className="mt-1.5 text-[16px] font-semibold tracking-[-0.02em] text-[rgb(var(--livv-ink))]">
+                  {a.title}
+                </p>
+                <p className="mt-2 text-[13px] leading-relaxed text-livv-muted">{a.body}</p>
+                {a.href && a.cta ? (
+                  <Link
+                    href={a.href}
+                    className="mt-3 inline-flex items-center gap-1 text-[12px] font-semibold text-[rgb(var(--livv-ink))] underline-offset-4 hover:underline"
+                  >
+                    {a.cta}
+                    <ArrowRight size={13} />
+                  </Link>
+                ) : null}
+              </div>
+            ))}
           </div>
-        </footer>
+        </section>
+
+        {/* Reading / news */}
+        <section className="mt-12">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-livv-muted">
+            Read
+          </p>
+          <h2 className="mt-1.5 text-[22px] font-semibold tracking-[-0.035em]">Worth your time</h2>
+          <p className="mt-2 max-w-[36ch] text-[13px] leading-relaxed text-livv-muted">
+            Short pieces on capability, health, and how to use the system.
+          </p>
+          <div className="mt-5 divide-y divide-livv-border border-t border-livv-border">
+            {reads.map((article) => {
+              const desk = deskMeta(article.desk);
+              return (
+                <Link
+                  key={article.slug}
+                  href={`/home/read/${article.slug}`}
+                  className="group flex items-start gap-3 py-5 transition active:opacity-80"
+                >
+                  <span className="min-w-0 flex-1">
+                    <span className="text-[10px] font-semibold uppercase tracking-[0.16em] text-livv-muted">
+                      {desk.label} · {article.readMins} min
+                    </span>
+                    <span className="mt-1.5 block text-[16px] font-semibold tracking-[-0.02em] text-[rgb(var(--livv-ink))]">
+                      {article.title}
+                    </span>
+                    <span className="mt-1.5 block text-[13px] leading-relaxed text-livv-muted">
+                      {article.hook}
+                    </span>
+                  </span>
+                  <ChevronRight
+                    size={16}
+                    className="mt-1 shrink-0 text-livv-muted opacity-50 group-hover:opacity-100"
+                  />
+                </Link>
+              );
+            })}
+          </div>
+        </section>
+
+        {/* Quote — quiet close */}
+        {quote ? (
+          <section className="mt-12 border-t border-livv-border pt-8 pb-4">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-livv-muted">
+              Carry this
+            </p>
+            <blockquote className="mt-4 max-w-[32ch] text-[18px] font-medium leading-[1.35] tracking-[-0.02em] text-[rgb(var(--livv-ink))]">
+              “{quote.text}”
+            </blockquote>
+            <p className="mt-4 text-[12px] font-semibold text-[rgb(var(--livv-ink))]">
+              {quote.author}
+              {quote.source ? (
+                <span className="font-normal text-livv-muted"> · {quote.source}</span>
+              ) : null}
+            </p>
+          </section>
+        ) : null}
       </div>
     </main>
   );
