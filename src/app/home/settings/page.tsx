@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, type ReactNode } from "react";
 import Link from "next/link";
 import {
   ChevronRight,
@@ -93,17 +93,16 @@ export default function SettingsPage() {
   const setLook = (opt: LookOption) => {
     if (!me) return;
     const next = patchIdentity({ appearance: opt.appearance, theme: opt.theme });
-    const id = next || loadIdentity();
-    applyAppearance(id.appearance, id.accent || "", id.theme || "ember");
+    applyAppearance(next.appearance, next.accent || "", next.theme || "ember");
     setMe(loadIdentity());
-    feedback("tap");
+    feedback("tick");
   };
 
   const togglePref = (key: keyof LivvPrefs) => {
     const next = { ...prefs, [key]: !prefs[key] };
     patchPrefs(next);
     setPrefs(loadPrefs());
-    feedback("tap");
+    feedback("tick");
   };
 
   const onExport = () => {
@@ -111,7 +110,7 @@ export default function SettingsPage() {
       downloadBackup();
       setStatus("Backup downloaded.");
       setError("");
-      feedback("success");
+      feedback("complete");
     } catch {
       setError("Could not export data.");
     }
@@ -123,12 +122,20 @@ export default function SettingsPage() {
     setStatus("");
     try {
       const parsed = await parseBackupFile(file);
-      importBackup(parsed);
+      if (!parsed.ok) {
+        setError(parsed.error || "Invalid backup file.");
+        return;
+      }
+      const result = importBackup(parsed.backup);
+      if (!result.ok) {
+        setError(result.error || "Import failed.");
+        return;
+      }
       setMe(loadIdentity());
       setPrefs(loadPrefs());
       setKeyCount(countManagedKeysPresent());
       setStatus("Backup restored.");
-      feedback("success");
+      feedback("complete");
     } catch {
       setError("Invalid backup file.");
     } finally {
@@ -147,11 +154,11 @@ export default function SettingsPage() {
     setPrefs(loadPrefs());
     setKeyCount(0);
     setStatus("Local data cleared.");
-    feedback("success");
+    feedback("complete");
   };
 
-  const onSignOut = async () => {
-    await signOut();
+  const onSignOut = () => {
+    signOut();
     window.location.href = "/";
   };
 
@@ -347,7 +354,7 @@ function ToggleRow({
   value,
   onToggle,
 }: {
-  icon: React.ReactNode;
+  icon: ReactNode;
   label: string;
   value: boolean;
   onToggle: () => void;
