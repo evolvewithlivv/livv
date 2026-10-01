@@ -4,7 +4,6 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { ArrowRight, Check, ChevronRight, Plus } from "lucide-react";
 import { addEmbers, loadIdentity, type Identity } from "@/lib/identity";
-import { getEffectiveTier } from "@/lib/billing";
 import { checkInRecord, isCheckedInToday, loadRecord, type LivvRecord } from "@/lib/record";
 import { dailyPillarStatus } from "@/lib/command";
 import { buildBehaviorLoop } from "@/lib/behavior-loop";
@@ -95,7 +94,6 @@ export default function HomePage() {
         : 0;
     addEmbers(base);
     if (bonus) addEmbers(bonus, `ember-checkin-bonus-${Date.now()}`);
-    void getEffectiveTier();
     pull();
   };
 
