@@ -5,22 +5,13 @@ export type VaultModule = {
   title: string;
   blurb: string;
   kind: "protocol" | "tool" | "program" | "series" | "lab";
-  /** Minimum tier required */
   minTier: LivvTier;
-  /** Minutes or weeks label */
   meta: string;
-  /** Printable / downloadable */
   downloadable?: boolean;
   steps?: string[];
   body?: string[];
 };
 
-/**
- * Member Vault catalog.
- * Rise unlocks protocols + tools.
- * Apex unlocks programs + lab.
- * Circle inherits all.
- */
 export const VAULT_MODULES: VaultModule[] = [
   {
     id: "sleep-reset-7",
@@ -37,7 +28,7 @@ export const VAULT_MODULES: VaultModule[] = [
       "No caffeine after 2pm for the full week.",
       "Log sleep quality each morning in Daily (1-5). Look for the pattern, not perfection.",
       "If you miss a night, keep the wake time. Do not sleep in to compensate.",
-      "On day 7, write the wake time that actually worked. That becomes your default.",
+      "On day 7, keep the wake time that actually worked. That becomes your default.",
     ],
     body: [
       "This protocol is not about perfect sleep. It is about removing the daily argument with yourself.",
@@ -61,9 +52,7 @@ export const VAULT_MODULES: VaultModule[] = [
       "Review the week in 10 minutes. Circle the one leak that surprised you.",
       "Set next week's single money rule based on that leak. One rule only.",
     ],
-    body: [
-      "Clarity beats complicated budgets. One week of honest observation is enough to start.",
-    ],
+    body: ["Clarity beats complicated budgets. One week of honest observation is enough to start."],
   },
   {
     id: "discipline-stack-7",
@@ -84,6 +73,82 @@ export const VAULT_MODULES: VaultModule[] = [
     ],
   },
   {
+    id: "water-baseline-7",
+    title: "7-Day Water Baseline",
+    blurb: "Know your need. Store what you rotate. Practice once.",
+    kind: "protocol",
+    minTier: "rise",
+    meta: "7 days · printable",
+    downloadable: true,
+    steps: [
+      "Write how much drinking and cooking water your household uses in a quiet day. Multiply by three.",
+      "Inspect containers you already own. Clean, dry, and label with fill date.",
+      "Fill toward your three-day number. Cool, dark storage. No garage extremes if you can avoid them.",
+      "Learn one treatment or filtration method that fits your home. Read the instructions once while calm.",
+      "Practice that method on a small volume once this week so the motion is familiar.",
+      "Set a calendar reminder to rotate or use stored water within a sensible window for your containers.",
+      "On day 7, confirm labels, location, and that every adult in the home knows where it is.",
+    ],
+    body: ["Water readiness is a number, clean storage, and one practiced method - not a pile of unused equipment."],
+  },
+  {
+    id: "garden-start-7",
+    title: "7-Day Garden Start",
+    blurb: "One crop you eat. Light, soil, and a watering habit.",
+    kind: "protocol",
+    minTier: "rise",
+    meta: "7 days · printable",
+    downloadable: true,
+    steps: [
+      "Pick one food you already buy weekly. That is the crop.",
+      "Find a spot with roughly six hours of light - bed, pot, or sill.",
+      "Prepare soil or potting mix. Remove debris. Water until damp, not flooded.",
+      "Plant according to the packet for your climate. Label the date.",
+      "Set a simple watering cue tied to something you already do daily.",
+      "Check once for pests or dryness. Adjust water; do not rebuild the whole plan.",
+      "On day 7, ask whether the site and schedule are realistic. Change one variable only if needed.",
+    ],
+    body: ["Competence at one plant beats a decorative garden you abandon. Eat what you grow."],
+  },
+  {
+    id: "home-ready-7",
+    title: "7-Day Home Ready",
+    blurb: "Entries, light, first aid, and a one-page plan.",
+    kind: "protocol",
+    minTier: "rise",
+    meta: "7 days · printable",
+    downloadable: true,
+    steps: [
+      "Walk every exterior door and ground-floor window. Note what does not latch cleanly.",
+      "Fix or schedule the weakest entry point. One improvement this week is enough to start.",
+      "Place working lights where you would need them in the dark. Test batteries.",
+      "Locate first aid and important documents. Tell everyone in the home the same locations.",
+      "Write a one-page plan: power loss, medical need, and if you must leave. Keep it short.",
+      "Review smoke and carbon monoxide alarms. Replace what is dead.",
+      "On day 7, re-read the one-page plan aloud once. Update one line that was unclear.",
+    ],
+    body: ["A home that holds is maintained and known - not staged for a movie."],
+  },
+  {
+    id: "awareness-stack-7",
+    title: "7-Day Awareness Stack",
+    blurb: "Exits, distance, and a body that can move - without looking for a fight.",
+    kind: "protocol",
+    minTier: "rise",
+    meta: "7 days · printable",
+    downloadable: true,
+    steps: [
+      "On one daily route, name three exits and the best-lit path. Do it silently.",
+      "Practice giving yourself distance in ordinary spaces - step aside early, do not narrate it.",
+      "Add one session of movement that raises heart rate and asks for control (walk hills, carries, or Train).",
+      "Write your personal rules: when you leave, when you call for help, when you protect. One sentence each.",
+      "Learn the basic self-defense law where you live from a reputable public source. No forums as primary.",
+      "If you train contact skills, do it with qualified instruction. This protocol does not replace that.",
+      "On day 7, re-walk your main route once with the same checklist. Notice what became automatic.",
+    ],
+    body: ["Vigilance is awareness and capability under integrity - not aggression as identity."],
+  },
+  {
     id: "focus-block-tool",
     title: "Focus Block Planner",
     blurb: "Plan one protected hour. Decide the outcome before the hour starts.",
@@ -98,9 +163,7 @@ export const VAULT_MODULES: VaultModule[] = [
       "Work only on the named outcome until the timer ends.",
       "Write what moved and what is left for tomorrow.",
     ],
-    body: [
-      "One quiet hour beats a scattered day. This tool exists to make that hour concrete.",
-    ],
+    body: ["One quiet hour beats a scattered day. This tool exists to make that hour concrete."],
   },
   {
     id: "member-mind-series",
@@ -131,9 +194,7 @@ export const VAULT_MODULES: VaultModule[] = [
       "Protein at each meal. Water target stays on Daily trackers.",
       "End of week 4: keep the weekly structure. Only change one variable at a time afterward.",
     ],
-    body: [
-      "This is not a challenge that peaks on day 3 and dies on day 10. It is a month of showing up.",
-    ],
+    body: ["This is not a challenge that peaks on day 3 and dies on day 10. It is a month of showing up."],
   },
   {
     id: "deep-work-28",
