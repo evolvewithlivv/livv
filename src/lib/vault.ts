@@ -158,12 +158,12 @@ export const VAULT_MODULES: VaultModule[] = [
   },
   {
     id: "member-mind-series",
-    title: "Member Mind Series",
+    title: "Mind Series",
     blurb: "Deeper reads on attention, standards, and long-game habits.",
     kind: "series",
-    meta: "Series · in Vault",
+    meta: "Series · Mind",
     body: [
-      "Member series expand on the free Mind desk with longer, more practical playbooks.",
+      "This series expands on the Mind desk with longer, more practical playbooks.",
       "Start with attention, standards, and recovery. Open any protocol to put the idea into motion the same week.",
     ],
   },
