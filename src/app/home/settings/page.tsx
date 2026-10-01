@@ -11,7 +11,6 @@ import {
   Volume2,
   Vibrate,
   UserRound,
-  Crown,
 } from "lucide-react";
 import { PageHero } from "@/components/layout/page-hero";
 import {
@@ -32,7 +31,6 @@ import {
   importBackup,
   parseBackupFile,
 } from "@/lib/data-portability";
-import { getEffectiveTier } from "@/lib/billing";
 
 type LookOption = {
   id: string;
@@ -57,11 +55,6 @@ function isLookActive(me: Identity, opt: LookOption): boolean {
   return false;
 }
 
-function tierDisplay(id: string): string {
-  if (!id || id === "spark") return "Spark";
-  return id.charAt(0).toUpperCase() + id.slice(1);
-}
-
 export default function SettingsPage() {
   const fileRef = useRef<HTMLInputElement>(null);
   const [me, setMe] = useState<Identity | null>(null);
@@ -72,7 +65,6 @@ export default function SettingsPage() {
   const [busy, setBusy] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [accountEmail, setAccountEmail] = useState<string | null>(null);
-  const [tierLabel, setTierLabel] = useState("Spark");
 
   useEffect(() => {
     const sync = () => {
@@ -81,11 +73,6 @@ export default function SettingsPage() {
       setKeyCount(countManagedKeysPresent());
       const acc = getCurrentAccount();
       setAccountEmail(acc?.email || null);
-      try {
-        setTierLabel(tierDisplay(String(getEffectiveTier() || "spark")));
-      } catch {
-        setTierLabel("Spark");
-      }
     };
     sync();
     window.addEventListener("focus", sync);
@@ -198,20 +185,6 @@ export default function SettingsPage() {
             </Link>
           </div>
         </section>
-
-        <Link
-          href="/home/tiers"
-          className="mt-4 flex items-center gap-4 overflow-hidden rounded-[22px] border border-livv-border bg-[color-mix(in_srgb,rgb(var(--livv-ink))_2.5%,transparent)] px-5 py-4 transition hover:bg-[color-mix(in_srgb,rgb(var(--livv-ink))_4%,transparent)]"
-        >
-          <div className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl border border-livv-border text-livv-muted">
-            <Crown size={18} strokeWidth={1.7} />
-          </div>
-          <div className="min-w-0 flex-1">
-            <p className="text-[14px] font-semibold tracking-tight">Membership</p>
-            <p className="mt-0.5 text-[12px] text-livv-muted">{tierLabel} · how far the system goes</p>
-          </div>
-          <ChevronRight size={16} strokeWidth={1.8} className="shrink-0 text-livv-muted" />
-        </Link>
 
         <section className="mt-8">
           <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-livv-muted">Look</p>
