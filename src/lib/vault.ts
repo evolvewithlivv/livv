@@ -1,3 +1,5 @@
+import type { LivvTier } from "./identity";
+
 export type VaultModule = {
   id: string;
   title: string;
@@ -227,3 +229,7 @@ export const VAULT_MODULES: VaultModule[] = [
   },
 ];
 
+
+export function modulesForTier(_tier: LivvTier): VaultModule[] { return VAULT_MODULES; }
+export function lockedModules(_tier: LivvTier): VaultModule[] { return []; }
+export function moduleById(id: string): VaultModule | null { return VAULT_MODULES.find((m) => m.id === id) || null; }
