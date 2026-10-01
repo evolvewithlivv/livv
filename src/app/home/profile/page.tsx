@@ -17,9 +17,6 @@ import { fileToPhoto, loadIdentity, patchIdentity, type Identity } from "@/lib/i
 import { loadRecord } from "@/lib/record";
 import { evolutionTitle } from "@/lib/levels";
 import { feedback } from "@/lib/sensory";
-import { getEffectiveTier } from "@/lib/billing";
-import { getTier } from "@/lib/membership";
-import { tierColor } from "@/lib/tier-style";
 import { syncIdentityToCloud } from "@/lib/auth";
 import {
   MIN_REDEEM_EMBERS,
@@ -49,7 +46,7 @@ export default function ProfilePage() {
       }
     };
     sync();
-    for (const event of ["livv-identity", "livv-record", "livv-billing"]) {
+    for (const event of ["livv-identity", "livv-record"]) {
       window.addEventListener(event, sync);
     }
     return () => {
@@ -61,9 +58,6 @@ export default function ProfilePage() {
 
   if (!me || !rec) return <main className="min-h-dvh" />;
 
-  const effectiveTier = getEffectiveTier();
-  const tierDef = getTier(effectiveTier);
-  const tierStyle = tierColor(effectiveTier);
   const evo = evolutionTitle(rec.level);
   const xpToNext = Math.max(1, rec.xpToNext || 1);
   const pct = Math.min(100, Math.round((rec.currentXp / xpToNext) * 100));
@@ -97,8 +91,8 @@ export default function ProfilePage() {
         level: rec.level || 1,
         evolutionName: evo.name,
         streak: rec.streak || 0,
-        tierLabel: tierDef.name,
-        tierColor: tierStyle.hex || "#1769FF",
+        tierLabel: "LIVV",
+        tierColor: "#FFFFFF",
         embers: me.embers || 0,
         workoutsCompleted: rec.workoutsCompleted || 0,
         dailyScore: pct,
@@ -141,7 +135,7 @@ export default function ProfilePage() {
         <PageHero
           eyebrow="You"
           title="You."
-          subtitle="Identity, membership, Embers, and the work behind your level."
+          subtitle="Identity, Embers, and the work behind your level."
           right={
             <div className="flex items-center gap-1.5">
               <button
@@ -173,11 +167,10 @@ export default function ProfilePage() {
               aria-label="Change profile photo"
             >
               <Avatar
-                identity={{ ...me, tier: effectiveTier }}
+                identity={me}
                 size={128}
                 fit="contain"
                 className="profile-avatar"
-                showTierRing
               />
               <span
                 className="absolute bottom-0.5 right-0.5 grid h-8 w-8 place-items-center rounded-full border-2 border-[var(--livv-pro-surface)] bg-[var(--livv-pro-ink)] text-[var(--livv-pro-bg)] shadow-[0_2px_8px_rgba(0,0,0,.28)]"
@@ -200,19 +193,6 @@ export default function ProfilePage() {
             <p className="mt-1 text-[13px] text-livv-muted">
               @{me.username || "livv"}
             </p>
-
-            <div className="mt-3 flex justify-center">
-              <span
-                className="rounded-full px-3 py-1 text-[9px] font-semibold uppercase tracking-[.16em]"
-                style={{
-                  color: tierStyle.hex,
-                  background: `color-mix(in srgb, ${tierStyle.hex} 14%, transparent)`,
-                  border: `1px solid color-mix(in srgb, ${tierStyle.hex} 38%, transparent)`,
-                }}
-              >
-                {tierDef.name}
-              </span>
-            </div>
 
             {me.bio ? (
               <p className="mx-auto mt-3 max-w-[36ch] text-[13px] leading-relaxed text-livv-muted">
@@ -275,29 +255,6 @@ export default function ProfilePage() {
               href="/home/shop"
               className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-livv-border text-livv-muted transition hover:text-livv-ink"
               aria-label="Open shop"
-            >
-              <ChevronRight size={16} />
-            </Link>
-          </div>
-        </section>
-
-        <section className="mt-3 rounded-[22px] border border-livv-border bg-[color-mix(in_srgb,rgb(var(--livv-ink))_2.5%,transparent)] px-5 py-5">
-          <div className="flex items-center justify-between gap-4">
-            <div className="min-w-0">
-              <p className="text-[10px] font-semibold uppercase tracking-[.18em] text-livv-muted">
-                Membership
-              </p>
-              <p className="mt-1.5 text-[24px] font-semibold tracking-[-.03em]">
-                {tierDef.name}
-              </p>
-              <p className="mt-1 max-w-[34ch] text-[12px] leading-relaxed text-livv-muted">
-                Core app is free. Vault tools unlock with Rise and above.
-              </p>
-            </div>
-            <Link
-              href="/home/tiers"
-              className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-livv-border text-livv-muted transition hover:text-livv-ink"
-              aria-label="View membership tiers"
             >
               <ChevronRight size={16} />
             </Link>
