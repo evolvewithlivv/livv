@@ -64,7 +64,7 @@ export default function HomePage() {
   useEffect(() => {
     pull();
     setQuote(quoteForSession());
-    const events = ["livv-identity", "livv-record", "livv-daily", "livv-billing"];
+    const events = ["livv-identity", "livv-record", "livv-daily"];
     events.forEach((e) => window.addEventListener(e, pull));
     return () => events.forEach((e) => window.removeEventListener(e, pull));
   }, []);
