@@ -50,7 +50,7 @@ export default function ProfilePage() {
       window.addEventListener(event, sync);
     }
     return () => {
-      for (const event of ["livv-identity", "livv-record", "livv-billing"]) {
+      for (const event of ["livv-identity", "livv-record"]) {
         window.removeEventListener(event, sync);
       }
     };
