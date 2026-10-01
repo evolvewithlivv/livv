@@ -268,13 +268,13 @@ export default function ProfilePage() {
           >
             <div>
               <p className="text-[10px] font-semibold uppercase tracking-[.18em] text-livv-muted">
-                Member Vault
+                Vault
               </p>
               <p className="mt-1.5 text-[17px] font-semibold tracking-[-.02em]">
                 Protocols, tools, downloads
               </p>
               <p className="mt-1 text-[12px] text-livv-muted">
-                The deeper half of LIVV. Unlock with Rise.
+                Protocols, tools, and downloads. Free to every LIVV user.
               </p>
             </div>
             <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-livv-border text-livv-muted">
