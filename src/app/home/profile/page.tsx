@@ -140,8 +140,8 @@ export default function ProfilePage() {
       <div className="mx-auto w-full max-w-2xl px-5 pb-12 pt-6 sm:px-6">
         <PageHero
           eyebrow="You"
-          title="Your profile."
-          subtitle="Identity, membership, Embers, and the work you have put in."
+          title="You."
+          subtitle="Identity, membership, Embers, and the work behind your level."
           right={
             <div className="flex items-center gap-1.5">
               <button
