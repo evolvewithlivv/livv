@@ -1,8 +1,9 @@
 "use client";
 
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
-import { ArrowRight, Check, ChevronRight, Plus } from "lucide-react";
+import { useEffect, useMemo, useState, type CSSProperties, type ReactNode } from "react";
+import { Caveat } from "next/font/google";
+import { Check } from "lucide-react";
 import { addEmbers, loadIdentity, type Identity } from "@/lib/identity";
 import {
   checkInRecord,
@@ -15,7 +16,13 @@ import { dailySummary } from "@/lib/daily";
 import { quoteForSession, type Quote } from "@/lib/quotes";
 import { embersFromAction } from "@/lib/embers";
 import { ANNOUNCEMENTS } from "@/lib/announcements";
-import { WIKI, deskMeta, type WikiArticle } from "@/lib/wiki";
+import { WIKI, type WikiArticle } from "@/lib/wiki";
+
+const hand = Caveat({
+  subsets: ["latin"],
+  weight: ["500", "600", "700"],
+  display: "swap",
+});
 
 function greetingForHour(hour: number): string {
   if (hour < 5) return "Still up";
@@ -33,15 +40,140 @@ function displayNameForGreeting(me: Identity): string {
   return "there";
 }
 
-/** Rotate featured set by calendar day. */
-function featuredReads(count = 3): WikiArticle[] {
-  if (WIKI.length === 0) return [];
-  const start = new Date().getDate() % WIKI.length;
-  const out: WikiArticle[] = [];
-  for (let i = 0; i < Math.min(count, WIKI.length); i++) {
-    out.push(WIKI[(start + i) % WIKI.length]);
+function featuredRead(): WikiArticle | null {
+  if (WIKI.length === 0) return null;
+  return WIKI[new Date().getDate() % WIKI.length] ?? null;
+}
+
+/** Dark cork — dense grain without an image asset. */
+const CORK_STYLE: CSSProperties = {
+  backgroundColor: "#1a1510",
+  backgroundImage: [
+    "radial-gradient(ellipse 120% 80% at 20% 30%, rgba(90,70,50,0.35), transparent 55%)",
+    "radial-gradient(ellipse 90% 70% at 80% 70%, rgba(40,30,22,0.5), transparent 50%)",
+    "repeating-radial-gradient(circle at 12% 18%, rgba(255,220,180,0.04) 0 0.5px, transparent 0.6px 3px)",
+    "repeating-radial-gradient(circle at 70% 40%, rgba(0,0,0,0.2) 0 0.6px, transparent 0.7px 4px)",
+    "repeating-linear-gradient(105deg, rgba(255,255,255,0.02) 0 1px, transparent 1px 5px)",
+  ].join(","),
+  boxShadow:
+    "inset 0 0 80px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.04), 0 24px 48px rgba(0,0,0,0.45)",
+};
+
+type PaperTone = "cream" | "kraft" | "aged";
+
+function paperStyle(tone: PaperTone): CSSProperties {
+  if (tone === "kraft") {
+    return {
+      background:
+        "linear-gradient(145deg, #c4a882 0%, #b8956a 40%, #a8845c 100%)",
+      color: "#2a2118",
+      boxShadow:
+        "0 1px 0 rgba(255,255,255,0.2) inset, 0 8px 20px rgba(0,0,0,0.35), 0 2px 4px rgba(0,0,0,0.2)",
+    };
   }
-  return out;
+  if (tone === "aged") {
+    return {
+      background:
+        "linear-gradient(160deg, #e8e0d0 0%, #d9d0bc 50%, #cfc6b0 100%)",
+      color: "#2c2820",
+      boxShadow:
+        "0 1px 0 rgba(255,255,255,0.35) inset, 0 10px 24px rgba(0,0,0,0.4), 0 2px 4px rgba(0,0,0,0.2)",
+    };
+  }
+  return {
+    background:
+      "linear-gradient(155deg, #f7f2e8 0%, #efe8da 45%, #e5dcc8 100%)",
+    color: "#1f1a14",
+    boxShadow:
+      "0 1px 0 rgba(255,255,255,0.5) inset, 0 10px 28px rgba(0,0,0,0.42), 0 2px 6px rgba(0,0,0,0.22)",
+  };
+}
+
+function Thumbtack() {
+  return (
+    <span
+      aria-hidden
+      className="pointer-events-none absolute left-1/2 top-0 z-10 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full"
+      style={{
+        background:
+          "radial-gradient(circle at 35% 30%, #f0f0f0 0%, #a8a8a8 40%, #5a5a5a 75%, #2a2a2a 100%)",
+        boxShadow:
+          "0 1px 2px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.5)",
+      }}
+    />
+  );
+}
+
+function Note({
+  children,
+  tone = "cream",
+  rotate = 0,
+  className = "",
+  as: Comp = "div",
+  onClick,
+  href,
+  ariaLabel,
+  disabled,
+}: {
+  children: ReactNode;
+  tone?: PaperTone;
+  rotate?: number;
+  className?: string;
+  as?: "div" | "button" | "a";
+  onClick?: () => void;
+  href?: string;
+  ariaLabel?: string;
+  disabled?: boolean;
+}) {
+  const base =
+    "relative block w-full p-3.5 text-left transition active:scale-[0.98] " +
+    hand.className;
+
+  const style: CSSProperties = {
+    ...paperStyle(tone),
+    transform: `rotate(${rotate}deg)`,
+  };
+
+  const inner = (
+    <>
+      <Thumbtack />
+      <div className="pt-1">{children}</div>
+    </>
+  );
+
+  if (href && !disabled) {
+    return (
+      <Link
+        href={href}
+        aria-label={ariaLabel}
+        className={`${base} ${className}`}
+        style={style}
+      >
+        {inner}
+      </Link>
+    );
+  }
+
+  if (Comp === "button" || onClick) {
+    return (
+      <button
+        type="button"
+        onClick={onClick}
+        disabled={disabled}
+        aria-label={ariaLabel}
+        className={`${base} ${className} disabled:opacity-90`}
+        style={style}
+      >
+        {inner}
+      </button>
+    );
+  }
+
+  return (
+    <div className={`${base} ${className}`} style={style} aria-label={ariaLabel}>
+      {inner}
+    </div>
+  );
 }
 
 export default function HomePage() {
@@ -63,9 +195,9 @@ export default function HomePage() {
     return () => events.forEach((e) => window.removeEventListener(e, pull));
   }, []);
 
-  const reads = useMemo(() => featuredReads(3), []);
-  const featured = reads[0] ?? null;
-  const more = reads.slice(1);
+  const featured = useMemo(() => featuredRead(), []);
+  const primaryUpdate = ANNOUNCEMENTS[0];
+  const secondaryUpdate = ANNOUNCEMENTS[1];
 
   if (!rec || !me) return <main className="min-h-dvh" />;
 
@@ -90,141 +222,141 @@ export default function HomePage() {
 
   return (
     <main className="livv-page min-h-full pb-24">
-      <div className="mx-auto w-full max-w-xl px-5 pb-12 sm:px-6">
-        {/* 1. Presence */}
-        <header className="pt-6">
+      <div className="mx-auto w-full max-w-xl px-4 pb-10 sm:px-5">
+        {/* Quiet identity — not competing with the board */}
+        <header className="pt-5 pb-4">
           <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-livv-muted">
             Home
           </p>
-          <h1 className="mt-2 text-[30px] font-semibold leading-[1.1] tracking-[-0.045em] sm:text-[34px]">
+          <h1 className="mt-1.5 text-[22px] font-semibold tracking-[-0.03em] text-[rgb(var(--livv-ink))]">
             {hello}, {name}.
           </h1>
         </header>
 
-        <section className="mt-8 flex items-center justify-between gap-4 border-t border-livv-border pt-6">
-          <div className="min-w-0">
-            <p className="text-[15px] font-semibold tracking-[-0.02em]">
-              {checkedIn ? "Checked in" : "Check in"}
-            </p>
-            <p className="mt-1 text-[13px] text-livv-muted">
-              {checkedIn
-                ? rec.streak > 1
-                  ? `${rec.streak}-day chain`
-                  : "Today is on the record"
-                : "One mark. Then use the tabs."}
-            </p>
-          </div>
-          <button
-            type="button"
-            onClick={checkIn}
-            disabled={checkedIn}
-            aria-label={checkedIn ? "Already checked in" : "Check in for today"}
-            className={
-              checkedIn
-                ? "flex h-11 shrink-0 items-center gap-1.5 rounded-full border border-livv-border px-4 text-[12px] font-semibold text-livv-muted"
-                : "flex h-11 shrink-0 items-center gap-1.5 rounded-full bg-[rgb(var(--livv-ink))] px-5 text-[12px] font-semibold text-[var(--livv-bg)]"
-            }
-          >
-            {checkedIn ? <Check size={14} strokeWidth={2.25} /> : <Plus size={14} strokeWidth={2.25} />}
-            {checkedIn ? "Done" : "Check in"}
-          </button>
-        </section>
+        {/* THE BOARD — C layout density, A cork material */}
+        <section
+          className="relative overflow-hidden rounded-sm border border-black/40 px-3 py-5 sm:px-4 sm:py-6"
+          style={CORK_STYLE}
+          aria-label="LIVV board"
+        >
+          {/* Thin inner frame edge */}
+          <div
+            className="pointer-events-none absolute inset-0 rounded-sm"
+            style={{
+              boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.04), inset 0 0 0 3px rgba(0,0,0,0.25)",
+            }}
+          />
 
-        {/* 2. Featured read — one clear lead */}
-        {featured ? (
-          <section className="mt-12 border-t border-livv-border pt-8">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-livv-muted">
-              Read
-            </p>
-            <Link href={`/home/read/${featured.slug}`} className="group mt-4 block active:opacity-80">
-              <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-livv-muted">
-                {deskMeta(featured.desk).label} · {featured.readMins} min
+          {/* Row 1: check-in + primary announcement */}
+          <div className="relative grid grid-cols-2 gap-3 sm:gap-4">
+            <Note
+              tone="cream"
+              rotate={-3.5}
+              as="button"
+              onClick={checkIn}
+              disabled={checkedIn}
+              ariaLabel={checkedIn ? "Already checked in" : "Check in for today"}
+              className="min-h-[7.5rem]"
+            >
+              <p className="text-[22px] font-semibold leading-[1.15] tracking-[-0.01em] sm:text-[24px]">
+                {checkedIn ? "Checked in." : "Check in today."}
               </p>
-              <h2 className="mt-2 max-w-[20ch] text-[24px] font-semibold leading-[1.15] tracking-[-0.04em] text-[rgb(var(--livv-ink))] sm:text-[26px]">
-                {featured.title}
-              </h2>
-              <p className="mt-3 max-w-[36ch] text-[14px] leading-relaxed text-livv-muted">
-                {featured.hook}
+              <p className="mt-2 text-[15px] leading-snug opacity-80 sm:text-[16px]">
+                {checkedIn
+                  ? rec.streak > 1
+                    ? `${rec.streak}-day chain.`
+                    : "On the record."
+                  : "Same you. Better tomorrow."}
               </p>
-              <span className="mt-4 inline-flex items-center gap-1.5 text-[13px] font-semibold text-[rgb(var(--livv-ink))]">
-                Open
-                <ArrowRight size={14} className="transition group-hover:translate-x-0.5" />
-              </span>
-            </Link>
+              {checkedIn ? (
+                <span className="mt-3 inline-flex items-center gap-1 text-[14px] opacity-70">
+                  <Check size={14} strokeWidth={2.5} /> Done
+                </span>
+              ) : null}
+            </Note>
 
-            {more.length > 0 ? (
-              <div className="mt-8 divide-y divide-livv-border border-t border-livv-border">
-                {more.map((article) => (
-                  <Link
-                    key={article.slug}
-                    href={`/home/read/${article.slug}`}
-                    className="group flex items-center gap-3 py-4 transition active:opacity-80"
-                  >
-                    <span className="min-w-0 flex-1">
-                      <span className="text-[10px] font-semibold uppercase tracking-[0.16em] text-livv-muted">
-                        {deskMeta(article.desk).label} · {article.readMins} min
-                      </span>
-                      <span className="mt-1 block text-[15px] font-semibold tracking-[-0.02em] text-[rgb(var(--livv-ink))]">
-                        {article.title}
-                      </span>
-                    </span>
-                    <ChevronRight
-                      size={16}
-                      className="shrink-0 text-livv-muted opacity-40 group-hover:opacity-100"
-                    />
-                  </Link>
-                ))}
-              </div>
+            {primaryUpdate ? (
+              <Note
+                tone="aged"
+                rotate={2.8}
+                href={primaryUpdate.href}
+                ariaLabel={primaryUpdate.title}
+                className="min-h-[7.5rem]"
+              >
+                <p className="text-[20px] font-semibold leading-[1.15] sm:text-[22px]">
+                  {primaryUpdate.title}
+                </p>
+                <p className="mt-2 text-[14px] leading-snug opacity-80 sm:text-[15px]">
+                  {primaryUpdate.body.length > 90
+                    ? primaryUpdate.body.slice(0, 88) + "…"
+                    : primaryUpdate.body}
+                </p>
+              </Note>
             ) : null}
-          </section>
-        ) : null}
+          </div>
 
-        {/* 3. Updates — secondary, compact */}
-        <section className="mt-12 border-t border-livv-border pt-8">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-livv-muted">
-            Updates
-          </p>
-          <div className="mt-4 space-y-6">
-            {ANNOUNCEMENTS.map((a) => (
-              <div key={a.id}>
-                <p className="text-[10px] font-semibold uppercase tracking-[0.16em] text-livv-muted">
-                  {a.label}
+          {/* Center: featured read — larger poster note */}
+          {featured ? (
+            <div className="relative mx-auto mt-4 max-w-[85%] sm:mt-5 sm:max-w-[80%]">
+              <Note
+                tone="cream"
+                rotate={-1.2}
+                href={`/home/read/${featured.slug}`}
+                ariaLabel={`Read: ${featured.title}`}
+                className="min-h-[8.5rem] px-4 py-4"
+              >
+                <p className="text-[12px] font-medium uppercase tracking-[0.12em] opacity-55">
+                  Read · {featured.readMins} min
                 </p>
-                <p className="mt-1.5 text-[15px] font-semibold tracking-[-0.02em] text-[rgb(var(--livv-ink))]">
-                  {a.title}
+                <p className="mt-2 text-[24px] font-semibold leading-[1.12] sm:text-[26px]">
+                  {featured.title}
                 </p>
-                <p className="mt-1.5 max-w-[38ch] text-[13px] leading-relaxed text-livv-muted">
-                  {a.body}
+                <p className="mt-2 text-[15px] leading-snug opacity-75">
+                  {featured.hook.length > 100
+                    ? featured.hook.slice(0, 98) + "…"
+                    : featured.hook}
                 </p>
-                {a.href && a.cta ? (
-                  <Link
-                    href={a.href}
-                    className="mt-2 inline-flex items-center gap-1 text-[12px] font-semibold text-[rgb(var(--livv-ink))] underline-offset-4 hover:underline"
-                  >
-                    {a.cta}
-                    <ArrowRight size={12} />
-                  </Link>
-                ) : null}
-              </div>
-            ))}
+              </Note>
+            </div>
+          ) : null}
+
+          {/* Row 3: secondary update + quote */}
+          <div className="relative mt-4 grid grid-cols-2 gap-3 sm:mt-5 sm:gap-4">
+            {secondaryUpdate ? (
+              <Note
+                tone="kraft"
+                rotate={3.2}
+                href={secondaryUpdate.href}
+                ariaLabel={secondaryUpdate.title}
+                className="min-h-[7rem]"
+              >
+                <p className="text-[20px] font-semibold leading-[1.15] sm:text-[21px]">
+                  {secondaryUpdate.title}
+                </p>
+                <p className="mt-2 text-[14px] leading-snug opacity-80">
+                  {secondaryUpdate.body.length > 70
+                    ? secondaryUpdate.body.slice(0, 68) + "…"
+                    : secondaryUpdate.body}
+                </p>
+              </Note>
+            ) : (
+              <div />
+            )}
+
+            {quote ? (
+              <Note tone="cream" rotate={-2.5} className="min-h-[7rem]">
+                <p className="text-[17px] font-semibold leading-[1.25] sm:text-[18px]">
+                  “{quote.text.length > 110 ? quote.text.slice(0, 108) + "…” : quote.text}”
+                </p>
+                <p className="mt-2 text-[13px] opacity-65">— {quote.author}</p>
+              </Note>
+            ) : null}
           </div>
         </section>
 
-        {/* 4. Quote — close */}
-        {quote ? (
-          <section className="mt-12 border-t border-livv-border pt-8 pb-4">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-livv-muted">
-              Carry this
-            </p>
-            <blockquote className="mt-4 max-w-[30ch] text-[17px] font-medium leading-[1.4] tracking-[-0.02em] text-[rgb(var(--livv-ink))]">
-              “{quote.text}”
-            </blockquote>
-            <p className="mt-4 text-[12px] text-livv-muted">
-              <span className="font-semibold text-[rgb(var(--livv-ink))]">{quote.author}</span>
-              {quote.source ? ` · ${quote.source}` : ""}
-            </p>
-          </section>
-        ) : null}
+        <p className="mt-5 text-center text-[11px] text-livv-muted">
+          Pin what matters. Work lives in the tabs.
+        </p>
       </div>
     </main>
   );
