@@ -32,17 +32,55 @@ function tone(freq: number, duration: number, type: OscillatorType, gain = 0.04)
   osc.stop(now + duration + 0.02);
 }
 
-export function haptic(style: "light" | "medium" | "success" = "light") {
+export type HapticStyle = "light" | "medium" | "success";
+
+/**
+ * Fire haptic feedback.
+ * - Native (Capacitor iOS/Android): Taptic / vibrator via @capacitor/haptics
+ * - Web Android: navigator.vibrate fallback
+ * - Web iOS Safari: no-op (platform does not expose Vibration API)
+ * Always respects Settings → haptics.
+ * Sync API — native work is fire-and-forget so call sites stay unchanged.
+ */
+export function haptic(style: HapticStyle = "light") {
   if (typeof window === "undefined") return;
   if (!loadPrefs().haptics) return;
+  void runHaptic(style);
+}
+
+async function runHaptic(style: HapticStyle) {
   try {
-    if (navigator.vibrate) {
+    const native = await tryNativeHaptic(style);
+    if (native) return;
+
+    // Web fallback (Android Chrome / some desktop)
+    if (typeof navigator !== "undefined" && typeof navigator.vibrate === "function") {
       if (style === "light") navigator.vibrate(8);
       else if (style === "medium") navigator.vibrate(16);
       else navigator.vibrate([10, 30, 14]);
     }
   } catch {
-    // ignore
+    // never block UI on sensory failure
+  }
+}
+
+async function tryNativeHaptic(style: HapticStyle): Promise<boolean> {
+  try {
+    const { Capacitor } = await import("@capacitor/core");
+    if (!Capacitor.isNativePlatform()) return false;
+
+    const { Haptics, ImpactStyle, NotificationType } = await import("@capacitor/haptics");
+
+    if (style === "success") {
+      await Haptics.notification({ type: NotificationType.Success });
+    } else if (style === "medium") {
+      await Haptics.impact({ style: ImpactStyle.Medium });
+    } else {
+      await Haptics.impact({ style: ImpactStyle.Light });
+    }
+    return true;
+  } catch {
+    return false;
   }
 }
 
