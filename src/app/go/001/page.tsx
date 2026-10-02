@@ -91,15 +91,15 @@ export default function FieldNote001() {
     <main className="fn" aria-label="LIVV Field Note 001">
       <div className="fn-void" aria-hidden />
       <div className="fn-grid" aria-hidden />
-      <div className={`fn-pulse ${awake ? "on" : ""}`} aria-hidden />
+      <div className={"fn-pulse" + (awake ? " on" : "")} aria-hidden />
       <div className="fn-scan" aria-hidden />
       <div className="fn-particles" aria-hidden>
         {Array.from({ length: 18 }).map((_, i) => (
-          <span key={i} className={`fn-p p${i}`} />
+          <span key={i} className={"fn-p p" + i} />
         ))}
       </div>
 
-      <header className={`fn-top ${awake ? "on" : ""`}>
+      <header className={"fn-top" + (awake ? " on" : "")}>
         <div className="fn-top-l">
           <span className="fn-mark">LIVV</span>
           <span className="fn-sep" />
@@ -107,7 +107,7 @@ export default function FieldNote001() {
         </div>
         <div className="fn-top-r">
           <span className="fn-loc">PHILADELPHIA</span>
-          <span className={`fn-status ${awake ? "live" : ""`}>
+          <span className={"fn-status" + (awake ? " live" : "")}>
             {awake ? "DISCOVERED" : "— — —"}
           </span>
         </div>
@@ -115,7 +115,7 @@ export default function FieldNote001() {
 
       <div className="fn-body">
         {act === 0 && (
-          <section className={`fn-act fn-act0 ${awake ? "on" : ""}`} aria-live="polite">
+          <section className={"fn-act fn-act0" + (awake ? " on" : "")} aria-live="polite">
             <div className="fn-signal" aria-hidden>
               <div className="fn-ring r1" />
               <div className="fn-ring r2" />
@@ -179,7 +179,7 @@ export default function FieldNote001() {
                     key={p.id}
                     type="button"
                     role="listitem"
-                    className={`fn-node n${i} ${active ? "active" : ""}`}
+                    className={"fn-node n" + i + (active ? " active" : "")}
                     onClick={() => {
                       haptic(active ? "light" : "medium");
                       setSelected(active ? null : p.id);
@@ -189,7 +189,7 @@ export default function FieldNote001() {
                   >
                     <span className="fn-node-coord">{p.coord}</span>
                     <span className="fn-node-label">{p.label}</span>
-                    <span className={`fn-node-detail ${active ? "show" : ""}`}>
+                    <span className={"fn-node-detail" + (active ? " show" : "")}>
                       {p.line}
                     </span>
                   </button>
@@ -210,7 +210,10 @@ export default function FieldNote001() {
         )}
 
         {act === 3 && (
-          <section className={`fn-act fn-act3 on ${ctaReady ? "ready" : ""}`} aria-live="polite">
+          <section
+            className={"fn-act fn-act3 on" + (ctaReady ? " ready" : "")}
+            aria-live="polite"
+          >
             <div className="fn-threshold-mark" aria-hidden>
               <img src="/livv-logo.png" alt="" width={56} height={56} />
             </div>
@@ -226,7 +229,7 @@ export default function FieldNote001() {
 
             <button
               type="button"
-              className={`fn-enter ${ctaReady ? "show" : ""}`}
+              className={"fn-enter" + (ctaReady ? " show" : "")}
               onClick={() => {
                 haptic("success");
                 router.push("/auth");
@@ -241,7 +244,7 @@ export default function FieldNote001() {
 
             <button
               type="button"
-              className={`fn-secondary ${ctaReady ? "show" : ""}`}
+              className={"fn-secondary" + (ctaReady ? " show" : "")}
               onClick={() => router.push("/")}
             >
               EXPLORE THE SITE
@@ -250,10 +253,13 @@ export default function FieldNote001() {
         )}
       </div>
 
-      <footer className={`fn-foot ${awake ? "on" : ""`}>
+      <footer className={"fn-foot" + (awake ? " on" : "")}>
         <div className="fn-ticks" aria-hidden>
           {[0, 1, 2, 3].map((n) => (
-            <span key={n} className={n === act ? "on" : n < act ? "done" : ""} />
+            <span
+              key={n}
+              className={n === act ? "on" : n < act ? "done" : ""}
+            />
           ))}
         </div>
         <span className="fn-foot-meta">
