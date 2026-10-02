@@ -88,7 +88,7 @@ const CORK_STYLE: CSSProperties = {
     "repeating-linear-gradient(112deg, rgba(255,255,255,0.03) 0 1px, transparent 1px 4px)",
     "repeating-linear-gradient(22deg, rgba(0,0,0,0.06) 0 1px, transparent 1px 6px)",
   ].join(","),
-  boxShadow: "inset 0 0 60px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.06), 0 12px 32px rgba(0,0,0,0.4)",
+  boxShadow: "inset 0 0 48px rgba(0,0,0,0.28)",
 };
 
 function paperStyle(tone: PaperTone): CSSProperties {
@@ -275,11 +275,11 @@ export default function HomePage() {
         </header>
 
         <section
-          className="relative overflow-hidden rounded-[3px] border border-black/50 px-2.5 py-3 sm:px-3 sm:py-4"
+          className="relative overflow-hidden rounded-[18px] px-3.5 py-4 sm:px-4 sm:py-5"
           style={CORK_STYLE}
           aria-label="LIVV bulletin board"
         >
-          <div className="pointer-events-none absolute inset-0 rounded-[3px]" style={{ boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.05), inset 0 0 0 4px rgba(0,0,0,0.2)" }} />
+          <div className="pointer-events-none absolute inset-0 rounded-[18px]" style={{ boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.045)" }} />
 
           <div className="relative mb-3 flex items-center justify-between px-1">
             <div className="text-[9px] font-semibold uppercase tracking-[0.2em] text-white/45">
