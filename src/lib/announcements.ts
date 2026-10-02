@@ -1,11 +1,11 @@
 /**
- * Product announcements for the Home screen.
- * Keep short, factual, and ship-relevant — not marketing spam.
+ * Product updates on Home.
+ * Short. Factual. Ship-relevant. Not a marketing feed.
  */
 
 export type Announcement = {
   id: string;
-  date: string;
+  label: string;
   title: string;
   body: string;
   href?: string;
@@ -15,24 +15,18 @@ export type Announcement = {
 export const ANNOUNCEMENTS: Announcement[] = [
   {
     id: "v1-free-core",
-    date: "2026-10",
-    title: "LIVV is free for everyone.",
-    body: "No membership tiers. Same Daily, Train, Health, and Embers for every user. Collection is how we fund the work.",
+    label: "Now",
+    title: "The full system is free.",
+    body: "Daily, Train, Health, and Embers — same for everyone. No tiers. Collection funds the work.",
     href: "/home/shop",
-    cta: "See Collection",
+    cta: "Collection",
   },
   {
     id: "embers-1x",
-    date: "2026-10",
-    title: "Embers track showing up.",
-    body: "Earn them through real actions at the same rate for everyone. Redeem on Collection when pieces drop — never as cash.",
+    label: "Embers",
+    title: "Show up. Earn the same.",
+    body: "Embers come from real actions, at one rate for every user. Redeem on Collection — never cash.",
     href: "/home/shop",
-    cta: "Your Embers",
-  },
-  {
-    id: "core-rooms",
-    date: "2026-09",
-    title: "Daily, Train, and Health are the system.",
-    body: "Home is the front door. The work lives in the tabs — a few real moves, a body you can rely on, and a baseline that holds.",
+    cta: "Your balance",
   },
 ];
