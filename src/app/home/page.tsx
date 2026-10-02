@@ -50,17 +50,20 @@ function clip(text: string, max: number): string {
   return text.slice(0, max - 1).trimEnd() + "...";
 }
 
+/** Dark cork — denser grain so the board reads as a surface, not empty black. */
 const CORK_STYLE: CSSProperties = {
-  backgroundColor: "#1a1510",
+  backgroundColor: "#2a2218",
   backgroundImage: [
-    "radial-gradient(ellipse 120% 80% at 20% 30%, rgba(90,70,50,0.35), transparent 55%)",
-    "radial-gradient(ellipse 90% 70% at 80% 70%, rgba(40,30,22,0.5), transparent 50%)",
-    "repeating-radial-gradient(circle at 12% 18%, rgba(255,220,180,0.04) 0 0.5px, transparent 0.6px 3px)",
-    "repeating-radial-gradient(circle at 70% 40%, rgba(0,0,0,0.2) 0 0.6px, transparent 0.7px 4px)",
-    "repeating-linear-gradient(105deg, rgba(255,255,255,0.02) 0 1px, transparent 1px 5px)",
+    "radial-gradient(ellipse at 15% 20%, rgba(120,90,60,0.45), transparent 50%)",
+    "radial-gradient(ellipse at 85% 75%, rgba(60,45,30,0.55), transparent 45%)",
+    "repeating-radial-gradient(circle at 8% 12%, rgba(255,210,160,0.07) 0 0.6px, transparent 0.7px 2.8px)",
+    "repeating-radial-gradient(circle at 62% 38%, rgba(0,0,0,0.28) 0 0.7px, transparent 0.8px 3.2px)",
+    "repeating-radial-gradient(circle at 40% 80%, rgba(255,220,180,0.05) 0 0.5px, transparent 0.6px 3.5px)",
+    "repeating-linear-gradient(112deg, rgba(255,255,255,0.03) 0 1px, transparent 1px 4px)",
+    "repeating-linear-gradient(22deg, rgba(0,0,0,0.06) 0 1px, transparent 1px 6px)",
   ].join(","),
   boxShadow:
-    "inset 0 0 80px rgba(0,0,0,0.55), inset 0 1px 0 rgba(255,255,255,0.04), 0 24px 48px rgba(0,0,0,0.45)",
+    "inset 0 0 60px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.06), 0 12px 32px rgba(0,0,0,0.4)",
 };
 
 type PaperTone = "cream" | "kraft" | "aged";
@@ -71,7 +74,7 @@ function paperStyle(tone: PaperTone): CSSProperties {
       background: "linear-gradient(145deg, #c4a882 0%, #b8956a 40%, #a8845c 100%)",
       color: "#2a2118",
       boxShadow:
-        "0 1px 0 rgba(255,255,255,0.2) inset, 0 8px 20px rgba(0,0,0,0.35), 0 2px 4px rgba(0,0,0,0.2)",
+        "0 1px 0 rgba(255,255,255,0.2) inset, 0 6px 16px rgba(0,0,0,0.35), 0 2px 4px rgba(0,0,0,0.2)",
     };
   }
   if (tone === "aged") {
@@ -79,14 +82,14 @@ function paperStyle(tone: PaperTone): CSSProperties {
       background: "linear-gradient(160deg, #e8e0d0 0%, #d9d0bc 50%, #cfc6b0 100%)",
       color: "#2c2820",
       boxShadow:
-        "0 1px 0 rgba(255,255,255,0.35) inset, 0 10px 24px rgba(0,0,0,0.4), 0 2px 4px rgba(0,0,0,0.2)",
+        "0 1px 0 rgba(255,255,255,0.35) inset, 0 8px 18px rgba(0,0,0,0.38), 0 2px 4px rgba(0,0,0,0.2)",
     };
   }
   return {
     background: "linear-gradient(155deg, #f7f2e8 0%, #efe8da 45%, #e5dcc8 100%)",
     color: "#1f1a14",
     boxShadow:
-      "0 1px 0 rgba(255,255,255,0.5) inset, 0 10px 28px rgba(0,0,0,0.42), 0 2px 6px rgba(0,0,0,0.22)",
+      "0 1px 0 rgba(255,255,255,0.5) inset, 0 8px 20px rgba(0,0,0,0.4), 0 2px 5px rgba(0,0,0,0.22)",
   };
 }
 
@@ -126,7 +129,7 @@ function Note({
   disabled?: boolean;
 }) {
   const base =
-    "relative block w-full p-3.5 text-left transition active:scale-[0.98] " + hand.className;
+    "relative block w-full p-3 text-left transition active:scale-[0.98] " + hand.className;
 
   const style: CSSProperties = {
     ...paperStyle(tone),
@@ -136,7 +139,7 @@ function Note({
   const inner = (
     <>
       <Thumbtack />
-      <div className="pt-1">{children}</div>
+      <div className="pt-0.5">{children}</div>
     </>
   );
 
@@ -215,124 +218,131 @@ export default function HomePage() {
   };
 
   return (
-    <main className="livv-page min-h-full pb-24">
-      <div className="mx-auto w-full max-w-xl px-4 pb-10 sm:px-5">
-        <header className="pt-5 pb-4">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-livv-muted">Home</p>
-          <h1 className="mt-1.5 text-[22px] font-semibold tracking-[-0.03em] text-[rgb(var(--livv-ink))]">
-            {hello}, {name}.
-          </h1>
+    <main className="livv-page min-h-full pb-20">
+      {/* Board owns the screen — minimal chrome outside */}
+      <div className="mx-auto flex w-full max-w-xl flex-col px-3 sm:px-4">
+        <header className="flex items-end justify-between gap-3 pt-3 pb-2">
+          <div className="min-w-0">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-livv-muted">
+              Home
+            </p>
+            <h1 className="mt-0.5 text-[18px] font-semibold tracking-[-0.03em] text-[rgb(var(--livv-ink))]">
+              {hello}, {name}.
+            </h1>
+          </div>
         </header>
 
         <section
-          className="relative overflow-hidden rounded-sm border border-black/40 px-3 py-5 sm:px-4 sm:py-6"
+          className="relative flex min-h-[calc(100dvh-9.5rem)] flex-col overflow-hidden rounded-[3px] border border-black/50 px-2.5 py-3 sm:px-3 sm:py-4"
           style={CORK_STYLE}
           aria-label="LIVV board"
         >
           <div
-            className="pointer-events-none absolute inset-0 rounded-sm"
+            className="pointer-events-none absolute inset-0 rounded-[3px]"
             style={{
-              boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.04), inset 0 0 0 3px rgba(0,0,0,0.25)",
+              boxShadow:
+                "inset 0 0 0 1px rgba(255,255,255,0.05), inset 0 0 0 4px rgba(0,0,0,0.2)",
             }}
           />
 
-          <div className="relative grid grid-cols-2 gap-3 sm:gap-4">
-            <Note
-              tone="cream"
-              rotate={-3.5}
-              as="button"
-              onClick={checkIn}
-              disabled={checkedIn}
-              ariaLabel={checkedIn ? "Already checked in" : "Check in for today"}
-              className="min-h-[7.5rem]"
-            >
-              <p className="text-[22px] font-semibold leading-[1.15] tracking-[-0.01em] sm:text-[24px]">
-                {checkedIn ? "Checked in." : "Check in today."}
-              </p>
-              <p className="mt-2 text-[15px] leading-snug opacity-80 sm:text-[16px]">
-                {checkedIn
-                  ? rec.streak > 1
-                    ? `${rec.streak}-day chain.`
-                    : "On the record."
-                  : "Same you. Better tomorrow."}
-              </p>
-              {checkedIn ? (
-                <span className="mt-3 inline-flex items-center gap-1 text-[14px] opacity-70">
-                  <Check size={14} strokeWidth={2.5} /> Done
-                </span>
-              ) : null}
-            </Note>
-
-            {primaryUpdate ? (
-              <Note
-                tone="aged"
-                rotate={2.8}
-                href={primaryUpdate.href}
-                ariaLabel={primaryUpdate.title}
-                className="min-h-[7.5rem]"
-              >
-                <p className="text-[20px] font-semibold leading-[1.15] sm:text-[22px]">
-                  {primaryUpdate.title}
-                </p>
-                <p className="mt-2 text-[14px] leading-snug opacity-80 sm:text-[15px]">
-                  {clip(primaryUpdate.body, 90)}
-                </p>
-              </Note>
-            ) : null}
-          </div>
-
-          {featured ? (
-            <div className="relative mx-auto mt-4 max-w-[85%] sm:mt-5 sm:max-w-[80%]">
+          {/* Notes pack the board — tighter gaps, full width */}
+          <div className="relative flex flex-1 flex-col justify-between gap-2.5 sm:gap-3">
+            <div className="grid grid-cols-2 gap-2.5 sm:gap-3">
               <Note
                 tone="cream"
-                rotate={-1.2}
+                rotate={-3.5}
+                as="button"
+                onClick={checkIn}
+                disabled={checkedIn}
+                ariaLabel={checkedIn ? "Already checked in" : "Check in for today"}
+                className="min-h-[6.75rem]"
+              >
+                <p className="text-[20px] font-semibold leading-[1.12] sm:text-[22px]">
+                  {checkedIn ? "Checked in." : "Check in today."}
+                </p>
+                <p className="mt-1.5 text-[14px] leading-snug opacity-80">
+                  {checkedIn
+                    ? rec.streak > 1
+                      ? `${rec.streak}-day chain.`
+                      : "On the record."
+                    : "Same you. Better tomorrow."}
+                </p>
+                {checkedIn ? (
+                  <span className="mt-2 inline-flex items-center gap-1 text-[13px] opacity-70">
+                    <Check size={13} strokeWidth={2.5} /> Done
+                  </span>
+                ) : null}
+              </Note>
+
+              {primaryUpdate ? (
+                <Note
+                  tone="aged"
+                  rotate={2.8}
+                  href={primaryUpdate.href}
+                  ariaLabel={primaryUpdate.title}
+                  className="min-h-[6.75rem]"
+                >
+                  <p className="text-[18px] font-semibold leading-[1.12] sm:text-[20px]">
+                    {primaryUpdate.title}
+                  </p>
+                  <p className="mt-1.5 text-[13px] leading-snug opacity-80">
+                    {clip(primaryUpdate.body, 85)}
+                  </p>
+                </Note>
+              ) : null}
+            </div>
+
+            {featured ? (
+              <Note
+                tone="cream"
+                rotate={-1}
                 href={`/home/read/${featured.slug}`}
                 ariaLabel={`Read: ${featured.title}`}
-                className="min-h-[8.5rem] px-4 py-4"
+                className="min-h-[7.25rem] px-3.5 py-3.5"
               >
-                <p className="text-[12px] font-medium uppercase tracking-[0.12em] opacity-55">
+                <p className="text-[11px] font-medium uppercase tracking-[0.12em] opacity-55">
                   Read · {featured.readMins} min
                 </p>
-                <p className="mt-2 text-[24px] font-semibold leading-[1.12] sm:text-[26px]">
+                <p className="mt-1.5 text-[22px] font-semibold leading-[1.1] sm:text-[24px]">
                   {featured.title}
                 </p>
-                <p className="mt-2 text-[15px] leading-snug opacity-75">{clip(featured.hook, 100)}</p>
-              </Note>
-            </div>
-          ) : null}
-
-          <div className="relative mt-4 grid grid-cols-2 gap-3 sm:mt-5 sm:gap-4">
-            {secondaryUpdate ? (
-              <Note
-                tone="kraft"
-                rotate={3.2}
-                href={secondaryUpdate.href}
-                ariaLabel={secondaryUpdate.title}
-                className="min-h-[7rem]"
-              >
-                <p className="text-[20px] font-semibold leading-[1.15] sm:text-[21px]">
-                  {secondaryUpdate.title}
+                <p className="mt-1.5 text-[14px] leading-snug opacity-75">
+                  {clip(featured.hook, 95)}
                 </p>
-                <p className="mt-2 text-[14px] leading-snug opacity-80">{clip(secondaryUpdate.body, 70)}</p>
-              </Note>
-            ) : (
-              <div />
-            )}
-
-            {quote ? (
-              <Note tone="cream" rotate={-2.5} className="min-h-[7rem]">
-                <p className="text-[17px] font-semibold leading-[1.25] sm:text-[18px]">
-                  &ldquo;{clip(quote.text, 110)}&rdquo;
-                </p>
-                <p className="mt-2 text-[13px] opacity-65">&mdash; {quote.author}</p>
               </Note>
             ) : null}
+
+            <div className="grid grid-cols-2 gap-2.5 sm:gap-3">
+              {secondaryUpdate ? (
+                <Note
+                  tone="kraft"
+                  rotate={3.2}
+                  href={secondaryUpdate.href}
+                  ariaLabel={secondaryUpdate.title}
+                  className="min-h-[6.5rem]"
+                >
+                  <p className="text-[18px] font-semibold leading-[1.12] sm:text-[19px]">
+                    {secondaryUpdate.title}
+                  </p>
+                  <p className="mt-1.5 text-[13px] leading-snug opacity-80">
+                    {clip(secondaryUpdate.body, 65)}
+                  </p>
+                </Note>
+              ) : (
+                <div />
+              )}
+
+              {quote ? (
+                <Note tone="cream" rotate={-2.5} className="min-h-[6.5rem]">
+                  <p className="text-[16px] font-semibold leading-[1.22] sm:text-[17px]">
+                    &ldquo;{clip(quote.text, 100)}&rdquo;
+                  </p>
+                  <p className="mt-1.5 text-[12px] opacity-65">&mdash; {quote.author}</p>
+                </Note>
+              ) : null}
+            </div>
           </div>
         </section>
-
-        <p className="mt-5 text-center text-[11px] text-livv-muted">
-          Pin what matters. Work lives in the tabs.
-        </p>
       </div>
     </main>
   );
