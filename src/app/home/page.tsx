@@ -246,6 +246,7 @@ export default function HomePage() {
     setStickies(loadStickies());
     setEditingId(null);
     setDraft("");
+    setComposerOpen(false);
   };
 
   return (
