@@ -168,6 +168,7 @@ export default function HomePage() {
   const [editingId, setEditingId] = useState<string | null>(null);
   const [draft, setDraft] = useState("");
   const [tone, setTone] = useState<PaperTone>("cream");
+  const [composerOpen, setComposerOpen] = useState(false);
 
   const pull = () => {
     setRec(loadRecord());
@@ -179,10 +180,14 @@ export default function HomePage() {
     pull();
     setQuote(quoteForSession());
     setStickies(loadStickies());
-    const events = ["livv-identity", "livv-record", "livv-daily", "livv-home-stickies"];
+    const events = ["livv-identity", "livv-record", "livv-daily"];
     events.forEach((e) => window.addEventListener(e, pull));
-    window.addEventListener("livv-home-stickies", () => setStickies(loadStickies()));
-    return () => events.forEach((e) => window.removeEventListener(e, pull));
+    const syncStickies = () => setStickies(loadStickies());
+    window.addEventListener("livv-home-stickies", syncStickies);
+    return () => {
+      events.forEach((e) => window.removeEventListener(e, pull));
+      window.removeEventListener("livv-home-stickies", syncStickies);
+    };
   }, []);
 
   const featured = useMemo(() => featuredRead(), []);
@@ -211,12 +216,14 @@ export default function HomePage() {
     setEditingId(null);
     setDraft("");
     setTone(stickies.length % 2 === 0 ? "cream" : "kraft");
+    setComposerOpen(true);
   };
 
   const openEditSticky = (sticky: PersonalSticky) => {
     setEditingId(sticky.id);
     setDraft(sticky.text);
     setTone(sticky.tone);
+    setComposerOpen(true);
   };
 
   const saveSticky = () => {
@@ -230,6 +237,7 @@ export default function HomePage() {
     setStickies(loadStickies());
     setEditingId(null);
     setDraft("");
+    setComposerOpen(false);
   };
 
   const deleteSticky = () => {
@@ -348,7 +356,7 @@ export default function HomePage() {
         </div>
       </div>
 
-      {(editingId !== null || draft.length > 0) ? (
+      {composerOpen ? (
         <div className="fixed inset-0 z-[120] flex items-end justify-center bg-black/55 p-3 backdrop-blur-[2px] sm:items-center">
           <div className="w-full max-w-md rounded-[24px] border border-[var(--livv-pro-line)] bg-[var(--livv-pro-bg)] p-5 shadow-2xl">
             <div className="flex items-center justify-between">
@@ -356,7 +364,7 @@ export default function HomePage() {
                 <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-livv-muted">Personal pin</p>
                 <h2 className="mt-1 text-[21px] font-semibold tracking-[-0.03em]">Put something on your board.</h2>
               </div>
-              <button type="button" onClick={() => { setEditingId(null); setDraft(""); }} className="grid h-9 w-9 place-items-center rounded-full border border-[var(--livv-pro-line)]" aria-label="Close"><X size={17} /></button>
+              <button type="button" onClick={() => { setEditingId(null); setDraft(""); setComposerOpen(false); }} className="grid h-9 w-9 place-items-center rounded-full border border-[var(--livv-pro-line)]" aria-label="Close"><X size={17} /></button>
             </div>
 
             <textarea
