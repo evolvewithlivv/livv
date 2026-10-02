@@ -3,14 +3,9 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState, type CSSProperties, type ReactNode } from "react";
 import { Caveat } from "next/font/google";
-import { Check } from "lucide-react";
+import { Check, Pencil, Plus, Trash2, X } from "lucide-react";
 import { addEmbers, loadIdentity, type Identity } from "@/lib/identity";
-import {
-  checkInRecord,
-  isCheckedInToday,
-  loadRecord,
-  type LivvRecord,
-} from "@/lib/record";
+import { checkInRecord, isCheckedInToday, loadRecord, type LivvRecord } from "@/lib/record";
 import { feedback } from "@/lib/sensory";
 import { dailySummary } from "@/lib/daily";
 import { quoteForSession, type Quote } from "@/lib/quotes";
@@ -24,11 +19,22 @@ const hand = Caveat({
   display: "swap",
 });
 
+type PaperTone = "cream" | "kraft" | "aged";
+type PersonalSticky = {
+  id: string;
+  text: string;
+  tone: PaperTone;
+  updatedAt: number;
+};
+
+const STICKY_KEY = "livv-home-stickies-v1";
+const MAX_STICKIES = 3;
+
 function greetingForHour(hour: number): string {
-  if (hour < 5) return "Still up";
-  if (hour < 12) return "Good morning";
-  if (hour < 17) return "Good afternoon";
-  if (hour < 21) return "Good evening";
+  if (hour < 5) return "Late night";
+  if (hour < 12) return "Morning";
+  if (hour < 17) return "Afternoon";
+  if (hour < 21) return "Evening";
   return "Wind down";
 }
 
@@ -50,7 +56,27 @@ function clip(text: string, max: number): string {
   return text.slice(0, max - 1).trimEnd() + "...";
 }
 
-/** Dark cork — denser grain so the board reads as a surface, not empty black. */
+function loadStickies(): PersonalSticky[] {
+  if (typeof window === "undefined") return [];
+  try {
+    const raw = window.localStorage.getItem(STICKY_KEY);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw);
+    if (!Array.isArray(parsed)) return [];
+    return parsed
+      .filter((x): x is PersonalSticky => Boolean(x && typeof x.id === "string" && typeof x.text === "string"))
+      .slice(0, MAX_STICKIES);
+  } catch {
+    return [];
+  }
+}
+
+function saveStickies(next: PersonalSticky[]) {
+  if (typeof window === "undefined") return;
+  window.localStorage.setItem(STICKY_KEY, JSON.stringify(next.slice(0, MAX_STICKIES)));
+  window.dispatchEvent(new Event("livv-home-stickies"));
+}
+
 const CORK_STYLE: CSSProperties = {
   backgroundColor: "#2a2218",
   backgroundImage: [
@@ -62,34 +88,28 @@ const CORK_STYLE: CSSProperties = {
     "repeating-linear-gradient(112deg, rgba(255,255,255,0.03) 0 1px, transparent 1px 4px)",
     "repeating-linear-gradient(22deg, rgba(0,0,0,0.06) 0 1px, transparent 1px 6px)",
   ].join(","),
-  boxShadow:
-    "inset 0 0 60px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.06), 0 12px 32px rgba(0,0,0,0.4)",
+  boxShadow: "inset 0 0 60px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.06), 0 12px 32px rgba(0,0,0,0.4)",
 };
-
-type PaperTone = "cream" | "kraft" | "aged";
 
 function paperStyle(tone: PaperTone): CSSProperties {
   if (tone === "kraft") {
     return {
       background: "linear-gradient(145deg, #c4a882 0%, #b8956a 40%, #a8845c 100%)",
       color: "#2a2118",
-      boxShadow:
-        "0 1px 0 rgba(255,255,255,0.2) inset, 0 6px 16px rgba(0,0,0,0.35), 0 2px 4px rgba(0,0,0,0.2)",
+      boxShadow: "0 1px 0 rgba(255,255,255,0.2) inset, 0 6px 16px rgba(0,0,0,0.35), 0 2px 4px rgba(0,0,0,0.2)",
     };
   }
   if (tone === "aged") {
     return {
       background: "linear-gradient(160deg, #e8e0d0 0%, #d9d0bc 50%, #cfc6b0 100%)",
       color: "#2c2820",
-      boxShadow:
-        "0 1px 0 rgba(255,255,255,0.35) inset, 0 8px 18px rgba(0,0,0,0.38), 0 2px 4px rgba(0,0,0,0.2)",
+      boxShadow: "0 1px 0 rgba(255,255,255,0.35) inset, 0 8px 18px rgba(0,0,0,0.38), 0 2px 4px rgba(0,0,0,0.2)",
     };
   }
   return {
     background: "linear-gradient(155deg, #f7f2e8 0%, #efe8da 45%, #e5dcc8 100%)",
     color: "#1f1a14",
-    boxShadow:
-      "0 1px 0 rgba(255,255,255,0.5) inset, 0 8px 20px rgba(0,0,0,0.4), 0 2px 5px rgba(0,0,0,0.22)",
+    boxShadow: "0 1px 0 rgba(255,255,255,0.5) inset, 0 8px 20px rgba(0,0,0,0.4), 0 2px 5px rgba(0,0,0,0.22)",
   };
 }
 
@@ -99,8 +119,7 @@ function Thumbtack() {
       aria-hidden
       className="pointer-events-none absolute left-1/2 top-0 z-10 h-3 w-3 -translate-x-1/2 -translate-y-1/2 rounded-full"
       style={{
-        background:
-          "radial-gradient(circle at 35% 30%, #f0f0f0 0%, #a8a8a8 40%, #5a5a5a 75%, #2a2a2a 100%)",
+        background: "radial-gradient(circle at 35% 30%, #f0f0f0 0%, #a8a8a8 40%, #5a5a5a 75%, #2a2a2a 100%)",
         boxShadow: "0 1px 2px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.5)",
       }}
     />
@@ -128,55 +147,27 @@ function Note({
   ariaLabel?: string;
   disabled?: boolean;
 }) {
-  const base =
-    "relative block w-full p-3 text-left transition active:scale-[0.98] " + hand.className;
-
-  const style: CSSProperties = {
-    ...paperStyle(tone),
-    transform: `rotate(${rotate}deg)`,
-  };
-
-  const inner = (
-    <>
-      <Thumbtack />
-      <div className="pt-0.5">{children}</div>
-    </>
-  );
+  const base = "relative block w-full p-3 text-left transition active:scale-[0.98] " + hand.className;
+  const style: CSSProperties = { ...paperStyle(tone), transform: `rotate(${rotate}deg)` };
+  const inner = <><Thumbtack /><div className="pt-0.5">{children}</div></>;
 
   if (href && !disabled) {
-    return (
-      <Link href={href} aria-label={ariaLabel} className={`${base} ${className}`} style={style}>
-        {inner}
-      </Link>
-    );
+    return <Link href={href} aria-label={ariaLabel} className={`${base} ${className}`} style={style}>{inner}</Link>;
   }
-
   if (Comp === "button" || onClick) {
-    return (
-      <button
-        type="button"
-        onClick={onClick}
-        disabled={disabled}
-        aria-label={ariaLabel}
-        className={`${base} ${className} disabled:opacity-90`}
-        style={style}
-      >
-        {inner}
-      </button>
-    );
+    return <button type="button" onClick={onClick} disabled={disabled} aria-label={ariaLabel} className={`${base} ${className} disabled:opacity-90`} style={style}>{inner}</button>;
   }
-
-  return (
-    <div className={`${base} ${className}`} style={style} aria-label={ariaLabel}>
-      {inner}
-    </div>
-  );
+  return <div className={`${base} ${className}`} style={style} aria-label={ariaLabel}>{inner}</div>;
 }
 
 export default function HomePage() {
   const [rec, setRec] = useState<LivvRecord | null>(null);
   const [me, setMe] = useState<Identity | null>(null);
   const [quote, setQuote] = useState<Quote | null>(null);
+  const [stickies, setStickies] = useState<PersonalSticky[]>([]);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [draft, setDraft] = useState("");
+  const [tone, setTone] = useState<PaperTone>("cream");
 
   const pull = () => {
     setRec(loadRecord());
@@ -187,8 +178,10 @@ export default function HomePage() {
   useEffect(() => {
     pull();
     setQuote(quoteForSession());
-    const events = ["livv-identity", "livv-record", "livv-daily"];
+    setStickies(loadStickies());
+    const events = ["livv-identity", "livv-record", "livv-daily", "livv-home-stickies"];
     events.forEach((e) => window.addEventListener(e, pull));
+    window.addEventListener("livv-home-stickies", () => setStickies(loadStickies()));
     return () => events.forEach((e) => window.removeEventListener(e, pull));
   }, []);
 
@@ -201,149 +194,210 @@ export default function HomePage() {
   const checkedIn = isCheckedInToday(rec);
   const name = displayNameForGreeting(me);
   const hello = greetingForHour(new Date().getHours());
+  const dateLabel = new Intl.DateTimeFormat("en-US", { weekday: "long", month: "long", day: "numeric" }).format(new Date());
 
   const checkIn = () => {
     if (checkedIn) return;
     const result = checkInRecord();
     if (result.already) return;
     feedback("checkin");
-    const base = embersFromAction("checkin");
-    addEmbers(base);
-    const bonus =
-      result.emberBonus && [4, 6, 8, 10, 12, 15].includes(result.emberBonus)
-        ? result.emberBonus
-        : 0;
+    addEmbers(embersFromAction("checkin"));
+    const bonus = result.emberBonus && [4, 6, 8, 10, 12, 15].includes(result.emberBonus) ? result.emberBonus : 0;
     if (bonus) addEmbers(bonus, `ember-checkin-bonus-${Date.now()}`);
     pull();
   };
 
+  const openNewSticky = () => {
+    setEditingId(null);
+    setDraft("");
+    setTone(stickies.length % 2 === 0 ? "cream" : "kraft");
+  };
+
+  const openEditSticky = (sticky: PersonalSticky) => {
+    setEditingId(sticky.id);
+    setDraft(sticky.text);
+    setTone(sticky.tone);
+  };
+
+  const saveSticky = () => {
+    const text = draft.trim().replace(/\s+/g, " ");
+    if (!text) return;
+    if (editingId) {
+      saveStickies(stickies.map((s) => s.id === editingId ? { ...s, text, tone, updatedAt: Date.now() } : s));
+    } else if (stickies.length < MAX_STICKIES) {
+      saveStickies([...stickies, { id: `sticky_${Date.now()}`, text, tone, updatedAt: Date.now() }]);
+    }
+    setStickies(loadStickies());
+    setEditingId(null);
+    setDraft("");
+  };
+
+  const deleteSticky = () => {
+    if (!editingId) return;
+    saveStickies(stickies.filter((s) => s.id !== editingId));
+    setStickies(loadStickies());
+    setEditingId(null);
+    setDraft("");
+  };
+
   return (
     <main className="livv-page min-h-full pb-20">
-      {/* Board owns the screen — minimal chrome outside */}
       <div className="mx-auto flex w-full max-w-xl flex-col px-3 sm:px-4">
-        <header className="flex items-end justify-between gap-3 pt-3 pb-2">
+        <header className="flex items-end justify-between gap-4 px-1 pt-3 pb-3">
           <div className="min-w-0">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-livv-muted">
-              Home
-            </p>
-            <h1 className="mt-0.5 text-[18px] font-semibold tracking-[-0.03em] text-[rgb(var(--livv-ink))]">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-livv-muted">{dateLabel}</p>
+            <h1 className="mt-0.5 text-[24px] font-semibold tracking-[-0.04em] text-[rgb(var(--livv-ink))]">
               {hello}, {name}.
             </h1>
+          </div>
+          <div className="shrink-0 text-right">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-livv-muted">Embers</p>
+            <p className="mt-0.5 text-[14px] font-semibold tabular-nums text-[rgb(var(--livv-ink))]">{me.embers}</p>
           </div>
         </header>
 
         <section
-          className="relative flex min-h-[calc(100dvh-9.5rem)] flex-col overflow-hidden rounded-[3px] border border-black/50 px-2.5 py-3 sm:px-3 sm:py-4"
+          className="relative overflow-hidden rounded-[3px] border border-black/50 px-2.5 py-3 sm:px-3 sm:py-4"
           style={CORK_STYLE}
-          aria-label="LIVV board"
+          aria-label="LIVV bulletin board"
         >
-          <div
-            className="pointer-events-none absolute inset-0 rounded-[3px]"
-            style={{
-              boxShadow:
-                "inset 0 0 0 1px rgba(255,255,255,0.05), inset 0 0 0 4px rgba(0,0,0,0.2)",
-            }}
-          />
+          <div className="pointer-events-none absolute inset-0 rounded-[3px]" style={{ boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.05), inset 0 0 0 4px rgba(0,0,0,0.2)" }} />
 
-          {/* Notes pack the board — tighter gaps, full width */}
-          <div className="relative flex flex-1 flex-col justify-between gap-2.5 sm:gap-3">
-            <div className="grid grid-cols-2 gap-2.5 sm:gap-3">
-              <Note
-                tone="cream"
-                rotate={-3.5}
-                as="button"
-                onClick={checkIn}
-                disabled={checkedIn}
-                ariaLabel={checkedIn ? "Already checked in" : "Check in for today"}
-                className="min-h-[6.75rem]"
-              >
-                <p className="text-[20px] font-semibold leading-[1.12] sm:text-[22px]">
-                  {checkedIn ? "Checked in." : "Check in today."}
-                </p>
-                <p className="mt-1.5 text-[14px] leading-snug opacity-80">
-                  {checkedIn
-                    ? rec.streak > 1
-                      ? `${rec.streak}-day chain.`
-                      : "On the record."
-                    : "Same you. Better tomorrow."}
-                </p>
-                {checkedIn ? (
-                  <span className="mt-2 inline-flex items-center gap-1 text-[13px] opacity-70">
-                    <Check size={13} strokeWidth={2.5} /> Done
-                  </span>
-                ) : null}
-              </Note>
+          <div className="relative mb-2.5 flex items-center justify-between px-1 text-[9px] font-semibold uppercase tracking-[0.2em] text-white/45">
+            <span>LIVV / TODAY</span>
+            <span>{rec.streak > 0 ? `${rec.streak} day chain` : "Start your chain"}</span>
+          </div>
 
-              {primaryUpdate ? (
-                <Note
-                  tone="aged"
-                  rotate={2.8}
-                  href={primaryUpdate.href}
-                  ariaLabel={primaryUpdate.title}
-                  className="min-h-[6.75rem]"
-                >
-                  <p className="text-[18px] font-semibold leading-[1.12] sm:text-[20px]">
-                    {primaryUpdate.title}
-                  </p>
-                  <p className="mt-1.5 text-[13px] leading-snug opacity-80">
-                    {clip(primaryUpdate.body, 85)}
-                  </p>
-                </Note>
-              ) : null}
-            </div>
+          <div className="relative grid grid-cols-2 gap-2.5 sm:gap-3">
+            <Note tone="cream" rotate={-3.5} as="button" onClick={checkIn} disabled={checkedIn} ariaLabel={checkedIn ? "Already checked in" : "Check in for today"} className="min-h-[6.75rem]">
+              <p className="text-[20px] font-semibold leading-[1.12] sm:text-[22px]">{checkedIn ? "Checked in." : "Check in today."}</p>
+              <p className="mt-1.5 text-[14px] leading-snug opacity-80">{checkedIn ? (rec.streak > 1 ? `${rec.streak}-day chain.` : "On the record.") : "Same you. Better tomorrow."}</p>
+              {checkedIn ? <span className="mt-2 inline-flex items-center gap-1 text-[13px] opacity-70"><Check size={13} strokeWidth={2.5} /> Done</span> : null}
+            </Note>
 
-            {featured ? (
-              <Note
-                tone="cream"
-                rotate={-1}
-                href={`/home/read/${featured.slug}`}
-                ariaLabel={`Read: ${featured.title}`}
-                className="min-h-[7.25rem] px-3.5 py-3.5"
-              >
-                <p className="text-[11px] font-medium uppercase tracking-[0.12em] opacity-55">
-                  Read · {featured.readMins} min
-                </p>
-                <p className="mt-1.5 text-[22px] font-semibold leading-[1.1] sm:text-[24px]">
-                  {featured.title}
-                </p>
-                <p className="mt-1.5 text-[14px] leading-snug opacity-75">
-                  {clip(featured.hook, 95)}
-                </p>
+            {primaryUpdate ? (
+              <Note tone="aged" rotate={2.8} href={primaryUpdate.href} ariaLabel={primaryUpdate.title} className="min-h-[6.75rem]">
+                <p className="text-[18px] font-semibold leading-[1.12] sm:text-[20px]">{primaryUpdate.title}</p>
+                <p className="mt-1.5 text-[13px] leading-snug opacity-80">{clip(primaryUpdate.body, 85)}</p>
               </Note>
             ) : null}
 
-            <div className="grid grid-cols-2 gap-2.5 sm:gap-3">
-              {secondaryUpdate ? (
-                <Note
-                  tone="kraft"
-                  rotate={3.2}
-                  href={secondaryUpdate.href}
-                  ariaLabel={secondaryUpdate.title}
-                  className="min-h-[6.5rem]"
-                >
-                  <p className="text-[18px] font-semibold leading-[1.12] sm:text-[19px]">
-                    {secondaryUpdate.title}
-                  </p>
-                  <p className="mt-1.5 text-[13px] leading-snug opacity-80">
-                    {clip(secondaryUpdate.body, 65)}
-                  </p>
-                </Note>
-              ) : (
-                <div />
-              )}
+            {featured ? (
+              <Note tone="cream" rotate={-1} href={`/home/read/${featured.slug}`} ariaLabel={`Read: ${featured.title}`} className="col-span-2 min-h-[7.6rem] px-3.5 py-3.5">
+                <p className="text-[11px] font-medium uppercase tracking-[0.12em] opacity-55">Read · {featured.readMins} min</p>
+                <p className="mt-1.5 max-w-[24ch] text-[23px] font-semibold leading-[1.06] sm:text-[25px]">{featured.title}</p>
+                <p className="mt-1.5 max-w-[42ch] text-[14px] leading-snug opacity-75">{clip(featured.hook, 100)}</p>
+              </Note>
+            ) : null}
 
-              {quote ? (
-                <Note tone="cream" rotate={-2.5} className="min-h-[6.5rem]">
-                  <p className="text-[16px] font-semibold leading-[1.22] sm:text-[17px]">
-                    &ldquo;{clip(quote.text, 100)}&rdquo;
-                  </p>
-                  <p className="mt-1.5 text-[12px] opacity-65">&mdash; {quote.author}</p>
-                </Note>
-              ) : null}
-            </div>
+            {secondaryUpdate ? (
+              <Note tone="kraft" rotate={3.2} href={secondaryUpdate.href} ariaLabel={secondaryUpdate.title} className="min-h-[6.25rem]">
+                <p className="text-[18px] font-semibold leading-[1.12] sm:text-[19px]">{secondaryUpdate.title}</p>
+                <p className="mt-1.5 text-[13px] leading-snug opacity-80">{clip(secondaryUpdate.body, 65)}</p>
+              </Note>
+            ) : null}
+
+            {quote ? (
+              <Note tone="cream" rotate={-2.5} className="min-h-[6.25rem]">
+                <p className="text-[16px] font-semibold leading-[1.22] sm:text-[17px]">&ldquo;{clip(quote.text, 100)}&rdquo;</p>
+                <p className="mt-1.5 text-[12px] opacity-65">&mdash; {quote.author}</p>
+              </Note>
+            ) : null}
+
+            {stickies.map((sticky, index) => (
+              <Note
+                key={sticky.id}
+                tone={sticky.tone}
+                rotate={index % 2 === 0 ? -2.4 : 2.4}
+                as="button"
+                onClick={() => openEditSticky(sticky)}
+                ariaLabel="Edit your pinned note"
+                className="min-h-[5.75rem]"
+              >
+                <p className="mb-1 text-[9px] font-semibold uppercase tracking-[0.14em] opacity-45">Pinned by you</p>
+                <p className="text-[17px] font-semibold leading-[1.15]">{clip(sticky.text, 105)}</p>
+                <Pencil size={12} className="absolute bottom-2.5 right-2.5 opacity-35" />
+              </Note>
+            ))}
+
+            {stickies.length < MAX_STICKIES ? (
+              <Note
+                tone={stickies.length === 0 ? "aged" : "kraft"}
+                rotate={stickies.length % 2 === 0 ? 2.8 : -2.2}
+                as="button"
+                onClick={openNewSticky}
+                ariaLabel="Pin a personal note"
+                className="min-h-[5.75rem]"
+              >
+                <span className="flex h-full min-h-[4.8rem] flex-col justify-between">
+                  <span className="flex items-center gap-2 text-[17px] font-semibold leading-tight">
+                    <Plus size={17} strokeWidth={2.5} /> Pin something.
+                  </span>
+                  <span className="text-[12px] leading-snug opacity-65">
+                    A goal, reminder, idea, or sentence you want in sight.
+                  </span>
+                </span>
+              </Note>
+            ) : null}
           </div>
         </section>
+
+        <div className="flex items-center justify-between px-1 pt-3 text-[10px] font-semibold uppercase tracking-[0.17em] text-livv-muted">
+          <span>{stickies.length}/{MAX_STICKIES} personal pins</span>
+          <Link href="/home/daily" className="flex items-center gap-1.5 text-[rgb(var(--livv-ink))]">Open Daily <span aria-hidden>↗</span></Link>
+        </div>
       </div>
+
+      {(editingId !== null || draft.length > 0) ? (
+        <div className="fixed inset-0 z-[120] flex items-end justify-center bg-black/55 p-3 backdrop-blur-[2px] sm:items-center">
+          <div className="w-full max-w-md rounded-[24px] border border-[var(--livv-pro-line)] bg-[var(--livv-pro-bg)] p-5 shadow-2xl">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-livv-muted">Personal pin</p>
+                <h2 className="mt-1 text-[21px] font-semibold tracking-[-0.03em]">Put something on your board.</h2>
+              </div>
+              <button type="button" onClick={() => { setEditingId(null); setDraft(""); }} className="grid h-9 w-9 place-items-center rounded-full border border-[var(--livv-pro-line)]" aria-label="Close"><X size={17} /></button>
+            </div>
+
+            <textarea
+              autoFocus
+              value={draft}
+              maxLength={140}
+              onChange={(e) => setDraft(e.target.value)}
+              placeholder="What do you want to keep in sight?"
+              className="mt-5 min-h-[120px] w-full resize-none rounded-[16px] border border-[var(--livv-pro-line)] bg-transparent p-4 text-[17px] leading-relaxed outline-none placeholder:text-livv-muted focus:border-[rgb(var(--livv-accent))]"
+            />
+
+            <div className="mt-4 flex gap-2">
+              {(["cream", "kraft", "aged"] as PaperTone[]).map((option) => (
+                <button
+                  key={option}
+                  type="button"
+                  onClick={() => setTone(option)}
+                  className={`h-9 flex-1 rounded-full border text-[10px] font-semibold uppercase tracking-[0.12em] ${tone === option ? "border-[rgb(var(--livv-accent))]" : "border-[var(--livv-pro-line)]"}`}
+                >
+                  {option}
+                </button>
+              ))}
+            </div>
+
+            <div className="mt-5 flex gap-2">
+              {editingId ? (
+                <button type="button" onClick={deleteSticky} className="flex h-11 w-11 shrink-0 items-center justify-center rounded-full border border-[var(--livv-pro-line)] text-red-400" aria-label="Delete pinned note"><Trash2 size={16} /></button>
+              ) : null}
+              <button
+                type="button"
+                disabled={!draft.trim()}
+                onClick={saveSticky}
+                className="h-11 flex-1 rounded-full bg-[rgb(var(--livv-ink))] px-5 text-[12px] font-semibold text-[rgb(var(--livv-bg))] disabled:opacity-40"
+              >
+                {editingId ? "Update pin" : "Pin to board"}
+              </button>
+            </div>
+            <p className="mt-3 text-center text-[10px] text-livv-muted">Keep it short. Your board can hold up to three.</p>
+          </div>
+        </div>
+      ) : null}
     </main>
   );
 }
