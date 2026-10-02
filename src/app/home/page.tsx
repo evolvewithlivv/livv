@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState, type CSSProperties, type ReactNode } from "react";
 import { Caveat } from "next/font/google";
-import { Check, Pencil, Plus, Trash2, X } from "lucide-react";
+import { ArrowUpRight, Check, Pencil, Plus, Trash2, X } from "lucide-react";
 import { addEmbers, loadIdentity, type Identity } from "@/lib/identity";
 import { checkInRecord, isCheckedInToday, loadRecord, type LivvRecord } from "@/lib/record";
 import { feedback } from "@/lib/sensory";
@@ -200,6 +200,10 @@ export default function HomePage() {
   const name = displayNameForGreeting(me);
   const hello = greetingForHour(new Date().getHours());
   const dateLabel = new Intl.DateTimeFormat("en-US", { weekday: "long", month: "long", day: "numeric" }).format(new Date());
+  const lastWorkout = rec.lastWorkout;
+  const lastWorkoutDate = lastWorkout
+    ? new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric" }).format(new Date(lastWorkout.at))
+    : null;
 
   const checkIn = () => {
     if (checkedIn) return;
@@ -252,17 +256,22 @@ export default function HomePage() {
   return (
     <main className="livv-page min-h-full pb-20">
       <div className="mx-auto flex w-full max-w-xl flex-col px-3 sm:px-4">
-        <header className="flex items-end justify-between gap-4 px-1 pt-3 pb-3">
-          <div className="min-w-0">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-livv-muted">{dateLabel}</p>
-            <h1 className="mt-0.5 text-[24px] font-semibold tracking-[-0.04em] text-[rgb(var(--livv-ink))]">
-              {hello}, {name}.
-            </h1>
+        <header className="px-1 pt-4 pb-5">
+          <div className="flex items-end justify-between gap-5">
+            <div className="min-w-0">
+              <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-livv-muted">{dateLabel}</p>
+              <h1 className="mt-1 text-[28px] font-semibold tracking-[-0.05em] text-[rgb(var(--livv-ink))]">
+                {hello}, {name}.
+              </h1>
+            </div>
+            <div className="shrink-0 border-l border-[var(--livv-pro-line)] pl-4 text-right">
+              <p className="text-[9px] font-semibold uppercase tracking-[0.2em] text-livv-muted">Embers</p>
+              <p className="mt-1 text-[17px] font-semibold tabular-nums text-[rgb(var(--livv-ink))]">{me.embers}</p>
+            </div>
           </div>
-          <div className="shrink-0 text-right">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-livv-muted">Embers</p>
-            <p className="mt-0.5 text-[14px] font-semibold tabular-nums text-[rgb(var(--livv-ink))]">{me.embers}</p>
-          </div>
+          <p className="mt-4 max-w-[31rem] text-[14px] leading-6 text-livv-muted">
+            {checkedIn ? "You're on the board. Keep the rest of today honest." : "A new day. Put something real on the board."}
+          </p>
         </header>
 
         <section
@@ -272,9 +281,22 @@ export default function HomePage() {
         >
           <div className="pointer-events-none absolute inset-0 rounded-[3px]" style={{ boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.05), inset 0 0 0 4px rgba(0,0,0,0.2)" }} />
 
-          <div className="relative mb-2.5 flex items-center justify-between px-1 text-[9px] font-semibold uppercase tracking-[0.2em] text-white/45">
-            <span>LIVV / TODAY</span>
-            <span>{rec.streak > 0 ? `${rec.streak} day chain` : "Start your chain"}</span>
+          <div className="relative mb-3 flex items-center justify-between px-1">
+            <div className="text-[9px] font-semibold uppercase tracking-[0.2em] text-white/45">
+              <span>LIVV / TODAY</span>
+              <span className="mx-2 text-white/20">/</span>
+              <span>{rec.streak > 0 ? `${rec.streak} day chain` : "Start your chain"}</span>
+            </div>
+            {stickies.length < MAX_STICKIES ? (
+              <button
+                type="button"
+                onClick={openNewSticky}
+                className="relative z-20 inline-flex min-h-8 items-center gap-1.5 rounded-full border border-white/20 bg-black/25 px-3 text-[9px] font-semibold uppercase tracking-[0.16em] text-white/80 transition active:scale-[0.97]"
+                aria-label="Add a personal pin"
+              >
+                <Plus size={13} strokeWidth={2.5} /> Add pin
+              </button>
+            ) : null}
           </div>
 
           <div className="relative grid grid-cols-2 gap-2.5 sm:gap-3">
@@ -330,31 +352,59 @@ export default function HomePage() {
             ))}
 
             {stickies.length < MAX_STICKIES ? (
-              <Note
-                tone={stickies.length === 0 ? "aged" : "kraft"}
-                rotate={stickies.length % 2 === 0 ? 2.8 : -2.2}
-                as="button"
+              <button
+                type="button"
                 onClick={openNewSticky}
-                ariaLabel="Pin a personal note"
-                className="min-h-[5.75rem]"
+                aria-label="Pin a personal note"
+                className={`relative block min-h-[5.75rem] w-full p-3 text-left transition active:scale-[0.98] ${hand.className}`}
+                style={{ ...paperStyle(stickies.length === 0 ? "aged" : "kraft"), transform: `rotate(${stickies.length % 2 === 0 ? 2.8 : -2.2}deg)` }}
               >
+                <Thumbtack />
                 <span className="flex h-full min-h-[4.8rem] flex-col justify-between">
                   <span className="flex items-center gap-2 text-[17px] font-semibold leading-tight">
-                    <Plus size={17} strokeWidth={2.5} /> Pin something.
+                    <span className="grid h-6 w-6 place-items-center rounded-full border border-black/20"><Plus size={15} strokeWidth={2.5} /></span>
+                    Add a personal pin
                   </span>
                   <span className="text-[12px] leading-snug opacity-65">
-                    A goal, reminder, idea, or sentence you want in sight.
+                    Goal, reminder, idea, or sentence. Up to {MAX_STICKIES - stickies.length} {MAX_STICKIES - stickies.length === 1 ? "spot" : "spots"} left.
                   </span>
                 </span>
-              </Note>
+              </button>
             ) : null}
           </div>
         </section>
 
-        <div className="flex items-center justify-between px-1 pt-3 text-[10px] font-semibold uppercase tracking-[0.17em] text-livv-muted">
-          <span>{stickies.length}/{MAX_STICKIES} personal pins</span>
-          <Link href="/home/daily" className="flex items-center gap-1.5 text-[rgb(var(--livv-ink))]">Open Daily <span aria-hidden>↗</span></Link>
-        </div>
+        <section className="mt-7 border-t border-[var(--livv-pro-line)] pt-5" aria-label="Continue">
+          <div className="mb-3 flex items-center justify-between px-1">
+            <p className="text-[9px] font-semibold uppercase tracking-[0.2em] text-livv-muted">Continue</p>
+            <Link href="/home/train" className="text-[9px] font-semibold uppercase tracking-[0.16em] text-livv-muted">Train ↗</Link>
+          </div>
+          <Link
+            href="/home/train"
+            className="group block border-b border-[var(--livv-pro-line)] px-1 pb-5"
+          >
+            <div className="flex items-end justify-between gap-4">
+              <div className="min-w-0">
+                <p className="text-[22px] font-semibold tracking-[-0.04em] text-[rgb(var(--livv-ink))]">
+                  {lastWorkout ? "Pick up where you left off." : "Start with your body."}
+                </p>
+                <p className="mt-1.5 text-[13px] leading-5 text-livv-muted">
+                  {lastWorkout
+                    ? `${lastWorkout.name} · ${lastWorkout.duration} · ${lastWorkoutDate}`
+                    : "Your first session is waiting."}
+                </p>
+              </div>
+              <span className="mb-0.5 grid h-10 w-10 shrink-0 place-items-center rounded-full border border-[var(--livv-pro-line)] transition group-active:scale-95">
+                <ArrowUpRight size={17} />
+              </span>
+            </div>
+          </Link>
+
+          <div className="flex items-center justify-between px-1 pt-3 text-[10px] font-semibold uppercase tracking-[0.17em] text-livv-muted">
+            <span>{stickies.length}/{MAX_STICKIES} personal pins</span>
+            <Link href="/home/daily" className="text-[rgb(var(--livv-ink))]">Open Daily ↗</Link>
+          </div>
+        </section>
       </div>
 
       {composerOpen ? (
