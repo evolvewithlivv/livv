@@ -78,17 +78,7 @@ function saveStickies(next: PersonalSticky[]) {
 }
 
 const CORK_STYLE: CSSProperties = {
-  backgroundColor: "#2a2218",
-  backgroundImage: [
-    "radial-gradient(ellipse at 15% 20%, rgba(120,90,60,0.45), transparent 50%)",
-    "radial-gradient(ellipse at 85% 75%, rgba(60,45,30,0.55), transparent 45%)",
-    "repeating-radial-gradient(circle at 8% 12%, rgba(255,210,160,0.07) 0 0.6px, transparent 0.7px 2.8px)",
-    "repeating-radial-gradient(circle at 62% 38%, rgba(0,0,0,0.28) 0 0.7px, transparent 0.8px 3.2px)",
-    "repeating-radial-gradient(circle at 40% 80%, rgba(255,220,180,0.05) 0 0.5px, transparent 0.6px 3.5px)",
-    "repeating-linear-gradient(112deg, rgba(255,255,255,0.03) 0 1px, transparent 1px 4px)",
-    "repeating-linear-gradient(22deg, rgba(0,0,0,0.06) 0 1px, transparent 1px 6px)",
-  ].join(","),
-  boxShadow: "inset 0 0 42px rgba(0,0,0,0.16)",
+  backgroundColor: "transparent",
 };
 
 function paperStyle(tone: PaperTone): CSSProperties {
@@ -275,8 +265,7 @@ export default function HomePage() {
         </header>
 
         <section
-          className="relative overflow-hidden rounded-[18px] px-3.5 py-4 sm:px-4 sm:py-5"
-          style={CORK_STYLE}
+          className="relative px-0.5 py-2 sm:px-1 sm:py-3"
           aria-label="LIVV bulletin board"
         >
           
