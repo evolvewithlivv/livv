@@ -363,35 +363,50 @@ export default function HomePage() {
           </div>
         </section>
 
-        <section className="mt-7 border-t border-[var(--livv-pro-line)] pt-5" aria-label="Continue">
-          <div className="mb-3 flex items-center justify-between px-1">
-            <p className="text-[9px] font-semibold uppercase tracking-[0.2em] text-livv-muted">Continue</p>
-            <Link href="/home/train" className="text-[9px] font-semibold uppercase tracking-[0.16em] text-livv-muted">Train ↗</Link>
+        <section className="mt-10 border-t border-[var(--livv-pro-line)] pt-7" aria-label="What’s next">
+          <div className="mb-5 flex items-center justify-between px-1">
+            <p className="text-[9px] font-semibold uppercase tracking-[0.22em] text-livv-muted">Keep moving</p>
+            <span className="text-[9px] font-semibold uppercase tracking-[0.16em] text-livv-muted">Your next move</span>
           </div>
+
           <Link
             href="/home/train"
-            className="group block border-b border-[var(--livv-pro-line)] px-1 pb-5"
+            className="group block px-1 pb-6"
           >
-            <div className="flex items-end justify-between gap-4">
+            <div className="flex items-end justify-between gap-5">
               <div className="min-w-0">
-                <p className="text-[22px] font-semibold tracking-[-0.04em] text-[rgb(var(--livv-ink))]">
+                <p className="text-[27px] font-semibold tracking-[-0.045em] text-[rgb(var(--livv-ink))]">
                   {lastWorkout ? "Pick up where you left off." : "Start with your body."}
                 </p>
-                <p className="mt-1.5 text-[13px] leading-5 text-livv-muted">
+                <p className="mt-2 text-[14px] leading-6 text-livv-muted">
                   {lastWorkout
                     ? `${lastWorkout.name} · ${lastWorkout.duration} · ${lastWorkoutDate}`
                     : "Your first session is waiting."}
                 </p>
               </div>
-              <span className="mb-0.5 grid h-10 w-10 shrink-0 place-items-center rounded-full border border-[var(--livv-pro-line)] transition group-active:scale-95">
-                <ArrowUpRight size={17} />
+              <span className="mb-0.5 grid h-12 w-12 shrink-0 place-items-center rounded-full border border-[var(--livv-pro-line)] transition group-active:scale-95">
+                <ArrowUpRight size={18} />
               </span>
             </div>
           </Link>
 
-          <div className="flex items-center justify-between px-1 pt-3 text-[10px] font-semibold uppercase tracking-[0.17em] text-livv-muted">
-            <span>{stickies.length}/{MAX_STICKIES} personal pins</span>
-            <Link href="/home/daily" className="text-[rgb(var(--livv-ink))]">Open Daily ↗</Link>
+          <div className="mt-1 flex items-center justify-between border-t border-[var(--livv-pro-line)] px-1 pt-4">
+            <span className="text-[10px] font-semibold uppercase tracking-[0.19em] text-livv-muted">
+              {stickies.length}/{MAX_STICKIES} personal pins
+            </span>
+            {stickies.length < MAX_STICKIES ? (
+              <button
+                type="button"
+                onClick={openNewSticky}
+                className="text-[10px] font-semibold uppercase tracking-[0.17em] text-[rgb(var(--livv-ink))]"
+              >
+                Add a pin ↗
+              </button>
+            ) : (
+              <span className="text-[10px] font-semibold uppercase tracking-[0.17em] text-livv-muted">
+                Board full
+              </span>
+            )}
           </div>
         </section>
       </div>
