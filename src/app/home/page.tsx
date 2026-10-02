@@ -45,7 +45,11 @@ function featuredRead(): WikiArticle | null {
   return WIKI[new Date().getDate() % WIKI.length] ?? null;
 }
 
-/** Dark cork — dense grain without an image asset. */
+function clip(text: string, max: number): string {
+  if (text.length <= max) return text;
+  return text.slice(0, max - 1).trimEnd() + "...";
+}
+
 const CORK_STYLE: CSSProperties = {
   backgroundColor: "#1a1510",
   backgroundImage: [
@@ -64,8 +68,7 @@ type PaperTone = "cream" | "kraft" | "aged";
 function paperStyle(tone: PaperTone): CSSProperties {
   if (tone === "kraft") {
     return {
-      background:
-        "linear-gradient(145deg, #c4a882 0%, #b8956a 40%, #a8845c 100%)",
+      background: "linear-gradient(145deg, #c4a882 0%, #b8956a 40%, #a8845c 100%)",
       color: "#2a2118",
       boxShadow:
         "0 1px 0 rgba(255,255,255,0.2) inset, 0 8px 20px rgba(0,0,0,0.35), 0 2px 4px rgba(0,0,0,0.2)",
@@ -73,16 +76,14 @@ function paperStyle(tone: PaperTone): CSSProperties {
   }
   if (tone === "aged") {
     return {
-      background:
-        "linear-gradient(160deg, #e8e0d0 0%, #d9d0bc 50%, #cfc6b0 100%)",
+      background: "linear-gradient(160deg, #e8e0d0 0%, #d9d0bc 50%, #cfc6b0 100%)",
       color: "#2c2820",
       boxShadow:
         "0 1px 0 rgba(255,255,255,0.35) inset, 0 10px 24px rgba(0,0,0,0.4), 0 2px 4px rgba(0,0,0,0.2)",
     };
   }
   return {
-    background:
-      "linear-gradient(155deg, #f7f2e8 0%, #efe8da 45%, #e5dcc8 100%)",
+    background: "linear-gradient(155deg, #f7f2e8 0%, #efe8da 45%, #e5dcc8 100%)",
     color: "#1f1a14",
     boxShadow:
       "0 1px 0 rgba(255,255,255,0.5) inset, 0 10px 28px rgba(0,0,0,0.42), 0 2px 6px rgba(0,0,0,0.22)",
@@ -97,8 +98,7 @@ function Thumbtack() {
       style={{
         background:
           "radial-gradient(circle at 35% 30%, #f0f0f0 0%, #a8a8a8 40%, #5a5a5a 75%, #2a2a2a 100%)",
-        boxShadow:
-          "0 1px 2px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.5)",
+        boxShadow: "0 1px 2px rgba(0,0,0,0.5), inset 0 1px 1px rgba(255,255,255,0.5)",
       }}
     />
   );
@@ -126,8 +126,7 @@ function Note({
   disabled?: boolean;
 }) {
   const base =
-    "relative block w-full p-3.5 text-left transition active:scale-[0.98] " +
-    hand.className;
+    "relative block w-full p-3.5 text-left transition active:scale-[0.98] " + hand.className;
 
   const style: CSSProperties = {
     ...paperStyle(tone),
@@ -143,12 +142,7 @@ function Note({
 
   if (href && !disabled) {
     return (
-      <Link
-        href={href}
-        aria-label={ariaLabel}
-        className={`${base} ${className}`}
-        style={style}
-      >
+      <Link href={href} aria-label={ariaLabel} className={`${base} ${className}`} style={style}>
         {inner}
       </Link>
     );
@@ -223,23 +217,18 @@ export default function HomePage() {
   return (
     <main className="livv-page min-h-full pb-24">
       <div className="mx-auto w-full max-w-xl px-4 pb-10 sm:px-5">
-        {/* Quiet identity — not competing with the board */}
         <header className="pt-5 pb-4">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-livv-muted">
-            Home
-          </p>
+          <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-livv-muted">Home</p>
           <h1 className="mt-1.5 text-[22px] font-semibold tracking-[-0.03em] text-[rgb(var(--livv-ink))]">
             {hello}, {name}.
           </h1>
         </header>
 
-        {/* THE BOARD — C layout density, A cork material */}
         <section
           className="relative overflow-hidden rounded-sm border border-black/40 px-3 py-5 sm:px-4 sm:py-6"
           style={CORK_STYLE}
           aria-label="LIVV board"
         >
-          {/* Thin inner frame edge */}
           <div
             className="pointer-events-none absolute inset-0 rounded-sm"
             style={{
@@ -247,7 +236,6 @@ export default function HomePage() {
             }}
           />
 
-          {/* Row 1: check-in + primary announcement */}
           <div className="relative grid grid-cols-2 gap-3 sm:gap-4">
             <Note
               tone="cream"
@@ -287,15 +275,12 @@ export default function HomePage() {
                   {primaryUpdate.title}
                 </p>
                 <p className="mt-2 text-[14px] leading-snug opacity-80 sm:text-[15px]">
-                  {primaryUpdate.body.length > 90
-                    ? primaryUpdate.body.slice(0, 88) + "…"
-                    : primaryUpdate.body}
+                  {clip(primaryUpdate.body, 90)}
                 </p>
               </Note>
             ) : null}
           </div>
 
-          {/* Center: featured read — larger poster note */}
           {featured ? (
             <div className="relative mx-auto mt-4 max-w-[85%] sm:mt-5 sm:max-w-[80%]">
               <Note
@@ -311,16 +296,11 @@ export default function HomePage() {
                 <p className="mt-2 text-[24px] font-semibold leading-[1.12] sm:text-[26px]">
                   {featured.title}
                 </p>
-                <p className="mt-2 text-[15px] leading-snug opacity-75">
-                  {featured.hook.length > 100
-                    ? featured.hook.slice(0, 98) + "…"
-                    : featured.hook}
-                </p>
+                <p className="mt-2 text-[15px] leading-snug opacity-75">{clip(featured.hook, 100)}</p>
               </Note>
             </div>
           ) : null}
 
-          {/* Row 3: secondary update + quote */}
           <div className="relative mt-4 grid grid-cols-2 gap-3 sm:mt-5 sm:gap-4">
             {secondaryUpdate ? (
               <Note
@@ -333,11 +313,7 @@ export default function HomePage() {
                 <p className="text-[20px] font-semibold leading-[1.15] sm:text-[21px]">
                   {secondaryUpdate.title}
                 </p>
-                <p className="mt-2 text-[14px] leading-snug opacity-80">
-                  {secondaryUpdate.body.length > 70
-                    ? secondaryUpdate.body.slice(0, 68) + "…"
-                    : secondaryUpdate.body}
-                </p>
+                <p className="mt-2 text-[14px] leading-snug opacity-80">{clip(secondaryUpdate.body, 70)}</p>
               </Note>
             ) : (
               <div />
@@ -346,9 +322,9 @@ export default function HomePage() {
             {quote ? (
               <Note tone="cream" rotate={-2.5} className="min-h-[7rem]">
                 <p className="text-[17px] font-semibold leading-[1.25] sm:text-[18px]">
-                  “{quote.text.length > 110 ? quote.text.slice(0, 108) + "…” : quote.text}”
+                  &ldquo;{clip(quote.text, 110)}&rdquo;
                 </p>
-                <p className="mt-2 text-[13px] opacity-65">— {quote.author}</p>
+                <p className="mt-2 text-[13px] opacity-65">&mdash; {quote.author}</p>
               </Note>
             ) : null}
           </div>
