@@ -17,18 +17,48 @@ export function saveIdentity(next:Identity){if(typeof window==="undefined")retur
 export function patchIdentity(partial:Partial<Identity>){const current=loadIdentity();const next={...current,...partial};saveIdentity(next);return next;}
 export type EmberAction = "checkin" | "workout" | "objective" | "custom";
 
-/** Request a server-authoritative Ember award. Amount is decided on the server. */
+function sizeFromAmount(amount: number): "small" | "standard" | "major" {
+  if (amount <= 4) return "small";
+  if (amount >= 12) return "major";
+  return "standard";
+}
+
+/**
+ * Request a server-authoritative Ember award.
+ * Preferred: addEmbers("checkin" | "workout" | "objective" | "custom", opts)
+ * Legacy: addEmbers(amount, eventKey?) — amount is mapped to a size band;
+ * client event keys are ignored (server derives keys).
+ */
 export function addEmbers(
-  action: EmberAction,
-  opts?: { detail?: string; size?: "small" | "standard" | "major" },
+  actionOrAmount: EmberAction | number,
+  optsOrEventKey?: { detail?: string; size?: "small" | "standard" | "major" } | string,
 ) {
   const current = loadIdentity();
+
+  let action: EmberAction;
+  let opts: { detail?: string; size?: "small" | "standard" | "major" } | undefined;
+
+  if (typeof actionOrAmount === "number") {
+    // Legacy callers: never trust client amount beyond size banding.
+    action = "custom";
+    opts = {
+      detail: typeof optsOrEventKey === "string" && optsOrEventKey.includes("checkin")
+        ? "checkin-bonus"
+        : "legacy",
+      size: sizeFromAmount(actionOrAmount),
+    };
+  } else {
+    action = actionOrAmount;
+    opts = typeof optsOrEventKey === "object" && optsOrEventKey ? optsOrEventKey : undefined;
+  }
+
   const offlineAmounts: Record<EmberAction, number> = {
     checkin: 6,
     workout: 10,
     objective: 4,
     custom: opts?.size === "small" ? 4 : opts?.size === "major" ? 12 : 6,
   };
+
   if (typeof window !== "undefined" && isSupabaseConfigured()) {
     void (async () => {
       try {
