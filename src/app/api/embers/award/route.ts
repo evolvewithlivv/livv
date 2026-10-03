@@ -70,19 +70,16 @@ export async function POST(req: NextRequest) {
     }
     const action = actionRaw as AwardAction;
 
-    let baseAmount = AMOUNTS[action];
-    if (action === "custom") {
-      const size = typeof body?.size === "string" ? body.size.trim().toLowerCase() : "standard";
-      if (size === "small" || size === "standard" || size === "major") {
-        baseAmount = CUSTOM_SIZE_AMOUNTS[size];
-      } else {
-        return json({ error: "Invalid Ember size." }, 400);
-      }
+    const size = action === "custom"
+      ? (typeof body?.size === "string" ? body.size.trim().toLowerCase() : "standard")
+      : null;
+    if (action === "custom" && size !== "small" && size !== "standard" && size !== "major") {
+      return json({ error: "Invalid Ember size." }, 400);
     }
 
     const detail = sanitizeDetail(body?.detail);
     const day = utcDayKey();
-    const eventKey = `ember-${verified.id}-${action}-${day}-${detail}`.slice(0, 120);
+    const eventKey = `ember-${verified.id}-${action}-${day}-${size || "base"}-${detail}`.slice(0, 120);
 
     const admin = getSupabaseAdmin();
     if (!admin) return json({ error: "Ember service unavailable." }, 503);
@@ -90,7 +87,8 @@ export async function POST(req: NextRequest) {
     const { data, error } = await admin.rpc("grant_embers", {
       p_user_id: verified.id,
       p_event_key: eventKey,
-      p_base_amount: baseAmount,
+      p_action: action,
+      p_size: action === "custom" ? (typeof body?.size === "string" ? body.size.trim().toLowerCase() : "standard") : null,
     });
 
     if (error) {
@@ -98,7 +96,7 @@ export async function POST(req: NextRequest) {
       if (msg.includes("daily ember award limit")) {
         return json({ error: "Daily Ember limit reached.", awarded: 0 }, 429);
       }
-      if (msg.includes("invalid event key") || msg.includes("invalid ember award")) {
+      if (msg.includes("invalid event key") || msg.includes("invalid ember action") || msg.includes("invalid ember size")) {
         return json({ error: "Invalid Ember award." }, 400);
       }
       console.error("[embers] grant failed", msg);
