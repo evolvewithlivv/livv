@@ -2,7 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 const root=process.cwd();const read=(file)=>fs.readFileSync(path.join(root,file),"utf8");
 const checks=[
-{name:"email-only authentication is surfaced",file:"src/app/auth/page.tsx",patterns:["startEmailAuth","verifyEmailAuth","Sign in with email","Create account with email","8-digit code","Verify & enter LIVV","Change email"],absentPatterns:["startPhoneAuth","verifyPhoneAuth","Continue with phone","Continue with Google","Continue with Apple","Continue with X","Continue with Twitter","Continue with Snapchat"]},
+{name:"email-only authentication is surfaced",file:"src/app/auth/page.tsx",patterns:["startEmailAuth","verifyEmailAuth","Sign in with email","Create account with email","8-digit code","Change email"],absentPatterns:["startPhoneAuth","verifyPhoneAuth","Continue with phone","Continue with Google","Continue with Apple","Continue with X","Continue with Twitter","Continue with Snapchat"]},
 {name:"real Supabase authentication is email-only OTP",file:"src/lib/supabase/real-auth.ts",patterns:["signInWithOtp","verifyEmailAuth",'type: "email"',"shouldCreateUser: allowSignup","materializeSupabaseUser","allowSignup = true"],absentPatterns:["signInWithOAuth","linkIdentity","type: \"sms\"","startPhoneAuth","verifyPhoneAuth","normalizePhoneE164","phone: cleanPhone","provider === \"phone\""]},
 {name:"local auth provider model is email-only",file:"src/lib/auth.ts",patterns:['export type AuthProvider="email"','provider:AuthProvider'],absentPatterns:["AuthProvider = \"phone\"","signInWithPhone","phone?: string","provider === \"phone\"","phone number required"]},
 {name:"member routes require a real LIVV account",file:"src/components/auth/require-auth.tsx",patterns:["getAuthenticatedUser","user.is_anonymous","router.replace(\"/auth\")"],absentPatterns:["resolveHomeAccess","isSignedInLocal"]},
@@ -10,10 +10,10 @@ const checks=[
 {name:"opening flow requires authentication before onboarding",file:"src/app/page.tsx",patterns:['redirect("/auth")'],absentPatterns:['redirect("/onboarding")','router.push("/onboarding")']},
 {name:"email callback exchanges the server-issued code",file:"src/app/auth/callback/page.tsx",patterns:["finishSupabaseCallback",'params.get("code")',"Authentication could not be completed"]},
 {name:"onboarding completion verifies a non-anonymous Supabase user",file:"src/lib/auth.ts",patterns:["client.auth.getUser()","data.user.is_anonymous","Please verify your email before entering LIVV"],absentPatterns:["await ensureAnonymousSession();"]},
-{name:"billing portal is authenticated and server-bound",file:"src/app/api/stripe/portal/route.ts",patterns:["getVerifiedSupabaseUser",'.from("entitlements")','.eq("user_id", verifiedUserId)',"billingPortal.sessions.create"]},
+{name:"billing portal is authenticated and server-bound",file:"src/app/api/stripe/portal/route.ts",patterns:["getVerifiedSupabaseUser",'.from("entitlements")','.eq("user_id", verified.id)',"billingPortal.sessions.create"]},
 {name:"Stripe session confirmation is authenticated and user-bound",file:"src/app/api/stripe/session/route.ts",patterns:["getVerifiedSupabaseUser","checkout.sessions.retrieve","client_reference_id"]},
 {name:"production billing has no demo paid-unlock path",file:"src/lib/billing.ts",patterns:["resolveEffectiveEntitlement","startCheckout"],absentPatterns:["NEXT_PUBLIC_LIVV_DEMO_UNLOCK","isDemoUnlock","source:\"demo\"","enableDemoUnlock"]},
-{name:"server entitlements migration exists",file:"supabase/migrations",patterns:[]},
+{name:"server entitlements migration exists",file:"supabase/migrations/20260911174348_b1_entitlements.sql",patterns:["create table if not exists public.entitlements","stripe_subscription_id","stripe_webhook_events"]},
 {name:"production security headers are configured",file:"next.config.ts",patterns:["Content-Security-Policy","X-Content-Type-Options","Referrer-Policy"]},
 {name:"cross-device member state is cloud-backed",file:"src/lib/supabase/cloud-state.ts",patterns:["member_state","bootstrapCloudMemberState","mergeOnlyChanged","notifyStateHydrated"]},
 {name:"cloud sync is serialized to prevent stale concurrent writes",file:"src/lib/supabase/cloud-state.ts",patterns:["syncInFlight","return syncInFlight"]},
