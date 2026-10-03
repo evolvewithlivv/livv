@@ -26,6 +26,7 @@ import {
   MEALS_TARGET,
   type HealthDay,
 } from "@/lib/health";
+import { feedback } from "@/lib/sensory";
 
 const TOOLS = [
   {
@@ -79,8 +80,9 @@ export default function HealthPage() {
     () => days.find((day) => day.date === today) ?? blankDay(today),
     [days, today],
   );
-  const history = useMemo(() => lastNDays(days, 7), [days]);
-  const completion = dayCompletion(current);
+
+  const completion = useMemo(() => dayCompletion(current), [current]);
+  const week = useMemo(() => lastNDays(days, 7), [days]);
   const trackedDays = days.filter(
     (day) => day.sleep > 0 || day.water > 0 || day.meals > 0 || day.movement,
   ).length;
@@ -89,12 +91,19 @@ export default function HealthPage() {
     setDays((prev) =>
       upsertHealthDay({ ...current, ...patch, date: today }, prev),
     );
+    const hitWater =
+      (patch.water ?? current.water) >= WATER_TARGET && current.water < WATER_TARGET;
+    const hitMeals =
+      (patch.meals ?? current.meals) >= MEALS_TARGET && current.meals < MEALS_TARGET;
+    const hitMove = patch.movement === true && !current.movement;
+    if (hitWater || hitMeals || hitMove) feedback("complete");
+    else feedback("tick");
   }
 
   return (
     <main className="livv-page min-h-full pb-20">
-      <div className="mx-auto w-full max-w-xl px-5 pb-12 sm:px-6">
-        <header className="pt-6">
+      <div className="livv-stagger mx-auto w-full max-w-xl px-5 pb-12 sm:px-6">
+        <header className="livv-page-hero pt-6">
           <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-livv-muted">Health</p>
           <h1 className="mt-2 max-w-[18ch] text-[30px] font-semibold leading-[1.1] tracking-[-0.045em] sm:text-[34px]">
             The baseline that holds everything else.
@@ -107,7 +116,7 @@ export default function HealthPage() {
         <section className="mt-10">
           <div className="flex items-center gap-5">
             <div
-              className="grid h-[82px] w-[82px] shrink-0 place-items-center rounded-full"
+              className="grid h-[82px] w-[82px] shrink-0 place-items-center rounded-full transition-[background] duration-500"
               style={{
                 background: `conic-gradient(var(--livv-pro-accent) ${completion.percent}%, var(--livv-pro-line) 0)`,
               }}
@@ -123,21 +132,18 @@ export default function HealthPage() {
               <p className="text-[10px] font-semibold uppercase tracking-[.2em] text-livv-muted">
                 Baseline today
               </p>
-              <p className="mt-1.5 text-[25px] font-semibold tracking-[-.045em]">
-                {completion.count} of 4 basics
+              <p className="mt-1.5 text-[25px] font-semibold tracking-[-.04em]">
+                {completion.done}/{completion.total} logged
               </p>
-              <p className="mt-1.5 text-[11px] leading-relaxed text-livv-muted">
-                {completion.count === 4
-                  ? "Baseline checked. Keep the standard."
-                  : "Log what is true, not what looks perfect."}
+              <p className="mt-1 text-[12px] text-livv-muted">
+                {trackedDays} day{trackedDays === 1 ? "" : "s"} with entries.
               </p>
             </div>
           </div>
-
-          <div className="mt-6 grid grid-cols-4 gap-2 border-t border-livv-border pt-5">
+          <div className="mt-6 grid grid-cols-4 gap-2">
             <Metric icon={<Moon size={14} />} label="Sleep" value={current.sleep ? `${current.sleep}h` : "—"} />
-            <Metric icon={<Droplets size={14} />} label="Water" value={String(current.water)} />
-            <Metric icon={<Utensils size={14} />} label="Meals" value={String(current.meals)} />
+            <Metric icon={<Droplets size={14} />} label="Water" value={`${current.water}`} />
+            <Metric icon={<Utensils size={14} />} label="Meals" value={`${current.meals}`} />
             <Metric icon={<Footprints size={14} />} label="Move" value={current.movement ? "✓" : "—"} />
           </div>
         </section>
@@ -204,15 +210,9 @@ export default function HealthPage() {
               <button
                 type="button"
                 onClick={() => update({ movement: !current.movement })}
-                className={
-                  "rounded-full border px-4 py-2 text-[10px] font-semibold uppercase tracking-[.14em] transition " +
-                  (current.movement
-                    ? "border-livv-accent bg-livv-accent-soft text-livv-accent"
-                    : "border-livv-border text-livv-muted")
-                }
-                aria-pressed={current.movement}
+                className="livv-press shrink-0 rounded-full border border-livv-border px-3 py-2 text-[10px] font-semibold uppercase tracking-[.12em]"
               >
-                {current.movement ? "Logged" : "Log"}
+                {current.movement ? "Done" : "Mark"}
               </button>
             </div>
           </div>
@@ -231,7 +231,7 @@ export default function HealthPage() {
           </div>
           <div className="mt-5 divide-y divide-livv-border border-t border-livv-border">
             {TOOLS.map(({ href, label, detail, Icon }) => (
-              <Link key={href} href={href} className="group flex items-center gap-4 py-4">
+              <Link key={href} href={href} className="livv-press group flex items-center gap-4 py-4">
                 <IconBubble icon={<Icon size={17} />} />
                 <span className="min-w-0 flex-1">
                   <span className="block text-[14px] font-semibold">{label}</span>
@@ -250,44 +250,31 @@ export default function HealthPage() {
 
         <section className="mt-12">
           <div className="flex items-end justify-between gap-4">
-            <SectionHead
-              label="Signal"
-              title="Seven days."
-              sub="Whether the basics are becoming consistent."
-            />
-            <span className="shrink-0 text-[10px] text-livv-muted">{trackedDays} tracked</span>
+            <SectionHead label="Week" title="Recent days." />
           </div>
-
-          <div className="mt-6 grid grid-cols-7 items-end gap-2">
-            {history.map((day) => {
-              const percent = dayCompletion(day).percent;
+          <div className="mt-5 space-y-2">
+            {week.map((day) => {
+              const c = dayCompletion(day);
               return (
-                <div key={day.date} className="flex min-w-0 flex-col items-center gap-2">
-                  <div className="flex h-24 w-full items-end">
+                <div
+                  key={day.date}
+                  className="flex items-center gap-3 rounded-xl border border-livv-border px-3 py-3"
+                >
+                  <span className="w-20 shrink-0 text-[11px] font-semibold tabular-nums text-livv-muted">
+                    {day.date.slice(5)}
+                  </span>
+                  <div className="h-1.5 min-w-0 flex-1 overflow-hidden rounded-full bg-[var(--livv-pro-surface-2)]">
                     <div
-                      className="w-full rounded-t-[4px] bg-livv-accent transition-all"
-                      style={{ height: `${Math.max(percent ? 10 : 3, percent)}%` }}
-                      title={`${percent}% tracked on ${day.date}`}
+                      className="h-full rounded-full bg-[var(--livv-pro-accent)] transition-[width] duration-500 ease-out"
+                      style={{ width: `${c.percent}%` }}
                     />
                   </div>
-                  <span className="text-[9px] font-semibold uppercase tracking-[.08em] text-livv-muted">
-                    {new Date(day.date + "T12:00:00").toLocaleDateString("en-US", {
-                      weekday: "narrow",
-                    })}
+                  <span className="w-10 shrink-0 text-right text-[11px] tabular-nums text-livv-muted">
+                    {c.done}/{c.total}
                   </span>
                 </div>
               );
             })}
-          </div>
-        </section>
-
-        <section className="mt-12 pb-4">
-          <div className="flex items-start gap-3">
-            <HeartPulse size={15} className="mt-0.5 shrink-0 text-livv-muted" />
-            <p className="text-[10px] leading-5 text-livv-muted">
-              LIVV Health is a personal wellness and organization tool. It is not medical
-              advice, diagnosis, or a substitute for professional care.
-            </p>
           </div>
         </section>
       </div>
@@ -305,14 +292,10 @@ function SectionHead({
   sub?: string;
 }) {
   return (
-    <div className="min-w-0">
-      <p className="text-[10px] font-semibold uppercase tracking-[.19em] text-livv-muted">
-        {label}
-      </p>
-      <h2 className="mt-1.5 text-[24px] font-semibold tracking-[-.045em]">{title}</h2>
-      {sub && (
-        <p className="mt-2 max-w-[38ch] text-[11px] leading-relaxed text-livv-muted">{sub}</p>
-      )}
+    <div>
+      <p className="text-[10px] font-semibold uppercase tracking-[.2em] text-livv-muted">{label}</p>
+      <h2 className="mt-1.5 text-[26px] font-semibold tracking-tight">{title}</h2>
+      {sub ? <p className="mt-1.5 text-[12px] text-livv-muted">{sub}</p> : null}
     </div>
   );
 }
@@ -327,19 +310,17 @@ function Metric({
   value: string;
 }) {
   return (
-    <div className="flex min-w-0 flex-col items-center gap-1.5 text-center">
-      <span className="text-livv-muted">{icon}</span>
-      <span className="text-[9px] font-semibold uppercase tracking-[.12em] text-livv-muted">
-        {label}
-      </span>
-      <span className="text-[13px] font-semibold">{value}</span>
+    <div className="rounded-xl border border-livv-border px-2 py-3 text-center">
+      <div className="mx-auto mb-1.5 flex justify-center text-livv-muted">{icon}</div>
+      <p className="text-[12px] font-semibold tabular-nums">{value}</p>
+      <p className="mt-0.5 text-[9px] uppercase tracking-[.12em] text-livv-muted">{label}</p>
     </div>
   );
 }
 
 function IconBubble({ icon }: { icon: ReactNode }) {
   return (
-    <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-livv-border bg-[var(--livv-pro-surface-2)] text-livv-muted">
+    <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-livv-border text-livv-muted">
       {icon}
     </span>
   );
@@ -380,7 +361,7 @@ function Adjust({ minus, plus }: { minus: () => void; plus: () => void }) {
       <button
         type="button"
         onClick={minus}
-        className="grid h-10 w-10 place-items-center rounded-full border border-livv-border text-livv-muted"
+        className="livv-press grid h-10 w-10 place-items-center rounded-full border border-livv-border text-livv-muted"
         aria-label="Decrease"
       >
         <Minus size={14} />
@@ -388,7 +369,7 @@ function Adjust({ minus, plus }: { minus: () => void; plus: () => void }) {
       <button
         type="button"
         onClick={plus}
-        className="grid h-10 w-10 place-items-center rounded-full border border-livv-border text-livv-muted"
+        className="livv-press grid h-10 w-10 place-items-center rounded-full border border-livv-border text-livv-muted"
         aria-label="Increase"
       >
         <Plus size={14} />
