@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { haptic } from "@/lib/sensory";
 
 /**
- * FIELD NOTE 001
+ * SIGNAL 001
  * Physical sticker → NFC/QR → this page.
  * Not a landing page. A digital artifact being inspected.
  */
@@ -40,7 +40,14 @@ const PILLARS = [
   },
 ] as const;
 
-export default function FieldNote001() {
+const FOOT_META = [
+  "TAP / SCAN / ENTER",
+  "LEAVE THE DEFAULT",
+  "SIGNAL LOCKED",
+  "CROSS WHEN READY",
+] as const;
+
+export default function Signal001() {
   const router = useRouter();
   const [act, setAct] = useState<Act>(0);
   const [awake, setAwake] = useState(false);
@@ -114,7 +121,7 @@ export default function FieldNote001() {
   const activePillar = PILLARS.find((p) => p.id === selected) ?? null;
 
   return (
-    <main className={"fn" + (awake ? " awake" : "")} aria-label="LIVV Field Note 001">
+    <main className={"fn" + (awake ? " awake" : "")} aria-label="LIVV Signal 001">
       <div className="fn-void" aria-hidden />
       <div className="fn-grid" aria-hidden />
       <div className={"fn-pulse" + (awake ? " on" : "")} aria-hidden />
@@ -129,7 +136,7 @@ export default function FieldNote001() {
         <div className="fn-top-l">
           <span className="fn-mark">LIVV</span>
           <span className="fn-sep" />
-          <span className="fn-id">FIELD NOTE / 001</span>
+          <span className="fn-id">SIGNAL / 001</span>
         </div>
         <div className="fn-top-r">
           <span className="fn-loc">PHILADELPHIA</span>
@@ -159,7 +166,7 @@ export default function FieldNote001() {
             </div>
 
             <p className="fn-micro-label">SIGNAL</p>
-            <h1 className="fn-title">
+            <h1 className="fn-title stack center">
               <span className="fn-line dim">You found</span>
               <span className="fn-line">LIVV.</span>
             </h1>
@@ -197,12 +204,22 @@ export default function FieldNote001() {
               This is the other door.
             </p>
 
-            <button type="button" className="fn-ghost solid" onClick={() => go(2)}>
-              <span>OPEN THE SYSTEM</span>
-              <span className="fn-arrow" aria-hidden>
-                →
-              </span>
-            </button>
+            <div className="fn-cta-row">
+              <button
+                type="button"
+                className="fn-back"
+                onClick={() => go(0)}
+                aria-label="Go back"
+              >
+                ←
+              </button>
+              <button type="button" className="fn-ghost solid" onClick={() => go(2)}>
+                <span>OPEN THE SYSTEM</span>
+                <span className="fn-arrow" aria-hidden>
+                  →
+                </span>
+              </button>
+            </div>
           </section>
         )}
 
@@ -267,12 +284,22 @@ export default function FieldNote001() {
               )}
             </div>
 
-            <button type="button" className="fn-ghost solid" onClick={() => go(3)}>
-              <span>CROSS THE THRESHOLD</span>
-              <span className="fn-arrow" aria-hidden>
-                →
-              </span>
-            </button>
+            <div className="fn-cta-row">
+              <button
+                type="button"
+                className="fn-back"
+                onClick={() => go(1)}
+                aria-label="Go back"
+              >
+                ←
+              </button>
+              <button type="button" className="fn-ghost solid" onClick={() => go(3)}>
+                <span>CROSS THE THRESHOLD</span>
+                <span className="fn-arrow" aria-hidden>
+                  →
+                </span>
+              </button>
+            </div>
           </section>
         )}
 
@@ -315,29 +342,58 @@ export default function FieldNote001() {
               </span>
             </button>
 
-            <button
-              type="button"
-              className={"fn-secondary" + (ctaReady ? " show" : "")}
-              onClick={() => router.push("/")}
-            >
-              EXPLORE THE SITE
-            </button>
+            <div className={"fn-act3-secondary" + (ctaReady ? " show" : "")}>
+              <button
+                type="button"
+                className="fn-back-text"
+                onClick={() => go(2)}
+              >
+                ← Back
+              </button>
+              <button
+                type="button"
+                className="fn-secondary"
+                onClick={() => router.push("/")}
+              >
+                EXPLORE THE SITE
+              </button>
+            </div>
           </section>
         )}
       </div>
 
       <footer className={"fn-foot" + (awake ? " on" : "")}>
-        <div className="fn-ticks" aria-hidden>
-          {[0, 1, 2, 3].map((n) => (
-            <span key={n} className={n === act ? "on" : n < act ? "done" : ""} />
-          ))}
+        <div className="fn-ticks" role="navigation" aria-label="Progress">
+          {([0, 1, 2, 3] as Act[]).map((n) => {
+            const visited = n <= act;
+            const current = n === act;
+            return (
+              <button
+                key={n}
+                type="button"
+                className={
+                  "fn-tick" +
+                  (current ? " on" : "") +
+                  (n < act ? " done" : "") +
+                  (visited ? " visit" : "")
+                }
+                onClick={() => {
+                  if (n < act) go(n);
+                }}
+                disabled={n >= act}
+                aria-label={
+                  current
+                    ? `Step ${n + 1}, current`
+                    : n < act
+                      ? `Go back to step ${n + 1}`
+                      : `Step ${n + 1}, locked`
+                }
+                aria-current={current ? "step" : undefined}
+              />
+            );
+          })}
         </div>
-        <span className="fn-foot-meta">
-          {act === 0 && "TAP / SCAN / ENTER"}
-          {act === 1 && "LEAVE THE DEFAULT"}
-          {act === 2 && "SIGNAL LOCKED"}
-          {act === 3 && "CROSS WHEN READY"}
-        </span>
+        <span className="fn-foot-meta">{FOOT_META[act]}</span>
       </footer>
     </main>
   );
