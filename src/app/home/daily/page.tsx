@@ -161,8 +161,7 @@ export default function DailyPage() {
             <h1 className="mt-2 max-w-[24ch] text-[28px] font-semibold leading-[1.08] tracking-[-0.045em] text-[var(--livv-pro-ink)] sm:text-[32px]">
               {question}
             </h1>
-          </div>
-          <div className="mt-5 flex items-center gap-3">
+            <div className="mt-5 flex items-center gap-3">
             <div className="h-1 flex-1 overflow-hidden rounded-full bg-[var(--livv-pro-surface-2)]">
               <div
                 className="h-full rounded-full bg-[var(--livv-pro-accent)] transition-[width] duration-500 ease-out"
@@ -175,6 +174,7 @@ export default function DailyPage() {
             {doubleXp ? (
               <span className="shrink-0 text-[10px] font-semibold text-[var(--livv-pro-accent)]">2× XP</span>
             ) : null}
+            </div>
           </div>
         </header>
 
