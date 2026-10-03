@@ -33,14 +33,10 @@ function BootOverlay({ onDone }: { onDone: () => void }) {
           <div className="ll-ring r3" />
           <div className="ll-core">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/livv-logo.png" alt="" width={40} height={40} />
+            <img src="/livv-logo.png" alt="" width={48} height={48} />
           </div>
         </div>
-        <p className="ll-mark">LIVV</p>
         <p className="ll-line">Loading your world.</p>
-        <div className="ll-bar" aria-hidden>
-          <span className="ll-bar-fill" />
-        </div>
       </div>
     </div>
   );
@@ -57,7 +53,6 @@ export function ThemeShell({ children }: { children: React.ReactNode }) {
       pathname.replaceAll("/", "-").replace(/^-|-$/g, "") || "root";
   }, [pathname]);
 
-  // Cold open: hold the signal long enough to read (once per tab session)
   useEffect(() => {
     if (isPublicDiscovery) return;
     try {
