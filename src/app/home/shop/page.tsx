@@ -27,8 +27,8 @@ export default function ShopPage() {
 
   return (
     <main className="livv-page min-h-full text-livv-ink">
-      <div className="mx-auto w-full max-w-2xl px-5 pb-12 pt-6 sm:px-6">
-        <header className="pt-2">
+      <div className="livv-stagger mx-auto w-full max-w-2xl px-5 pb-12 pt-6 sm:px-6">
+        <header className="livv-page-hero pt-2">
           <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-livv-muted">
             Collection
           </p>
@@ -40,55 +40,49 @@ export default function ShopPage() {
           </p>
         </header>
 
-        <section className="mt-10">
-          <div className="flex items-start gap-3">
-            <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-livv-border text-livv-accent">
-              <Flame size={18} />
+        <section className="mt-10 rounded-[22px] border border-livv-border bg-[color-mix(in_srgb,rgb(var(--livv-ink))_2.5%,transparent)] px-5 py-5">
+          <div className="flex items-center gap-3">
+            <span className="grid h-11 w-11 place-items-center rounded-full border border-livv-border">
+              <Flame size={18} className="text-livv-accent" />
             </span>
             <div className="min-w-0 flex-1">
-              <p className="text-[10px] font-semibold uppercase tracking-[.18em] text-livv-muted">
-                Your Embers
-              </p>
-              <p className="mt-1.5 text-[26px] font-semibold tracking-[-.04em]">
-                {embers.toLocaleString()}
-              </p>
-              <p className="mt-1 text-[12px] text-livv-muted">
-                {dollars >= 1
-                  ? `≈ $${dollars} toward Collection`
-                  : `Earn toward $${Math.ceil(MIN_REDEEM_EMBERS / EMBERS_PER_DOLLAR)} minimum redeem`}
-              </p>
+              <p className="text-[10px] font-semibold uppercase tracking-[.14em] text-livv-muted">Your Embers</p>
+              <p className="mt-1 text-[26px] font-semibold tabular-nums tracking-tight">{embers.toLocaleString()}</p>
+            </div>
+            <div className="text-right">
+              <p className="text-[10px] uppercase tracking-[.12em] text-livv-muted">Value</p>
+              <p className="mt-1 text-[14px] font-semibold tabular-nums">${dollars.toFixed(2)}</p>
             </div>
           </div>
-          <div className="mt-4 h-1 overflow-hidden rounded-full bg-livv-border">
+          <div className="mt-4 h-1.5 overflow-hidden rounded-full bg-livv-border">
             <div
-              className="h-full rounded-full bg-livv-accent transition-all"
+              className="h-full rounded-full bg-livv-accent transition-[width] duration-500 ease-out"
               style={{ width: `${towardMin}%` }}
             />
           </div>
-          <p className="mt-2 text-[10px] text-livv-muted">
+          <p className="mt-2 text-[11px] text-livv-muted">
             {embers >= MIN_REDEEM_EMBERS
-              ? "You can redeem on Collection when pieces are live."
-              : `${(MIN_REDEEM_EMBERS - embers).toLocaleString()} more Embers to reach the $${Math.ceil(MIN_REDEEM_EMBERS / EMBERS_PER_DOLLAR)} minimum.`}
+              ? `Ready to redeem (min ${MIN_REDEEM_EMBERS.toLocaleString()} Embers).`
+              : `${(MIN_REDEEM_EMBERS - embers).toLocaleString()} Embers to minimum redeem.`}
           </p>
         </section>
 
-        <section className="mt-12 border-t border-livv-border pt-10 text-center">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.22em] text-livv-muted">
-            Collection 001
+        <section className="mt-10">
+          <p className="text-[10px] font-semibold uppercase tracking-[.2em] text-livv-muted">Coming</p>
+          <h2 className="mt-2 text-[24px] font-semibold tracking-tight">Collection drops soon.</h2>
+          <p className="mt-2 max-w-[40ch] text-[13px] leading-relaxed text-livv-muted">
+            Apparel and gear that match how you live. Embers convert to credit at {EMBERS_PER_DOLLAR} per dollar,
+            up to ${MAX_CREDIT_DOLLARS}.
           </p>
-          <h2 className="mt-3 text-[26px] font-semibold tracking-[-0.03em]">Nothing to sell yet.</h2>
-          <p className="mx-auto mt-3 max-w-[32ch] text-[13px] leading-relaxed text-livv-muted">
-            When pieces drop, they live here. Embers convert to credit at{" "}
-            {EMBERS_PER_DOLLAR} Embers per dollar (max ${MAX_CREDIT_DOLLARS}).
-          </p>
-          <p className="mx-auto mt-6 max-w-[40ch] text-[11px] leading-relaxed text-livv-muted">
-            {REDEEM_RULES_COPY}
-          </p>
+          <p className="mt-4 text-[12px] leading-relaxed text-livv-muted">{REDEEM_RULES_COPY}</p>
         </section>
 
-        <section className="mt-10 pb-4 text-center">
-          <Link href="/home/tiers" className="text-[12px] font-semibold text-livv-muted underline-offset-4 hover:underline">
-            Membership accelerates Embers
+        <section className="mt-10">
+          <Link
+            href="/home/profile"
+            className="livv-press inline-flex min-h-11 items-center rounded-full border border-livv-border px-5 text-[12px] font-semibold"
+          >
+            View profile & Embers
           </Link>
         </section>
       </div>
