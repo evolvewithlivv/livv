@@ -1,0 +1,144 @@
+/* LIVV motion system — product depth, not Field Note theatrics.
+   Restraint + hierarchy. Reduced-motion respected. */
+
+:root {
+  --livv-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --livv-ease-soft: cubic-bezier(0.2, 0.85, 0.2, 1);
+  --livv-dur-page: 0.55s;
+  --livv-dur-fast: 0.22s;
+}
+
+/* ---- Page enter (route content) ---- */
+.livv-page-motion {
+  animation: livv-page-in var(--livv-dur-page) var(--livv-ease-out) both;
+}
+
+@keyframes livv-page-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+    filter: blur(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+}
+
+/* Stagger children when parent has .livv-stagger */
+.livv-stagger > * {
+  animation: livv-rise 0.5s var(--livv-ease-out) both;
+}
+.livv-stagger > *:nth-child(1) { animation-delay: 0.04s; }
+.livv-stagger > *:nth-child(2) { animation-delay: 0.09s; }
+.livv-stagger > *:nth-child(3) { animation-delay: 0.14s; }
+.livv-stagger > *:nth-child(4) { animation-delay: 0.19s; }
+.livv-stagger > *:nth-child(5) { animation-delay: 0.24s; }
+.livv-stagger > *:nth-child(6) { animation-delay: 0.29s; }
+.livv-stagger > *:nth-child(7) { animation-delay: 0.34s; }
+.livv-stagger > *:nth-child(8) { animation-delay: 0.39s; }
+.livv-stagger > *:nth-child(n+9) { animation-delay: 0.44s; }
+
+@keyframes livv-rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Hero enters slightly ahead of body */
+.livv-page-hero {
+  animation: livv-hero-in 0.6s var(--livv-ease-out) both;
+}
+
+@keyframes livv-hero-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Interactive press feedback */
+.livv-press {
+  transition: transform var(--livv-dur-fast) var(--livv-ease-soft),
+    opacity var(--livv-dur-fast) ease;
+}
+.livv-press:active {
+  transform: scale(0.97);
+}
+
+/* Cards / surfaces — subtle depth on interaction */
+.livv-surface-lift {
+  transition:
+    transform 0.28s var(--livv-ease-soft),
+    box-shadow 0.28s ease,
+    border-color 0.28s ease;
+}
+@media (hover: hover) {
+  .livv-surface-lift:hover {
+    transform: translateY(-2px);
+  }
+}
+.livv-surface-lift:active {
+  transform: scale(0.99);
+}
+
+/* Tab bar active indicator motion */
+.livv-tab {
+  transition:
+    color 0.25s ease,
+    background 0.25s ease,
+    transform 0.2s var(--livv-ease-soft);
+  position: relative;
+}
+.livv-tab .livv-tab-icon {
+  transition: transform 0.25s var(--livv-ease-soft);
+}
+.livv-tab.is-active .livv-tab-icon {
+  transform: translateY(-1px) scale(1.06);
+}
+.livv-tab:active {
+  transform: scale(0.94);
+}
+
+/* Soft depth under scroll content */
+.livv-app-shell {
+  position: relative;
+}
+.livv-app-shell::before {
+  content: "";
+  pointer-events: none;
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  background:
+    radial-gradient(ellipse 80% 40% at 50% -10%, rgba(100, 140, 200, 0.06), transparent 55%);
+  opacity: 1;
+}
+.livv-app-shell > * {
+  position: relative;
+  z-index: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .livv-page-motion,
+  .livv-stagger > *,
+  .livv-page-hero {
+    animation: none !important;
+  }
+  .livv-press:active,
+  .livv-tab:active,
+  .livv-surface-lift:active,
+  .livv-surface-lift:hover {
+    transform: none !important;
+  }
+}
