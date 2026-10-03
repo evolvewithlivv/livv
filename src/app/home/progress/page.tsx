@@ -45,8 +45,8 @@ export default function ProgressPage() {
 
   return (
     <main className="livv-page min-h-full pb-14">
-      <div className="mx-auto w-full max-w-xl px-5 pt-6 sm:px-6">
-        <header>
+      <div className="livv-stagger mx-auto w-full max-w-xl px-5 pt-6 sm:px-6">
+        <header className="livv-page-hero">
           <p className="text-[10px] font-semibold uppercase tracking-[.2em] text-livv-muted">
             Progress
           </p>
@@ -86,7 +86,7 @@ export default function ProgressPage() {
           <div className="mt-6">
             <div className="h-1.5 overflow-hidden rounded-full bg-livv-border">
               <div
-                className="h-full rounded-full bg-livv-accent transition-[width] duration-500"
+                className="h-full rounded-full bg-livv-accent transition-[width] duration-500 ease-out"
                 style={{ width: `${pct}%` }}
               />
             </div>
@@ -118,7 +118,7 @@ export default function ProgressPage() {
               <div key={d.key} className="min-w-0">
                 <div className="relative h-20 overflow-hidden rounded-lg bg-livv-surface-2 sm:h-24">
                   <div
-                    className="absolute inset-x-0 bottom-0 rounded-lg bg-livv-accent"
+                    className="absolute inset-x-0 bottom-0 rounded-lg bg-livv-accent transition-[height] duration-500 ease-out"
                     style={{
                       height: `${Math.max(d.v ? 12 : 6, d.v)}%`,
                       opacity: d.v ? 0.9 : 0.18,
@@ -154,7 +154,7 @@ export default function ProgressPage() {
                 </div>
                 <div className="mt-3 h-1 overflow-hidden rounded-full bg-livv-border">
                   <div
-                    className="h-full rounded-full bg-livv-accent"
+                    className="h-full rounded-full bg-livv-accent transition-[width] duration-500 ease-out"
                     style={{ width: `${Math.min(100, p.progress)}%` }}
                   />
                 </div>
