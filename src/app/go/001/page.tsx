@@ -105,8 +105,8 @@ export default function FieldNote001() {
         window.scrollTo({ top: 0, behavior: "auto" });
         window.setTimeout(() => {
           lockRef.current = false;
-        }, 700);
-      }, 480);
+        }, 820);
+      }, 560);
     },
     [act]
   );
@@ -218,41 +218,40 @@ export default function FieldNote001() {
               <p className="fn-hint">Tap a node.</p>
             </div>
 
-            <div className="fn-sky" role="list">
-              <svg className="fn-sky-links" viewBox="0 0 100 100" aria-hidden>
-                <circle className="fn-sky-orbit" cx="50" cy="50" r="32" fill="none" />
-                <circle className="fn-sky-orbit soft" cx="50" cy="50" r="22" fill="none" />
-                <line x1="50" y1="18" x2="50" y2="82" />
-                <line x1="18" y1="50" x2="82" y2="50" />
-                <line x1="27" y1="27" x2="73" y2="73" />
-                <line x1="73" y1="27" x2="27" y2="73" />
-              </svg>
-
-              <div className="fn-sky-hub" aria-hidden>
-                <img src="/livv-logo.png" alt="" width={28} height={28} />
+            <div className={"fn-sky3d" + (selected ? " locked" : "")} role="list">
+              <div className="fn-sky3d-stage">
+                <div className="fn-sky3d-rig">
+                  <div className="fn-orbit-ring ring-a" aria-hidden />
+                  <div className="fn-orbit-ring ring-b" aria-hidden />
+                  <div className="fn-orbit-ring ring-c" aria-hidden />
+                  <div className="fn-sky-hub" aria-hidden>
+                    <img src="/livv-logo.png" alt="" width={28} height={28} />
+                  </div>
+                  {PILLARS.map((p, i) => {
+                    const active = selected === p.id;
+                    return (
+                      <button
+                        key={p.id}
+                        type="button"
+                        role="listitem"
+                        className={"fn-star3d s" + i + (active ? " active" : "")}
+                        onClick={() => {
+                          haptic(active ? "light" : "medium");
+                          setSelected(active ? null : p.id);
+                        }}
+                        aria-expanded={active}
+                        aria-label={p.label}
+                      >
+                        <span className="fn-star3d-face">
+                          <span className="fn-star-dot" aria-hidden />
+                          <span className="fn-star-coord">{p.coord}</span>
+                          <span className="fn-star-label">{p.label}</span>
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
-
-              {PILLARS.map((p, i) => {
-                const active = selected === p.id;
-                return (
-                  <button
-                    key={p.id}
-                    type="button"
-                    role="listitem"
-                    className={"fn-star s" + i + (active ? " active" : "")}
-                    onClick={() => {
-                      haptic(active ? "light" : "medium");
-                      setSelected(active ? null : p.id);
-                    }}
-                    aria-expanded={active}
-                    aria-label={p.label}
-                  >
-                    <span className="fn-star-dot" aria-hidden />
-                    <span className="fn-star-coord">{p.coord}</span>
-                    <span className="fn-star-label">{p.label}</span>
-                  </button>
-                );
-              })}
             </div>
 
             <div className={"fn-readout" + (activePillar ? " show" : "")} aria-live="polite">
