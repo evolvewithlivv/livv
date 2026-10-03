@@ -192,7 +192,7 @@ export default function FieldNote001() {
               <span className="fn-line dim">survive.</span>
             </h1>
             <p className="fn-sub left">
-              What happens when becoming more capable becomes part of everyday life?
+              Most people never leave the default path. This is the other option.
             </p>
 
             <button type="button" className="fn-ghost solid" onClick={() => go(2)}>
@@ -218,40 +218,38 @@ export default function FieldNote001() {
               <p className="fn-hint">Tap a node.</p>
             </div>
 
-            <div className={"fn-sky3d" + (selected ? " locked" : "")} role="list">
-              <div className="fn-sky3d-stage">
-                <div className="fn-sky3d-rig">
-                  <div className="fn-orbit-ring ring-a" aria-hidden />
-                  <div className="fn-orbit-ring ring-b" aria-hidden />
-                  <div className="fn-orbit-ring ring-c" aria-hidden />
-                  <div className="fn-sky-hub" aria-hidden>
-                    <img src="/livv-logo.png" alt="" width={28} height={28} />
-                  </div>
-                  {PILLARS.map((p, i) => {
-                    const active = selected === p.id;
-                    return (
-                      <button
-                        key={p.id}
-                        type="button"
-                        role="listitem"
-                        className={"fn-star3d s" + i + (active ? " active" : "")}
-                        onClick={() => {
-                          haptic(active ? "light" : "medium");
-                          setSelected(active ? null : p.id);
-                        }}
-                        aria-expanded={active}
-                        aria-label={p.label}
-                      >
-                        <span className="fn-star3d-face">
-                          <span className="fn-star-dot" aria-hidden />
-                          <span className="fn-star-coord">{p.coord}</span>
-                          <span className="fn-star-label">{p.label}</span>
-                        </span>
-                      </button>
-                    );
-                  })}
-                </div>
+            <div className="fn-orbit" role="list">
+              <div className="fn-orbit-plane" aria-hidden>
+                <div className="fn-orbit-ring o1" />
+                <div className="fn-orbit-ring o2" />
+                <div className="fn-orbit-ring o3" />
               </div>
+              <div className="fn-orbit-hub" aria-hidden>
+                <img src="/livv-logo.png" alt="" width={28} height={28} />
+              </div>
+              {PILLARS.map((p, i) => {
+                const active = selected === p.id;
+                return (
+                  <button
+                    key={p.id}
+                    type="button"
+                    role="listitem"
+                    className={"fn-orbit-node n" + i + (active ? " active" : "")}
+                    onClick={() => {
+                      haptic(active ? "light" : "medium");
+                      setSelected(active ? null : p.id);
+                    }}
+                    aria-expanded={active}
+                    aria-label={p.label}
+                  >
+                    <span className="fn-orbit-dot" aria-hidden />
+                    <span className="fn-orbit-meta">
+                      <span className="fn-orbit-coord">{p.coord}</span>
+                      <span className="fn-orbit-name">{p.label}</span>
+                    </span>
+                  </button>
+                );
+              })}
             </div>
 
             <div className={"fn-readout" + (activePillar ? " show" : "")} aria-live="polite">
