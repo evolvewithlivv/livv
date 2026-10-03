@@ -131,7 +131,7 @@ export default function ProfilePage() {
 
   return (
     <main className="livv-page min-h-full text-livv-ink">
-      <div className="mx-auto w-full max-w-2xl px-5 pb-12 pt-6 sm:px-6">
+      <div className="livv-stagger mx-auto w-full max-w-2xl px-5 pb-12 pt-6 sm:px-6">
         <PageHero
           eyebrow="You"
           title="You."
@@ -143,14 +143,14 @@ export default function ProfilePage() {
                 onClick={() => void shareProfileCard()}
                 disabled={sharing}
                 aria-label="Save profile card"
-                className="grid h-10 w-10 place-items-center rounded-full border border-livv-border text-livv-muted transition hover:text-livv-ink disabled:opacity-50"
+                className="livv-press grid h-10 w-10 place-items-center rounded-full border border-livv-border text-livv-muted transition hover:text-livv-ink disabled:opacity-50"
               >
                 <Share2 size={16} strokeWidth={1.8} />
               </button>
               <Link
                 href="/home/settings"
                 aria-label="Settings"
-                className="grid h-10 w-10 place-items-center rounded-full border border-livv-border text-livv-muted transition hover:text-livv-ink"
+                className="livv-press grid h-10 w-10 place-items-center rounded-full border border-livv-border text-livv-muted transition hover:text-livv-ink"
               >
                 <Settings2 size={16} strokeWidth={1.8} />
               </Link>
@@ -163,7 +163,7 @@ export default function ProfilePage() {
             <button
               type="button"
               onClick={() => fileRef.current?.click()}
-              className="relative mx-auto block rounded-full"
+              className="livv-press relative mx-auto block rounded-full"
               aria-label="Change profile photo"
             >
               <Avatar
@@ -229,7 +229,7 @@ export default function ProfilePage() {
             </div>
             <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-livv-border">
               <div
-                className="h-full rounded-full bg-livv-accent"
+                className="h-full rounded-full bg-livv-accent transition-[width] duration-500 ease-out"
                 style={{ width: `${pct}%` }}
               />
             </div>
@@ -253,7 +253,7 @@ export default function ProfilePage() {
             </div>
             <Link
               href="/home/shop"
-              className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-livv-border text-livv-muted transition hover:text-livv-ink"
+              className="livv-press grid h-10 w-10 shrink-0 place-items-center rounded-full border border-livv-border text-livv-muted transition hover:text-livv-ink"
               aria-label="Open shop"
             >
               <ChevronRight size={16} />
@@ -264,7 +264,7 @@ export default function ProfilePage() {
         <section className="mt-3">
           <Link
             href="/home/vault"
-            className="flex items-center justify-between gap-4 rounded-[22px] border border-livv-border bg-[color-mix(in_srgb,rgb(var(--livv-ink))_2.5%,transparent)] px-5 py-5 transition hover:border-[color-mix(in_srgb,rgb(var(--livv-ink))_18%,transparent)]"
+            className="livv-press flex items-center justify-between gap-4 rounded-[22px] border border-livv-border bg-[color-mix(in_srgb,rgb(var(--livv-ink))_2.5%,transparent)] px-5 py-5 transition hover:border-[color-mix(in_srgb,rgb(var(--livv-ink))_18%,transparent)]"
           >
             <div>
               <p className="text-[10px] font-semibold uppercase tracking-[.18em] text-livv-muted">
@@ -286,7 +286,7 @@ export default function ProfilePage() {
         <section className="mt-3">
           <Link
             href="/home/progress"
-            className="flex items-center justify-between gap-4 rounded-[22px] border border-livv-border bg-[color-mix(in_srgb,rgb(var(--livv-ink))_2.5%,transparent)] px-5 py-5 transition hover:border-[color-mix(in_srgb,rgb(var(--livv-ink))_18%,transparent)]"
+            className="livv-press flex items-center justify-between gap-4 rounded-[22px] border border-livv-border bg-[color-mix(in_srgb,rgb(var(--livv-ink))_2.5%,transparent)] px-5 py-5 transition hover:border-[color-mix(in_srgb,rgb(var(--livv-ink))_18%,transparent)]"
           >
             <div>
               <p className="text-[10px] font-semibold uppercase tracking-[.18em] text-livv-muted">
