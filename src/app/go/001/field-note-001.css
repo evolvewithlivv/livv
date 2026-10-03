@@ -164,9 +164,12 @@
 .fn-foot-meta {
   font-size: 9px;
   font-weight: 700;
-  letter-spacing: 0.14em;
+  letter-spacing: 0.16em;
   color: var(--muted);
   text-transform: uppercase;
+}
+.fn-id {
+  letter-spacing: 0.18em;
 }
 .fn-status.live {
   color: var(--accent);
@@ -211,7 +214,7 @@
   position: relative;
   width: min(56vw, 200px);
   aspect-ratio: 1;
-  margin: 0 auto 2rem;
+  margin: 0 auto 1.75rem;
   display: grid;
   place-items: center;
 }
@@ -259,7 +262,7 @@
 }
 
 .fn-micro-label {
-  margin: 0 0 1rem;
+  margin: 0 0 0.85rem;
   font-size: 10px;
   font-weight: 800;
   letter-spacing: 0.2em;
@@ -282,6 +285,12 @@
 .fn-title.stack .fn-line {
   display: block;
 }
+.fn-title.stack.center {
+  text-align: center;
+}
+.fn-title.stack .fn-line + .fn-line {
+  margin-top: 0.02em;
+}
 .fn-act0 .fn-title {
   text-align: center;
 }
@@ -290,7 +299,7 @@
 }
 
 .fn-sub {
-  margin: 1.25rem auto 0;
+  margin: 1.15rem auto 0;
   max-width: 30ch;
   font-size: 1.0625rem;
   line-height: 1.7;
@@ -334,6 +343,72 @@
 .fn-arrow {
   font-size: 1rem;
   font-weight: 400;
+}
+
+.fn-cta-row {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  margin-top: 2.25rem;
+  width: 100%;
+}
+.fn-cta-row .fn-ghost {
+  margin-top: 0;
+  flex: 1;
+}
+.fn-back {
+  flex-shrink: 0;
+  width: 3.5rem;
+  min-height: 3.5rem;
+  display: grid;
+  place-items: center;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ink);
+  font-size: 1.05rem;
+  cursor: pointer;
+  transition: background 0.25s, border-color 0.25s, transform 0.2s;
+}
+.fn-back:active {
+  transform: scale(0.96);
+}
+.fn-back:hover {
+  border-color: rgba(255, 255, 255, 0.32);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.fn-act3-secondary {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.15rem;
+  margin-top: 0.35rem;
+  opacity: 0;
+  transition: opacity 0.8s ease 0.15s;
+}
+.fn-act3-secondary.show {
+  opacity: 1;
+}
+.fn-act3-secondary .fn-secondary {
+  margin-top: 0;
+  opacity: 1;
+}
+.fn-back-text {
+  display: block;
+  width: 100%;
+  padding: 0.65rem;
+  border: none;
+  background: transparent;
+  color: var(--muted);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+.fn-back-text:active {
+  opacity: 0.7;
 }
 
 .fn-act2-head {
@@ -633,20 +708,35 @@
 }
 .fn-ticks {
   display: flex;
-  gap: 4px;
+  align-items: center;
+  gap: 5px;
 }
-.fn-ticks span {
+.fn-tick {
   width: 1rem;
   height: 2px;
+  padding: 0;
+  border: none;
+  border-radius: 1px;
   background: var(--line);
-  transition: width 0.35s, background 0.35s;
+  transition: width 0.35s, background 0.35s, opacity 0.25s;
+  cursor: default;
 }
-.fn-ticks span.on {
+.fn-tick.on {
   width: 1.75rem;
   background: var(--ink);
 }
-.fn-ticks span.done {
-  background: rgba(247, 245, 240, 0.35);
+.fn-tick.done {
+  background: rgba(247, 245, 240, 0.4);
+  cursor: pointer;
+}
+.fn-tick.done:hover {
+  background: rgba(247, 245, 240, 0.65);
+}
+.fn-tick:disabled {
+  cursor: default;
+}
+.fn-tick.visit:not(.on):not(:disabled) {
+  cursor: pointer;
 }
 
 @media (min-width: 700px) {
@@ -675,7 +765,10 @@
   .fn-foot,
   .fn-pulse,
   .fn-enter,
-  .fn-secondary {
+  .fn-secondary,
+  .fn-act3-secondary,
+  .fn-back,
+  .fn-tick {
     transition-duration: 0.01ms !important;
   }
   .fn-act { filter: none; }
