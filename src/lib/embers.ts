@@ -12,7 +12,7 @@ export const EMBERS_BLURB =
   "Embers track showing up. Earn them through real actions. Redeem them on Collection — never as cash.";
 
 /**
- * Base award amounts (before tier multiplier).
+ * Base award amounts (1× for every user).
  * Kept low so discounts require sustained use, not a single session.
  * Must stay within server allow-list: 4,6,8,10,12,15,16,20,25,30,40,50,75,150
  */

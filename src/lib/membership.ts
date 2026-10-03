@@ -1,92 +1,53 @@
-import type { LivvTier } from "./identity";
+/**
+ * LIVV V1 membership surface.
+ *
+ * V1 is a free core product. Embers are earned at 1× for every user.
+ * Paid subscription tiers are intentionally not offered in V1.
+ * Historical Stripe entitlements infrastructure may still exist for
+ * data continuity and future Collection checkout — not for gated tiers.
+ */
+
 import { EMBERS_PER_DOLLAR, MIN_REDEEM_EMBERS } from "./ember-economy";
 
+export type LivvTierId = "free";
+
 export type TierDef = {
-  id: LivvTier;
+  id: LivvTierId;
   name: string;
   price: string;
   cadence: string;
   blurb: string;
   multiplier: number;
-  featured?: boolean;
   perks: string[];
 };
 
-/**
- * Paid tiers unlock depth: tools, protocols, downloads, programs.
- * Spark stays a complete product. Cosmetics are side perks only.
- */
+/** Single V1 product story — free core for everyone. */
 export const TIERS: TierDef[] = [
   {
-    id: "spark",
-    name: "Spark",
+    id: "free",
+    name: "LIVV",
     price: "Free",
     cadence: "forever",
-    blurb: "The full core system. Enough to build the habit.",
+    blurb: "The full core system. Embers track showing up.",
     multiplier: 1,
     perks: [
-      "Daily, Train, Mind, Health, and Progress",
+      "Daily, Train, Health, Progress, Shop, and You",
       "Photo identity and cloud-backed account",
-      "Embers at 1x - redeem on Collection when ready",
+      "Embers at 1× — redeem on Collection when ready",
       `${EMBERS_PER_DOLLAR} Embers = $1 off Collection (min ${MIN_REDEEM_EMBERS.toLocaleString()})`,
-    ],
-  },
-  {
-    id: "rise",
-    name: "Rise",
-    price: "$12",
-    cadence: "/mo",
-    blurb: "Unlock the Member Vault - protocols, tools, and downloads.",
-    multiplier: 2,
-    featured: true,
-    perks: [
-      "Member Vault access",
-      "7-day protocol packs with printable PDFs",
-      "Advanced Daily trackers and tools",
-      "Member-only Mind series",
-      "Embers at 2x on standard awards",
-    ],
-  },
-  {
-    id: "apex",
-    name: "Apex",
-    price: "$29",
-    cadence: "/mo",
-    blurb: "Full programs, deeper tools, and the complete Vault.",
-    multiplier: 4,
-    perks: [
-      "Everything in Rise",
-      "4-week transformation programs",
-      "Progress Lab - patterns and weak-link insights",
-      "Meal plan builder and export packs",
-      "Embers at 4x on standard awards",
-    ],
-  },
-  {
-    id: "circle",
-    name: "Inner Circle",
-    price: "$149",
-    cadence: "/yr",
-    blurb: "The complete operating system - closest seat to LIVV.",
-    multiplier: 6,
-    perks: [
-      "Everything in Apex",
-      "Embers at 6x on standard awards",
-      "Collection early access when drops go live",
-      "Inner Circle mark on your profile",
-      "Best yearly rate for the full Vault",
+      "Vault content free to every LIVV user",
     ],
   },
 ];
 
-export function tierRank(tier: LivvTier) {
-  return TIERS.findIndex((t) => t.id === tier);
+export function getTier(_id?: string) {
+  return TIERS[0];
 }
 
-export function hasTier(current: LivvTier, needed: LivvTier) {
-  return tierRank(current) >= tierRank(needed);
+export function tierRank(_tier?: string) {
+  return 0;
 }
 
-export function getTier(id: LivvTier) {
-  return TIERS.find((t) => t.id === id) || TIERS[0];
+export function hasTier(_current?: string, _needed?: string) {
+  return true;
 }
