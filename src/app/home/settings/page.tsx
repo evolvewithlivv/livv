@@ -155,7 +155,7 @@ export default function SettingsPage() {
 
   return (
     <main className="livv-page min-h-full text-livv-ink pb-32">
-      <div className="mx-auto w-full max-w-2xl px-5 pt-6 sm:px-6">
+      <div className="livv-stagger mx-auto w-full max-w-2xl px-5 pt-6 sm:px-6">
         <PageHero
           eyebrow="Settings"
           title="Control the system."
@@ -179,7 +179,7 @@ export default function SettingsPage() {
             <Link
               href="/home/profile"
               aria-label="Open profile"
-              className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-livv-border text-livv-muted transition hover:text-livv-ink"
+              className="livv-press grid h-10 w-10 shrink-0 place-items-center rounded-full border border-livv-border text-livv-muted transition hover:text-livv-ink"
             >
               <ChevronRight size={16} strokeWidth={1.8} />
             </Link>
@@ -197,7 +197,7 @@ export default function SettingsPage() {
                   type="button"
                   onClick={() => setLook(opt)}
                   className={
-                    "flex w-full items-center justify-between px-5 py-4 text-left transition " +
+                    "livv-press flex w-full items-center justify-between px-5 py-4 text-left transition " +
                     (i < LOOK_OPTIONS.length - 1 ? "border-b border-livv-border " : "") +
                     (active ? "bg-[color-mix(in_srgb,rgb(var(--livv-ink))_3.5%,transparent)]" : "")
                   }
@@ -299,7 +299,7 @@ export default function SettingsPage() {
             <button
               type="button"
               onClick={onSignOut}
-              className="flex w-full items-center gap-3 px-5 py-4 text-left transition hover:bg-[color-mix(in_srgb,rgb(var(--livv-ink))_3%,transparent)]"
+              className="livv-press flex w-full items-center gap-3 px-5 py-4 text-left transition hover:bg-[color-mix(in_srgb,rgb(var(--livv-ink))_3%,transparent)]"
             >
               <span className="grid h-9 w-9 place-items-center rounded-xl border border-livv-border text-livv-muted">
                 <LogOut size={16} strokeWidth={1.7} />
@@ -340,7 +340,7 @@ function ToggleRow({
       onClick={onToggle}
       aria-pressed={value}
       className={
-        "flex w-full items-center gap-3 px-5 py-4 text-left transition hover:bg-[color-mix(in_srgb,rgb(var(--livv-ink))_3%,transparent)] " +
+        "livv-press flex w-full items-center gap-3 px-5 py-4 text-left transition hover:bg-[color-mix(in_srgb,rgb(var(--livv-ink))_3%,transparent)] " +
         (last ? "" : "border-b border-livv-border")
       }
     >
@@ -392,7 +392,7 @@ function ActionRow({
       onClick={onClick}
       disabled={disabled}
       className={
-        "flex w-full items-center gap-3 px-5 py-4 text-left transition disabled:opacity-50 hover:bg-[color-mix(in_srgb,rgb(var(--livv-ink))_3%,transparent)] " +
+        "livv-press flex w-full items-center gap-3 px-5 py-4 text-left transition disabled:opacity-50 hover:bg-[color-mix(in_srgb,rgb(var(--livv-ink))_3%,transparent)] " +
         (last ? "" : "border-b border-livv-border")
       }
     >
