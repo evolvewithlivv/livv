@@ -4,6 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import { Home, CalendarCheck2, Dumbbell, HeartPulse, ShoppingBag, UserRound } from "lucide-react";
+import { haptic } from "@/lib/sensory";
 
 const NAV = [
   { href: "/home", label: "Home", Icon: Home, match: (p: string) => p === "/home" },
@@ -72,6 +73,9 @@ export function BottomNav() {
               aria-label={label}
               aria-current={active ? "page" : undefined}
               className={`livv-tab flex min-h-[54px] flex-col items-center justify-center gap-1 px-1 py-2 ${active ? "is-active" : ""}`}
+              onClick={() => {
+                if (!active) haptic("light");
+              }}
             >
               <span className="livv-tab-icon flex h-8 w-10 items-center justify-center">
                 <Icon size={20} strokeWidth={active ? 2.2 : 1.65} />
