@@ -4,15 +4,47 @@ import { getVerifiedSupabaseUser } from "@/lib/supabase/server-auth";
 
 export const runtime = "nodejs";
 
-/** Legitimate client awards stay at or below this (see src/lib/embers.ts). */
-const MAX_BASE_AMOUNT = 25;
-const ALLOWED_AMOUNTS = [4, 6, 8, 10, 12, 15, 16, 20, 25] as const;
+/**
+ * Server-authoritative Ember awards.
+ * Client may declare an *action type* and optional detail id.
+ * Client may NOT choose the award amount or invent unbounded event keys.
+ *
+ * Event keys are derived as:
+ *   ember:{userId}:{action}:{UTC-YYYY-MM-DD}:{detail}
+ * so the same action+detail same day is idempotent.
+ */
+
+const ACTIONS = ["checkin", "workout", "objective", "custom"] as const;
+type AwardAction = (typeof ACTIONS)[number];
+
+const AMOUNTS: Record<AwardAction, number> = {
+  checkin: 6,
+  workout: 10,
+  objective: 4,
+  custom: 6,
+};
+
+const CUSTOM_SIZE_AMOUNTS = {
+  small: 4,
+  standard: 6,
+  major: 12,
+} as const;
 
 function json(data: unknown, status = 200) {
   return NextResponse.json(data, {
     status,
     headers: { "Cache-Control": "private, no-store, max-age=0" },
   });
+}
+
+function utcDayKey() {
+  return new Date().toISOString().slice(0, 10);
+}
+
+function sanitizeDetail(raw: unknown): string {
+  if (typeof raw !== "string") return "default";
+  const cleaned = raw.trim().toLowerCase().replace(/[^a-z0-9:_-]/g, "").slice(0, 40);
+  return cleaned.length >= 1 ? cleaned : "default";
 }
 
 export async function POST(req: NextRequest) {
@@ -22,23 +54,35 @@ export async function POST(req: NextRequest) {
     const verified = await getVerifiedSupabaseUser(req);
     if (!verified || verified.isAnonymous) return json({ error: "Sign in to earn Embers." }, 401);
 
-    const body = (await req.json().catch(() => null)) as
-      | { eventKey?: unknown; baseAmount?: unknown }
-      | null;
-    const eventKey = typeof body?.eventKey === "string" ? body.eventKey.trim() : "";
-    let baseAmount = typeof body?.baseAmount === "number" ? Math.trunc(body.baseAmount) : 0;
+    const body = (await req.json().catch(() => null)) as {
+      action?: unknown;
+      detail?: unknown;
+      size?: unknown;
+      /** @deprecated ignored — amount is server-authoritative */
+      baseAmount?: unknown;
+      /** @deprecated ignored — key is server-derived */
+      eventKey?: unknown;
+    } | null;
 
-    if (!eventKey.startsWith("ember-") || eventKey.length < 12 || eventKey.length > 120) {
-      return json({ error: "Invalid Ember event." }, 400);
+    const actionRaw = typeof body?.action === "string" ? body.action.trim().toLowerCase() : "";
+    if (!(ACTIONS as readonly string[]).includes(actionRaw)) {
+      return json({ error: "Invalid Ember action." }, 400);
     }
-    if (!/^ember-[A-Za-z0-9:_-]+$/.test(eventKey)) {
-      return json({ error: "Invalid Ember event." }, 400);
+    const action = actionRaw as AwardAction;
+
+    let baseAmount = AMOUNTS[action];
+    if (action === "custom") {
+      const size = typeof body?.size === "string" ? body.size.trim().toLowerCase() : "standard";
+      if (size === "small" || size === "standard" || size === "major") {
+        baseAmount = CUSTOM_SIZE_AMOUNTS[size];
+      } else {
+        return json({ error: "Invalid Ember size." }, 400);
+      }
     }
 
-    baseAmount = Math.min(baseAmount, MAX_BASE_AMOUNT);
-    if (!(ALLOWED_AMOUNTS as readonly number[]).includes(baseAmount)) {
-      return json({ error: "Invalid Ember award." }, 400);
-    }
+    const detail = sanitizeDetail(body?.detail);
+    const day = utcDayKey();
+    const eventKey = `ember-${verified.id}-${action}-${day}-${detail}`.slice(0, 120);
 
     const admin = getSupabaseAdmin();
     if (!admin) return json({ error: "Ember service unavailable." }, 503);
@@ -54,6 +98,9 @@ export async function POST(req: NextRequest) {
       if (msg.includes("daily ember award limit")) {
         return json({ error: "Daily Ember limit reached.", awarded: 0 }, 429);
       }
+      if (msg.includes("invalid event key") || msg.includes("invalid ember award")) {
+        return json({ error: "Invalid Ember award." }, 400);
+      }
       console.error("[embers] grant failed", msg);
       return json({ error: "Ember award could not be recorded." }, 503);
     }
@@ -63,9 +110,10 @@ export async function POST(req: NextRequest) {
       awarded: Number(row?.awarded || 0),
       total: Number(row?.total || 0),
       multiplier: 1,
+      action,
     });
   } catch (error) {
-    console.error("[embers] request failed", error);
-    return json({ error: "Ember award could not be recorded." }, 500);
+    console.error("[embers] award route error", error);
+    return json({ error: "Ember award failed." }, 500);
   }
 }
