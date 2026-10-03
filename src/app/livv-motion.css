@@ -76,6 +76,17 @@
   transform: scale(0.97);
 }
 
+/* Default press feel on primary controls inside app pages */
+.livv-page button:not(:disabled),
+.livv-page a[role="button"],
+.livv-page .rounded-full.border {
+  transition: transform var(--livv-dur-fast) var(--livv-ease-soft);
+}
+.livv-page button:not(:disabled):active,
+.livv-page a[role="button"]:active {
+  transform: scale(0.97);
+}
+
 /* Cards / surfaces — subtle depth on interaction */
 .livv-surface-lift {
   transition:
@@ -129,6 +140,13 @@
   z-index: 1;
 }
 
+/* Progress bars across the product */
+.livv-page [class*="rounded-full"][class*="h-1"],
+.livv-page [class*="rounded-full"][class*="h-1.5"],
+.livv-page [class*="rounded-full"][class*="h-2"] {
+  transition: width 0.5s var(--livv-ease-out);
+}
+
 @media (prefers-reduced-motion: reduce) {
   .livv-page-motion,
   .livv-stagger > *,
@@ -138,7 +156,9 @@
   .livv-press:active,
   .livv-tab:active,
   .livv-surface-lift:active,
-  .livv-surface-lift:hover {
+  .livv-surface-lift:hover,
+  .livv-page button:active,
+  .livv-page a[role="button"]:active {
     transform: none !important;
   }
 }
