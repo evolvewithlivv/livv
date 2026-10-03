@@ -9,7 +9,6 @@ import {
   ChevronRight,
   Droplets,
   Footprints,
-  HeartPulse,
   Minus,
   Moon,
   Plus,
@@ -133,7 +132,7 @@ export default function HealthPage() {
                 Baseline today
               </p>
               <p className="mt-1.5 text-[25px] font-semibold tracking-[-.04em]">
-                {completion.done}/{completion.total} logged
+                {completion.count}/{completion.total} logged
               </p>
               <p className="mt-1 text-[12px] text-livv-muted">
                 {trackedDays} day{trackedDays === 1 ? "" : "s"} with entries.
@@ -270,7 +269,7 @@ export default function HealthPage() {
                     />
                   </div>
                   <span className="w-10 shrink-0 text-right text-[11px] tabular-nums text-livv-muted">
-                    {c.done}/{c.total}
+                    {c.count}/{c.total}
                   </span>
                 </div>
               );
