@@ -355,9 +355,9 @@
 
 .fn-orbit {
   position: relative;
-  width: min(100%, 20rem);
-  height: min(62vw, 16.5rem);
-  margin: 0.35rem auto 0.5rem;
+  width: min(100%, 21rem);
+  height: min(64vw, 17rem);
+  margin: 0.5rem auto 0.65rem;
 }
 .fn-orbit-plane {
   position: absolute;
@@ -554,14 +554,16 @@
   box-shadow: 0 0 40px rgba(120, 170, 240, 0.18);
 }
 .fn-threshold-mark {
-  width: 4rem;
-  height: 4rem;
-  margin-bottom: 1.5rem;
-  border: 1px solid rgba(255, 255, 255, 0.14);
-  border-radius: 1rem;
+  width: 4.25rem;
+  height: 4.25rem;
+  margin-bottom: 1.75rem;
+  border: 1px solid rgba(180, 210, 255, 0.28);
+  border-radius: 1.1rem;
   display: grid;
   place-items: center;
-  background: rgba(255, 255, 255, 0.03);
+  background: radial-gradient(circle at 35% 30%, rgba(255,255,255,0.08), rgba(3,4,5,0.9) 70%);
+  box-shadow: 0 0 36px rgba(100, 150, 220, 0.16);
+  transition: box-shadow 0.8s ease;
 }
 .fn-threshold-mark img {
   width: 52%;
@@ -591,6 +593,7 @@
 .fn-enter.show {
   opacity: 1;
   transform: none;
+  box-shadow: 0 0 40px rgba(241, 239, 233, 0.12);
 }
 .fn-enter:disabled {
   cursor: default;
