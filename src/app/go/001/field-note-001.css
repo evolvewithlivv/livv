@@ -353,178 +353,162 @@
   text-transform: uppercase;
 }
 
-.fn-sky3d {
+.fn-orbit {
   position: relative;
-  width: 100%;
-  margin: 0.15rem 0 0.4rem;
+  width: min(100%, 20rem);
+  height: min(62vw, 16.5rem);
+  margin: 0.35rem auto 0.5rem;
 }
-.fn-sky3d-stage {
-  position: relative;
-  width: min(100%, 19.5rem);
-  height: min(78vw, 20rem);
-  margin: 0 auto;
-  perspective: 1000px;
-  perspective-origin: 50% 42%;
-}
-.fn-sky3d-rig {
+.fn-orbit-plane {
   position: absolute;
-  inset: 8% 5% 12%;
+  left: 50%;
+  top: 46%;
+  width: 92%;
+  height: 58%;
+  transform: translate(-50%, -50%) rotateX(62deg);
   transform-style: preserve-3d;
-  transform: rotateX(58deg) rotateZ(-8deg);
-  animation: fn-rig-float 9s ease-in-out infinite;
+  pointer-events: none;
 }
-.fn-sky3d.locked .fn-sky3d-rig {
-  animation-duration: 16s;
-}
-
-@keyframes fn-rig-float {
-  0%, 100% { transform: rotateX(58deg) rotateZ(-8deg) translateZ(0); }
-  50% { transform: rotateX(54deg) rotateZ(-4deg) translateZ(6px); }
-}
-
 .fn-orbit-ring {
   position: absolute;
   left: 50%;
   top: 50%;
   border-radius: 50%;
-  border: 1px solid rgba(180, 210, 255, 0.22);
-  transform-style: preserve-3d;
-  pointer-events: none;
+  border: 1px solid rgba(180, 210, 255, 0.28);
   box-sizing: border-box;
+  transform: translate(-50%, -50%);
 }
-.fn-orbit-ring.ring-a {
-  width: 92%;
-  height: 92%;
-  margin: -46% 0 0 -46%;
-  border-color: rgba(180, 210, 255, 0.32);
-  box-shadow:
-    0 0 28px rgba(100, 150, 220, 0.1),
-    inset 0 0 20px rgba(100, 150, 220, 0.04);
+.fn-orbit-ring.o1 {
+  width: 100%;
+  height: 100%;
+  border-color: rgba(180, 210, 255, 0.38);
+  box-shadow: 0 0 32px rgba(100, 150, 220, 0.12);
+  animation: fn-orbit-spin 40s linear infinite;
 }
-.fn-orbit-ring.ring-b {
-  width: 68%;
-  height: 68%;
-  margin: -34% 0 0 -34%;
+.fn-orbit-ring.o2 {
+  width: 72%;
+  height: 72%;
   border-style: dashed;
-  border-color: rgba(180, 210, 255, 0.18);
-  transform: rotateZ(28deg);
+  border-color: rgba(180, 210, 255, 0.2);
+  animation: fn-orbit-spin-rev 56s linear infinite;
 }
-.fn-orbit-ring.ring-c {
+.fn-orbit-ring.o3 {
   width: 44%;
   height: 44%;
-  margin: -22% 0 0 -22%;
   border-color: rgba(180, 210, 255, 0.12);
-  transform: rotateZ(-18deg);
+}
+@keyframes fn-orbit-spin {
+  to { transform: translate(-50%, -50%) rotate(360deg); }
+}
+@keyframes fn-orbit-spin-rev {
+  to { transform: translate(-50%, -50%) rotate(-360deg); }
 }
 
-.fn-sky-hub {
+.fn-orbit-hub {
   position: absolute;
   left: 50%;
-  top: 50%;
-  width: 2.9rem;
-  height: 2.9rem;
-  margin: -1.45rem 0 0 -1.45rem;
+  top: 46%;
+  width: 2.85rem;
+  height: 2.85rem;
+  transform: translate(-50%, -50%);
   border-radius: 50%;
   border: 1px solid rgba(255, 255, 255, 0.2);
   display: grid;
   place-items: center;
-  background: radial-gradient(circle at 35% 28%, rgba(255,255,255,0.12), rgba(3,4,5,0.96) 70%);
+  background: radial-gradient(circle at 35% 28%, rgba(255,255,255,0.1), rgba(3,4,5,0.96) 70%);
   box-shadow:
-    0 0 36px rgba(100, 150, 220, 0.28),
-    0 0 70px rgba(80, 120, 200, 0.12);
-  transform: translateZ(28px) rotateX(-58deg) rotateZ(8deg);
-  z-index: 6;
+    0 0 28px rgba(100, 150, 220, 0.28),
+    0 0 56px rgba(80, 120, 200, 0.12);
+  z-index: 4;
 }
-.fn-sky-hub img {
+.fn-orbit-hub img {
   width: 52%;
   filter: brightness(0) invert(1);
   opacity: 0.92;
 }
 
-.fn-star3d {
+.fn-orbit-node {
   position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 5.5rem;
-  margin: 0;
-  padding: 0;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  width: 5.75rem;
+  padding: 0.25rem;
   border: none;
   background: transparent;
   color: var(--ink);
   cursor: pointer;
-  transform-style: preserve-3d;
   -webkit-tap-highlight-color: transparent;
-  z-index: 5;
-  transition: filter 0.35s ease;
+  transition: transform 0.3s ease, filter 0.3s ease;
 }
-.fn-star3d.s0 {
-  transform: translate(-50%, -50%) translateY(-46%) translateZ(12px) rotateX(-58deg) rotateZ(8deg);
+.fn-orbit-node.n0 {
+  left: 50%;
+  top: 2%;
+  transform: translateX(-50%);
 }
-.fn-star3d.s1 {
-  transform: translate(-50%, -50%) translateX(46%) translateZ(18px) rotateX(-58deg) rotateZ(8deg);
+.fn-orbit-node.n1 {
+  right: 0;
+  top: 42%;
+  transform: translateY(-50%);
+  align-items: flex-end;
+  text-align: right;
 }
-.fn-star3d.s2 {
-  transform: translate(-50%, -50%) translateY(46%) translateZ(10px) rotateX(-58deg) rotateZ(8deg);
+.fn-orbit-node.n2 {
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
 }
-.fn-star3d.s3 {
-  transform: translate(-50%, -50%) translateX(-46%) translateZ(16px) rotateX(-58deg) rotateZ(8deg);
+.fn-orbit-node.n3 {
+  left: 0;
+  top: 42%;
+  transform: translateY(-50%);
+  align-items: flex-start;
+  text-align: left;
 }
+.fn-orbit-node.active {
+  filter: drop-shadow(0 0 12px rgba(150, 190, 255, 0.55));
+}
+.fn-orbit-node.n0.active { transform: translateX(-50%) scale(1.06); }
+.fn-orbit-node.n1.active { transform: translateY(-50%) scale(1.06); }
+.fn-orbit-node.n2.active { transform: translateX(-50%) scale(1.06); }
+.fn-orbit-node.n3.active { transform: translateY(-50%) scale(1.06); }
 
-.fn-star3d.active {
-  z-index: 8;
-  filter: drop-shadow(0 0 14px rgba(150, 190, 255, 0.55));
-}
-.fn-star3d.active.s0 {
-  transform: translate(-50%, -50%) translateY(-46%) translateZ(36px) rotateX(-58deg) rotateZ(8deg) scale(1.08);
-}
-.fn-star3d.active.s1 {
-  transform: translate(-50%, -50%) translateX(46%) translateZ(40px) rotateX(-58deg) rotateZ(8deg) scale(1.08);
-}
-.fn-star3d.active.s2 {
-  transform: translate(-50%, -50%) translateY(46%) translateZ(34px) rotateX(-58deg) rotateZ(8deg) scale(1.08);
-}
-.fn-star3d.active.s3 {
-  transform: translate(-50%, -50%) translateX(-46%) translateZ(38px) rotateX(-58deg) rotateZ(8deg) scale(1.08);
-}
-
-.fn-star3d-face {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.28rem;
-}
-
-.fn-star-dot {
+.fn-orbit-dot {
   width: 11px;
   height: 11px;
   border-radius: 50%;
-  background: rgba(200, 220, 255, 0.65);
+  background: rgba(200, 220, 255, 0.7);
   box-shadow:
-    0 0 14px rgba(150, 190, 255, 0.55),
-    0 4px 12px rgba(0, 0, 0, 0.35);
+    0 0 12px rgba(150, 190, 255, 0.55),
+    0 2px 8px rgba(0, 0, 0, 0.4);
   transition: background 0.3s, box-shadow 0.3s, transform 0.3s;
 }
-.fn-star3d.active .fn-star-dot {
-  background: #e0ecff;
+.fn-orbit-node.active .fn-orbit-dot {
+  background: #e8f0ff;
   box-shadow:
-    0 0 20px rgba(200, 230, 255, 1),
-    0 0 40px rgba(100, 160, 255, 0.45);
-  transform: scale(1.3);
+    0 0 18px rgba(200, 230, 255, 1),
+    0 0 36px rgba(100, 160, 255, 0.45);
+  transform: scale(1.35);
 }
-.fn-star-coord {
+.fn-orbit-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.12rem;
+}
+.fn-orbit-coord {
   font-size: 8px;
   font-weight: 700;
   letter-spacing: 0.14em;
   color: var(--muted);
 }
-.fn-star-label {
+.fn-orbit-name {
   font-size: 10px;
   font-weight: 800;
   letter-spacing: 0.12em;
-  text-align: center;
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.85);
 }
-.fn-star3d.active .fn-star-label {
+.fn-orbit-node.active .fn-orbit-name {
   color: var(--accent);
 }
 
@@ -678,12 +662,11 @@
   .fn-ring.r1,
   .fn-ring.r2,
   .fn-p,
-  .fn-sky3d-rig {
+  .fn-orbit-ring.o1,
+  .fn-orbit-ring.o2 {
     animation: none !important;
   }
-  .fn-particles {
-    opacity: 0.25;
-  }
+  .fn-particles { opacity: 0.25; }
   .fn-act,
   .fn-top,
   .fn-foot,
@@ -692,32 +675,6 @@
   .fn-secondary {
     transition-duration: 0.01ms !important;
   }
-  .fn-act {
-    filter: none;
-  }
-  .fn-sky3d-stage {
-    perspective: none;
-  }
-  .fn-sky3d-rig {
-    transform: none;
-  }
-  .fn-orbit-ring {
-    transform: none !important;
-    opacity: 0.4;
-  }
-  .fn-sky-hub,
-  .fn-star3d.s0,
-  .fn-star3d.s1,
-  .fn-star3d.s2,
-  .fn-star3d.s3,
-  .fn-star3d.active.s0,
-  .fn-star3d.active.s1,
-  .fn-star3d.active.s2,
-  .fn-star3d.active.s3 {
-    transform: none !important;
-  }
-  .fn-star3d.s0 { left: 50%; top: 8%; margin-left: -2.75rem; }
-  .fn-star3d.s1 { left: auto; right: 4%; top: 42%; margin: 0; }
-  .fn-star3d.s2 { left: 50%; top: auto; bottom: 8%; margin-left: -2.75rem; }
-  .fn-star3d.s3 { left: 4%; top: 42%; margin: 0; }
+  .fn-act { filter: none; }
+  .fn-orbit-plane { transform: translate(-50%, -50%); }
 }
