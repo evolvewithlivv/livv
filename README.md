@@ -23,10 +23,10 @@ LIVV is a personal evolution ecosystem built around daily action, training, refl
 - Returning-account profile hydration across browsers/devices
 - Cross-device synchronization for member-owned LIVV local state
 - Daily, Train, Mind, Profile, Settings, Progress, Shop, and the six life-pillar surfaces
-- Stripe subscription tiers: Spark, Rise, Apex, Inner Circle
-- Server-side Stripe entitlements with webhook idempotency
-- Client dual-read entitlement resolver with safe offline/local fallback
-- Authenticated Stripe Customer Portal ownership
+- Free-core V1 product model; paid subscription tiers are intentionally not offered in the current member experience
+- Historical server-side Stripe entitlement infrastructure retained for billing continuity and future product phases
+- Stripe webhook signature verification + idempotency
+- Authenticated Stripe Customer Portal ownership for accounts with a linked Stripe customer
 - Authenticated and user-bound Checkout session confirmation
 - Production security headers
 - Local JSON export/import and full device-data wipe
@@ -56,7 +56,7 @@ The browser still maintains local state for fast UX and offline behavior, but au
 
 ## Billing architecture
 
-The browser is still responsible for local UX state, but paid subscription authority is backed by `public.entitlements` in Supabase.
+V1 is a free-core product. The browser is still responsible for local UX state, while the retained Stripe entitlement layer remains server-authoritative for any historical/future billing records.
 
 Stripe webhook events are signature-verified and recorded in `public.stripe_webhook_events` only after successful handling. Client access uses the server entitlement when available and falls back to the local entitlement cache when the network is unavailable.
 
@@ -130,13 +130,13 @@ npm run build
 
 The `main` branch deploys through Vercel. GitHub CI builds against Node 20 and Node 22.
 
-Before shipping a billing change, verify:
+Before shipping an account or billing change, verify:
 
 1. Supabase migrations are applied to the production project.
 2. Required production secrets are present in Vercel.
-3. Stripe webhook delivery is configured for the production URL.
+3. Stripe webhook delivery is configured for the production URL when billing infrastructure is being exercised.
 4. The current Vercel deployment is Ready.
-5. The paid Checkout → webhook → entitlement → client hydration path is tested end-to-end.
+5. Any retained Stripe Checkout → webhook → entitlement path being changed is tested end-to-end.
 6. `/api/health` reports the expected production commit after deployment.
 7. Email OTP authentication has been smoke-tested in the production Supabase configuration.
 8. Cross-device account recovery has been smoke-tested with a clean browser profile.
