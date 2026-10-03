@@ -26,6 +26,7 @@ import {
   type HealthDay,
 } from "@/lib/health";
 import { feedback } from "@/lib/sensory";
+import { PageHero } from "@/components/layout/page-hero";
 
 const TOOLS = [
   {
@@ -102,15 +103,11 @@ export default function HealthPage() {
   return (
     <main className="livv-page min-h-full pb-20">
       <div className="livv-stagger mx-auto w-full max-w-xl px-5 pb-12 sm:px-6">
-        <header className="livv-page-hero pt-6">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-livv-muted">Health</p>
-          <h1 className="mt-2 max-w-[18ch] text-[30px] font-semibold leading-[1.1] tracking-[-0.045em] sm:text-[34px]">
-            The baseline that holds everything else.
-          </h1>
-          <p className="mt-3 max-w-[36ch] text-[14px] leading-relaxed text-livv-muted">
-            Sleep, fuel, movement, and calm. Small systems that compound.
-          </p>
-        </header>
+        <PageHero
+          eyebrow="Health"
+          title="The baseline that holds everything else."
+          subtitle="Sleep, fuel, movement, and calm. Small systems that compound."
+        />
 
         <section className="mt-10">
           <div className="flex items-center gap-5">
