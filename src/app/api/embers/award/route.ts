@@ -9,6 +9,8 @@ export const runtime = "nodejs";
  * Client may declare an *action type* and optional detail id.
  * Client may NOT choose the award amount or invent unbounded event keys.
  *
+ * The database independently derives the award amount from the validated action/size.
+ *
  * Event keys are derived as:
  *   ember:{userId}:{action}:{UTC-YYYY-MM-DD}:{detail}
  * so the same action+detail same day is idempotent.
@@ -16,19 +18,6 @@ export const runtime = "nodejs";
 
 const ACTIONS = ["checkin", "workout", "objective", "custom"] as const;
 type AwardAction = (typeof ACTIONS)[number];
-
-const AMOUNTS: Record<AwardAction, number> = {
-  checkin: 6,
-  workout: 10,
-  objective: 4,
-  custom: 6,
-};
-
-const CUSTOM_SIZE_AMOUNTS = {
-  small: 4,
-  standard: 6,
-  major: 12,
-} as const;
 
 function json(data: unknown, status = 200) {
   return NextResponse.json(data, {
