@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import { Flame } from "lucide-react";
 import { loadIdentity } from "@/lib/identity";
+import { PageHero } from "@/components/layout/page-hero";
 import {
   EMBERS_PER_DOLLAR,
   MIN_REDEEM_EMBERS,
@@ -28,17 +29,11 @@ export default function ShopPage() {
   return (
     <main className="livv-page min-h-full text-livv-ink">
       <div className="livv-stagger mx-auto w-full max-w-2xl px-5 pb-12 pt-6 sm:px-6">
-        <header className="livv-page-hero pt-2">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-livv-muted">
-            Collection
-          </p>
-          <h1 className="mt-2 max-w-[14ch] text-[30px] font-semibold leading-[1.08] tracking-[-0.045em] sm:text-[34px]">
-            Wear the standard.
-          </h1>
-          <p className="mt-3 max-w-[36ch] text-[14px] leading-relaxed text-livv-muted">
-            Physical goods from LIVV. Earn Embers in the app. Redeem when Collection drops.
-          </p>
-        </header>
+        <PageHero
+          eyebrow="Collection"
+          title="Wear the standard."
+          subtitle="Physical goods from LIVV. Earn Embers in the app. Redeem when Collection drops."
+        />
 
         <section className="mt-10 rounded-[22px] border border-livv-border bg-[color-mix(in_srgb,rgb(var(--livv-ink))_2.5%,transparent)] px-5 py-5">
           <div className="flex items-center gap-3">
