@@ -150,16 +150,18 @@ export default function DailyPage() {
   return (
     <main className="livv-page min-h-full pb-20">
       <div className="livv-stagger mx-auto max-w-xl px-5 pt-6 pb-8">
-        <header className="livv-page-hero">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[var(--livv-pro-muted)]">
-            {now.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" })}
-          </p>
-          <p className="mt-5 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--livv-pro-accent)]">
-            Reflect
-          </p>
-          <h1 className="mt-3 max-w-[20ch] text-[28px] font-semibold leading-[1.15] tracking-[-0.04em] text-[var(--livv-pro-ink)] sm:text-[32px]">
-            {question}
-          </h1>
+        <header className="livv-page-hero livv-daily-hero">
+          <div className="livv-page-hero-main">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[var(--livv-pro-muted)]">
+              {now.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" })}
+            </p>
+            <p className="mt-4 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--livv-pro-accent)]">
+              Reflect
+            </p>
+            <h1 className="mt-2 max-w-[24ch] text-[28px] font-semibold leading-[1.08] tracking-[-0.045em] text-[var(--livv-pro-ink)] sm:text-[32px]">
+              {question}
+            </h1>
+          </div>
           <div className="mt-5 flex items-center gap-3">
             <div className="h-1 flex-1 overflow-hidden rounded-full bg-[var(--livv-pro-surface-2)]">
               <div
