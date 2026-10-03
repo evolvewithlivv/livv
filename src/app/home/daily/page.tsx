@@ -128,27 +128,29 @@ export default function DailyPage() {
 
   const complete = (id: "body" | "life") => {
     if (completed.includes(id)) return;
-    feedback("tick");
+    feedback("complete");
     completeDailyTask(id, now);
     refresh();
   };
 
   const toggle = (key: "movement" | "reset") => {
-    const next = { ...trackers, [key]: !trackers[key] };
+    const turningOn = !trackers[key];
+    const next = { ...trackers, [key]: turningOn };
     saveTrackers(next);
-    feedback("tick");
+    feedback(turningOn ? "complete" : "tick");
   };
 
   const step = (key: "water" | "meals", max: number) => {
-    const next = { ...trackers, [key]: Math.min(max, trackers[key] + 1) };
+    const nextVal = Math.min(max, trackers[key] + 1);
+    const next = { ...trackers, [key]: nextVal };
     saveTrackers(next);
-    feedback("tick");
+    feedback(nextVal >= max ? "complete" : "tick");
   };
 
   return (
     <main className="livv-page min-h-full pb-20">
-      <div className="mx-auto max-w-xl px-5 pt-6 pb-8">
-        <header>
+      <div className="livv-stagger mx-auto max-w-xl px-5 pt-6 pb-8">
+        <header className="livv-page-hero">
           <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[var(--livv-pro-muted)]">
             {now.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" })}
           </p>
@@ -161,7 +163,7 @@ export default function DailyPage() {
           <div className="mt-5 flex items-center gap-3">
             <div className="h-1 flex-1 overflow-hidden rounded-full bg-[var(--livv-pro-surface-2)]">
               <div
-                className="h-full rounded-full bg-[var(--livv-pro-accent)] transition-all"
+                className="h-full rounded-full bg-[var(--livv-pro-accent)] transition-[width] duration-500 ease-out"
                 style={{ width: `${Math.min(100, (doneCount / 3) * 100)}%` }}
               />
             </div>
@@ -190,9 +192,9 @@ export default function DailyPage() {
               type="button"
               onClick={saveAnswer}
               disabled={!answer.trim()}
-              className="rounded-full bg-[var(--livv-pro-ink)] px-4 py-2.5 text-[10px] font-semibold uppercase tracking-[.14em] text-[var(--livv-pro-bg)] disabled:opacity-30"
+              className="livv-press rounded-full bg-[var(--livv-pro-ink)] px-4 py-2.5 text-[10px] font-semibold uppercase tracking-[.14em] text-[var(--livv-pro-bg)] disabled:opacity-30"
             >
-              {completed.includes("mind") ? "Save changes" : "Save and complete"}
+              Save answer
             </button>
           </div>
         </section>
@@ -203,7 +205,6 @@ export default function DailyPage() {
             {tasks.map((task, index) => {
               const done = completed.includes(task.id);
               const isMind = task.id === "mind";
-              const last = index === tasks.length - 1;
               return (
                 <button
                   key={task.id}
@@ -216,13 +217,13 @@ export default function DailyPage() {
                       });
                     else complete(task.id as "body" | "life");
                   }}
-                  className="group flex w-full items-start gap-4 px-1 py-5 text-left"
+                  className="livv-press group flex w-full items-start gap-4 px-1 py-5 text-left transition-colors active:bg-[var(--livv-pro-surface-2)]/40"
                 >
                   <span
                     className={
-                      "grid h-10 w-10 shrink-0 place-items-center rounded-full border text-[10px] font-bold " +
+                      "grid h-10 w-10 shrink-0 place-items-center rounded-full border text-[10px] font-bold transition-all duration-300 " +
                       (done
-                        ? "border-[var(--livv-pro-accent)] bg-[var(--livv-pro-accent-soft)] text-[var(--livv-pro-accent)]"
+                        ? "border-[var(--livv-pro-accent)] bg-[var(--livv-pro-accent-soft)] text-[var(--livv-pro-accent)] scale-105"
                         : "border-[var(--livv-pro-line)] text-[var(--livv-pro-muted)]")
                     }
                   >
@@ -264,7 +265,6 @@ export default function DailyPage() {
               action={trackers.water >= 8 ? "Complete" : "+ 1 glass"}
               done={trackers.water >= 8}
               onClick={() => step("water", 8)}
-              last={false}
             />
             <TrackerRow
               label="Meals"
@@ -273,7 +273,6 @@ export default function DailyPage() {
               action={trackers.meals >= 3 ? "Complete" : "+ 1 meal"}
               done={trackers.meals >= 3}
               onClick={() => step("meals", 3)}
-              last={false}
             />
             <TrackerRow
               label="Movement"
@@ -282,7 +281,6 @@ export default function DailyPage() {
               action={trackers.movement ? "Complete" : "Mark done"}
               done={trackers.movement}
               onClick={() => toggle("movement")}
-              last={false}
             />
             <TrackerRow
               label="Reset"
@@ -319,20 +317,17 @@ export default function DailyPage() {
               </p>
               <h2 className="mt-1.5 text-[26px] font-semibold tracking-tight">Your days live here.</h2>
             </div>
-            <span className="text-[10px] text-[var(--livv-pro-muted)]">{archive.length} recent</span>
           </div>
-          <p className="mt-2 text-[12px] leading-relaxed text-[var(--livv-pro-muted)]">
-            Past answers are evidence you can return to.
-          </p>
-          <div className="mt-5 divide-y divide-[var(--livv-pro-line)] border-t border-[var(--livv-pro-line)]">
+          <div className="mt-6 space-y-4">
             {archive.map((entry, index) => {
-              const q =
-                (entry.question && entry.question.trim()) ||
-                questionForDayKey(entry.key);
+              const q = questionForDayKey(entry.key);
               return (
-                <div key={entry.key} className="px-1 py-4">
+                <div
+                  key={entry.key + String(index)}
+                  className="rounded-2xl border border-[var(--livv-pro-line)] bg-[var(--livv-pro-surface)] px-4 py-4"
+                >
                   <div className="flex items-center justify-between gap-3">
-                    <span className="text-[9px] font-semibold uppercase tracking-[.16em] text-[var(--livv-pro-muted)]">
+                    <span className="text-[10px] font-semibold uppercase tracking-[.14em] text-[var(--livv-pro-muted)]">
                       Entry {archive.length - index}
                     </span>
                     <span className="text-[10px] text-[var(--livv-pro-muted)]">{entry.key}</span>
@@ -393,13 +388,13 @@ function TrackerRow({
     <button
       type="button"
       onClick={onClick}
-      className="flex w-full items-center gap-4 px-1 py-4 text-left"
+      className="livv-press flex w-full items-center gap-4 px-1 py-4 text-left transition-colors active:bg-[var(--livv-pro-surface-2)]/40"
     >
       <span
         className={
-          "grid h-9 w-9 shrink-0 place-items-center rounded-full border text-[11px] font-semibold " +
+          "grid h-9 w-9 shrink-0 place-items-center rounded-full border text-[11px] font-semibold transition-all duration-300 " +
           (done
-            ? "border-[var(--livv-pro-accent)] bg-[var(--livv-pro-accent-soft)] text-[var(--livv-pro-accent)]"
+            ? "border-[var(--livv-pro-accent)] bg-[var(--livv-pro-accent-soft)] text-[var(--livv-pro-accent)] scale-105"
             : "border-[var(--livv-pro-line)] text-[var(--livv-pro-muted)]")
         }
       >
