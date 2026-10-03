@@ -75,7 +75,7 @@ export default function FieldNote001() {
     const reduced =
       typeof window !== "undefined" &&
       window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const t = window.setTimeout(() => setCtaReady(true), reduced ? 100 : 1400);
+    const t = window.setTimeout(() => setCtaReady(true), reduced ? 100 : 1600);
     return () => window.clearTimeout(t);
   }, [act]);
 
@@ -192,11 +192,13 @@ export default function FieldNote001() {
               <span className="fn-line dim">survive.</span>
             </h1>
             <p className="fn-sub left">
-              Most people never leave the default path. This is the other option.
+              Most people never leave the default path.
+              <br />
+              This is the other door.
             </p>
 
             <button type="button" className="fn-ghost solid" onClick={() => go(2)}>
-              <span>INSPECT THE SYSTEM</span>
+              <span>OPEN THE SYSTEM</span>
               <span className="fn-arrow" aria-hidden>
                 →
               </span>
@@ -214,7 +216,7 @@ export default function FieldNote001() {
             aria-live="polite"
           >
             <div className="fn-act2-head">
-              <p className="fn-micro-label">SYSTEM / 4 NODES</p>
+              <p className="fn-micro-label">INSIDE THE SIGNAL</p>
               <p className="fn-hint">Tap a node.</p>
             </div>
 
@@ -266,7 +268,7 @@ export default function FieldNote001() {
             </div>
 
             <button type="button" className="fn-ghost solid" onClick={() => go(3)}>
-              <span>CONTINUE</span>
+              <span>CROSS THE THRESHOLD</span>
               <span className="fn-arrow" aria-hidden>
                 →
               </span>
@@ -289,13 +291,13 @@ export default function FieldNote001() {
             </div>
             <p className="fn-micro-label">THRESHOLD</p>
             <h1 className="fn-title stack">
-              <span className="fn-line">Evolve</span>
-              <span className="fn-line">with</span>
-              <span className="fn-line dim">purpose.</span>
+              <span className="fn-line">Leave the</span>
+              <span className="fn-line">default.</span>
+              <span className="fn-line dim">Enter LIVV.</span>
             </h1>
             <p className="fn-sub left">
-              Training. Health. Knowledge. Practical capability. The small things that compound into a
-              life you can actually live.
+              Training. Health. Knowledge. Practical capability.
+              Not content — a different operating system for how you live.
             </p>
 
             <button
@@ -332,9 +334,9 @@ export default function FieldNote001() {
         </div>
         <span className="fn-foot-meta">
           {act === 0 && "TAP / SCAN / ENTER"}
-          {act === 1 && "FIELD NOTE / 001"}
-          {act === 2 && "NODES ONLINE"}
-          {act === 3 && "EVOLVE WITH PURPOSE"}
+          {act === 1 && "LEAVE THE DEFAULT"}
+          {act === 2 && "SIGNAL LOCKED"}
+          {act === 3 && "CROSS WHEN READY"}
         </span>
       </footer>
     </main>
