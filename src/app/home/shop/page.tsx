@@ -74,7 +74,14 @@ export default function ShopPage() {
             Apparel and gear that match how you live. Embers convert to credit at {EMBERS_PER_DOLLAR} per dollar,
             up to ${MAX_CREDIT_DOLLARS}.
           </p>
-          <p className="mt-4 text-[12px] leading-relaxed text-livv-muted">{REDEEM_RULES_COPY}</p>
+          <ul className="mt-4 space-y-1.5 text-[12px] leading-relaxed text-livv-muted">
+            {REDEEM_RULES_COPY.map((rule) => (
+              <li key={rule} className="flex gap-2">
+                <span className="mt-[0.45em] h-1 w-1 shrink-0 rounded-full bg-livv-muted opacity-60" aria-hidden />
+                <span>{rule}</span>
+              </li>
+            ))}
+          </ul>
         </section>
 
         <section className="mt-10">
