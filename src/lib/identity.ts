@@ -15,28 +15,53 @@ export function applyAppColor(hex:string,theme:LivvTheme="ember"){applyAppearanc
 export function loadIdentity():Identity{if(typeof window==="undefined")return DEFAULT_IDENTITY;try{const account=getCurrentAccount();let parsed:Identity;if(account)parsed={displayName:account.displayName,username:account.username,bio:account.bio,goal:account.goal||"",photo:account.photo,accent:account.accent,tier:account.tier,theme:account.theme,appearance:account.appearance,embers:account.embers};else{const raw=window.localStorage.getItem(KEY);if(!raw)return DEFAULT_IDENTITY;parsed={...DEFAULT_IDENTITY,...JSON.parse(raw)} as Identity;}if(!ACCENTS.includes(parsed.accent))parsed.accent=DEFAULT_ACCENT;if(!parsed.appearance)parsed.appearance="dark";if(!parsed.goal)parsed.goal="";return parsed;}catch{return DEFAULT_IDENTITY;}}
 export function saveIdentity(next:Identity){if(typeof window==="undefined")return;const account=getCurrentAccount();if(account?.usernameLocked)next={...next,username:account.username};if(!ACCENTS.includes(next.accent))next={...next,accent:DEFAULT_ACCENT};window.localStorage.setItem(KEY,JSON.stringify(next));applyAppearance(next.appearance,next.accent,next.theme);syncAccountFromIdentity(next);window.dispatchEvent(new Event("livv-identity"));}
 export function patchIdentity(partial:Partial<Identity>){const current=loadIdentity();const next={...current,...partial};saveIdentity(next);return next;}
-export function addEmbers(amount:number,eventKey?:string){
-  const current=loadIdentity();
-  if(typeof window!=="undefined" && isSupabaseConfigured()){
-    const key=eventKey || "ember-"+Date.now()+"-"+(typeof crypto!=="undefined"&&"randomUUID" in crypto?crypto.randomUUID():Math.random().toString(36).slice(2));
-    void (async()=>{
-      try{
-        const client=getSupabaseBrowserClient();
-        if(!client)return;
-        const{data}=await client.auth.getSession();
-        const token=data.session?.access_token;
-        if(!token)return;
-        const response=await fetch("/api/embers/award",{method:"POST",headers:{"Content-Type":"application/json",Authorization:"Bearer "+token},body:JSON.stringify({eventKey:key,baseAmount:amount})});
-        if(!response.ok)return;
-        const payload=await response.json() as {total?:number};
-        if(typeof payload.total==="number")patchIdentity({embers:Math.max(0,payload.total)});
-      }catch{
-        /* The server remains authoritative; failed awards do not change local Ember totals. */
+export type EmberAction = "checkin" | "workout" | "objective" | "custom";
+
+/** Request a server-authoritative Ember award. Amount is decided on the server. */
+export function addEmbers(
+  action: EmberAction,
+  opts?: { detail?: string; size?: "small" | "standard" | "major" },
+) {
+  const current = loadIdentity();
+  const offlineAmounts: Record<EmberAction, number> = {
+    checkin: 6,
+    workout: 10,
+    objective: 4,
+    custom: opts?.size === "small" ? 4 : opts?.size === "major" ? 12 : 6,
+  };
+  if (typeof window !== "undefined" && isSupabaseConfigured()) {
+    void (async () => {
+      try {
+        const client = getSupabaseBrowserClient();
+        if (!client) return;
+        const { data } = await client.auth.getSession();
+        const token = data.session?.access_token;
+        if (!token) return;
+        const body: Record<string, string> = { action };
+        if (opts?.detail) body.detail = opts.detail;
+        if (opts?.size) body.size = opts.size;
+        const response = await fetch("/api/embers/award", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: "Bearer " + token,
+          },
+          body: JSON.stringify(body),
+        });
+        if (!response.ok) return;
+        const payload = (await response.json()) as { total?: number };
+        if (typeof payload.total === "number") {
+          patchIdentity({ embers: Math.max(0, payload.total) });
+        }
+      } catch {
+        /* Server remains authoritative; failed awards do not inflate local totals. */
       }
     })();
     return current;
   }
-  return patchIdentity({embers:Math.max(0,current.embers+amount)});
+  return patchIdentity({
+    embers: Math.max(0, current.embers + offlineAmounts[action]),
+  });
 }
 
 export function fileToPhoto(file:File):Promise<string>{return new Promise((resolve,reject)=>{const img=new Image(),url=URL.createObjectURL(file);img.onload=()=>{const size=512,canvas=document.createElement("canvas");canvas.width=size;canvas.height=size;const ctx=canvas.getContext("2d");if(!ctx){URL.revokeObjectURL(url);reject(new Error("canvas"));return;}const min=Math.min(img.width,img.height),sx=(img.width-min)/2,sy=(img.height-min)/2;ctx.drawImage(img,sx,sy,min,min,0,0,size,size);URL.revokeObjectURL(url);resolve(canvas.toDataURL("image/jpeg",.86));};img.onerror=()=>{URL.revokeObjectURL(url);reject(new Error("image"));};img.src=url;});}
