@@ -46,7 +46,9 @@ export default function FieldNote001() {
   const [awake, setAwake] = useState(false);
   const [selected, setSelected] = useState<string | null>(null);
   const [ctaReady, setCtaReady] = useState(false);
+  const [phase, setPhase] = useState<"in" | "out">("in");
   const bootRef = useRef(false);
+  const lockRef = useRef(false);
 
   useEffect(() => {
     document.documentElement.dataset.livvRoute = "field-note-001";
@@ -77,18 +79,42 @@ export default function FieldNote001() {
     return () => window.clearTimeout(t);
   }, [act]);
 
-  const go = useCallback((next: Act) => {
-    haptic("light");
-    setSelected(null);
-    setAct(next);
-    window.scrollTo({
-      top: 0,
-      behavior: "instant" in window ? ("instant" as ScrollBehavior) : "auto",
-    });
-  }, []);
+  const go = useCallback(
+    (next: Act) => {
+      if (lockRef.current || next === act) return;
+      lockRef.current = true;
+      haptic("light");
+      setSelected(null);
+
+      const reduced =
+        typeof window !== "undefined" &&
+        window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+      if (reduced) {
+        setAct(next);
+        setPhase("in");
+        lockRef.current = false;
+        window.scrollTo({ top: 0, behavior: "auto" });
+        return;
+      }
+
+      setPhase("out");
+      window.setTimeout(() => {
+        setAct(next);
+        setPhase("in");
+        window.scrollTo({ top: 0, behavior: "auto" });
+        window.setTimeout(() => {
+          lockRef.current = false;
+        }, 700);
+      }, 480);
+    },
+    [act]
+  );
+
+  const activePillar = PILLARS.find((p) => p.id === selected) ?? null;
 
   return (
-    <main className="fn" aria-label="LIVV Field Note 001">
+    <main className={"fn" + (awake ? " awake" : "")} aria-label="LIVV Field Note 001">
       <div className="fn-void" aria-hidden />
       <div className="fn-grid" aria-hidden />
       <div className={"fn-pulse" + (awake ? " on" : "")} aria-hidden />
@@ -115,7 +141,14 @@ export default function FieldNote001() {
 
       <div className="fn-body">
         {act === 0 && (
-          <section className={"fn-act fn-act0" + (awake ? " on" : "")} aria-live="polite">
+          <section
+            className={
+              "fn-act fn-act0" +
+              (awake && phase === "in" ? " on" : "") +
+              (phase === "out" ? " out" : "")
+            }
+            aria-live="polite"
+          >
             <div className="fn-signal" aria-hidden>
               <div className="fn-ring r1" />
               <div className="fn-ring r2" />
@@ -144,7 +177,14 @@ export default function FieldNote001() {
         )}
 
         {act === 1 && (
-          <section className="fn-act fn-act1 on" aria-live="polite">
+          <section
+            className={
+              "fn-act fn-act1" +
+              (phase === "in" ? " on" : "") +
+              (phase === "out" ? " out" : "")
+            }
+            aria-live="polite"
+          >
             <p className="fn-micro-label">THE IDEA</p>
             <h1 className="fn-title stack">
               <span className="fn-line">You are not</span>
@@ -165,13 +205,33 @@ export default function FieldNote001() {
         )}
 
         {act === 2 && (
-          <section className="fn-act fn-act2 on" aria-live="polite">
+          <section
+            className={
+              "fn-act fn-act2" +
+              (phase === "in" ? " on" : "") +
+              (phase === "out" ? " out" : "")
+            }
+            aria-live="polite"
+          >
             <div className="fn-act2-head">
               <p className="fn-micro-label">SYSTEM / 4 NODES</p>
               <p className="fn-hint">Tap a node.</p>
             </div>
 
-            <div className="fn-constellation" role="list">
+            <div className="fn-sky" role="list">
+              <svg className="fn-sky-links" viewBox="0 0 100 100" aria-hidden>
+                <circle className="fn-sky-orbit" cx="50" cy="50" r="32" fill="none" />
+                <circle className="fn-sky-orbit soft" cx="50" cy="50" r="22" fill="none" />
+                <line x1="50" y1="18" x2="50" y2="82" />
+                <line x1="18" y1="50" x2="82" y2="50" />
+                <line x1="27" y1="27" x2="73" y2="73" />
+                <line x1="73" y1="27" x2="27" y2="73" />
+              </svg>
+
+              <div className="fn-sky-hub" aria-hidden>
+                <img src="/livv-logo.png" alt="" width={28} height={28} />
+              </div>
+
               {PILLARS.map((p, i) => {
                 const active = selected === p.id;
                 return (
@@ -179,7 +239,7 @@ export default function FieldNote001() {
                     key={p.id}
                     type="button"
                     role="listitem"
-                    className={"fn-node n" + i + (active ? " active" : "")}
+                    className={"fn-star s" + i + (active ? " active" : "")}
                     onClick={() => {
                       haptic(active ? "light" : "medium");
                       setSelected(active ? null : p.id);
@@ -187,17 +247,25 @@ export default function FieldNote001() {
                     aria-expanded={active}
                     aria-label={p.label}
                   >
-                    <span className="fn-node-coord">{p.coord}</span>
-                    <span className="fn-node-label">{p.label}</span>
-                    <span className={"fn-node-detail" + (active ? " show" : "")}>
-                      {p.line}
-                    </span>
+                    <span className="fn-star-dot" aria-hidden />
+                    <span className="fn-star-coord">{p.coord}</span>
+                    <span className="fn-star-label">{p.label}</span>
                   </button>
                 );
               })}
-              <div className="fn-constellation-hub" aria-hidden>
-                <img src="/livv-logo.png" alt="" width={28} height={28} />
-              </div>
+            </div>
+
+            <div className={"fn-readout" + (activePillar ? " show" : "")} aria-live="polite">
+              {activePillar ? (
+                <>
+                  <p className="fn-readout-coord">
+                    {activePillar.coord} · {activePillar.label}
+                  </p>
+                  <p className="fn-readout-line">{activePillar.line}</p>
+                </>
+              ) : (
+                <p className="fn-readout-idle">Select a node to inspect.</p>
+              )}
             </div>
 
             <button type="button" className="fn-ghost solid" onClick={() => go(3)}>
@@ -211,7 +279,12 @@ export default function FieldNote001() {
 
         {act === 3 && (
           <section
-            className={"fn-act fn-act3 on" + (ctaReady ? " ready" : "")}
+            className={
+              "fn-act fn-act3" +
+              (phase === "in" ? " on" : "") +
+              (phase === "out" ? " out" : "") +
+              (ctaReady ? " ready" : "")
+            }
             aria-live="polite"
           >
             <div className="fn-threshold-mark" aria-hidden>
@@ -224,7 +297,8 @@ export default function FieldNote001() {
               <span className="fn-line dim">purpose.</span>
             </h1>
             <p className="fn-sub left">
-              Training. Health. Knowledge. Practical capability. The small things that compound into a life you can actually live.
+              Training. Health. Knowledge. Practical capability. The small things that compound into a
+              life you can actually live.
             </p>
 
             <button
@@ -256,10 +330,7 @@ export default function FieldNote001() {
       <footer className={"fn-foot" + (awake ? " on" : "")}>
         <div className="fn-ticks" aria-hidden>
           {[0, 1, 2, 3].map((n) => (
-            <span
-              key={n}
-              className={n === act ? "on" : n < act ? "done" : ""}
-            />
+            <span key={n} className={n === act ? "on" : n < act ? "done" : ""} />
           ))}
         </div>
         <span className="fn-foot-meta">
