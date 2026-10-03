@@ -334,7 +334,7 @@ export default function TrainPage() {
             {(workout && workout.name) || "Your workout"} is logged.
           </p>
           <p className="mt-4 text-[11px] leading-relaxed text-livv-muted">
-            The session is now part of your history. Keep the next session slightly better, not simply longer.
+            The session is now part of your history. Use the record to stay honest about what you actually did.
           </p>
         </div>
         <button
