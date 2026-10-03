@@ -1,9 +1,8 @@
 import "./loading-screen.css";
 
 /**
- * Global route loading UI — first paint of every navigation suspend.
- * Matches Field Note 001 signal language: dark void, rings, mark.
- * Forced graphite so we never flash system white/gray.
+ * Global route loading UI.
+ * Signal rings + single line. No mark, no progress bar.
  */
 export default function Loading() {
   return (
@@ -19,15 +18,11 @@ export default function Loading() {
           <div className="ll-ring r3" />
           <div className="ll-core">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/livv-logo.png" alt="" width={40} height={40} />
+            <img src="/livv-logo.png" alt="" width={48} height={48} />
           </div>
         </div>
 
-        <p className="ll-mark">LIVV</p>
         <p className="ll-line">Loading your world.</p>
-        <div className="ll-bar" aria-hidden>
-          <span className="ll-bar-fill" />
-        </div>
       </div>
     </main>
   );
