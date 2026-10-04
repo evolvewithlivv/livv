@@ -203,7 +203,7 @@ export default function Signal001() {
             </h1>
             <p className="fn-sub left">
               Training. Health. Knowledge. Capability.
-              Not content — a different operating system for how you live.
+              A different operating system for real life.
             </p>
             <button type="button" className={"fn-enter" + (ctaReady ? " show" : "")}
               onClick={() => { haptic("success"); router.push("/auth"); }} disabled={!ctaReady}>
