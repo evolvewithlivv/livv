@@ -92,38 +92,13 @@
 
 .you-avatar-wrap {
   position: relative;
-  width: 8.75rem;
-  height: 8.75rem;
+  display: flex;
+  justify-content: center;
   margin: 0 auto 1.15rem;
 }
 
-.you-ring {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-}
-
-.you-ring-track {
-  fill: none;
-  stroke: color-mix(in srgb, var(--you-ink) 10%, transparent);
-  stroke-width: 4.5;
-}
-
-.you-ring-fill {
-  fill: none;
-  stroke: var(--you-accent);
-  stroke-width: 4.5;
-  stroke-linecap: round;
-  transition: stroke-dasharray 0.8s ease;
-  filter: drop-shadow(0 0 8px color-mix(in srgb, var(--you-accent) 45%, transparent));
-}
-
 .you-avatar-btn {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
+  position: relative;
   border: 0;
   padding: 0;
   background: transparent;
@@ -133,22 +108,22 @@
 
 .you-avatar {
   border-radius: 50% !important;
-  box-shadow: 0 8px 28px color-mix(in srgb, #000 35%, transparent);
 }
 
 .you-edit {
   position: absolute;
-  right: -2px;
-  bottom: -2px;
+  right: 2px;
+  bottom: 2px;
   display: grid;
   place-items: center;
   width: 1.75rem;
   height: 1.75rem;
   border-radius: 50%;
-  background: var(--you-ink);
-  color: var(--you-bg);
-  border: 2px solid var(--you-bg);
-  box-shadow: 0 2px 8px color-mix(in srgb, #000 30%, transparent);
+  background: #0a0b0d;
+  color: #f5f5f2;
+  border: 2px solid color-mix(in srgb, var(--you-bg) 90%, #000);
+  box-shadow: 0 2px 8px color-mix(in srgb, #000 40%, transparent);
+  z-index: 2;
 }
 
 .you-name {
@@ -187,6 +162,14 @@
   margin-top: 1.25rem;
   padding-top: 1.15rem;
   border-top: 1px solid var(--you-line);
+  text-align: left;
+}
+
+.you-evo-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
 }
 
 .you-evo-label {
@@ -200,16 +183,70 @@
 
 .you-evo-name {
   margin: 0.35rem 0 0;
-  font-size: 1.2rem;
+  font-size: 1.25rem;
   font-weight: 600;
   letter-spacing: -0.03em;
 }
 
 .you-evo-meta {
-  margin: 0.3rem 0 0;
+  margin: 0.55rem 0 0;
   font-size: 11px;
   font-weight: 600;
   color: color-mix(in srgb, var(--you-muted) 90%, transparent);
+}
+
+/* XP ring chip — next to evolution, not around avatar */
+.you-xp-chip {
+  position: relative;
+  width: 3.25rem;
+  height: 3.25rem;
+  flex-shrink: 0;
+}
+
+.you-xp-ring {
+  width: 100%;
+  height: 100%;
+}
+
+.you-xp-track {
+  fill: none;
+  stroke: color-mix(in srgb, var(--you-ink) 12%, transparent);
+  stroke-width: 3.5;
+}
+
+.you-xp-fill {
+  fill: none;
+  stroke: var(--you-accent);
+  stroke-width: 3.5;
+  stroke-linecap: round;
+  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--you-accent) 50%, transparent));
+}
+
+.you-xp-pct {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+
+.you-xp-bar {
+  margin-top: 0.65rem;
+  height: 3px;
+  border-radius: 999px;
+  background: var(--you-line);
+  overflow: hidden;
+}
+
+.you-xp-bar-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: var(--you-accent);
+  box-shadow: 0 0 10px color-mix(in srgb, var(--you-accent) 40%, transparent);
+  transition: width 0.6s ease;
 }
 
 /* Stats */
