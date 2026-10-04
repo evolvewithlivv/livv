@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowUpRight, Flame, ShoppingBag } from "lucide-react";
+import { ArrowUpRight, Flame } from "lucide-react";
 import { useEffect, useState } from "react";
 import { loadIdentity } from "@/lib/identity";
 import { EMBERS_PER_DOLLAR, MIN_REDEEM_EMBERS, REDEEM_RULES_COPY, embersToDollars } from "@/lib/ember-economy";
@@ -31,28 +31,25 @@ export default function ShopPage() {
   return (
     <main className="shop-page">
       <div className="shop-shell">
-        <header className="shop-hero">
-          <div className="shop-hero-meta"><span>SHOP</span><span>COLLECTION 001</span></div>
-          <div className="shop-hero-copy">
+        <header className="shop-header">
+          <div className="shop-header-top"><span>SHOP</span><span>COLLECTION 001</span></div>
+          <div className="shop-title-block">
             <p className="shop-kicker">THE PHYSICAL LAYER</p>
-            <h1>LIVE<br />THE STANDARD.</h1>
-            <p className="shop-intro">Objects for the life you are building. Nothing extra. Collection 001 is the first physical expression of LIVV.</p>
+            <h1>COLLECTION 001</h1>
+            <p className="shop-subtitle">The first LIVV collection.</p>
           </div>
-          <div className="shop-hero-line"><span>05 PIECES</span><span>MADE TO ORDER</span><span>2026</span></div>
+          <div className="shop-header-meta"><span>05 PIECES</span><span>MADE TO ORDER</span><span>2026</span></div>
         </header>
 
         <section className="shop-collection" aria-labelledby="collection-title">
-          <div className="shop-section-head">
-            <div><p className="shop-kicker">COLLECTION 001</p><h2 id="collection-title">The first layer.</h2></div>
-            <span className="shop-index">01—05</span>
-          </div>
+          <div className="shop-section-head"><h2 id="collection-title">Collection 001</h2><span>01—05</span></div>
           <div className="shop-grid">
             {PRODUCTS.map((product) => (
               <Link key={product.href} href={product.href} className="shop-product">
                 <div className="shop-product-image">
-                  <img src={product.image} alt={product.name} loading={product.no === "01" ? "eager" : "lazy"} />
+                  <img src={product.image} alt={product.name + " — " + product.variant} loading={product.no === "01" ? "eager" : "lazy"} />
                   <span className="shop-product-no">{product.no}</span>
-                  <span className="shop-product-open"><ArrowUpRight size={16} strokeWidth={1.7} /></span>
+                  <span className="shop-product-open" aria-hidden="true"><ArrowUpRight size={15} strokeWidth={1.7} /></span>
                 </div>
                 <div className="shop-product-info">
                   <div><h3>{product.name}</h3><p>{product.variant}</p></div>
@@ -63,32 +60,23 @@ export default function ShopPage() {
           </div>
         </section>
 
-        <section className="shop-manifesto">
-          <div className="shop-manifesto-mark">LIVV</div>
-          <div className="shop-manifesto-copy">
-            <p className="shop-kicker">WHY IT EXISTS</p>
-            <h2>Wear the system.<br />Then go live it.</h2>
-            <p>LIVV is not a merch brand. The physical layer is a reminder that the standard does not stop when you close the app.</p>
+        <section className="shop-embers" aria-label="Embers balance">
+          <div className="shop-embers-main">
+            <div className="shop-embers-label"><span className="shop-ember-icon"><Flame size={15} strokeWidth={1.8} /></span><span>EMBERS</span></div>
+            <div className="shop-embers-value"><strong>{embers.toLocaleString()}</strong><span>{"≈ $" + dollars.toFixed(2)}</span></div>
           </div>
-        </section>
-
-        <section className="shop-embers">
-          <div className="shop-embers-top">
-            <div className="shop-embers-title"><span className="shop-ember-icon"><Flame size={16} /></span><div><p className="shop-kicker">EARNED IN LIVV</p><h2>Your Embers</h2></div></div>
-            <div className="shop-embers-value"><strong>{embers.toLocaleString()}</strong><span>≈ ${dollars.toFixed(2)}</span></div>
-          </div>
-          <div className="shop-embers-bar"><span style={{ width: `${progress}%` }} /></div>
+          <div className="shop-embers-bar" aria-hidden="true"><span style={{ width: progress + "%" }} /></div>
           <div className="shop-embers-bottom">
-            <p>{remaining === 0 ? `You have reached the ${MIN_REDEEM_EMBERS.toLocaleString()} Ember redemption minimum.` : `${remaining.toLocaleString()} more Embers to reach the redemption minimum.`}</p>
-            <Link href="/home/profile">View profile <ArrowUpRight size={13} /></Link>
+            <p>{remaining === 0 ? MIN_REDEEM_EMBERS.toLocaleString() + " Ember redemption minimum reached." : remaining.toLocaleString() + " more to redeem."}</p>
+            <Link href="/home/profile" aria-label="View Embers in profile"><ArrowUpRight size={15} /></Link>
           </div>
           <details className="shop-embers-rules">
-            <summary>How Embers work</summary>
+            <summary>Embers</summary>
             <div><p>Embers convert at {EMBERS_PER_DOLLAR} per dollar.</p>{REDEEM_RULES_COPY.map((rule) => <p key={rule}>• {rule}</p>)}</div>
           </details>
         </section>
 
-        <footer className="shop-footer"><div><ShoppingBag size={15} strokeWidth={1.5} /><span>COLLECTION 001</span></div><p>Nothing extra.</p></footer>
+        <footer className="shop-footer"><span>LIVV / 001</span><span>Nothing extra.</span></footer>
       </div>
     </main>
   );
