@@ -1,0 +1,225 @@
+/* Clothing rack — Collection 001 */
+
+.rack {
+  --rack-metal: color-mix(in srgb, rgb(var(--livv-ink)) 55%, #8a9099);
+  --rack-metal-shine: color-mix(in srgb, rgb(var(--livv-ink)) 25%, #c8ccd2);
+}
+
+.rack-frame {
+  position: relative;
+  padding-top: 1.25rem;
+}
+
+/* Horizontal rail */
+.rack-rail {
+  position: relative;
+  z-index: 5;
+  height: 14px;
+  margin: 0 1.25rem;
+  pointer-events: none;
+}
+
+.rack-rail-bar {
+  display: block;
+  height: 7px;
+  margin-top: 3px;
+  border-radius: 999px;
+  background: linear-gradient(
+    180deg,
+    var(--rack-metal-shine) 0%,
+    var(--rack-metal) 45%,
+    color-mix(in srgb, var(--rack-metal) 70%, #000) 100%
+  );
+  box-shadow:
+    0 2px 6px color-mix(in srgb, #000 35%, transparent),
+    inset 0 1px 0 color-mix(in srgb, #fff 25%, transparent);
+}
+
+.rack-rail-end {
+  position: absolute;
+  top: 0;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 35% 30%, #ddd 0%, var(--rack-metal) 55%, #444 100%);
+  box-shadow: 0 1px 3px color-mix(in srgb, #000 40%, transparent);
+}
+.rack-rail-end.left { left: -2px; }
+.rack-rail-end.right { right: -2px; }
+
+/* Horizontal swipe track */
+.rack-track {
+  display: flex;
+  gap: 0.75rem;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: calc(50% - 7rem);
+  -webkit-overflow-scrolling: touch;
+  padding: 0.35rem calc(50% - 7rem) 1.25rem;
+  scrollbar-width: none;
+  overscroll-behavior-x: contain;
+}
+.rack-track::-webkit-scrollbar {
+  display: none;
+}
+
+/* Each hanging piece */
+.rack-item {
+  position: relative;
+  flex: 0 0 14rem;
+  scroll-snap-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-decoration: none;
+  color: inherit;
+  transform: scale(0.92);
+  opacity: 0.72;
+  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.35s ease;
+}
+.rack-item.is-active {
+  transform: scale(1);
+  opacity: 1;
+}
+
+.rack-hanger {
+  width: 5.5rem;
+  height: 2.2rem;
+  color: var(--rack-metal);
+  margin-bottom: -0.15rem;
+  filter: drop-shadow(0 1px 1px color-mix(in srgb, #000 25%, transparent));
+}
+
+.rack-hook {
+  width: 2px;
+  height: 10px;
+  background: var(--rack-metal);
+  border-radius: 1px;
+  margin-bottom: 2px;
+}
+
+.rack-garment {
+  width: 100%;
+  aspect-ratio: 3 / 4;
+  border-radius: 4px 4px 10px 10px;
+  overflow: hidden;
+  background: color-mix(in srgb, rgb(var(--livv-ink)) 4%, transparent);
+  box-shadow:
+    0 12px 28px color-mix(in srgb, #000 28%, transparent),
+    0 2px 6px color-mix(in srgb, #000 18%, transparent);
+  transition: box-shadow 0.35s ease;
+}
+.rack-item.is-active .rack-garment {
+  box-shadow:
+    0 18px 40px color-mix(in srgb, #000 38%, transparent),
+    0 4px 12px color-mix(in srgb, #000 22%, transparent),
+    0 0 0 1px color-mix(in srgb, rgb(var(--livv-accent)) 18%, transparent);
+}
+.rack-garment img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  transform-origin: top center;
+  animation: rack-sway 5.5s ease-in-out infinite;
+}
+.rack-item:nth-child(2n) .rack-garment img {
+  animation-duration: 6.2s;
+  animation-delay: -1.4s;
+}
+.rack-item:nth-child(3n) .rack-garment img {
+  animation-duration: 4.8s;
+  animation-delay: -2.1s;
+}
+
+@keyframes rack-sway {
+  0%, 100% { transform: rotate(-0.7deg); }
+  50% { transform: rotate(0.7deg); }
+}
+
+/* Focused product readout */
+.rack-focus {
+  margin-top: 0.5rem;
+  text-align: center;
+}
+.rack-focus-index {
+  margin: 0;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: rgb(var(--livv-muted));
+}
+.rack-focus-name {
+  margin: 0.55rem 0 0;
+  font-size: 1.35rem;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+  line-height: 1.15;
+}
+.rack-focus-detail {
+  margin: 0.3rem 0 0;
+  font-size: 13px;
+  color: rgb(var(--livv-muted));
+}
+.rack-focus-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.85rem;
+  margin-top: 1rem;
+}
+.rack-focus-price {
+  font-size: 15px;
+  font-weight: 700;
+}
+.rack-focus-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.5rem;
+  padding: 0 1.15rem;
+  border-radius: 999px;
+  background: rgb(var(--livv-ink));
+  color: rgb(var(--livv-bg));
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  text-decoration: none;
+}
+.rack-focus-cta:active {
+  transform: scale(0.97);
+}
+
+.rack-dots {
+  display: flex;
+  justify-content: center;
+  gap: 0.4rem;
+  margin-top: 1.15rem;
+}
+.rack-dot {
+  width: 6px;
+  height: 6px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: color-mix(in srgb, rgb(var(--livv-ink)) 18%, transparent);
+  cursor: pointer;
+  transition: transform 0.2s ease, background 0.2s ease;
+}
+.rack-dot.is-active {
+  background: rgb(var(--livv-accent));
+  transform: scale(1.25);
+  box-shadow: 0 0 10px color-mix(in srgb, rgb(var(--livv-accent)) 45%, transparent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .rack-garment img {
+    animation: none !important;
+  }
+  .rack-item {
+    transition: none;
+  }
+}
