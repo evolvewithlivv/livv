@@ -5,6 +5,7 @@ import "./livv-background.css";
 import "./livv-final-pass.css";
 import "./livv-visual-redesign.css";
 import "./livv-professional.css";
+import "./livv-tabbar.css";
 import "./livv-search-fix.css";
 import "./livv-tier-unlock.css";
 import "./livv-motion.css";
