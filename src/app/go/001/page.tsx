@@ -212,7 +212,6 @@ export default function Signal001() {
             </button>
             <div className={"fn-act3-secondary" + (ctaReady ? " show" : "")}>
               <button type="button" className="fn-back-text" onClick={() => go(2)}>← Back</button>
-              <button type="button" className="fn-secondary" onClick={() => router.push("/")}>EXPLORE THE SITE</button>
             </div>
           </section>
         )}
