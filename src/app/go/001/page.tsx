@@ -87,9 +87,13 @@ export default function Signal001() {
       </div>
 
       <header className={"fn-top" + (awake ? " on" : "")}>
-        <div className="fn-top-l"><span className="fn-mark">LIVV</span><span className="fn-sep" /><span className="fn-id">SIGNAL / 001</span></div>
+        <div className="fn-top-l">
+          <span className="fn-mark">LIVV</span>
+          <span className="fn-sep" />
+          <span className="fn-id">SIGNAL / 001</span>
+        </div>
         <div className="fn-top-r">
-          <span className="fn-loc">PHILADELPHIA</span>
+          <span className="fn-loc">PENNSYLVANIA</span>
           <span className={"fn-status" + (awake ? " live" : "")}>{awake ? "DISCOVERED" : "— — —"}</span>
         </div>
       </header>
@@ -123,7 +127,9 @@ export default function Signal001() {
             </h1>
             <p className="fn-sub left">Most people never leave the default path.<br />This is the other door.</p>
             <div className="fn-cta-row">
-              <button type="button" className="fn-back" onClick={() => go(0)} aria-label="Go back">←</button>
+              <button type="button" className="fn-back" onClick={() => go(0)} aria-label="Go back">
+                <span className="fn-back-icon" aria-hidden>←</span>
+              </button>
               <button type="button" className="fn-ghost solid" onClick={() => go(2)}>
                 <span>OPEN THE SYSTEM</span><span className="fn-arrow" aria-hidden>→</span>
               </button>
@@ -171,7 +177,9 @@ export default function Signal001() {
               )}
             </div>
             <div className="fn-cta-row">
-              <button type="button" className="fn-back" onClick={() => go(1)} aria-label="Go back">←</button>
+              <button type="button" className="fn-back" onClick={() => go(1)} aria-label="Go back">
+                <span className="fn-back-icon" aria-hidden>←</span>
+              </button>
               <button type="button" className="fn-ghost solid" onClick={() => go(3)}>
                 <span>CROSS THE THRESHOLD</span><span className="fn-arrow" aria-hidden>→</span>
               </button>
