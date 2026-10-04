@@ -1,10 +1,9 @@
 "use client";
 
-import Link from "next/link";
 import { useEffect, useState } from "react";
 import { loadIdentity, addEmbers, type Identity } from "@/lib/identity";
 import { checkInRecord, isCheckedInToday, loadRecord, type LivvRecord } from "@/lib/record";
-import { feedback, haptic } from "@/lib/sensory";
+import { feedback } from "@/lib/sensory";
 import { dailySummary } from "@/lib/daily";
 import { quoteForSession, type Quote } from "@/lib/quotes";
 import { embersFromAction } from "@/lib/embers";
@@ -124,30 +123,6 @@ export default function HomePage() {
               {checkedIn ? "✓" : "→"}
             </span>
           </button>
-
-          <div className="hs-row">
-            <Link
-              href="/home/daily"
-              className="hs-chip"
-              onClick={() => haptic("light")}
-            >
-              Daily
-            </Link>
-            <Link
-              href="/home/train"
-              className="hs-chip"
-              onClick={() => haptic("light")}
-            >
-              Train
-            </Link>
-            <Link
-              href="/home/board"
-              className="hs-chip"
-              onClick={() => haptic("light")}
-            >
-              Board
-            </Link>
-          </div>
         </section>
 
         {quote ? (
