@@ -183,30 +183,22 @@ export default function ProfilePage() {
           ) : null}
 
           <div className="you-evo">
-            <div className="you-evo-head">
-              <div>
-                <p className="you-evo-label">Evolution</p>
-                <p className="you-evo-name">{evo.name}</p>
-              </div>
-              <div className="you-xp-chip" aria-label={`${pct} percent to next level`}>
-                <svg className="you-xp-ring" viewBox="0 0 56 56" aria-hidden>
-                  <circle className="you-xp-track" cx="28" cy="28" r="22" />
-                  <circle
-                    className="you-xp-fill"
-                    cx="28"
-                    cy="28"
-                    r="22"
-                    strokeDasharray={`${(pct / 100) * (2 * Math.PI * 22)} ${2 * Math.PI * 22}`}
-                    transform="rotate(-90 28 28)"
-                  />
-                </svg>
-                <span className="you-xp-pct">{pct}%</span>
-              </div>
+            <p className="you-evo-label">Evolution</p>
+            <p className="you-evo-name">{evo.name}</p>
+            <div className="you-xp-row">
+              <p className="you-evo-meta">
+                Level {rec.level} · {rec.currentXp} / {xpToNext} XP
+              </p>
+              <p className="you-xp-pct">{pct}%</p>
             </div>
-            <p className="you-evo-meta">
-              Level {rec.level} · {rec.currentXp} / {xpToNext} XP
-            </p>
-            <div className="you-xp-bar" aria-hidden>
+            <div
+              className="you-xp-bar"
+              role="progressbar"
+              aria-valuenow={pct}
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-label={`${pct} percent toward next level`}
+            >
               <div className="you-xp-bar-fill" style={{ width: `${pct}%` }} />
             </div>
           </div>
