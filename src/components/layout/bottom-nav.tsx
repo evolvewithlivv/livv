@@ -20,10 +20,10 @@ const NAV = [
   { href: "/home/train", label: "Train", Icon: Dumbbell, match: (p: string) => p.startsWith("/home/train") },
   { href: "/home/health", label: "Health", Icon: HeartPulse, match: (p: string) => p.startsWith("/home/health") },
   {
-    href: "/home/board",
-    label: "Board",
+    href: "/home/bulletin",
+    label: "Bulletin",
     Icon: LayoutGrid,
-    match: (p: string) => p.startsWith("/home/board"),
+    match: (p: string) => p.startsWith("/home/bulletin"),
   },
   { href: "/home/shop", label: "Shop", Icon: ShoppingBag, match: (p: string) => p.startsWith("/home/shop") },
   {
