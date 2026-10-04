@@ -160,7 +160,7 @@ export default function ProfilePage() {
                 className="you-avatar-btn"
                 aria-label="Change profile photo"
               >
-                <Avatar identity={me} size={88} fit="contain" className="you-avatar" showTierRing />
+                <Avatar identity={me} size={118} fit="contain" className="you-avatar" showTierRing />
                 <span className="you-edit" aria-hidden>
                   <Pencil size={11} strokeWidth={2.2} />
                 </span>
