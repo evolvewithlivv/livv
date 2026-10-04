@@ -79,7 +79,7 @@
 
 /* Hero */
 .you-hero {
-  padding: 0.65rem 0 0.4rem;
+  padding: 0.85rem 0 0.55rem;
   opacity: 0;
   transform: translateY(12px);
   transition: opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.12s, transform 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.12s;
@@ -89,12 +89,13 @@
   transform: none;
 }
 
-/* Compact identity unit — centered */
+/* Centered stack: PFP then name */
 .you-identity {
   display: flex;
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 0.9rem;
+  gap: 0.75rem;
+  text-align: center;
 }
 
 .you-avatar-wrap {
@@ -103,7 +104,7 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.25rem;
+  gap: 0.3rem;
 }
 
 .you-photo-hint {
@@ -130,28 +131,27 @@
 
 .you-identity-text {
   min-width: 0;
-  flex: 0 1 auto;
-  text-align: left;
+  text-align: center;
 }
 
 .you-name {
   margin: 0;
   font-family: var(--font-display), var(--font-body), system-ui, sans-serif;
-  font-size: clamp(1.7rem, 6.5vw, 2.1rem);
+  font-size: clamp(1.75rem, 7vw, 2.15rem);
   font-weight: 600;
   letter-spacing: -0.045em;
   line-height: 1.05;
 }
 
 .you-handle {
-  margin: 0.25rem 0 0;
+  margin: 0.3rem 0 0;
   font-size: 13px;
   color: var(--you-muted);
 }
 
 .you-bio {
-  margin: 0.55rem 0 0;
-  max-width: 24ch;
+  margin: 0.55rem auto 0;
+  max-width: 28ch;
   font-size: 12.5px;
   line-height: 1.45;
   color: var(--you-muted);
@@ -161,6 +161,7 @@
   margin: 0.45rem 0 0;
   font-size: 12px;
   color: var(--you-muted);
+  text-align: center;
 }
 .you-status.is-err {
   color: #ef4444;
