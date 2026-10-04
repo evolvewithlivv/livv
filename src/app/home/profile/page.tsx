@@ -64,10 +64,6 @@ export default function ProfilePage() {
   const name = me.displayName || me.username || "Member";
   const handle = me.username ? `@${me.username.replace(/^@/, "")}` : "@livv";
 
-  const r = 58;
-  const circ = 2 * Math.PI * r;
-  const dash = (pct / 100) * circ;
-
   const photo = async (file?: File) => {
     if (!file) return;
     try {
@@ -157,24 +153,13 @@ export default function ProfilePage() {
 
         <section className="you-hero">
           <div className="you-avatar-wrap">
-            <svg className="you-ring" viewBox="0 0 140 140" aria-hidden>
-              <circle className="you-ring-track" cx="70" cy="70" r={r} />
-              <circle
-                className="you-ring-fill"
-                cx="70"
-                cy="70"
-                r={r}
-                strokeDasharray={`${dash} ${circ}`}
-                transform="rotate(-90 70 70)"
-              />
-            </svg>
             <button
               type="button"
               onClick={() => fileRef.current?.click()}
               className="you-avatar-btn"
               aria-label="Change profile photo"
             >
-              <Avatar identity={me} size={96} fit="contain" className="you-avatar" />
+              <Avatar identity={me} size={104} fit="contain" className="you-avatar" showTierRing />
               <span className="you-edit" aria-hidden>
                 <Pencil size={12} strokeWidth={2.2} />
               </span>
@@ -198,11 +183,32 @@ export default function ProfilePage() {
           ) : null}
 
           <div className="you-evo">
-            <p className="you-evo-label">Evolution</p>
-            <p className="you-evo-name">{evo.name}</p>
+            <div className="you-evo-head">
+              <div>
+                <p className="you-evo-label">Evolution</p>
+                <p className="you-evo-name">{evo.name}</p>
+              </div>
+              <div className="you-xp-chip" aria-label={`${pct} percent to next level`}>
+                <svg className="you-xp-ring" viewBox="0 0 56 56" aria-hidden>
+                  <circle className="you-xp-track" cx="28" cy="28" r="22" />
+                  <circle
+                    className="you-xp-fill"
+                    cx="28"
+                    cy="28"
+                    r="22"
+                    strokeDasharray={`${(pct / 100) * (2 * Math.PI * 22)} ${2 * Math.PI * 22}`}
+                    transform="rotate(-90 28 28)"
+                  />
+                </svg>
+                <span className="you-xp-pct">{pct}%</span>
+              </div>
+            </div>
             <p className="you-evo-meta">
-              Level {rec.level} · {pct}% to next · {rec.currentXp}/{xpToNext} XP
+              Level {rec.level} · {rec.currentXp} / {xpToNext} XP
             </p>
+            <div className="you-xp-bar" aria-hidden>
+              <div className="you-xp-bar-fill" style={{ width: `${pct}%` }} />
+            </div>
           </div>
         </section>
 
