@@ -68,36 +68,38 @@ export function BottomNav() {
   return (
     <nav
       className={
-        "livv-tabbar z-[80] shrink-0 border-t border-[var(--livv-pro-line)] " +
-        "bg-[var(--livv-pro-bg)]/96 px-1 " +
-        (keyboard ? "pointer-events-none max-h-0 overflow-hidden opacity-0 border-0" : "opacity-100")
+        "livv-tabbar livv-glass-dock z-[80] shrink-0 " +
+        (keyboard ? "is-hidden" : "")
       }
-      style={{ paddingBottom: "max(.4rem, env(safe-area-inset-bottom))" }}
+      style={{ paddingBottom: "max(0.35rem, env(safe-area-inset-bottom))" }}
       aria-label="Primary navigation"
       aria-hidden={keyboard}
     >
-      <div className="mx-auto grid w-full max-w-[52rem] grid-cols-7 items-center py-1">
-        {NAV.map(({ href, label, Icon, match }) => {
-          const active = match(pathname);
-          return (
-            <Link
-              key={href}
-              href={href}
-              title={label}
-              aria-label={label}
-              aria-current={active ? "page" : undefined}
-              className={`livv-tab flex min-h-[52px] flex-col items-center justify-center gap-0.5 px-0.5 py-1.5 ${active ? "is-active" : ""}`}
-              onClick={() => {
-                if (!active) haptic("light");
-              }}
-            >
-              <span className="livv-tab-icon flex h-7 w-9 items-center justify-center">
-                <Icon size={18} strokeWidth={active ? 2.2 : 1.65} />
-              </span>
-              <span className="text-[9px] font-medium leading-none">{label}</span>
-            </Link>
-          );
-        })}
+      <div className="livv-glass-dock-inner">
+        <div className="livv-glass-dock-grid">
+          {NAV.map(({ href, label, Icon, match }) => {
+            const active = match(pathname);
+            return (
+              <Link
+                key={href}
+                href={href}
+                title={label}
+                aria-label={label}
+                aria-current={active ? "page" : undefined}
+                className={`livv-tab ${active ? "is-active" : ""}`}
+                onClick={() => {
+                  if (!active) haptic("light");
+                }}
+              >
+                <span className="livv-tab-icon" aria-hidden>
+                  <Icon size={18} strokeWidth={active ? 2.15 : 1.6} />
+                </span>
+                <span className="livv-tab-label">{label}</span>
+                {active ? <span className="livv-tab-pulse" aria-hidden /> : null}
+              </Link>
+            );
+          })}
+        </div>
       </div>
     </nav>
   );
