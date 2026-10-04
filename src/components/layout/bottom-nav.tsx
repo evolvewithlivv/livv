@@ -3,7 +3,15 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Home, CalendarCheck2, Dumbbell, HeartPulse, ShoppingBag, UserRound } from "lucide-react";
+import {
+  Home,
+  CalendarCheck2,
+  Dumbbell,
+  HeartPulse,
+  LayoutGrid,
+  ShoppingBag,
+  UserRound,
+} from "lucide-react";
 import { haptic } from "@/lib/sensory";
 
 const NAV = [
@@ -11,6 +19,12 @@ const NAV = [
   { href: "/home/daily", label: "Daily", Icon: CalendarCheck2, match: (p: string) => p.startsWith("/home/daily") },
   { href: "/home/train", label: "Train", Icon: Dumbbell, match: (p: string) => p.startsWith("/home/train") },
   { href: "/home/health", label: "Health", Icon: HeartPulse, match: (p: string) => p.startsWith("/home/health") },
+  {
+    href: "/home/board",
+    label: "Board",
+    Icon: LayoutGrid,
+    match: (p: string) => p.startsWith("/home/board"),
+  },
   { href: "/home/shop", label: "Shop", Icon: ShoppingBag, match: (p: string) => p.startsWith("/home/shop") },
   {
     href: "/home/profile",
@@ -55,14 +69,14 @@ export function BottomNav() {
     <nav
       className={
         "livv-tabbar z-[80] shrink-0 border-t border-[var(--livv-pro-line)] " +
-        "bg-[var(--livv-pro-bg)]/96 px-2 " +
+        "bg-[var(--livv-pro-bg)]/96 px-1 " +
         (keyboard ? "pointer-events-none max-h-0 overflow-hidden opacity-0 border-0" : "opacity-100")
       }
       style={{ paddingBottom: "max(.4rem, env(safe-area-inset-bottom))" }}
       aria-label="Primary navigation"
       aria-hidden={keyboard}
     >
-      <div className="mx-auto grid w-full max-w-[52rem] grid-cols-6 items-center py-1">
+      <div className="mx-auto grid w-full max-w-[52rem] grid-cols-7 items-center py-1">
         {NAV.map(({ href, label, Icon, match }) => {
           const active = match(pathname);
           return (
@@ -72,15 +86,15 @@ export function BottomNav() {
               title={label}
               aria-label={label}
               aria-current={active ? "page" : undefined}
-              className={`livv-tab flex min-h-[54px] flex-col items-center justify-center gap-1 px-1 py-2 ${active ? "is-active" : ""}`}
+              className={`livv-tab flex min-h-[52px] flex-col items-center justify-center gap-0.5 px-0.5 py-1.5 ${active ? "is-active" : ""}`}
               onClick={() => {
                 if (!active) haptic("light");
               }}
             >
-              <span className="livv-tab-icon flex h-8 w-10 items-center justify-center">
-                <Icon size={20} strokeWidth={active ? 2.2 : 1.65} />
+              <span className="livv-tab-icon flex h-7 w-9 items-center justify-center">
+                <Icon size={18} strokeWidth={active ? 2.2 : 1.65} />
               </span>
-              <span className="text-[10px] font-medium leading-none">{label}</span>
+              <span className="text-[9px] font-medium leading-none">{label}</span>
             </Link>
           );
         })}
