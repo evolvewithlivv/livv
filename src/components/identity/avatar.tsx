@@ -1,6 +1,9 @@
 import { cn } from "@/lib/utils";
-import type { Identity, LivvTier } from "@/lib/identity";
-import { tierColor } from "@/lib/tier-style";
+import type { Identity } from "@/lib/identity";
+
+/** LIVV signal blue — universal identity ring (tiers removed from V1). */
+const LIVV_RING = "#0F7FFF";
+const LIVV_GLOW = "rgba(15, 127, 255, 0.55)";
 
 export function Avatar({
   identity,
@@ -9,18 +12,16 @@ export function Avatar({
   showTierRing = true,
   fit = "cover",
 }: {
-  identity: Pick<Identity, "displayName" | "photo" | "accent"> & { tier?: LivvTier };
+  identity: Pick<Identity, "displayName" | "photo" | "accent">;
   size?: number;
   className?: string;
-  /** Glowing ring matching membership tier color */
+  /** Soft glowing outline in LIVV blue for every member */
   showTierRing?: boolean;
   /** Image fit mode for avatars where the full source photo should remain visible. */
   fit?: "cover" | "contain";
 }) {
   const initial = (identity.displayName?.[0] || "L").toUpperCase();
-  const tier = identity.tier || "spark";
-  const tc = tierColor(tier);
-  const ring = showTierRing ? Math.max(3, Math.round(size * 0.06)) : 0;
+  const ring = showTierRing ? Math.max(3, Math.round(size * 0.055)) : 0;
   const outer = size + ring * 2;
 
   return (
@@ -32,10 +33,10 @@ export function Avatar({
         <span
           className="absolute inset-0 rounded-full"
           style={{
-            background: `conic-gradient(from 0deg, ${tc.hex}, transparent 40%, ${tc.hex} 70%, transparent)`,
-            boxShadow: `0 0 ${size * 0.25}px ${tc.glow}, 0 0 ${size * 0.12}px ${tc.hex}`,
-            animation: "tierSpin 8s linear infinite",
-            opacity: 0.95,
+            background: `conic-gradient(from 0deg, ${LIVV_RING}, transparent 38%, ${LIVV_RING} 72%, transparent)`,
+            boxShadow: `0 0 ${size * 0.22}px ${LIVV_GLOW}, 0 0 ${size * 0.1}px ${LIVV_RING}`,
+            animation: "tierSpin 10s linear infinite",
+            opacity: 0.9,
           }}
         />
       )}
@@ -48,7 +49,7 @@ export function Avatar({
           top: ring,
           backgroundColor: identity.photo ? undefined : identity.accent,
           boxShadow: showTierRing
-            ? `0 0 0 2px #050505, 0 0 0 ${ring}px ${tc.hex}`
+            ? `0 0 0 2px #050505, 0 0 0 ${ring}px ${LIVV_RING}`
             : "0 0 0 1px rgba(255,255,255,0.08)",
         }}
       >
