@@ -165,13 +165,6 @@
   text-align: left;
 }
 
-.you-evo-head {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-}
-
 .you-evo-label {
   margin: 0;
   font-size: 10px;
@@ -188,56 +181,37 @@
   letter-spacing: -0.03em;
 }
 
+.you-xp-row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-top: 0.55rem;
+}
+
 .you-evo-meta {
-  margin: 0.55rem 0 0;
+  margin: 0;
   font-size: 11px;
   font-weight: 600;
   color: color-mix(in srgb, var(--you-muted) 90%, transparent);
 }
 
-/* XP ring chip — next to evolution, not around avatar */
-.you-xp-chip {
-  position: relative;
-  width: 3.25rem;
-  height: 3.25rem;
-  flex-shrink: 0;
-}
-
-.you-xp-ring {
-  width: 100%;
-  height: 100%;
-}
-
-.you-xp-track {
-  fill: none;
-  stroke: color-mix(in srgb, var(--you-ink) 12%, transparent);
-  stroke-width: 3.5;
-}
-
-.you-xp-fill {
-  fill: none;
-  stroke: var(--you-accent);
-  stroke-width: 3.5;
-  stroke-linecap: round;
-  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--you-accent) 50%, transparent));
-}
-
 .you-xp-pct {
-  position: absolute;
-  inset: 0;
-  display: grid;
-  place-items: center;
-  font-size: 11px;
+  margin: 0;
+  font-size: 12px;
   font-weight: 700;
-  letter-spacing: -0.02em;
   font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+  color: var(--you-accent);
 }
 
+/* Horizontal progress line */
 .you-xp-bar {
-  margin-top: 0.65rem;
-  height: 3px;
+  margin-top: 0.7rem;
+  height: 10px;
   border-radius: 999px;
-  background: var(--you-line);
+  border: 1.5px solid color-mix(in srgb, var(--you-accent) 35%, transparent);
+  background: color-mix(in srgb, var(--you-ink) 6%, transparent);
   overflow: hidden;
 }
 
@@ -245,8 +219,9 @@
   height: 100%;
   border-radius: 999px;
   background: var(--you-accent);
-  box-shadow: 0 0 10px color-mix(in srgb, var(--you-accent) 40%, transparent);
-  transition: width 0.6s ease;
+  box-shadow: 0 0 12px color-mix(in srgb, var(--you-accent) 45%, transparent);
+  transition: width 0.55s ease;
+  min-width: 0;
 }
 
 /* Stats */
