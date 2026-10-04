@@ -32,7 +32,7 @@ export default function ShopPage() {
     <main className="shop-page">
       <div className="shop-shell">
         <header className="shop-header">
-          <div className="shop-header-top"><span>SHOP</span><span>001</span></div>
+          <div className="shop-header-top"><span>SHOP</span></div>
           <div className="shop-title-block">
             <p className="shop-kicker">THE PHYSICAL LAYER</p>
             <h1>COLLECTION 001</h1>
@@ -41,7 +41,7 @@ export default function ShopPage() {
         </header>
 
         <section className="shop-collection" aria-labelledby="collection-title">
-          <div className="shop-section-head"><h2 id="collection-title">THE FIVE</h2><span>01—05</span></div>
+          <div className="shop-section-head"><h2 id="collection-title">THE FIVE</h2></div>
           <div className="shop-grid">
             {PRODUCTS.map((product) => (
               <Link key={product.href} href={product.href} className="shop-product">
@@ -60,22 +60,29 @@ export default function ShopPage() {
         </section>
 
         <section className="shop-embers" aria-label="Embers balance">
-          <div className="shop-embers-main">
-            <div className="shop-embers-head"><span>FIELD NOTE / 001</span><span>EMBER LEDGER</span></div>
-          <div className="shop-embers-label"><span className="shop-ember-icon"><Flame size={15} strokeWidth={1.8} /></span><span>AVAILABLE EMBERS</span></div>
-            <div className="shop-embers-value"><strong>{embers.toLocaleString()}</strong><span>{"≈ $" + dollars.toFixed(2)}</span></div>
+          <div className="shop-embers-top">
+            <div className="shop-embers-mark" aria-hidden="true"><Flame size={14} strokeWidth={1.8} /></div>
+            <div>
+              <p className="shop-embers-eyebrow">EMBER BALANCE</p>
+              <p className="shop-embers-caption">Earned by putting the standard into practice.</p>
+            </div>
+            <Link href="/home/profile" className="shop-embers-open" aria-label="View Embers in profile"><ArrowUpRight size={15} /></Link>
           </div>
-          <div className="shop-embers-bar" aria-hidden="true"><span style={{ width: progress + "%" }} /></div>
-          <div className="shop-embers-bottom">
-            <p>{remaining === 0 ? MIN_REDEEM_EMBERS.toLocaleString() + " Ember redemption minimum reached." : remaining.toLocaleString() + " more to redeem."}</p>
-            <Link href="/home/profile" aria-label="View Embers in profile"><ArrowUpRight size={15} /></Link>
+          <div className="shop-embers-reading">
+            <strong>{embers.toLocaleString()}</strong>
+            <span>EMBERS</span>
+            <span className="shop-embers-value">≈ ${dollars.toFixed(2)}</span>
+          </div>
+          <div className="shop-embers-progress" aria-hidden="true"><span style={{ width: progress + "%" }} /></div>
+          <div className="shop-embers-meta">
+            <span>{remaining === 0 ? "REDEMPTION READY" : remaining.toLocaleString() + " TO REDEEM"}</span>
+            <span>{MIN_REDEEM_EMBERS.toLocaleString()} EMBER MINIMUM</span>
           </div>
           <details className="shop-embers-rules">
             <summary>How Embers work</summary>
             <div><p>Embers convert at {EMBERS_PER_DOLLAR} per dollar.</p>{REDEEM_RULES_COPY.map((rule) => <p key={rule}>• {rule}</p>)}</div>
           </details>
         </section>
-
         <footer className="shop-footer"><span>LIVV / 001</span><span>Nothing extra.</span></footer>
       </div>
     </main>
