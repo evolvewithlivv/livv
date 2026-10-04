@@ -93,7 +93,8 @@
 .you-identity {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  justify-content: space-between;
+  gap: 1.25rem;
 }
 
 .you-avatar-wrap {
@@ -120,8 +121,8 @@
   bottom: 0;
   display: grid;
   place-items: center;
-  width: 1.55rem;
-  height: 1.55rem;
+  width: 1.7rem;
+  height: 1.7rem;
   border-radius: 50%;
   background: #0a0b0d;
   color: #f5f5f2;
@@ -133,27 +134,29 @@
 .you-identity-text {
   min-width: 0;
   flex: 1;
-  text-align: left;
+  text-align: right;
+  padding-left: 0.5rem;
 }
 
 .you-name {
   margin: 0;
   font-family: var(--font-display), var(--font-body), system-ui, sans-serif;
-  font-size: clamp(1.55rem, 6vw, 1.9rem);
+  font-size: clamp(1.85rem, 7.5vw, 2.35rem);
   font-weight: 600;
-  letter-spacing: -0.04em;
-  line-height: 1.1;
+  letter-spacing: -0.045em;
+  line-height: 1.05;
 }
 
 .you-handle {
-  margin: 0.3rem 0 0;
-  font-size: 13px;
+  margin: 0.4rem 0 0;
+  font-size: 14px;
   color: var(--you-muted);
 }
 
 .you-bio {
-  margin: 0.55rem 0 0;
-  max-width: 28ch;
+  margin: 0.55rem 0 0 0;
+  margin-left: auto;
+  max-width: 22ch;
   font-size: 12.5px;
   line-height: 1.45;
   color: var(--you-muted);
