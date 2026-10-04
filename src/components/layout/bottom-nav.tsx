@@ -95,7 +95,6 @@ export function BottomNav() {
                   <Icon size={18} strokeWidth={active ? 2.15 : 1.6} />
                 </span>
                 <span className="livv-tab-label">{label}</span>
-                {active ? <span className="livv-tab-pulse" aria-hidden /> : null}
               </Link>
             );
           })}
