@@ -49,14 +49,6 @@ const PRODUCTS = [
     href: `${SHOP_URL}/products/mens-heavyweight-long-sleeve-t-shirt`,
   },
   {
-    name: "LIVV Recycled Mesh Shorts",
-    subtitle: "Recycled performance mesh",
-    price: "$49.95",
-    image:
-      "https://cdn.shopify.com/s/files/1/1091/3644/5726/files/all-over-print-youth-recycled-mesh-shorts-white-front-6ac2560852ffd.png?v=1791120923",
-    href: `${SHOP_URL}/products/all-over-print-youth-recycled-mesh-shorts`,
-  },
-  {
     name: "LIVV Tough iPhone Case",
     subtitle: "Matte or gloss / dual-layer",
     price: "$34.95",
