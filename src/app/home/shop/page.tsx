@@ -75,11 +75,11 @@ export default function ShopPage() {
         <section className="shop-embers">
           <div className="shop-embers-top">
             <div className="shop-embers-title"><span className="shop-ember-icon"><Flame size={16} /></span><div><p className="shop-kicker">EARNED IN LIVV</p><h2>Your Embers</h2></div></div>
-            <div className="shop-embers-value"><strong>{embers.toLocaleString()}</strong><span>≈ \${dollars.toFixed(2)}</span></div>
+            <div className="shop-embers-value"><strong>{embers.toLocaleString()}</strong><span>≈ ${dollars.toFixed(2)}</span></div>
           </div>
-          <div className="shop-embers-bar"><span style={{ width: \`\${progress}%\` }} /></div>
+          <div className="shop-embers-bar"><span style={{ width: `${progress}%` }} /></div>
           <div className="shop-embers-bottom">
-            <p>{remaining === 0 ? \`You have reached the \${MIN_REDEEM_EMBERS.toLocaleString()} Ember redemption minimum.\` : \`\${remaining.toLocaleString()} more Embers to reach the redemption minimum.\`}</p>
+            <p>{remaining === 0 ? `You have reached the ${MIN_REDEEM_EMBERS.toLocaleString()} Ember redemption minimum.` : `${remaining.toLocaleString()} more Embers to reach the redemption minimum.`}</p>
             <Link href="/home/profile">View profile <ArrowUpRight size={13} /></Link>
           </div>
           <details className="shop-embers-rules">
