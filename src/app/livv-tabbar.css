@@ -1,0 +1,205 @@
+/* LIVV glass tab dock — matches Home signal atmosphere */
+
+.livv-tabbar.livv-glass-dock {
+  position: relative;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+  padding: 0 0.55rem 0;
+  transition: opacity 0.25s ease, max-height 0.25s ease;
+}
+
+.livv-tabbar.livv-glass-dock.is-hidden {
+  pointer-events: none;
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  padding: 0;
+}
+
+.livv-glass-dock-inner {
+  position: relative;
+  margin: 0 auto;
+  max-width: 36rem;
+  border-radius: 22px 22px 18px 18px;
+  overflow: hidden;
+  isolation: isolate;
+
+  /* Frosted glass */
+  background: color-mix(in srgb, var(--livv-pro-bg, #090a0c) 55%, transparent) !important;
+  border: 1px solid color-mix(in srgb, var(--livv-pro-ink, #fff) 10%, transparent) !important;
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, rgb(var(--livv-accent)) 8%, transparent),
+    0 -12px 40px color-mix(in srgb, #000 45%, transparent),
+    inset 0 1px 0 color-mix(in srgb, #fff 8%, transparent) !important;
+
+  -webkit-backdrop-filter: blur(22px) saturate(1.35);
+  backdrop-filter: blur(22px) saturate(1.35);
+}
+
+/* Soft accent wash from top — Home signal kinship */
+.livv-glass-dock-inner::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto 0;
+  height: 55%;
+  pointer-events: none;
+  z-index: 0;
+  background: radial-gradient(
+    ellipse 80% 100% at 50% 0%,
+    color-mix(in srgb, rgb(var(--livv-accent)) 14%, transparent),
+    transparent 70%
+  );
+}
+
+/* Hairline top glow */
+.livv-glass-dock-inner::after {
+  content: "";
+  position: absolute;
+  left: 12%;
+  right: 12%;
+  top: 0;
+  height: 1px;
+  pointer-events: none;
+  z-index: 1;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in srgb, rgb(var(--livv-accent)) 45%, #fff 20%),
+    transparent
+  );
+  opacity: 0.55;
+}
+
+.livv-glass-dock-grid {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  align-items: center;
+  padding: 0.3rem 0.2rem 0.35rem;
+}
+
+.livv-tabbar .livv-tab {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 0.22rem;
+  min-height: 52px;
+  padding: 0.35rem 0.1rem;
+  border-radius: 14px;
+  text-decoration: none;
+  color: color-mix(in srgb, var(--livv-pro-muted, #969aa3) 92%, transparent) !important;
+  background: transparent !important;
+  text-shadow: none !important;
+  transition:
+    color 0.2s ease,
+    background 0.2s ease,
+    transform 0.15s ease;
+}
+
+.livv-tabbar .livv-tab:active {
+  transform: scale(0.94);
+}
+
+.livv-tabbar .livv-tab .livv-tab-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.15rem;
+  height: 1.65rem;
+  border-radius: 999px;
+  transition: background 0.25s ease, box-shadow 0.25s ease;
+}
+
+.livv-tabbar .livv-tab .livv-tab-label {
+  font-size: 9px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  line-height: 1;
+  color: inherit !important;
+}
+
+/* Active — soft signal glow */
+.livv-tabbar .livv-tab.is-active {
+  color: var(--livv-pro-ink, #f5f5f2) !important;
+  background: transparent !important;
+}
+
+.livv-tabbar .livv-tab.is-active .livv-tab-icon {
+  background: color-mix(in srgb, rgb(var(--livv-accent)) 16%, transparent);
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, rgb(var(--livv-accent)) 22%, transparent),
+    0 0 18px color-mix(in srgb, rgb(var(--livv-accent)) 28%, transparent);
+}
+
+.livv-tabbar .livv-tab.is-active svg {
+  color: rgb(var(--livv-accent)) !important;
+}
+
+/* Kill old underline indicator from professional.css */
+.livv-tabbar .livv-tab.is-active:after {
+  display: none !important;
+  content: none !important;
+}
+
+/* Tiny pulse under active label */
+.livv-tab-pulse {
+  position: absolute;
+  bottom: 5px;
+  left: 50%;
+  width: 4px;
+  height: 4px;
+  margin-left: -2px;
+  border-radius: 50%;
+  background: rgb(var(--livv-accent));
+  box-shadow: 0 0 10px color-mix(in srgb, rgb(var(--livv-accent)) 70%, transparent);
+  animation: livv-tab-pulse 2.4s ease-in-out infinite;
+}
+
+@keyframes livv-tab-pulse {
+  0%, 100% { opacity: 0.55; transform: scale(0.85); }
+  50% { opacity: 1; transform: scale(1.15); }
+}
+
+/* Light theme glass */
+html[data-theme="light"] .livv-glass-dock-inner {
+  background: color-mix(in srgb, #ffffff 72%, transparent) !important;
+  border-color: color-mix(in srgb, #111214 12%, transparent) !important;
+  box-shadow:
+    0 0 0 1px color-mix(in srgb, rgb(var(--livv-accent)) 6%, transparent),
+    0 -8px 28px color-mix(in srgb, #111214 10%, transparent),
+    inset 0 1px 0 color-mix(in srgb, #fff 80%, transparent) !important;
+}
+
+html[data-theme="light"] .livv-glass-dock-inner::before {
+  background: radial-gradient(
+    ellipse 80% 100% at 50% 0%,
+    color-mix(in srgb, rgb(var(--livv-accent)) 10%, transparent),
+    transparent 70%
+  );
+}
+
+html[data-theme="light"] .livv-tabbar .livv-tab.is-active {
+  color: var(--livv-pro-ink, #111214) !important;
+}
+
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  .livv-tab-pulse {
+    animation: none !important;
+    opacity: 1;
+  }
+  .livv-tabbar .livv-tab:active {
+    transform: none;
+  }
+}
+
+/* Override legacy dock class if present */
+.livv-tabbar-dock {
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+}
