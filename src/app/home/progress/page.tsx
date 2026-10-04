@@ -10,9 +10,11 @@ import {
 } from "@/lib/record";
 import { evolutionTitle } from "@/lib/levels";
 import { buildProgressInsights } from "@/lib/progress-insights";
+import "./progress-signal.css";
 
 export default function ProgressPage() {
   const [rec, setRec] = useState<LivvRecord | null>(null);
+  const [awake, setAwake] = useState(false);
 
   useEffect(() => {
     const sync = () => setRec(loadRecord());
@@ -20,141 +22,123 @@ export default function ProgressPage() {
     for (const e of ["livv-record", "livv-daily", "livv-identity"]) {
       window.addEventListener(e, sync);
     }
+    const t = window.setTimeout(() => setAwake(true), 80);
     return () => {
       for (const e of ["livv-record", "livv-daily", "livv-identity"]) {
         window.removeEventListener(e, sync);
       }
+      window.clearTimeout(t);
     };
   }, []);
 
   const insights = useMemo(() => (rec ? buildProgressInsights(rec, 14) : null), [rec]);
-  if (!rec || !insights) return <main className="livv-page min-h-full" />;
+  if (!rec || !insights) return <main className="rec min-h-[70dvh]" aria-hidden />;
 
   const week = weekBars(rec);
   const pillars = livePillars(rec);
   const evo = evolutionTitle(rec.level);
   const pct = Math.min(100, Math.round((rec.currentXp / Math.max(1, rec.xpToNext)) * 100));
+  const weekHits = weekHitCount(rec);
   const bestRun =
-    insights.longestActiveRun <= 0
-      ? "0d"
-      : `${insights.longestActiveRun}d`;
+    insights.longestActiveRun <= 0 ? "0" : String(insights.longestActiveRun);
   const actions =
-    insights.objectivesCompletedInWindow +
-    insights.checkInDays +
-    insights.workoutDays;
+    insights.objectivesCompletedInWindow + insights.checkInDays + insights.workoutDays;
+
+  const r = 54;
+  const c = 2 * Math.PI * r;
+  const dash = (pct / 100) * c;
 
   return (
-    <main className="livv-page min-h-full pb-14">
-      <div className="livv-stagger mx-auto w-full max-w-xl px-5 pt-6 sm:px-6">
-        <header className="livv-page-hero">
-          <p className="text-[10px] font-semibold uppercase tracking-[.2em] text-livv-muted">
-            Progress
-          </p>
-          <div className="mt-2 flex items-end justify-between gap-4">
-            <div className="min-w-0">
-              <h1 className="text-[34px] font-semibold leading-[.96] tracking-[-.055em] sm:text-[40px]">
-                Your record.
-              </h1>
-              <p className="mt-3 max-w-[36ch] text-[13px] leading-6 text-livv-muted">
-                The work you have put in — not the story you tell yourself.
-              </p>
-            </div>
-            <span className="shrink-0 rounded-full border border-livv-border px-3 py-1.5 text-[11px] font-semibold text-livv-muted">
-              Level {rec.level}
-            </span>
-          </div>
+    <main className={"rec" + (awake ? " awake" : "")} aria-label="Your record">
+      <div className="rec-void" aria-hidden />
+
+      <div className="rec-inner">
+        <header className="rec-top">
+          <p className="rec-eyebrow">Record</p>
+          <span className="rec-level">Level {rec.level}</span>
         </header>
 
-        <section className="mt-8 overflow-hidden rounded-[22px] border border-livv-border bg-[color-mix(in_srgb,rgb(var(--livv-ink))_2.5%,transparent)] p-5 sm:p-6">
-          <div className="flex items-start justify-between gap-4">
-            <div className="min-w-0">
-              <p className="text-[10px] font-semibold uppercase tracking-[.18em] text-livv-muted">
-                Current evolution
-              </p>
-              <h2 className="mt-2 text-[26px] font-semibold tracking-[-.04em] sm:text-[28px]">
-                {evo.name}
-              </h2>
-              <p className="mt-2 text-[13px] leading-6 text-livv-muted">{evo.line}</p>
-            </div>
-            <div className="shrink-0 text-right">
-              <p className="text-[10px] font-semibold uppercase tracking-[.16em] text-livv-muted">XP</p>
-              <p className="mt-1 text-[22px] font-semibold tabular-nums tracking-[-.03em]">
-                {rec.currentXp}
-              </p>
-            </div>
-          </div>
-          <div className="mt-6">
-            <div className="h-1.5 overflow-hidden rounded-full bg-livv-border">
-              <div
-                className="h-full rounded-full bg-livv-accent transition-[width] duration-500 ease-out"
-                style={{ width: `${pct}%` }}
+        <section className="rec-hero">
+          <div className="rec-ring-wrap" aria-hidden>
+            <svg className="rec-ring" viewBox="0 0 128 128">
+              <circle className="rec-ring-track" cx="64" cy="64" r={r} />
+              <circle
+                className="rec-ring-fill"
+                cx="64"
+                cy="64"
+                r={r}
+                strokeDasharray={`${dash} ${c}`}
+                transform="rotate(-90 64 64)"
               />
+            </svg>
+            <div className="rec-ring-core">
+              <p className="rec-xp">{rec.currentXp}</p>
+              <p className="rec-xp-label">XP</p>
             </div>
-            <p className="mt-2.5 text-[11px] text-livv-muted">
-              {pct}% toward next level · {rec.xpToNext} needed
+          </div>
+
+          <p className="rec-evo-label">Current evolution</p>
+          <h1 className="rec-evo-name">{evo.name}</h1>
+          <p className="rec-evo-line">{evo.line}</p>
+          <p className="rec-evo-meta">
+            {pct}% toward next · {rec.xpToNext} XP needed
+          </p>
+        </section>
+
+        <section className="rec-metrics" aria-label="Key metrics">
+          <div className="rec-metric">
+            <p className="rec-metric-v">{insights.consistencyPct}%</p>
+            <p className="rec-metric-l">14-day active</p>
+          </div>
+          <div className="rec-metric">
+            <p className="rec-metric-v">
+              {bestRun}
+              <span className="rec-metric-unit">d</span>
             </p>
+            <p className="rec-metric-l">Best run</p>
+          </div>
+          <div className="rec-metric">
+            <p className="rec-metric-v">{actions}</p>
+            <p className="rec-metric-l">Actions</p>
+          </div>
+          <div className="rec-metric">
+            <p className="rec-metric-v">{insights.balancePct}%</p>
+            <p className="rec-metric-l">Areas live</p>
           </div>
         </section>
 
-        <section className="mt-6 grid grid-cols-2 gap-3">
-          <Stat value={`${insights.consistencyPct}%`} label="14d active" />
-          <Stat value={bestRun} label="Best run" />
-          <Stat value={String(actions)} label="Actions" />
-          <Stat value={`${insights.balancePct}%`} label="Areas active" />
-        </section>
-
-        <section className="mt-10">
-          <div className="flex items-end justify-between gap-4">
-            <div>
-              <p className="text-[10px] font-semibold uppercase tracking-[.18em] text-livv-muted">
-                This week
-              </p>
-              <h2 className="mt-1 text-[24px] font-semibold tracking-[-.04em]">Consistency</h2>
-            </div>
-            <span className="text-[11px] text-livv-muted">{weekHitCount(rec)}/7 active</span>
+        <section className="rec-week">
+          <div className="rec-week-head">
+            <p className="rec-section-label">This week</p>
+            <p className="rec-week-count">{weekHits}/7 present</p>
           </div>
-          <div className="mt-5 grid grid-cols-7 gap-2">
+          <div className="rec-week-bars">
             {week.map((d) => (
-              <div key={d.key} className="min-w-0">
-                <div className="relative h-20 overflow-hidden rounded-lg bg-livv-surface-2 sm:h-24">
-                  <div
-                    className="absolute inset-x-0 bottom-0 rounded-lg bg-livv-accent transition-[height] duration-500 ease-out"
-                    style={{
-                      height: `${Math.max(d.v ? 12 : 6, d.v)}%`,
-                      opacity: d.v ? 0.9 : 0.18,
-                    }}
-                  />
-                </div>
-                <p className="mt-2 text-center text-[10px] font-medium text-livv-muted">{d.d}</p>
+              <div key={d.key} className={"rec-day" + (d.active ? " is-on" : "")}>
+                <div className="rec-day-bar" style={{ height: `${Math.max(12, d.v)}%` }} />
+                <span className="rec-day-label">{d.d}</span>
               </div>
             ))}
           </div>
         </section>
 
-        <section className="mt-10">
-          <p className="text-[10px] font-semibold uppercase tracking-[.18em] text-livv-muted">
-            Six areas
-          </p>
-          <h2 className="mt-1 text-[24px] font-semibold tracking-[-.04em]">
-            Where your life is moving.
-          </h2>
-          <div className="mt-5 divide-y divide-livv-border border-y border-livv-border">
+        <section className="rec-pillars">
+          <p className="rec-section-label">Pillars</p>
+          <div className="rec-pillar-list">
             {pillars.map((p) => (
-              <div key={p.id} className="py-4">
-                <div className="flex items-center justify-between gap-3">
-                  <div className="min-w-0">
-                    <p className="text-[15px] font-semibold tracking-[-.02em]">{p.name}</p>
-                    <p className="mt-0.5 text-[11px] text-livv-muted">
-                      Level {p.level} · {p.xp} XP
+              <div key={p.id} className="rec-pillar">
+                <div className="rec-pillar-row">
+                  <div>
+                    <p className="rec-pillar-name">{p.name}</p>
+                    <p className="rec-pillar-meta">
+                      Lvl {p.level} · {p.xp} XP
                     </p>
                   </div>
-                  <span className="shrink-0 text-[12px] font-semibold tabular-nums text-livv-muted">
-                    {p.progress}%
-                  </span>
+                  <span className="rec-pillar-pct">{p.progress}%</span>
                 </div>
-                <div className="mt-3 h-1 overflow-hidden rounded-full bg-livv-border">
+                <div className="rec-pillar-track">
                   <div
-                    className="h-full rounded-full bg-livv-accent transition-[width] duration-500 ease-out"
+                    className="rec-pillar-fill"
                     style={{ width: `${Math.min(100, p.progress)}%` }}
                   />
                 </div>
@@ -164,41 +148,24 @@ export default function ProgressPage() {
         </section>
 
         {insights.bullets.length > 0 && (
-          <section className="mt-10 pb-4">
-            <p className="text-[10px] font-semibold uppercase tracking-[.18em] text-livv-muted">
-              Evidence
-            </p>
-            <div className="mt-4 divide-y divide-livv-border border-y border-livv-border">
+          <section className="rec-evidence">
+            <p className="rec-section-label">Evidence</p>
+            <div className="rec-evidence-list">
               {insights.bullets.map((b) => (
-                <div key={b.title} className="py-5">
-                  <p className="text-[10px] font-semibold uppercase tracking-[.16em] text-livv-accent">
-                    {b.title}
-                  </p>
-                  <p className="mt-2 text-[15px] font-medium leading-snug tracking-[-.02em]">
-                    {b.detail}
-                  </p>
+                <article key={b.title} className="rec-evidence-card">
+                  <p className="rec-evidence-title">{b.title}</p>
+                  <p className="rec-evidence-detail">{b.detail}</p>
                   {b.evidence.facts.length > 0 && (
-                    <p className="mt-2 text-[11px] leading-5 text-livv-muted">
+                    <p className="rec-evidence-facts">
                       {b.evidence.facts.slice(0, 3).join(" · ")}
                     </p>
                   )}
-                </div>
+                </article>
               ))}
             </div>
           </section>
         )}
       </div>
     </main>
-  );
-}
-
-function Stat({ value, label }: { value: string; label: string }) {
-  return (
-    <div className="rounded-[18px] border border-livv-border px-4 py-4">
-      <p className="text-[22px] font-semibold tracking-[-.03em] tabular-nums">{value}</p>
-      <p className="mt-1.5 text-[10px] font-semibold uppercase tracking-[.14em] text-livv-muted">
-        {label}
-      </p>
-    </div>
   );
 }
