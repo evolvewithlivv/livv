@@ -1,0 +1,389 @@
+/* You / Profile — signal identity screen */
+
+.you {
+  --you-ink: rgb(var(--livv-ink));
+  --you-muted: rgb(var(--livv-muted));
+  --you-line: rgb(var(--livv-border));
+  --you-accent: rgb(var(--livv-accent));
+  --you-bg: rgb(var(--livv-bg));
+  position: relative;
+  isolation: isolate;
+  min-height: calc(100dvh - 5.5rem);
+  color: var(--you-ink);
+  padding-bottom: 2rem;
+}
+
+.you-void {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    radial-gradient(ellipse 65% 38% at 50% 8%, color-mix(in srgb, var(--you-accent) 11%, transparent), transparent 58%),
+    radial-gradient(ellipse 50% 28% at 50% 100%, color-mix(in srgb, var(--you-ink) 3.5%, transparent), transparent 55%);
+}
+
+.you-inner {
+  position: relative;
+  z-index: 2;
+  max-width: 28rem;
+  margin: 0 auto;
+  padding: 1.35rem 1.35rem 2.5rem;
+}
+
+.you-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  opacity: 0;
+  transform: translateY(-6px);
+  transition: opacity 0.7s ease 0.08s, transform 0.7s ease 0.08s;
+}
+.you.awake .you-top {
+  opacity: 1;
+  transform: none;
+}
+
+.you-eyebrow {
+  margin: 0;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--you-muted);
+}
+
+.you-actions {
+  display: flex;
+  gap: 0.4rem;
+}
+
+.you-icon-btn {
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 999px;
+  border: 1px solid var(--you-line);
+  background: color-mix(in srgb, var(--you-ink) 2.5%, transparent);
+  color: var(--you-muted);
+  text-decoration: none;
+  transition: color 0.2s ease, border-color 0.2s ease;
+}
+.you-icon-btn:active {
+  transform: scale(0.96);
+}
+.you-icon-btn:disabled {
+  opacity: 0.45;
+}
+
+/* Hero */
+.you-hero {
+  text-align: center;
+  padding: 1.5rem 0 1.25rem;
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.12s, transform 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.12s;
+}
+.you.awake .you-hero {
+  opacity: 1;
+  transform: none;
+}
+
+.you-avatar-wrap {
+  position: relative;
+  width: 8.75rem;
+  height: 8.75rem;
+  margin: 0 auto 1.15rem;
+}
+
+.you-ring {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.you-ring-track {
+  fill: none;
+  stroke: color-mix(in srgb, var(--you-ink) 10%, transparent);
+  stroke-width: 4.5;
+}
+
+.you-ring-fill {
+  fill: none;
+  stroke: var(--you-accent);
+  stroke-width: 4.5;
+  stroke-linecap: round;
+  transition: stroke-dasharray 0.8s ease;
+  filter: drop-shadow(0 0 8px color-mix(in srgb, var(--you-accent) 45%, transparent));
+}
+
+.you-avatar-btn {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  border: 0;
+  padding: 0;
+  background: transparent;
+  border-radius: 50%;
+  cursor: pointer;
+}
+
+.you-avatar {
+  border-radius: 50% !important;
+  box-shadow: 0 8px 28px color-mix(in srgb, #000 35%, transparent);
+}
+
+.you-edit {
+  position: absolute;
+  right: -2px;
+  bottom: -2px;
+  display: grid;
+  place-items: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  border-radius: 50%;
+  background: var(--you-ink);
+  color: var(--you-bg);
+  border: 2px solid var(--you-bg);
+  box-shadow: 0 2px 8px color-mix(in srgb, #000 30%, transparent);
+}
+
+.you-name {
+  margin: 0;
+  font-family: var(--font-display), var(--font-body), system-ui, sans-serif;
+  font-size: clamp(1.75rem, 7vw, 2.15rem);
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  line-height: 1.05;
+}
+
+.you-handle {
+  margin: 0.35rem 0 0;
+  font-size: 13px;
+  color: var(--you-muted);
+}
+
+.you-bio {
+  margin: 0.75rem auto 0;
+  max-width: 34ch;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--you-muted);
+}
+
+.you-status {
+  margin: 0.55rem 0 0;
+  font-size: 12px;
+  color: var(--you-muted);
+}
+.you-status.is-err {
+  color: #ef4444;
+}
+
+.you-evo {
+  margin-top: 1.25rem;
+  padding-top: 1.15rem;
+  border-top: 1px solid var(--you-line);
+}
+
+.you-evo-label {
+  margin: 0;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--you-muted);
+}
+
+.you-evo-name {
+  margin: 0.35rem 0 0;
+  font-size: 1.2rem;
+  font-weight: 600;
+  letter-spacing: -0.03em;
+}
+
+.you-evo-meta {
+  margin: 0.3rem 0 0;
+  font-size: 11px;
+  font-weight: 600;
+  color: color-mix(in srgb, var(--you-muted) 90%, transparent);
+}
+
+/* Stats */
+.you-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+  opacity: 0;
+  transition: opacity 0.7s ease 0.28s;
+}
+.you.awake .you-stats {
+  opacity: 1;
+}
+
+.you-stat {
+  text-align: center;
+  padding: 0.9rem 0.35rem;
+  border-radius: 14px;
+  border: 1px solid var(--you-line);
+  background: color-mix(in srgb, var(--you-ink) 2.5%, transparent);
+}
+
+.you-stat-v {
+  margin: 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.you-stat-l {
+  margin: 0.4rem 0 0;
+  font-size: 9px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--you-muted);
+}
+
+/* Embers card */
+.you-embers {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  margin-top: 0.75rem;
+  padding: 1rem 1.05rem;
+  border-radius: 16px;
+  border: 1px solid var(--you-line);
+  background: color-mix(in srgb, var(--you-ink) 2.5%, transparent);
+  opacity: 0;
+  transition: opacity 0.7s ease 0.35s;
+}
+.you.awake .you-embers {
+  opacity: 1;
+}
+
+.you-embers-icon {
+  display: grid;
+  place-items: center;
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--you-accent) 14%, transparent);
+  color: var(--you-accent);
+  flex-shrink: 0;
+}
+
+.you-embers-body {
+  min-width: 0;
+  flex: 1;
+}
+
+.you-embers-label {
+  margin: 0;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--you-muted);
+}
+
+.you-embers-value {
+  margin: 0.2rem 0 0;
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: -0.03em;
+  font-variant-numeric: tabular-nums;
+  line-height: 1.1;
+}
+
+.you-embers-note {
+  margin: 0.3rem 0 0;
+  font-size: 11px;
+  line-height: 1.4;
+  color: var(--you-muted);
+}
+
+.you-embers-go {
+  display: grid;
+  place-items: center;
+  width: 2.35rem;
+  height: 2.35rem;
+  border-radius: 999px;
+  border: 1px solid var(--you-line);
+  color: var(--you-muted);
+  text-decoration: none;
+  flex-shrink: 0;
+}
+
+/* Record link */
+.you-link {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-top: 0.75rem;
+  padding: 1.1rem 1.1rem;
+  border-radius: 16px;
+  border: 1px solid var(--you-line);
+  background: color-mix(in srgb, var(--you-ink) 2.5%, transparent);
+  text-decoration: none;
+  color: inherit;
+  opacity: 0;
+  transition: opacity 0.7s ease 0.4s;
+}
+.you.awake .you-link {
+  opacity: 1;
+}
+.you-link:active {
+  transform: scale(0.99);
+}
+
+.you-link-label {
+  margin: 0;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--you-muted);
+}
+
+.you-link-title {
+  margin: 0.3rem 0 0;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.you-link-sub {
+  margin: 0.25rem 0 0;
+  font-size: 12px;
+  color: var(--you-muted);
+}
+
+.you-link-chev {
+  display: grid;
+  place-items: center;
+  width: 2.35rem;
+  height: 2.35rem;
+  border-radius: 999px;
+  border: 1px solid var(--you-line);
+  color: var(--you-muted);
+  flex-shrink: 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .you-top,
+  .you-hero,
+  .you-stats,
+  .you-embers,
+  .you-link {
+    opacity: 1 !important;
+    transform: none !important;
+    transition: none !important;
+  }
+}
