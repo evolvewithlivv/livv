@@ -5,7 +5,6 @@ import Link from "next/link";
 import {
   ChevronRight,
   Flame,
-  Pencil,
   Settings2,
   Share2,
 } from "lucide-react";
@@ -161,10 +160,8 @@ export default function ProfilePage() {
                 aria-label="Change profile photo"
               >
                 <Avatar identity={me} size={118} fit="contain" className="you-avatar" showTierRing />
-                <span className="you-edit" aria-hidden>
-                  <Pencil size={11} strokeWidth={2.2} />
-                </span>
               </button>
+              <p className="you-photo-hint">Tap to edit</p>
               <input
                 ref={fileRef}
                 type="file"
