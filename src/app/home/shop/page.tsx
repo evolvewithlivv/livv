@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { Flame } from "lucide-react";
 import { loadIdentity } from "@/lib/identity";
@@ -17,7 +17,7 @@ import "./shop-rack.css";
 const PRODUCTS = [
   {
     name: "Heavyweight Tee",
-    detail: "White logo",
+    detail: "White logo · Made to order",
     price: "From $39.95",
     image:
       "https://cdn.shopify.com/s/files/1/1091/3644/5726/files/mens-premium-heavyweight-tee-black-front-6ac2572409a64.png?v=1791121207",
@@ -25,7 +25,7 @@ const PRODUCTS = [
   },
   {
     name: "Heavyweight Tee",
-    detail: "Black logo",
+    detail: "Black logo · Made to order",
     price: "From $39.95",
     image:
       "https://cdn.shopify.com/s/files/1/1091/3644/5726/files/mens-premium-heavyweight-tee-white-front-6ac256bda7240.png?v=1791121101",
@@ -33,7 +33,7 @@ const PRODUCTS = [
   },
   {
     name: "Long Sleeve",
-    detail: "White logo",
+    detail: "White logo · Made to order",
     price: "From $44.95",
     image:
       "https://cdn.shopify.com/s/files/1/1091/3644/5726/files/mens-heavyweight-long-sleeve-t-shirt-black-front-6ac2573c45416.png?v=1791121222",
@@ -41,7 +41,7 @@ const PRODUCTS = [
   },
   {
     name: "Long Sleeve",
-    detail: "Black logo",
+    detail: "Black logo · Made to order",
     price: "From $44.95",
     image:
       "https://cdn.shopify.com/s/files/1/1091/3644/5726/files/mens-heavyweight-long-sleeve-t-shirt-white-front-6ac256f65cc22.png?v=1791121157",
@@ -49,7 +49,7 @@ const PRODUCTS = [
   },
   {
     name: "iPhone Tough Case",
-    detail: "Protect the signal",
+    detail: "Matte finish · Signal ready",
     price: "$34.95",
     image:
       "https://cdn.shopify.com/s/files/1/1091/3644/5726/files/tough-case-for-iphone-matte-iphone-17-pro-max-front-6ac255eaa6549.png?v=1791120889",
@@ -57,39 +57,37 @@ const PRODUCTS = [
   },
 ];
 
+const N = PRODUCTS.length;
+const STEP = 360 / N;
+
 function Hanger() {
   return (
-    <svg className="rack-hanger" viewBox="0 0 120 48" aria-hidden>
+    <svg className="closet-hanger" viewBox="0 0 80 36" aria-hidden>
       <path
-        d="M60 6c0-3.3 2.7-6 6-6s6 2.7 6 6c0 2.2-1.2 4.1-3 5.2V14"
+        d="M40 4a5 5 0 1 1 5 5v3"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="2"
+        strokeLinecap="round"
+      />
+      <path
+        d="M40 12v3M10 24c4-7 14-10 30-10s26 3 30 10"
         fill="none"
         stroke="currentColor"
         strokeWidth="2.2"
         strokeLinecap="round"
       />
-      <path
-        d="M60 14v4M18 28c0-6 12-10 42-10s42 4 42 10"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="2.4"
-        strokeLinecap="round"
-        strokeLinejoin="round"
-      />
-      <path
-        d="M18 28h84"
-        fill="none"
-        stroke="currentColor"
-        strokeWidth="3.2"
-        strokeLinecap="round"
-      />
+      <line x1="10" y1="24" x2="70" y2="24" stroke="currentColor" strokeWidth="2.8" strokeLinecap="round" />
     </svg>
   );
 }
 
 export default function ShopPage() {
   const [embers, setEmbers] = useState(0);
-  const [active, setActive] = useState(0);
-  const trackRef = useRef<HTMLDivElement>(null);
+  const [rotation, setRotation] = useState(0);
+  const [dragging, setDragging] = useState(false);
+  const dragRef = useRef({ startX: 0, startRot: 0, lastX: 0, moved: false });
+  const stageRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const sync = () => setEmbers(loadIdentity().embers || 0);
@@ -98,175 +96,214 @@ export default function ShopPage() {
     return () => window.removeEventListener("livv-identity", sync);
   }, []);
 
-  useEffect(() => {
-    const el = trackRef.current;
-    if (!el) return;
-
-    const onScroll = () => {
-      const cards = Array.from(el.querySelectorAll<HTMLElement>("[data-rack-item]"));
-      if (!cards.length) return;
-      const mid = el.scrollLeft + el.clientWidth / 2;
-      let best = 0;
-      let bestDist = Infinity;
-      cards.forEach((card, i) => {
-        const center = card.offsetLeft + card.offsetWidth / 2;
-        const dist = Math.abs(center - mid);
-        if (dist < bestDist) {
-          bestDist = dist;
-          best = i;
-        }
-      });
-      setActive((prev) => (prev === best ? prev : best));
-    };
-
-    el.addEventListener("scroll", onScroll, { passive: true });
-    onScroll();
-    return () => el.removeEventListener("scroll", onScroll);
+  const normalizeIndex = useCallback((rot: number) => {
+    const raw = Math.round(-rot / STEP);
+    return ((raw % N) + N) % N;
   }, []);
+
+  const active = normalizeIndex(rotation);
+  const focused = PRODUCTS[active];
+
+  const snapToIndex = useCallback(
+    (index: number) => {
+      const target = -index * STEP;
+      let delta = target - rotation;
+      while (delta > 180) delta -= 360;
+      while (delta < -180) delta += 360;
+      setRotation(rotation + delta);
+      haptic("light");
+    },
+    [rotation]
+  );
+
+  const onPointerDown = (e: React.PointerEvent) => {
+    (e.currentTarget as HTMLElement).setPointerCapture(e.pointerId);
+    dragRef.current = {
+      startX: e.clientX,
+      startRot: rotation,
+      lastX: e.clientX,
+      moved: false,
+    };
+    setDragging(true);
+  };
+
+  const onPointerMove = (e: React.PointerEvent) => {
+    if (!dragging) return;
+    const dx = e.clientX - dragRef.current.startX;
+    if (Math.abs(dx) > 4) dragRef.current.moved = true;
+    setRotation(dragRef.current.startRot + dx * 0.38);
+    dragRef.current.lastX = e.clientX;
+  };
+
+  const onPointerUp = (e: React.PointerEvent) => {
+    if (!dragging) return;
+    setDragging(false);
+    const dx = e.clientX - dragRef.current.startX;
+    const velocityBoost = dx * 0.08;
+    const finalRot = dragRef.current.startRot + dx * 0.38 + velocityBoost;
+    const idx = normalizeIndex(finalRot);
+    setRotation(-idx * STEP);
+    if (dragRef.current.moved) haptic("light");
+  };
 
   const towardMin = Math.min(100, Math.round((embers / MIN_REDEEM_EMBERS) * 100));
   const dollars = embersToDollars(embers);
-  const focused = PRODUCTS[active] ?? PRODUCTS[0];
-
-  const scrollToIndex = (index: number) => {
-    const el = trackRef.current;
-    if (!el) return;
-    const card = el.querySelectorAll<HTMLElement>("[data-rack-item]")[index];
-    if (!card) return;
-    const left = card.offsetLeft - (el.clientWidth - card.offsetWidth) / 2;
-    el.scrollTo({ left, behavior: "smooth" });
-    haptic("light");
-  };
 
   return (
     <main className="livv-page min-h-full text-livv-ink">
-      <div className="mx-auto w-full max-w-2xl pb-12 pt-5">
-        <header className="px-5 sm:px-6">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-livv-muted">
-            Collection 001
-          </p>
-          <h1 className="mt-2 text-[28px] font-semibold tracking-tight">The rack.</h1>
-          <p className="mt-2 max-w-[36ch] text-[14px] leading-relaxed text-livv-muted">
-            Swipe the rail. Tap a piece to open it.
-          </p>
+      <div className="mx-auto w-full max-w-2xl pb-14 pt-6">
+        <header className="closet-header px-6">
+          <p className="closet-eyebrow">Collection 001</p>
+          <h1 className="closet-title">Closet</h1>
+          <p className="closet-sub">Drag to rotate. Tap the front piece to open.</p>
         </header>
 
-        <section className="rack mt-8" aria-label="Clothing rack">
-          <div className="rack-frame">
-            <div className="rack-rail" aria-hidden>
-              <span className="rack-rail-bar" />
-              <span className="rack-rail-end left" />
-              <span className="rack-rail-end right" />
-            </div>
+        <section className="closet" aria-label="Rotating closet">
+          <div className="closet-ring" aria-hidden>
+            <div className="closet-ring-outer" />
+            <div className="closet-ring-inner" />
+            <div className="closet-ring-highlight" />
+          </div>
 
-            <div className="rack-track" ref={trackRef}>
-              {PRODUCTS.map((product, i) => (
-                <Link
-                  key={product.href}
-                  href={product.href}
-                  data-rack-item
-                  className={"rack-item" + (i === active ? " is-active" : "")}
-                  onClick={() => haptic("light")}
-                >
-                  <Hanger />
-                  <div className="rack-hook" aria-hidden />
-                  <div className="rack-garment">
-                    <img src={product.image} alt={product.name} loading={i < 2 ? "eager" : "lazy"} />
-                  </div>
-                </Link>
-              ))}
+          <div
+            ref={stageRef}
+            className={"closet-stage" + (dragging ? " is-dragging" : "")}
+            onPointerDown={onPointerDown}
+            onPointerMove={onPointerMove}
+            onPointerUp={onPointerUp}
+            onPointerCancel={onPointerUp}
+            role="listbox"
+            aria-label="Products"
+            aria-activedescendant={`closet-item-${active}`}
+          >
+            <div
+              className="closet-carousel"
+              style={{
+                transform: `translateZ(-160px) rotateY(${rotation}deg)`,
+                transition: dragging ? "none" : "transform 0.55s cubic-bezier(0.22, 1, 0.36, 1)",
+              }}
+            >
+              {PRODUCTS.map((product, i) => {
+                const angle = i * STEP;
+                const isFront = i === active;
+                return (
+                  <Link
+                    key={product.href}
+                    id={`closet-item-${i}`}
+                    href={product.href}
+                    role="option"
+                    aria-selected={isFront}
+                    className={"closet-item" + (isFront ? " is-front" : "")}
+                    style={{
+                      transform: `rotateY(${angle}deg) translateZ(160px)`,
+                    }}
+                    onClick={(e) => {
+                      if (dragRef.current.moved) {
+                        e.preventDefault();
+                        return;
+                      }
+                      if (!isFront) {
+                        e.preventDefault();
+                        snapToIndex(i);
+                        return;
+                      }
+                      haptic("light");
+                    }}
+                    draggable={false}
+                  >
+                    <div className="closet-item-inner">
+                      <Hanger />
+                      <div className="closet-stem" aria-hidden />
+                      <div className="closet-garment">
+                        <img
+                          src={product.image}
+                          alt={product.name}
+                          draggable={false}
+                          loading={i < 2 ? "eager" : "lazy"}
+                        />
+                      </div>
+                    </div>
+                  </Link>
+                );
+              })}
             </div>
           </div>
 
-          <div className="rack-focus px-5 sm:px-6">
-            <p className="rack-focus-index">
-              {String(active + 1).padStart(2, "0")} / {String(PRODUCTS.length).padStart(2, "0")}
+          <div className="closet-floor" aria-hidden />
+
+          <div className="closet-info">
+            <p className="closet-count">
+              {String(active + 1).padStart(2, "0")}
+              <span> / {String(N).padStart(2, "0")}</span>
             </p>
-            <h2 className="rack-focus-name">{focused.name}</h2>
-            <p className="rack-focus-detail">{focused.detail}</p>
-            <div className="rack-focus-row">
-              <span className="rack-focus-price">{focused.price}</span>
-              <Link href={focused.href} className="rack-focus-cta" onClick={() => haptic("light")}>
+            <h2 className="closet-name">{focused.name}</h2>
+            <p className="closet-detail">{focused.detail}</p>
+            <div className="closet-actions">
+              <span className="closet-price">{focused.price}</span>
+              <Link href={focused.href} className="closet-cta" onClick={() => haptic("light")}>
                 View piece
               </Link>
-            </div>
-
-            <div className="rack-dots" role="tablist" aria-label="Pieces on the rack">
-              {PRODUCTS.map((p, i) => (
-                <button
-                  key={p.href}
-                  type="button"
-                  role="tab"
-                  aria-selected={i === active}
-                  aria-label={p.name}
-                  className={"rack-dot" + (i === active ? " is-active" : "")}
-                  onClick={() => scrollToIndex(i)}
-                />
-              ))}
             </div>
           </div>
         </section>
 
-        <div className="px-5 sm:px-6">
-          <section className="mt-12 rounded-[22px] border border-livv-border bg-[color-mix(in_srgb,rgb(var(--livv-ink))_2.5%,transparent)] px-5 py-5">
+        <div className="px-6">
+          <section className="closet-embers mt-12">
             <div className="flex items-center gap-4">
-              <span className="flex h-12 w-12 items-center justify-center rounded-full bg-livv-accent/10">
-                <Flame size={22} className="text-livv-accent" />
+              <span className="flex h-11 w-11 items-center justify-center rounded-full bg-livv-accent/10">
+                <Flame size={20} className="text-livv-accent" />
               </span>
               <div className="min-w-0 flex-1">
-                <p className="text-[10px] font-semibold uppercase tracking-[.14em] text-livv-muted">
+                <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-livv-muted">
                   Your Embers
                 </p>
-                <p className="mt-1 text-[26px] font-semibold tabular-nums tracking-tight">
+                <p className="mt-0.5 text-[24px] font-semibold tabular-nums tracking-tight">
                   {embers.toLocaleString()}
                 </p>
               </div>
               <div className="text-right">
                 <p className="text-[10px] uppercase tracking-[.12em] text-livv-muted">Value</p>
-                <p className="mt-1 text-[14px] font-semibold tabular-nums">${dollars.toFixed(2)}</p>
+                <p className="mt-0.5 text-[14px] font-semibold tabular-nums">${dollars.toFixed(2)}</p>
               </div>
             </div>
-            <div className="mt-4 h-1.5 overflow-hidden rounded-full bg-livv-border">
+            <div className="mt-4 h-1 overflow-hidden rounded-full bg-livv-border">
               <div
                 className="h-full rounded-full bg-livv-accent transition-[width] duration-500 ease-out"
                 style={{ width: `${towardMin}%` }}
               />
             </div>
-            <p className="mt-2 text-[11px] text-livv-muted">
+            <p className="mt-2 text-[11px] leading-relaxed text-livv-muted">
               {embers >= MIN_REDEEM_EMBERS
                 ? `Ready to redeem (min ${MIN_REDEEM_EMBERS.toLocaleString()} Embers).`
-                : `${(MIN_REDEEM_EMBERS - embers).toLocaleString()} Embers to minimum redeem.`}
+                : `${(MIN_REDEEM_EMBERS - embers).toLocaleString()} more Embers to redeem.`}
             </p>
           </section>
 
           <section className="mt-10">
-            <p className="text-[10px] font-semibold uppercase tracking-[.2em] text-livv-muted">
+            <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-livv-muted">
               Earned in LIVV
             </p>
-            <h2 className="mt-2 text-[24px] font-semibold tracking-tight">Your actions have value.</h2>
+            <h2 className="mt-2 text-[22px] font-semibold tracking-tight">Your actions have value.</h2>
             <p className="mt-2 max-w-[40ch] text-[13px] leading-relaxed text-livv-muted">
-              Embers convert to credit at {EMBERS_PER_DOLLAR} per dollar, up to ${MAX_CREDIT_DOLLARS}.
-              Collection pieces are made to order, so buy what you will actually use.
+              Embers convert at {EMBERS_PER_DOLLAR} per dollar, up to ${MAX_CREDIT_DOLLARS}. Pieces are made
+              to order.
             </p>
             <ul className="mt-4 space-y-1.5 text-[12px] leading-relaxed text-livv-muted">
               {REDEEM_RULES_COPY.map((rule) => (
                 <li key={rule} className="flex gap-2">
-                  <span
-                    className="mt-[0.45em] h-1 w-1 shrink-0 rounded-full bg-livv-muted opacity-60"
-                    aria-hidden
-                  />
+                  <span className="mt-[0.45em] h-1 w-1 shrink-0 rounded-full bg-livv-muted opacity-50" aria-hidden />
                   <span>{rule}</span>
                 </li>
               ))}
             </ul>
           </section>
 
-          <section className="mt-10">
+          <section className="mt-8">
             <Link
               href="/home/profile"
-              className="livv-press inline-flex min-h-11 items-center rounded-full border border-livv-border px-5 text-[12px] font-semibold"
+              className="inline-flex min-h-11 items-center rounded-full border border-livv-border px-5 text-[12px] font-semibold"
             >
-              View profile & Embers
+              Profile & Embers
             </Link>
           </section>
         </div>
