@@ -302,7 +302,7 @@ export default function BoardPage() {
               >
                 <p className="text-[11px] font-bold uppercase tracking-wide opacity-60">Read</p>
                 <p className="mt-1 text-[19px] font-semibold leading-tight">{featured.title}</p>
-                <p className="mt-2 text-[14px] leading-snug opacity-70">{clip(featured.excerpt || "", 120)}</p>
+                <p className="mt-2 text-[14px] leading-snug opacity-70">{clip(featured.hook || "", 120)}</p>
               </Note>
             ) : null}
 
