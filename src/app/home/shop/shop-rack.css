@@ -1,225 +1,282 @@
-/* Clothing rack — Collection 001 */
+/* Rotating closet — Collection 001 */
 
-.rack {
-  --rack-metal: color-mix(in srgb, rgb(var(--livv-ink)) 55%, #8a9099);
-  --rack-metal-shine: color-mix(in srgb, rgb(var(--livv-ink)) 25%, #c8ccd2);
+.closet-header {
+  text-align: left;
+}
+.closet-eyebrow {
+  margin: 0;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: rgb(var(--livv-muted));
+}
+.closet-title {
+  margin: 0.45rem 0 0;
+  font-family: var(--font-display), var(--font-body), system-ui, sans-serif;
+  font-size: clamp(1.85rem, 6.5vw, 2.25rem);
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  line-height: 1.05;
+}
+.closet-sub {
+  margin: 0.55rem 0 0;
+  max-width: 32ch;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: rgb(var(--livv-muted));
 }
 
-.rack-frame {
+.closet {
   position: relative;
-  padding-top: 1.25rem;
+  margin-top: 1.75rem;
+  padding-bottom: 0.5rem;
 }
 
-/* Horizontal rail */
-.rack-rail {
+/* Top circular rail */
+.closet-ring {
   position: relative;
-  z-index: 5;
-  height: 14px;
-  margin: 0 1.25rem;
+  z-index: 4;
+  width: min(78%, 280px);
+  height: 18px;
+  margin: 0 auto 0.25rem;
   pointer-events: none;
 }
-
-.rack-rail-bar {
-  display: block;
-  height: 7px;
-  margin-top: 3px;
+.closet-ring-outer {
+  position: absolute;
+  inset: 0;
   border-radius: 999px;
   background: linear-gradient(
     180deg,
-    var(--rack-metal-shine) 0%,
-    var(--rack-metal) 45%,
-    color-mix(in srgb, var(--rack-metal) 70%, #000) 100%
+    color-mix(in srgb, rgb(var(--livv-ink)) 20%, #d0d4da) 0%,
+    color-mix(in srgb, rgb(var(--livv-ink)) 45%, #8a9098) 50%,
+    color-mix(in srgb, rgb(var(--livv-ink)) 55%, #5a5e66) 100%
   );
   box-shadow:
-    0 2px 6px color-mix(in srgb, #000 35%, transparent),
-    inset 0 1px 0 color-mix(in srgb, #fff 25%, transparent);
+    0 3px 10px color-mix(in srgb, #000 40%, transparent),
+    inset 0 1px 0 color-mix(in srgb, #fff 35%, transparent),
+    inset 0 -1px 0 color-mix(in srgb, #000 25%, transparent);
 }
-
-.rack-rail-end {
+.closet-ring-inner {
   position: absolute;
-  top: 0;
-  width: 12px;
-  height: 12px;
-  border-radius: 50%;
-  background: radial-gradient(circle at 35% 30%, #ddd 0%, var(--rack-metal) 55%, #444 100%);
-  box-shadow: 0 1px 3px color-mix(in srgb, #000 40%, transparent);
+  left: 8%;
+  right: 8%;
+  top: 4px;
+  height: 4px;
+  border-radius: 999px;
+  background: color-mix(in srgb, #000 35%, transparent);
+  opacity: 0.45;
 }
-.rack-rail-end.left { left: -2px; }
-.rack-rail-end.right { right: -2px; }
-
-/* Horizontal swipe track */
-.rack-track {
-  display: flex;
-  gap: 0.75rem;
-  overflow-x: auto;
-  overflow-y: hidden;
-  scroll-snap-type: x mandatory;
-  scroll-padding-inline: calc(50% - 7rem);
-  -webkit-overflow-scrolling: touch;
-  padding: 0.35rem calc(50% - 7rem) 1.25rem;
-  scrollbar-width: none;
-  overscroll-behavior-x: contain;
-}
-.rack-track::-webkit-scrollbar {
-  display: none;
+.closet-ring-highlight {
+  position: absolute;
+  left: 18%;
+  right: 18%;
+  top: 1px;
+  height: 2px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, transparent, color-mix(in srgb, #fff 55%, transparent), transparent);
+  opacity: 0.55;
 }
 
-/* Each hanging piece */
-.rack-item {
+/* 3D stage */
+.closet-stage {
   position: relative;
-  flex: 0 0 14rem;
-  scroll-snap-align: center;
+  z-index: 3;
+  height: 300px;
+  margin: 0 auto;
+  max-width: 100%;
+  perspective: 900px;
+  perspective-origin: 50% 42%;
+  touch-action: pan-y;
+  cursor: grab;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.closet-stage.is-dragging {
+  cursor: grabbing;
+}
+
+.closet-carousel {
+  position: absolute;
+  inset: 0;
+  transform-style: preserve-3d;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.closet-item {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 150px;
+  margin-left: -75px;
+  margin-top: -130px;
+  transform-style: preserve-3d;
+  text-decoration: none;
+  color: inherit;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.closet-item-inner {
   display: flex;
   flex-direction: column;
   align-items: center;
-  text-decoration: none;
-  color: inherit;
-  transform: scale(0.92);
-  opacity: 0.72;
-  transition: transform 0.35s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.35s ease;
+  transform-style: preserve-3d;
+  transition: filter 0.4s ease, opacity 0.4s ease;
+  opacity: 0.45;
+  filter: brightness(0.7);
 }
-.rack-item.is-active {
-  transform: scale(1);
+.closet-item.is-front .closet-item-inner {
   opacity: 1;
+  filter: brightness(1);
 }
 
-.rack-hanger {
-  width: 5.5rem;
-  height: 2.2rem;
-  color: var(--rack-metal);
-  margin-bottom: -0.15rem;
-  filter: drop-shadow(0 1px 1px color-mix(in srgb, #000 25%, transparent));
+.closet-hanger {
+  width: 52px;
+  height: 24px;
+  color: color-mix(in srgb, rgb(var(--livv-ink)) 40%, #a8adb4);
+  filter: drop-shadow(0 1px 1px color-mix(in srgb, #000 30%, transparent));
 }
 
-.rack-hook {
-  width: 2px;
-  height: 10px;
-  background: var(--rack-metal);
-  border-radius: 1px;
-  margin-bottom: 2px;
+.closet-stem {
+  width: 1.5px;
+  height: 8px;
+  background: color-mix(in srgb, rgb(var(--livv-ink)) 40%, #a8adb4);
+  margin-bottom: 1px;
 }
 
-.rack-garment {
-  width: 100%;
-  aspect-ratio: 3 / 4;
-  border-radius: 4px 4px 10px 10px;
+.closet-garment {
+  width: 150px;
+  aspect-ratio: 3 / 3.7;
+  border-radius: 6px 6px 12px 12px;
   overflow: hidden;
-  background: color-mix(in srgb, rgb(var(--livv-ink)) 4%, transparent);
+  background: color-mix(in srgb, rgb(var(--livv-ink)) 5%, transparent);
   box-shadow:
-    0 12px 28px color-mix(in srgb, #000 28%, transparent),
-    0 2px 6px color-mix(in srgb, #000 18%, transparent);
-  transition: box-shadow 0.35s ease;
+    0 16px 36px color-mix(in srgb, #000 45%, transparent),
+    0 2px 8px color-mix(in srgb, #000 25%, transparent);
+  transform-origin: top center;
 }
-.rack-item.is-active .rack-garment {
+.closet-item.is-front .closet-garment {
   box-shadow:
-    0 18px 40px color-mix(in srgb, #000 38%, transparent),
-    0 4px 12px color-mix(in srgb, #000 22%, transparent),
-    0 0 0 1px color-mix(in srgb, rgb(var(--livv-accent)) 18%, transparent);
+    0 22px 48px color-mix(in srgb, #000 55%, transparent),
+    0 0 0 1px color-mix(in srgb, rgb(var(--livv-accent)) 22%, transparent),
+    0 4px 14px color-mix(in srgb, #000 30%, transparent);
 }
-.rack-garment img {
+.closet-garment img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
-  transform-origin: top center;
-  animation: rack-sway 5.5s ease-in-out infinite;
-}
-.rack-item:nth-child(2n) .rack-garment img {
-  animation-duration: 6.2s;
-  animation-delay: -1.4s;
-}
-.rack-item:nth-child(3n) .rack-garment img {
-  animation-duration: 4.8s;
-  animation-delay: -2.1s;
+  pointer-events: none;
 }
 
-@keyframes rack-sway {
-  0%, 100% { transform: rotate(-0.7deg); }
-  50% { transform: rotate(0.7deg); }
+/* Soft floor ellipse */
+.closet-floor {
+  width: 55%;
+  height: 18px;
+  margin: -0.5rem auto 0;
+  border-radius: 50%;
+  background: radial-gradient(
+    ellipse at center,
+    color-mix(in srgb, #000 45%, transparent),
+    transparent 70%
+  );
+  filter: blur(4px);
+  pointer-events: none;
 }
 
-/* Focused product readout */
-.rack-focus {
-  margin-top: 0.5rem;
+/* Info block */
+.closet-info {
+  margin-top: 1.25rem;
+  padding: 0 1.5rem;
   text-align: center;
 }
-.rack-focus-index {
+.closet-count {
   margin: 0;
-  font-size: 10px;
-  font-weight: 700;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
   color: rgb(var(--livv-muted));
 }
-.rack-focus-name {
-  margin: 0.55rem 0 0;
-  font-size: 1.35rem;
+.closet-count span {
+  opacity: 0.55;
+}
+.closet-name {
+  margin: 0.5rem 0 0;
+  font-family: var(--font-display), var(--font-body), system-ui, sans-serif;
+  font-size: 1.4rem;
   font-weight: 600;
   letter-spacing: -0.03em;
   line-height: 1.15;
 }
-.rack-focus-detail {
-  margin: 0.3rem 0 0;
+.closet-detail {
+  margin: 0.35rem 0 0;
   font-size: 13px;
+  line-height: 1.4;
   color: rgb(var(--livv-muted));
 }
-.rack-focus-row {
+.closet-actions {
   display: flex;
   align-items: center;
   justify-content: center;
   gap: 0.85rem;
-  margin-top: 1rem;
+  margin-top: 1.15rem;
 }
-.rack-focus-price {
+.closet-price {
   font-size: 15px;
   font-weight: 700;
+  letter-spacing: -0.01em;
+  font-variant-numeric: tabular-nums;
 }
-.rack-focus-cta {
+.closet-cta {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-height: 2.5rem;
-  padding: 0 1.15rem;
+  min-height: 2.6rem;
+  padding: 0 1.2rem;
   border-radius: 999px;
-  background: rgb(var(--livv-ink));
-  color: rgb(var(--livv-bg));
+  background: #f5f5f2;
+  color: #0a0b0d;
   font-size: 11px;
   font-weight: 800;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.12em;
   text-transform: uppercase;
   text-decoration: none;
+  box-shadow: 0 4px 16px color-mix(in srgb, #000 35%, transparent);
+  transition: transform 0.15s ease, opacity 0.15s ease;
 }
-.rack-focus-cta:active {
+html[data-theme="light"] .closet-cta {
+  background: #111214;
+  color: #f5f5f2;
+}
+.closet-cta:active {
   transform: scale(0.97);
+  opacity: 0.92;
 }
 
-.rack-dots {
-  display: flex;
-  justify-content: center;
-  gap: 0.4rem;
-  margin-top: 1.15rem;
-}
-.rack-dot {
-  width: 6px;
-  height: 6px;
-  padding: 0;
-  border: 0;
-  border-radius: 50%;
-  background: color-mix(in srgb, rgb(var(--livv-ink)) 18%, transparent);
-  cursor: pointer;
-  transition: transform 0.2s ease, background 0.2s ease;
-}
-.rack-dot.is-active {
-  background: rgb(var(--livv-accent));
-  transform: scale(1.25);
-  box-shadow: 0 0 10px color-mix(in srgb, rgb(var(--livv-accent)) 45%, transparent);
+.closet-embers {
+  border-radius: 20px;
+  border: 1px solid rgb(var(--livv-border));
+  background: color-mix(in srgb, rgb(var(--livv-ink)) 2.5%, transparent);
+  padding: 1.15rem 1.2rem;
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .rack-garment img {
-    animation: none !important;
+  .closet-carousel {
+    transition: none !important;
   }
-  .rack-item {
-    transition: none;
+}
+
+@media (min-width: 480px) {
+  .closet-stage {
+    height: 340px;
+  }
+  .closet-item {
+    width: 170px;
+    margin-left: -85px;
+  }
+  .closet-garment {
+    width: 170px;
   }
 }
