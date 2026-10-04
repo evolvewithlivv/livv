@@ -263,28 +263,6 @@ export default function ProfilePage() {
 
         <section className="mt-3">
           <Link
-            href="/home/vault"
-            className="livv-press flex items-center justify-between gap-4 rounded-[22px] border border-livv-border bg-[color-mix(in_srgb,rgb(var(--livv-ink))_2.5%,transparent)] px-5 py-5 transition hover:border-[color-mix(in_srgb,rgb(var(--livv-ink))_18%,transparent)]"
-          >
-            <div>
-              <p className="text-[10px] font-semibold uppercase tracking-[.18em] text-livv-muted">
-                Vault
-              </p>
-              <p className="mt-1.5 text-[17px] font-semibold tracking-[-.02em]">
-                Protocols, tools, downloads
-              </p>
-              <p className="mt-1 text-[12px] text-livv-muted">
-                Protocols, tools, and downloads. Free to every LIVV user.
-              </p>
-            </div>
-            <span className="grid h-10 w-10 shrink-0 place-items-center rounded-full border border-livv-border text-livv-muted">
-              <ChevronRight size={16} />
-            </span>
-          </Link>
-        </section>
-
-        <section className="mt-3">
-          <Link
             href="/home/progress"
             className="livv-press flex items-center justify-between gap-4 rounded-[22px] border border-livv-border bg-[color-mix(in_srgb,rgb(var(--livv-ink))_2.5%,transparent)] px-5 py-5 transition hover:border-[color-mix(in_srgb,rgb(var(--livv-ink))_18%,transparent)]"
           >
