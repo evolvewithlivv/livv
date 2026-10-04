@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { Avatar } from "@/components/identity/avatar";
 import { loadIdentity, type Identity } from "@/lib/identity";
-import { getEffectiveTier } from "@/lib/billing";
 import { LIVV_ICON_BLACK, LIVV_ICON_WHITE } from "@/lib/header-logo";
 import { useEffect, useState } from "react";
 
@@ -50,7 +49,7 @@ export function AppHeader() {
         </Link>
         {me && (
           <Link href="/home/profile" aria-label="Profile" className="rounded-full">
-            <Avatar identity={{ ...me, tier: getEffectiveTier() }} size={34} />
+            <Avatar identity={me} size={34} />
           </Link>
         )}
       </div>
