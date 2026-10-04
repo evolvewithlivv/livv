@@ -14,7 +14,7 @@ const PILLARS = [
   { id: "vigilance", label: "VIGILANCE", coord: "04", line: "Aware. Prepared. Harder to break." },
 ] as const;
 
-const FOOT_META = ["TAP / SCAN / ENTER", "LEAVE THE DEFAULT", "SIGNAL LOCKED", "CROSS WHEN READY"] as const;
+const FOOT_META = ["SIGNAL LIVE", "PRINCIPLE", "MAPPED", "THRESHOLD"] as const;
 
 export default function Signal001() {
   const router = useRouter();
@@ -78,9 +78,6 @@ export default function Signal001() {
       <div className="fn-particles" aria-hidden>
         {Array.from({ length: 18 }).map((_, i) => <span key={i} className={"fn-p p" + i} />)}
       </div>
-      <div className="fn-amb fn-amb1" aria-hidden>
-        <span className="fn-path-line a" /><span className="fn-path-line b" /><span className="fn-path-glow" />
-      </div>
       <div className="fn-amb fn-amb3" aria-hidden>
         <span className="fn-portal r1" /><span className="fn-portal r2" /><span className="fn-portal r3" />
         <span className="fn-portal-core" />
@@ -110,28 +107,34 @@ export default function Signal001() {
               <span className="fn-line dim">You found</span>
               <span className="fn-line">LIVV.</span>
             </h1>
-            <p className="fn-sub">Not a pitch. A doorway into a different way of thinking about your life.</p>
+            <p className="fn-sub">
+              An operating system for becoming more capable in real life.
+            </p>
             <button type="button" className="fn-ghost" onClick={() => go(1)}>
-              <span>KEEP GOING</span><span className="fn-arrow" aria-hidden>→</span>
+              <span>CONTINUE</span><span className="fn-arrow" aria-hidden>→</span>
             </button>
           </section>
         )}
 
         {act === 1 && (
           <section className={actCls(1)} aria-live="polite">
-            <p className="fn-micro-label">THE IDEA</p>
+            <p className="fn-micro-label">PRINCIPLE</p>
             <h1 className="fn-title stack">
               <span className="fn-line">You are not</span>
               <span className="fn-line">here just to</span>
               <span className="fn-line dim">survive.</span>
             </h1>
-            <p className="fn-sub left">Most people never leave the default path.<br />This is the other door.</p>
+            <p className="fn-sub left">
+              Most lives follow a default path.
+              <br />
+              This is the alternative.
+            </p>
             <div className="fn-cta-row">
               <button type="button" className="fn-back" onClick={() => go(0)} aria-label="Go back">
                 <span className="fn-back-icon" aria-hidden>←</span>
               </button>
               <button type="button" className="fn-ghost solid" onClick={() => go(2)}>
-                <span>OPEN THE SYSTEM</span><span className="fn-arrow" aria-hidden>→</span>
+                <span>OPEN SYSTEM</span><span className="fn-arrow" aria-hidden>→</span>
               </button>
             </div>
           </section>
@@ -141,7 +144,7 @@ export default function Signal001() {
           <section className={actCls(2)} aria-live="polite">
             <div className="fn-act2-head">
               <p className="fn-micro-label">INSIDE THE SIGNAL</p>
-              <p className="fn-hint">Tap a node.</p>
+              <p className="fn-hint">Select a node</p>
             </div>
             <div className="fn-orbit" role="list">
               <div className="fn-orbit-plane" aria-hidden>
@@ -173,7 +176,7 @@ export default function Signal001() {
                   <p className="fn-readout-line">{activePillar.line}</p>
                 </>
               ) : (
-                <p className="fn-readout-idle">Select a node to inspect.</p>
+                <p className="fn-readout-idle">Select a node to continue.</p>
               )}
             </div>
             <div className="fn-cta-row">
@@ -181,7 +184,7 @@ export default function Signal001() {
                 <span className="fn-back-icon" aria-hidden>←</span>
               </button>
               <button type="button" className="fn-ghost solid" onClick={() => go(3)}>
-                <span>CROSS THE THRESHOLD</span><span className="fn-arrow" aria-hidden>→</span>
+                <span>CROSS THRESHOLD</span><span className="fn-arrow" aria-hidden>→</span>
               </button>
             </div>
           </section>
@@ -199,7 +202,7 @@ export default function Signal001() {
               <span className="fn-line dim">Enter LIVV.</span>
             </h1>
             <p className="fn-sub left">
-              Training. Health. Knowledge. Practical capability.
+              Training. Health. Knowledge. Capability.
               Not content — a different operating system for how you live.
             </p>
             <button type="button" className={"fn-enter" + (ctaReady ? " show" : "")}
