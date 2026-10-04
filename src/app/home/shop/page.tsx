@@ -13,22 +13,20 @@ import {
   embersToDollars,
 } from "@/lib/ember-economy";
 
-const SHOP_URL = "https://n8tv6p-pu.myshopify.com";
-
 const PRODUCTS = [
   {
     name: "LIVV Heavyweight Tee - White Logo",
     price: "From $39.95",
     image:
       "https://cdn.shopify.com/s/files/1/1091/3644/5726/files/mens-premium-heavyweight-tee-black-front-6ac2572409a64.png?v=1791121207",
-    href: `${SHOP_URL}/products/men-s-premium-heavyweight-tee-1`,
+    href: "/products/men-s-premium-heavyweight-tee-1",
   },
   {
     name: "LIVV Heavyweight Tee - Black Logo",
     price: "From $39.95",
     image:
       "https://cdn.shopify.com/s/files/1/1091/3644/5726/files/mens-premium-heavyweight-tee-white-front-6ac256bda7240.png?v=1791121101",
-    href: `${SHOP_URL}/products/men-s-premium-heavyweight-tee`,
+    href: "/products/men-s-premium-heavyweight-tee",
   },
   {
     name: "LIVV Heavyweight Long Sleeve - White Logo",
@@ -36,7 +34,7 @@ const PRODUCTS = [
     price: "From $44.95",
     image:
       "https://cdn.shopify.com/s/files/1/1091/3644/5726/files/mens-heavyweight-long-sleeve-t-shirt-black-front-6ac2573c45416.png?v=1791121222",
-    href: `${SHOP_URL}/products/mens-heavyweight-long-sleeve-t-shirt-1`,
+    href: "/products/mens-heavyweight-long-sleeve-t-shirt-1",
   },
   {
     name: "LIVV Heavyweight Long Sleeve - Black Logo",
@@ -44,14 +42,14 @@ const PRODUCTS = [
     price: "From $44.95",
     image:
       "https://cdn.shopify.com/s/files/1/1091/3644/5726/files/mens-heavyweight-long-sleeve-t-shirt-white-front-6ac256f65cc22.png?v=1791121157",
-    href: `${SHOP_URL}/products/mens-heavyweight-long-sleeve-t-shirt`,
+    href: "/products/mens-heavyweight-long-sleeve-t-shirt",
   },
   {
     name: "LIVV Tough iPhone Case",
     price: "$34.95",
     image:
       "https://cdn.shopify.com/s/files/1/1091/3644/5726/files/tough-case-for-iphone-matte-iphone-17-pro-max-front-6ac255eaa6549.png?v=1791120889",
-    href: `${SHOP_URL}/products/tough-case-for-iphone®`,
+    href: "/products/tough-case-for-iphone",
   },
 ];
 
@@ -92,11 +90,9 @@ export default function ShopPage() {
 
           <div className="mt-6 grid grid-cols-2 gap-x-4 gap-y-8">
             {PRODUCTS.map((product) => (
-              <a
+              <Link
                 key={product.href}
                 href={product.href}
-                target="_blank"
-                rel="noreferrer"
                 className="group min-w-0 transition active:scale-[0.99]"
               >
                 <div className="aspect-[4/5] overflow-hidden rounded-[18px]">
@@ -116,15 +112,15 @@ export default function ShopPage() {
                     </span>
                   </div>
                 </div>
-              </a>
+              </Link>
             ))}
           </div>
         </section>
 
         <section className="mt-12 rounded-[22px] border border-livv-border bg-[color-mix(in_srgb,rgb(var(--livv-ink))_2.5%,transparent)] px-5 py-5">
-          <div className="flex items-center gap-3">
-            <span className="grid h-11 w-11 place-items-center rounded-full border border-livv-border">
-              <Flame size={18} className="text-livv-accent" />
+          <div className="flex items-start gap-3">
+            <span className="mt-0.5 flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-[color-mix(in_srgb,rgb(var(--livv-accent))_12%,transparent)]">
+              <Flame size={16} className="text-livv-accent" />
             </span>
             <div className="min-w-0 flex-1">
               <p className="text-[10px] font-semibold uppercase tracking-[.14em] text-livv-muted">Your Embers</p>
