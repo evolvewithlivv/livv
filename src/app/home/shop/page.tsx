@@ -13,12 +13,11 @@ import {
   embersToDollars,
 } from "@/lib/ember-economy";
 
-const SHOP_URL = "https://evolvewithlivv.com";
+const SHOP_URL = "https://n8tv6p-pu.myshopify.com";
 
 const PRODUCTS = [
   {
     name: "LIVV Heavyweight Tee - White Logo",
-    subtitle: "Heavyweight / white logo",
     price: "From $39.95",
     image:
       "https://cdn.shopify.com/s/files/1/1091/3644/5726/files/mens-premium-heavyweight-tee-black-front-6ac2572409a64.png?v=1791121207",
@@ -26,7 +25,6 @@ const PRODUCTS = [
   },
   {
     name: "LIVV Heavyweight Tee - Black Logo",
-    subtitle: "Heavyweight / black logo",
     price: "From $39.95",
     image:
       "https://cdn.shopify.com/s/files/1/1091/3644/5726/files/mens-premium-heavyweight-tee-white-front-6ac256bda7240.png?v=1791121101",
@@ -50,7 +48,6 @@ const PRODUCTS = [
   },
   {
     name: "LIVV Tough iPhone Case",
-    subtitle: "Matte or gloss / dual-layer",
     price: "$34.95",
     image:
       "https://cdn.shopify.com/s/files/1/1091/3644/5726/files/tough-case-for-iphone-matte-iphone-17-pro-max-front-6ac255eaa6549.png?v=1791120889",
@@ -102,7 +99,7 @@ export default function ShopPage() {
                 rel="noreferrer"
                 className="group min-w-0 transition active:scale-[0.99]"
               >
-                <div className="aspect-[4/5] overflow-hidden rounded-[18px] border border-livv-border bg-[color-mix(in_srgb,rgb(var(--livv-ink))_3%,transparent)]">
+                <div className="aspect-[4/5] overflow-hidden rounded-[18px]">
                   <img
                     src={product.image}
                     alt={product.name}
@@ -111,11 +108,7 @@ export default function ShopPage() {
                   />
                 </div>
                 <div className="pt-3">
-                  <p className="text-[9px] font-semibold uppercase tracking-[.17em] text-livv-muted">
-                    Collection 001
-                  </p>
-                  <h3 className="mt-1 text-[13px] font-semibold leading-tight">{product.name}</h3>
-                  <p className="mt-1 text-[11px] text-livv-muted">{product.subtitle}</p>
+                  <h3 className="text-[13px] font-semibold leading-tight">{product.name}</h3>
                   <div className="mt-3 flex items-center justify-between gap-2">
                     <span className="text-sm font-semibold">{product.price}</span>
                     <span className="flex h-8 w-8 shrink-0 items-center justify-center text-livv-muted transition group-hover:text-livv-ink">
