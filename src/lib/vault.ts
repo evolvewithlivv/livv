@@ -220,6 +220,118 @@ export const VAULT_MODULES: VaultModule[] = [
 ];
 
 
+export type VaultGuide = {
+  objective: string;
+  why: string;
+  before: string[];
+  principles: string[];
+  fieldNotes: string[];
+  checkpoints: string[];
+  review: string[];
+};
+
+export const VAULT_GUIDES: Record<string, VaultGuide> = {
+  "sleep-reset-7": {
+    objective: "Stabilize your wake time and build a repeatable evening that makes sleep easier without turning bedtime into a performance.",
+    why: "Sleep quality is strongly affected by timing, light exposure, stimulation, and consistency. This week is designed to reduce variables so you can see what actually helps.",
+    before: ["Choose a wake time you can keep on weekends.", "Decide where the phone will charge at night.", "Set one simple wind-down sequence and keep the same order each night."],
+    principles: ["Protect wake time before chasing an earlier bedtime.", "Reduce stimulation before bed instead of relying on willpower once you are already tired.", "Judge the week by the pattern you create, not by one unusually good or bad night."],
+    fieldNotes: ["Get outdoor light soon after waking when practical.", "Keep the bedroom dark, cool, and quiet when possible.", "If you cannot sleep, avoid turning the bed into a scrolling or work zone.", "Do not try to fix a bad night by radically changing the next day's schedule."],
+    checkpoints: ["Day 1: record your starting sleep and wake pattern.", "Day 3: identify the biggest source of evening stimulation.", "Day 5: check whether the fixed wake time is becoming easier.", "Day 7: choose the schedule and wind-down habits worth keeping."],
+    review: ["What made sleep easier?", "What repeatedly pushed bedtime later?", "Which habit is realistic enough to keep for another month?"]
+  },
+  "money-baseline-7": {
+    objective: "Build a factual picture of your cash flow before trying to budget, invest, cut spending, or increase income.",
+    why: "Most money plans fail when they are built from guesses. A short observation period exposes recurring charges, forgotten spending, and the categories that actually move your balance.",
+    before: ["Gather your checking, savings, card, and payment app balances.", "List recurring bills and their due dates.", "Choose one spending category you suspect is leaking money."],
+    principles: ["Measure first, optimize second.", "Separate fixed obligations from flexible spending.", "Use one clear rule instead of ten rules you will ignore."],
+    fieldNotes: ["Record purchases the same day so small transactions do not disappear from memory.", "Mark subscriptions you would not buy again today.", "Watch timing as well as amount. A cash crunch can come from when bills hit, not only from total spending.", "Keep an emergency buffer separate from money meant for everyday spending."],
+    checkpoints: ["Day 1: establish your starting balances and recurring charges.", "Day 3: identify the category with the most avoidable movement.", "Day 5: test one 24-hour pause rule.", "Day 7: write the single money rule you will carry forward."],
+    review: ["What expense surprised you?", "Which recurring charge is no longer earning its place?", "What one rule would make next month easier?"]
+  },
+  "discipline-stack-7": {
+    objective: "Prove that you can keep a small set of daily commitments without needing a perfect mood or schedule.",
+    why: "Discipline becomes useful when it survives ordinary days. Three anchors create a small operating system that can be repeated before adding complexity.",
+    before: ["Choose three anchors that matter to your current life.", "Define the minimum version of each anchor.", "Choose the time or trigger that will remind you to act."],
+    principles: ["Minimum viable action beats zero.", "Do not add new commitments while the current stack is unstable.", "Entertainment comes after the anchors when possible."],
+    fieldNotes: ["Make the first action physically easy to start.", "Track completion, not how motivated you felt.", "When a day goes wrong, shrink the task instead of abandoning it.", "Keep the same anchors long enough to discover whether they actually work."],
+    checkpoints: ["Day 1: establish the exact three anchors.", "Day 3: find the anchor most likely to be skipped.", "Day 5: redesign only the weak trigger or minimum.", "Day 7: keep the two strongest anchors and improve the third."],
+    review: ["Which commitment became automatic?", "Where did friction appear?", "What should become easier before you add anything else?"]
+  },
+  "water-baseline-7": {
+    objective: "Know your household's basic water needs, improve storage, and practice one appropriate treatment method before you need it.",
+    why: "Water readiness is not about buying a pile of gear. It is about knowing your baseline, keeping water stored appropriately, and knowing how your chosen method works.",
+    before: ["Estimate daily drinking and cooking use for your household.", "Inspect the containers you already have.", "Choose a treatment method appropriate to the type of water and your situation."],
+    principles: ["Use clean containers intended for water storage.", "Follow the instructions for your treatment or filtration method.", "Treat storage as a rotation system, not a one-time purchase.", "Keep emergency water separate from casual daily use when practical."],
+    fieldNotes: ["Label stored containers with the fill or rotation date.", "Store water away from extreme heat and contamination.", "Know the difference between filtering and disinfecting. A method that removes particles may not address every microorganism or chemical contaminant.", "For an actual emergency, follow local public health guidance when available."],
+    checkpoints: ["Day 1: calculate a practical three-day baseline.", "Day 3: finish cleaning and labeling storage.", "Day 5: practice the chosen treatment method with a small amount.", "Day 7: confirm every adult in the home knows the storage location and procedure."],
+    review: ["How much water do you actually need?", "Which part of your setup is weakest?", "What would you need to replace or practice before relying on this plan?"]
+  },
+  "garden-start-7": {
+    objective: "Grow one useful food successfully by matching the crop, light, container or bed, soil, and watering routine to your actual environment.",
+    why: "A small productive garden teaches more than a large abandoned one. One crop gives you a manageable experiment with visible feedback.",
+    before: ["Pick a crop you already eat.", "Observe the growing area for light and drainage.", "Choose a container or bed large enough for the crop's expected root system."],
+    principles: ["Match the plant to the site instead of forcing the site to behave differently.", "Consistent moisture is different from constantly wet soil.", "Change one variable at a time so you know what caused an improvement or problem."],
+    fieldNotes: ["Check soil moisture before watering instead of following a rigid clock.", "Label planting dates and varieties.", "Inspect leaves and stems regularly for pests, damage, and stress.", "Follow the seed packet or plant label for depth, spacing, and local timing."],
+    checkpoints: ["Day 1: choose crop and site.", "Day 3: confirm moisture and light are behaving as expected.", "Day 5: inspect for stress or pests.", "Day 7: decide whether the setup is sustainable for the next few weeks."],
+    review: ["What did the site teach you?", "What was harder than expected?", "Would you plant the same crop again in this exact location?"]
+  },
+  "home-ready-7": {
+    objective: "Make the home easier to operate during common disruptions by fixing weak points, locating essentials, and agreeing on a simple response plan.",
+    why: "Preparedness is most useful when it reduces confusion. A known light, known first-aid location, known documents, and a short plan are more valuable than an enormous checklist nobody remembers.",
+    before: ["Walk the home in daylight.", "Gather the locations of first aid, lights, important documents, alarms, and emergency contacts.", "Choose a simple meeting or communication plan for household members."],
+    principles: ["Fix the weakest practical point first.", "Keep critical information accessible when power or internet is unavailable.", "Everyone in the household should know the plan, not just the person who created it."],
+    fieldNotes: ["Test flashlights instead of assuming the batteries work.", "Check smoke and carbon monoxide alarms according to manufacturer guidance.", "Know how to shut off essential utilities when appropriate and safe.", "Keep copies of important information in a secure place that remains accessible during a disruption."],
+    checkpoints: ["Day 1: inspect entries and windows.", "Day 3: verify lights, alarms, and first-aid access.", "Day 5: write the one-page response plan.", "Day 7: walk through the plan with the household."],
+    review: ["Where would confusion happen first?", "What single repair or purchase would improve readiness most?", "Who still does not know where the essentials are?"]
+  },
+  "awareness-stack-7": {
+    objective: "Improve environmental awareness, movement, decision-making, and help-seeking without turning vigilance into aggression.",
+    why: "Useful awareness is quiet. It helps you notice exits, distance, lighting, people, and changes in your environment early enough to make better decisions.",
+    before: ["Choose one normal route to observe.", "Define your personal exit and help-seeking rules.", "If you want physical self-defense training, choose qualified instruction rather than learning from random clips."],
+    principles: ["Avoidance and early exit are successful outcomes.", "Awareness should increase options, not paranoia.", "Physical skill should be trained safely and progressively.", "Know the laws and emergency resources relevant to where you live."],
+    fieldNotes: ["Notice exits when entering unfamiliar places.", "Keep enough attention on your environment to notice changes around you.", "Create distance early when something feels wrong instead of waiting for certainty.", "If a situation becomes dangerous, prioritize getting to safety and contacting appropriate help."],
+    checkpoints: ["Day 1: map exits and well-lit routes.", "Day 3: practice calm distance and positioning.", "Day 5: review your personal leave and help rules.", "Day 7: repeat the route and notice what became automatic."],
+    review: ["What did you begin noticing earlier?", "Where do you become distracted?", "What skill would most improve your ability to leave safely?"]
+  },
+  "focus-block-tool": {
+    objective: "Turn one hour of intention into one hour of measurable output.",
+    why: "Focus improves when the outcome, time window, environment, and stopping point are decided before work begins.",
+    before: ["Choose one outcome that can be described in one sentence.", "Remove or silence nonessential notifications.", "Put the materials for the task within reach before the block starts."],
+    principles: ["One outcome per block.", "Protect the start time.", "Capture distractions instead of acting on them.", "End with a handoff so restarting is easy."],
+    fieldNotes: ["Use a visible timer if it helps you stay inside the block.", "When a new task appears, write it down and return to the current outcome.", "If you finish early, improve or verify the result rather than automatically opening another task.", "Record what actually moved, not what you intended to move."],
+    checkpoints: ["Start: write the outcome.", "Halfway: check whether you are still on the named task.", "End: record the result and next action.", "Weekly: compare blocks by useful output, not hours alone."],
+    review: ["What interrupted you?", "Was the outcome specific enough?", "What environmental change would make the next block easier?"]
+  },
+  "body-rebuild-28": {
+    objective: "Build a sustainable month of movement, strength work, walking, food structure, and recovery that can continue after day 28.",
+    why: "A body changes through repeated exposure and recovery. The program is designed around consistency rather than a short burst of punishment.",
+    before: ["Choose three realistic training days.", "Set a daily walking floor you can actually maintain.", "Decide how you will record sessions and basic recovery markers."],
+    principles: ["Progress gradually.", "Technique and repeatability matter more than proving how hard you can suffer.", "Recovery is part of training.", "Do not make up missed sessions by doubling the workload."],
+    fieldNotes: ["Use clean, controlled repetitions.", "Stop or modify an exercise when pain, dizziness, unusual shortness of breath, or other concerning symptoms appear.", "Keep protein and hydration consistent enough to support the routine.", "Compare performance under similar conditions when possible."],
+    checkpoints: ["Week 1: establish schedule and baseline.", "Week 2: add a small progression only if recovery is good.", "Week 3: repeat the structure and clean up technique.", "Week 4: repeat a simple benchmark and decide what continues."],
+    review: ["What improved?", "What created unnecessary fatigue?", "Which training structure can you maintain for the next three months?"]
+  },
+  "deep-work-28": {
+    objective: "Build a repeatable concentration practice that produces meaningful work instead of simply increasing screen time.",
+    why: "Deep work is a system of clear outcomes, protected time, reduced interruption, and deliberate recovery. More hours are not automatically better.",
+    before: ["Choose the work that creates the most value.", "Block the times on your calendar.", "Prepare a simple distraction capture note."],
+    principles: ["Define the result before starting.", "Protect attention instead of testing it constantly.", "Keep the environment stable long enough to learn what works.", "Measure finished work, not just time spent sitting."],
+    fieldNotes: ["Put the phone out of reach when practical.", "Close unrelated tabs and apps.", "Use short breaks between blocks instead of turning every break into a long feed session.", "End with a one-line handoff that names the next action."],
+    checkpoints: ["Week 1: prove one block five days.", "Week 2: add a second block only where useful.", "Week 3: reduce environmental friction.", "Week 4: review output and keep the schedule that produced real work."],
+    review: ["What kind of work benefits most from uninterrupted time?", "What repeatedly steals attention?", "What is the minimum weekly practice that still creates meaningful output?"]
+  },
+  "meal-plan-builder": {
+    objective: "Create a realistic seven-day food plan that reduces daily decisions, supports your goals, and produces a usable grocery list.",
+    why: "Meal planning works when it reflects how you actually eat. Repetition is a feature because it reduces cost, waste, and decision fatigue.",
+    before: ["Choose meals you already know you will eat.", "Check your pantry, refrigerator, and freezer first.", "Set a realistic grocery budget before building the list."],
+    principles: ["Build around repeatable meals.", "Shop from the plan instead of shopping from impulse.", "Leave room for one flexible meal.", "Batch the parts that save the most time."],
+    fieldNotes: ["Keep a simple protein source available.", "Use produce you can realistically finish before it spoils.", "Freeze extras when appropriate instead of letting them become waste.", "Adjust portions and ingredients to your actual needs rather than treating a sample plan as a prescription."],
+    checkpoints: ["Plan: choose meals and quantities.", "Shop: buy only what supports the plan.", "Midweek: identify what is running low or going unused.", "End: record one meal worth repeating and one worth replacing."],
+    review: ["Which meal was easiest?", "Where did waste occur?", "What should become a permanent part of your weekly rotation?"]
+  }
+};
+
 export function modulesForTier(_tier: LivvTier): VaultModule[] { return VAULT_MODULES; }
 export function lockedModules(_tier: LivvTier): VaultModule[] { return []; }
-export function moduleById(id: string): VaultModule | null { return VAULT_MODULES.find((m) => m.id === id) || null; }
+export function moduleById(id: string): (VaultModule & { guide?: VaultGuide }) | null { const mod = VAULT_MODULES.find((m) => m.id === id); return mod ? { ...mod, guide: VAULT_GUIDES[id] } : null; }
