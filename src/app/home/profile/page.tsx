@@ -152,45 +152,46 @@ export default function ProfilePage() {
         </header>
 
         <section className="you-hero">
-          <div className="you-avatar-wrap">
-            <button
-              type="button"
-              onClick={() => fileRef.current?.click()}
-              className="you-avatar-btn"
-              aria-label="Change profile photo"
-            >
-              <Avatar identity={me} size={104} fit="contain" className="you-avatar" showTierRing />
-              <span className="you-edit" aria-hidden>
-                <Pencil size={12} strokeWidth={2.2} />
-              </span>
-            </button>
-            <input
-              ref={fileRef}
-              type="file"
-              accept="image/*"
-              className="hidden"
-              onChange={(e) => void photo(e.target.files?.[0])}
-            />
-          </div>
+          <div className="you-identity">
+            <div className="you-avatar-wrap">
+              <button
+                type="button"
+                onClick={() => fileRef.current?.click()}
+                className="you-avatar-btn"
+                aria-label="Change profile photo"
+              >
+                <Avatar identity={me} size={88} fit="contain" className="you-avatar" showTierRing />
+                <span className="you-edit" aria-hidden>
+                  <Pencil size={11} strokeWidth={2.2} />
+                </span>
+              </button>
+              <input
+                ref={fileRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => void photo(e.target.files?.[0])}
+              />
+            </div>
 
-          <h1 className="you-name">{name}</h1>
-          <p className="you-handle">{handle}</p>
-          {me.bio ? <p className="you-bio">{me.bio}</p> : null}
-          {status ? (
-            <p className={"you-status" + (status.startsWith("Could") ? " is-err" : "")}>
-              {status}
-            </p>
-          ) : null}
+            <div className="you-identity-text">
+              <h1 className="you-name">{name}</h1>
+              <p className="you-handle">{handle}</p>
+              {me.bio ? <p className="you-bio">{me.bio}</p> : null}
+              {status ? (
+                <p className={"you-status" + (status.startsWith("Could") ? " is-err" : "")}>
+                  {status}
+                </p>
+              ) : null}
+            </div>
+          </div>
 
           <div className="you-evo">
             <p className="you-evo-label">Evolution</p>
             <p className="you-evo-name">{evo.name}</p>
-            <div className="you-xp-row">
-              <p className="you-evo-meta">
-                Level {rec.level} · {rec.currentXp} / {xpToNext} XP
-              </p>
-              <p className="you-xp-pct">{pct}%</p>
-            </div>
+            <p className="you-evo-meta">
+              Level {rec.level} · {rec.currentXp} / {xpToNext} XP
+            </p>
             <div
               className="you-xp-bar"
               role="progressbar"
