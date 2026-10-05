@@ -115,15 +115,9 @@ export default function HomePage() {
           <div className="hs-signal" aria-hidden>
             <div className="hs-glow" />
             <div className="hs-orbit" />
-            <div className="hs-reticle">
-              <span className="t t-n" />
-              <span className="t t-e" />
-              <span className="t t-s" />
-              <span className="t t-w" />
-            </div>
             <div className="hs-mark">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/livv-logo.png" alt="" width={64} height={64} />
+              <img src="/livv-logo.png" alt="" width={72} height={72} />
             </div>
           </div>
 
