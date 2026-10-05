@@ -46,31 +46,6 @@
   mask-image: radial-gradient(ellipse 75% 65% at 50% 42%, black, transparent 78%);
 }
 
-.hs-scan {
-  position: absolute;
-  left: 0;
-  right: 0;
-  height: 28%;
-  top: -30%;
-  pointer-events: none;
-  z-index: 1;
-  background: linear-gradient(
-    to bottom,
-    transparent,
-    color-mix(in srgb, var(--hs-accent) 7%, transparent) 45%,
-    transparent
-  );
-  animation: hs-scan 9s ease-in-out infinite;
-  opacity: 0;
-}
-.hs.awake .hs-scan {
-  opacity: 1;
-}
-@keyframes hs-scan {
-  0% { transform: translateY(0); }
-  100% { transform: translateY(320%); }
-}
-
 .hs-particles {
   position: absolute;
   inset: 0;
@@ -226,14 +201,14 @@
   background: conic-gradient(
     from 0deg,
     transparent 0deg,
-    color-mix(in srgb, var(--hs-accent) 55%, transparent) 22deg,
-    transparent 55deg,
+    color-mix(in srgb, var(--hs-accent) 32%, transparent) 16deg,
+    transparent 42deg,
     transparent 100%
   );
-  mask-image: radial-gradient(circle, transparent 46%, black 47.5%, black 49.5%, transparent 51%);
-  -webkit-mask-image: radial-gradient(circle, transparent 46%, black 47.5%, black 49.5%, transparent 51%);
-  animation: hs-orbit 7s linear infinite;
-  opacity: 0.9;
+  mask-image: radial-gradient(circle, transparent 46%, black 47.5%, black 49.2%, transparent 50.5%);
+  -webkit-mask-image: radial-gradient(circle, transparent 46%, black 47.5%, black 49.2%, transparent 50.5%);
+  animation: hs-orbit 11s linear infinite;
+  opacity: 0.45;
 }
 
 .hs-mark {
@@ -244,9 +219,22 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  animation: hs-mark-breathe 3.6s ease-in-out infinite;
+  animation: hs-mark-pulse 2.8s ease-in-out infinite;
   filter: drop-shadow(0 0 18px color-mix(in srgb, var(--hs-accent) 45%, transparent))
           drop-shadow(0 0 36px color-mix(in srgb, var(--hs-accent) 22%, transparent));
+}
+.hs-mark::before {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 100%;
+  height: 100%;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  border: 1px solid color-mix(in srgb, var(--hs-accent) 28%, transparent);
+  animation: hs-ring-pulse 2.8s ease-out infinite;
+  pointer-events: none;
 }
 .hs-mark img {
   display: block;
@@ -275,9 +263,14 @@
   0%, 100% { opacity: 0.75; transform: translate(-50%, -50%) scale(0.96); }
   50% { opacity: 1; transform: translate(-50%, -50%) scale(1.06); }
 }
-@keyframes hs-mark-breathe {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.04); }
+@keyframes hs-mark-pulse {
+  0%, 100% { transform: scale(1); filter: drop-shadow(0 0 14px color-mix(in srgb, var(--hs-accent) 35%, transparent)) drop-shadow(0 0 28px color-mix(in srgb, var(--hs-accent) 16%, transparent)); }
+  50% { transform: scale(1.05); filter: drop-shadow(0 0 22px color-mix(in srgb, var(--hs-accent) 55%, transparent)) drop-shadow(0 0 44px color-mix(in srgb, var(--hs-accent) 28%, transparent)); }
+}
+@keyframes hs-ring-pulse {
+  0% { transform: translate(-50%, -50%) scale(0.92); opacity: 0.5; }
+  70% { transform: translate(-50%, -50%) scale(1.55); opacity: 0; }
+  100% { transform: translate(-50%, -50%) scale(1.55); opacity: 0; }
 }
 
 .hs-hello {
@@ -424,8 +417,8 @@
   .hs-orbit,
   .hs-glow,
   .hs-mark,
+  .hs-mark::before,
   .hs-p,
-  .hs-scan,
   .hs-void {
     animation: none !important;
   }
@@ -434,8 +427,7 @@
   .hs-actions,
   .hs-quote,
   .hs-readouts,
-  .hs-particles,
-  .hs-scan {
+  .hs-particles {
     opacity: 1 !important;
     transform: none !important;
     transition: none !important;
