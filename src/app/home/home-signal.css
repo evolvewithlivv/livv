@@ -190,160 +190,129 @@
 
 .hs-signal {
   position: relative;
-  width: 9.5rem;
-  height: 9.5rem;
-  margin-bottom: 1.5rem;
-  display: grid;
-  place-items: center;
+  width: 10rem;
+  height: 10rem;
+  margin: 0 auto 1.35rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
-.hs-aura {
+.hs-glow {
   position: absolute;
-  inset: -18%;
+  left: 50%;
+  top: 50%;
+  width: 7.5rem;
+  height: 7.5rem;
+  transform: translate(-50%, -50%);
   border-radius: 50%;
-  background: radial-gradient(
-    circle,
-    color-mix(in srgb, var(--hs-accent) 22%, transparent) 0%,
-    color-mix(in srgb, var(--hs-accent) 8%, transparent) 42%,
-    transparent 70%
-  );
-  animation: hs-aura 4.5s ease-in-out infinite;
-  pointer-events: none;
-}
-.hs-ring {
-  position: absolute;
-  border-radius: 50%;
-  border: 1px solid color-mix(in srgb, var(--hs-ink) 10%, transparent);
-}
-.hs-ring.r0 {
-  inset: 0;
-  border-color: color-mix(in srgb, var(--hs-accent) 28%, transparent);
-  box-shadow: 0 0 24px color-mix(in srgb, var(--hs-accent) 12%, transparent);
-  animation: hs-spin 32s linear infinite;
-}
-.hs-ring.r1 {
-  inset: 14%;
-  border-top-color: color-mix(in srgb, var(--hs-accent) 75%, transparent);
-  border-right-color: color-mix(in srgb, var(--hs-accent) 30%, transparent);
-  animation: hs-spin 14s linear infinite;
-}
-.hs-ring.r2 {
-  inset: 28%;
-  border-style: dashed;
-  border-color: color-mix(in srgb, var(--hs-ink) 16%, transparent);
-  animation: hs-spin-rev 22s linear infinite;
-}
-.hs-ticks {
-  position: absolute;
-  inset: 6%;
-  border-radius: 50%;
-  background: repeating-conic-gradient(
-    from 0deg,
-    color-mix(in srgb, var(--hs-accent) 55%, transparent) 0deg 1.2deg,
-    transparent 1.2deg 30deg
-  );
-  mask-image: radial-gradient(circle, transparent 68%, black 69%, black 100%);
-  -webkit-mask-image: radial-gradient(circle, transparent 68%, black 69%, black 100%);
-  opacity: 0.55;
-  animation: hs-spin-rev 48s linear infinite;
-}
-.hs-sweep {
-  position: absolute;
-  inset: 4%;
-  border-radius: 50%;
-  opacity: 0.5;
-  mask-image: radial-gradient(circle, transparent 36%, black 38%, black 72%, transparent 74%);
-  -webkit-mask-image: radial-gradient(circle, transparent 36%, black 38%, black 72%, transparent 74%);
-}
-.hs-sweep.s1 {
-  background: conic-gradient(
-    from 0deg,
-    transparent 0deg,
-    color-mix(in srgb, var(--hs-accent) 35%, transparent) 28deg,
-    transparent 70deg
-  );
-  animation: hs-spin 4.8s linear infinite;
-}
-.hs-sweep.s2 {
-  background: conic-gradient(
-    from 180deg,
-    transparent 0deg,
-    color-mix(in srgb, var(--hs-accent) 14%, transparent) 18deg,
-    transparent 50deg
-  );
-  animation: hs-spin-rev 9s linear infinite;
-  opacity: 0.35;
-}
-.hs-pulse {
-  position: absolute;
-  inset: 32%;
-  border-radius: 50%;
-  border: 1px solid color-mix(in srgb, var(--hs-accent) 40%, transparent);
-  opacity: 0;
-  pointer-events: none;
-}
-.hs-pulse.p1 {
-  animation: hs-expand 3.2s ease-out infinite;
-}
-.hs-pulse.p2 {
-  animation: hs-expand 3.2s ease-out infinite 1.6s;
-}
-.hs-core {
-  position: relative;
-  z-index: 4;
-  width: 3.15rem;
-  height: 3.15rem;
-  border-radius: 50%;
-  display: grid;
-  place-items: center;
-  background:
-    radial-gradient(circle at 35% 28%, color-mix(in srgb, #fff 12%, transparent), transparent 55%),
-    radial-gradient(circle at 50% 50%, color-mix(in srgb, var(--hs-accent) 18%, transparent), rgb(3 4 5) 72%);
-  border: 1px solid color-mix(in srgb, var(--hs-accent) 45%, transparent);
-  box-shadow:
-    0 0 0 1px color-mix(in srgb, var(--hs-ink) 8%, transparent),
-    0 0 22px color-mix(in srgb, var(--hs-accent) 35%, transparent),
-    0 0 48px color-mix(in srgb, var(--hs-accent) 18%, transparent);
-  animation: hs-core-breathe 3.4s ease-in-out infinite;
-}
-.hs-core img {
-  width: 58%;
-  height: 58%;
-  object-fit: contain;
-  filter: brightness(0) invert(1);
-  opacity: 0.95;
-}
-.hs.is-present .hs-core {
-  border-color: color-mix(in srgb, var(--hs-accent) 70%, transparent);
-  box-shadow:
-    0 0 0 1px color-mix(in srgb, var(--hs-accent) 25%, transparent),
-    0 0 28px color-mix(in srgb, var(--hs-accent) 50%, transparent),
-    0 0 60px color-mix(in srgb, var(--hs-accent) 25%, transparent);
-}
-.hs.is-present .hs-aura {
   background: radial-gradient(
     circle,
     color-mix(in srgb, var(--hs-accent) 28%, transparent) 0%,
-    color-mix(in srgb, var(--hs-accent) 10%, transparent) 42%,
+    color-mix(in srgb, var(--hs-accent) 10%, transparent) 38%,
+    transparent 68%
+  );
+  animation: hs-glow 4s ease-in-out infinite;
+  pointer-events: none;
+}
+.hs-orbit {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 8.25rem;
+  height: 8.25rem;
+  margin: 0;
+  transform: translate(-50%, -50%);
+  border-radius: 50%;
+  background: conic-gradient(
+    from 0deg,
+    transparent 0deg,
+    color-mix(in srgb, var(--hs-accent) 70%, transparent) 18deg,
+    transparent 48deg,
+    transparent 180deg,
+    color-mix(in srgb, var(--hs-accent) 28%, transparent) 198deg,
+    transparent 230deg
+  );
+  mask-image: radial-gradient(circle, transparent 46%, black 47.5%, black 49.5%, transparent 51%);
+  -webkit-mask-image: radial-gradient(circle, transparent 46%, black 47.5%, black 49.5%, transparent 51%);
+  animation: hs-orbit 7s linear infinite;
+  opacity: 0.9;
+}
+.hs-reticle {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 8.25rem;
+  height: 8.25rem;
+  transform: translate(-50%, -50%);
+  pointer-events: none;
+}
+.hs-reticle .t {
+  position: absolute;
+  background: color-mix(in srgb, var(--hs-accent) 75%, transparent);
+  border-radius: 1px;
+  box-shadow: 0 0 8px color-mix(in srgb, var(--hs-accent) 40%, transparent);
+}
+.hs-reticle .t-n,
+.hs-reticle .t-s {
+  left: 50%;
+  width: 2px;
+  height: 10px;
+  transform: translateX(-50%);
+}
+.hs-reticle .t-n { top: 0; }
+.hs-reticle .t-s { bottom: 0; }
+.hs-reticle .t-e,
+.hs-reticle .t-w {
+  top: 50%;
+  width: 10px;
+  height: 2px;
+  transform: translateY(-50%);
+}
+.hs-reticle .t-e { right: 0; }
+.hs-reticle .t-w { left: 0; }
+
+.hs-mark {
+  position: relative;
+  z-index: 5;
+  width: 4.25rem;
+  height: 4.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  animation: hs-mark-breathe 3.6s ease-in-out infinite;
+  filter: drop-shadow(0 0 18px color-mix(in srgb, var(--hs-accent) 45%, transparent))
+          drop-shadow(0 0 36px color-mix(in srgb, var(--hs-accent) 22%, transparent));
+}
+.hs-mark img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  object-position: center;
+  opacity: 1;
+}
+.hs.is-present .hs-glow {
+  background: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--hs-accent) 36%, transparent) 0%,
+    color-mix(in srgb, var(--hs-accent) 14%, transparent) 40%,
     transparent 70%
   );
 }
-@keyframes hs-spin {
-  to { transform: rotate(360deg); }
+.hs.is-present .hs-mark {
+  filter: drop-shadow(0 0 22px color-mix(in srgb, var(--hs-accent) 60%, transparent))
+          drop-shadow(0 0 48px color-mix(in srgb, var(--hs-accent) 30%, transparent));
 }
-@keyframes hs-spin-rev {
-  to { transform: rotate(-360deg); }
+@keyframes hs-orbit {
+  to { transform: translate(-50%, -50%) rotate(360deg); }
 }
-@keyframes hs-aura {
-  0%, 100% { transform: scale(0.96); opacity: 0.7; }
-  50% { transform: scale(1.05); opacity: 1; }
+@keyframes hs-glow {
+  0%, 100% { opacity: 0.75; transform: translate(-50%, -50%) scale(0.96); }
+  50% { opacity: 1; transform: translate(-50%, -50%) scale(1.06); }
 }
-@keyframes hs-core-breathe {
-  0%, 100% { transform: scale(0.97); }
+@keyframes hs-mark-breathe {
+  0%, 100% { transform: scale(1); }
   50% { transform: scale(1.04); }
-}
-@keyframes hs-expand {
-  0% { transform: scale(0.85); opacity: 0.55; }
-  100% { transform: scale(2.1); opacity: 0; }
 }
 
 .hs-hello {
@@ -487,12 +456,9 @@
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .hs-ring,
-  .hs-sweep,
-  .hs-core,
-  .hs-aura,
-  .hs-ticks,
-  .hs-pulse,
+  .hs-orbit,
+  .hs-glow,
+  .hs-mark,
   .hs-p,
   .hs-scan,
   .hs-void {
