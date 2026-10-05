@@ -34,12 +34,13 @@ const config: CapacitorConfig = {
       splashImmersive: true,
     },
     StatusBar: {
-      style: 'DARK',
-      backgroundColor: '#030405',
+      style: 'LIGHT',
+      backgroundColor: '#00000000',
+      overlaysWebView: true,
     },
   },
   ios: {
-    contentInset: 'automatic',
+    contentInset: 'never',
     preferredContentMode: 'mobile',
     scheme: 'LIVV',
   },
