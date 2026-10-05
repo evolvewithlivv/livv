@@ -93,7 +93,6 @@ export default function HomePage() {
     >
       <div className="hs-void" aria-hidden />
       <div className="hs-grid" aria-hidden />
-      <div className="hs-scan" aria-hidden />
       <div className="hs-particles" aria-hidden>
         {Array.from({ length: 22 }).map((_, i) => (
           <span key={i} className={"hs-p p" + i} />
