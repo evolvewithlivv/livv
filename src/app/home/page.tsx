@@ -113,18 +113,17 @@ export default function HomePage() {
 
         <section className="hs-hero">
           <div className="hs-signal" aria-hidden>
-            <div className="hs-aura" />
-            <div className="hs-ring r0" />
-            <div className="hs-ring r1" />
-            <div className="hs-ring r2" />
-            <div className="hs-ticks" />
-            <div className="hs-sweep s1" />
-            <div className="hs-sweep s2" />
-            <div className="hs-pulse p1" />
-            <div className="hs-pulse p2" />
-            <div className="hs-core">
+            <div className="hs-glow" />
+            <div className="hs-orbit" />
+            <div className="hs-reticle">
+              <span className="t t-n" />
+              <span className="t t-e" />
+              <span className="t t-s" />
+              <span className="t t-w" />
+            </div>
+            <div className="hs-mark">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/livv-logo.png" alt="" width={36} height={36} />
+              <img src="/livv-logo.png" alt="" width={64} height={64} />
             </div>
           </div>
 
