@@ -226,56 +226,21 @@
   background: conic-gradient(
     from 0deg,
     transparent 0deg,
-    color-mix(in srgb, var(--hs-accent) 70%, transparent) 18deg,
-    transparent 48deg,
-    transparent 180deg,
-    color-mix(in srgb, var(--hs-accent) 28%, transparent) 198deg,
-    transparent 230deg
+    color-mix(in srgb, var(--hs-accent) 55%, transparent) 22deg,
+    transparent 55deg,
+    transparent 100%
   );
   mask-image: radial-gradient(circle, transparent 46%, black 47.5%, black 49.5%, transparent 51%);
   -webkit-mask-image: radial-gradient(circle, transparent 46%, black 47.5%, black 49.5%, transparent 51%);
   animation: hs-orbit 7s linear infinite;
   opacity: 0.9;
 }
-.hs-reticle {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 8.25rem;
-  height: 8.25rem;
-  transform: translate(-50%, -50%);
-  pointer-events: none;
-}
-.hs-reticle .t {
-  position: absolute;
-  background: color-mix(in srgb, var(--hs-accent) 75%, transparent);
-  border-radius: 1px;
-  box-shadow: 0 0 8px color-mix(in srgb, var(--hs-accent) 40%, transparent);
-}
-.hs-reticle .t-n,
-.hs-reticle .t-s {
-  left: 50%;
-  width: 2px;
-  height: 10px;
-  transform: translateX(-50%);
-}
-.hs-reticle .t-n { top: 0; }
-.hs-reticle .t-s { bottom: 0; }
-.hs-reticle .t-e,
-.hs-reticle .t-w {
-  top: 50%;
-  width: 10px;
-  height: 2px;
-  transform: translateY(-50%);
-}
-.hs-reticle .t-e { right: 0; }
-.hs-reticle .t-w { left: 0; }
 
 .hs-mark {
   position: relative;
   z-index: 5;
-  width: 4.25rem;
-  height: 4.25rem;
+  width: 4.75rem;
+  height: 4.75rem;
   display: flex;
   align-items: center;
   justify-content: center;
