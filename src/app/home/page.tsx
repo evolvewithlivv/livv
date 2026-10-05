@@ -30,6 +30,7 @@ export default function HomePage() {
   const [me, setMe] = useState<Identity | null>(null);
   const [quote, setQuote] = useState<Quote | null>(null);
   const [awake, setAwake] = useState(false);
+  const [now, setNow] = useState(() => new Date());
 
   const pull = () => {
     setRec(loadRecord());
@@ -43,9 +44,11 @@ export default function HomePage() {
     const events = ["livv-identity", "livv-record", "livv-daily"];
     events.forEach((e) => window.addEventListener(e, pull));
     const t = window.setTimeout(() => setAwake(true), 120);
+    const clock = window.setInterval(() => setNow(new Date()), 30_000);
     return () => {
       events.forEach((e) => window.removeEventListener(e, pull));
       window.clearTimeout(t);
+      window.clearInterval(clock);
     };
   }, []);
 
@@ -55,13 +58,19 @@ export default function HomePage() {
 
   const checkedIn = isCheckedInToday(rec);
   const name = displayName(me);
-  const hello = greetingForHour(new Date().getHours());
+  const hello = greetingForHour(now.getHours());
   const dateLabel = new Intl.DateTimeFormat("en-US", {
     weekday: "long",
     month: "long",
     day: "numeric",
-  }).format(new Date());
+  }).format(now);
+  const timeLabel = new Intl.DateTimeFormat("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+  }).format(now);
   const streak = rec.streak || 0;
+  const embers = me.embers || 0;
+  const sessions = rec.workoutsCompleted || 0;
 
   const checkIn = () => {
     if (checkedIn) return;
@@ -78,25 +87,36 @@ export default function HomePage() {
   };
 
   return (
-    <main className={"hs" + (awake ? " awake" : "")} aria-label="LIVV Home">
+    <main
+      className={"hs" + (awake ? " awake" : "") + (checkedIn ? " is-present" : "")}
+      aria-label="LIVV Home"
+    >
       <div className="hs-void" aria-hidden />
       <div className="hs-grid" aria-hidden />
+      <div className="hs-scan" aria-hidden />
       <div className="hs-particles" aria-hidden>
-        {Array.from({ length: 14 }).map((_, i) => (
+        {Array.from({ length: 22 }).map((_, i) => (
           <span key={i} className={"hs-p p" + i} />
         ))}
       </div>
 
       <div className="hs-inner">
         <header className="hs-top">
-          <p className="hs-date">{dateLabel}</p>
-          <p className="hs-status">{checkedIn ? "PRESENT" : "AWAITING"}</p>
+          <div className="hs-top-left">
+            <p className="hs-date">{dateLabel}</p>
+            <p className="hs-time">{timeLabel}</p>
+          </div>
+          <p className={"hs-status" + (checkedIn ? " on" : "")}>
+            {checkedIn ? "PRESENT" : "AWAITING"}
+          </p>
         </header>
 
         <section className="hs-hero">
           <div className="hs-signal" aria-hidden>
+            <div className="hs-ring r0" />
             <div className="hs-ring r1" />
             <div className="hs-ring r2" />
+            <div className="hs-sweep" />
             <div className="hs-core" />
           </div>
 
@@ -109,6 +129,23 @@ export default function HomePage() {
                 : "You showed up today."
               : "One check-in. Mark the day."}
           </p>
+        </section>
+
+        <section className="hs-readouts" aria-label="Presence">
+          <div className="hs-read">
+            <p className="hs-read-v">{streak}</p>
+            <p className="hs-read-l">Streak</p>
+          </div>
+          <div className="hs-read-div" aria-hidden />
+          <div className="hs-read">
+            <p className="hs-read-v">{embers.toLocaleString()}</p>
+            <p className="hs-read-l">Embers</p>
+          </div>
+          <div className="hs-read-div" aria-hidden />
+          <div className="hs-read">
+            <p className="hs-read-v">{sessions}</p>
+            <p className="hs-read-l">Sessions</p>
+          </div>
         </section>
 
         <section className="hs-actions">
