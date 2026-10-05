@@ -190,65 +190,142 @@
 
 .hs-signal {
   position: relative;
-  width: 7.5rem;
-  height: 7.5rem;
-  margin-bottom: 1.65rem;
+  width: 9.5rem;
+  height: 9.5rem;
+  margin-bottom: 1.5rem;
   display: grid;
   place-items: center;
+}
+.hs-aura {
+  position: absolute;
+  inset: -18%;
+  border-radius: 50%;
+  background: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--hs-accent) 22%, transparent) 0%,
+    color-mix(in srgb, var(--hs-accent) 8%, transparent) 42%,
+    transparent 70%
+  );
+  animation: hs-aura 4.5s ease-in-out infinite;
+  pointer-events: none;
 }
 .hs-ring {
   position: absolute;
   border-radius: 50%;
-  border: 1px solid color-mix(in srgb, var(--hs-ink) 12%, transparent);
+  border: 1px solid color-mix(in srgb, var(--hs-ink) 10%, transparent);
 }
 .hs-ring.r0 {
-  inset: -12%;
-  border-color: color-mix(in srgb, var(--hs-accent) 18%, transparent);
-  animation: hs-spin 28s linear infinite;
-  opacity: 0.55;
+  inset: 0;
+  border-color: color-mix(in srgb, var(--hs-accent) 28%, transparent);
+  box-shadow: 0 0 24px color-mix(in srgb, var(--hs-accent) 12%, transparent);
+  animation: hs-spin 32s linear infinite;
 }
 .hs-ring.r1 {
-  inset: 0;
-  border-top-color: color-mix(in srgb, var(--hs-accent) 70%, transparent);
-  border-right-color: color-mix(in srgb, var(--hs-accent) 25%, transparent);
+  inset: 14%;
+  border-top-color: color-mix(in srgb, var(--hs-accent) 75%, transparent);
+  border-right-color: color-mix(in srgb, var(--hs-accent) 30%, transparent);
   animation: hs-spin 14s linear infinite;
-  box-shadow: 0 0 20px color-mix(in srgb, var(--hs-accent) 12%, transparent);
 }
 .hs-ring.r2 {
-  inset: 22%;
+  inset: 28%;
   border-style: dashed;
-  border-color: color-mix(in srgb, var(--hs-ink) 14%, transparent);
-  animation: hs-spin-rev 18s linear infinite;
+  border-color: color-mix(in srgb, var(--hs-ink) 16%, transparent);
+  animation: hs-spin-rev 22s linear infinite;
 }
-.hs-sweep {
+.hs-ticks {
   position: absolute;
   inset: 6%;
   border-radius: 50%;
+  background: repeating-conic-gradient(
+    from 0deg,
+    color-mix(in srgb, var(--hs-accent) 55%, transparent) 0deg 1.2deg,
+    transparent 1.2deg 30deg
+  );
+  mask-image: radial-gradient(circle, transparent 68%, black 69%, black 100%);
+  -webkit-mask-image: radial-gradient(circle, transparent 68%, black 69%, black 100%);
+  opacity: 0.55;
+  animation: hs-spin-rev 48s linear infinite;
+}
+.hs-sweep {
+  position: absolute;
+  inset: 4%;
+  border-radius: 50%;
+  opacity: 0.5;
+  mask-image: radial-gradient(circle, transparent 36%, black 38%, black 72%, transparent 74%);
+  -webkit-mask-image: radial-gradient(circle, transparent 36%, black 38%, black 72%, transparent 74%);
+}
+.hs-sweep.s1 {
   background: conic-gradient(
     from 0deg,
     transparent 0deg,
-    color-mix(in srgb, var(--hs-accent) 22%, transparent) 40deg,
-    transparent 90deg
+    color-mix(in srgb, var(--hs-accent) 35%, transparent) 28deg,
+    transparent 70deg
   );
-  animation: hs-spin 5.5s linear infinite;
-  opacity: 0.55;
-  mask-image: radial-gradient(circle, transparent 42%, black 44%, black 70%, transparent 72%);
+  animation: hs-spin 4.8s linear infinite;
+}
+.hs-sweep.s2 {
+  background: conic-gradient(
+    from 180deg,
+    transparent 0deg,
+    color-mix(in srgb, var(--hs-accent) 14%, transparent) 18deg,
+    transparent 50deg
+  );
+  animation: hs-spin-rev 9s linear infinite;
+  opacity: 0.35;
+}
+.hs-pulse {
+  position: absolute;
+  inset: 32%;
+  border-radius: 50%;
+  border: 1px solid color-mix(in srgb, var(--hs-accent) 40%, transparent);
+  opacity: 0;
+  pointer-events: none;
+}
+.hs-pulse.p1 {
+  animation: hs-expand 3.2s ease-out infinite;
+}
+.hs-pulse.p2 {
+  animation: hs-expand 3.2s ease-out infinite 1.6s;
 }
 .hs-core {
-  width: 22%;
-  aspect-ratio: 1;
+  position: relative;
+  z-index: 4;
+  width: 3.15rem;
+  height: 3.15rem;
   border-radius: 50%;
-  background: color-mix(in srgb, var(--hs-accent) 55%, var(--hs-ink));
+  display: grid;
+  place-items: center;
+  background:
+    radial-gradient(circle at 35% 28%, color-mix(in srgb, #fff 12%, transparent), transparent 55%),
+    radial-gradient(circle at 50% 50%, color-mix(in srgb, var(--hs-accent) 18%, transparent), rgb(3 4 5) 72%);
+  border: 1px solid color-mix(in srgb, var(--hs-accent) 45%, transparent);
   box-shadow:
-    0 0 20px color-mix(in srgb, var(--hs-accent) 40%, transparent),
-    0 0 48px color-mix(in srgb, var(--hs-accent) 22%, transparent);
-  animation: hs-pulse 2.8s ease-in-out infinite;
+    0 0 0 1px color-mix(in srgb, var(--hs-ink) 8%, transparent),
+    0 0 22px color-mix(in srgb, var(--hs-accent) 35%, transparent),
+    0 0 48px color-mix(in srgb, var(--hs-accent) 18%, transparent);
+  animation: hs-core-breathe 3.4s ease-in-out infinite;
+}
+.hs-core img {
+  width: 58%;
+  height: 58%;
+  object-fit: contain;
+  filter: brightness(0) invert(1);
+  opacity: 0.95;
 }
 .hs.is-present .hs-core {
-  background: var(--hs-accent);
+  border-color: color-mix(in srgb, var(--hs-accent) 70%, transparent);
   box-shadow:
-    0 0 24px color-mix(in srgb, var(--hs-accent) 55%, transparent),
-    0 0 60px color-mix(in srgb, var(--hs-accent) 28%, transparent);
+    0 0 0 1px color-mix(in srgb, var(--hs-accent) 25%, transparent),
+    0 0 28px color-mix(in srgb, var(--hs-accent) 50%, transparent),
+    0 0 60px color-mix(in srgb, var(--hs-accent) 25%, transparent);
+}
+.hs.is-present .hs-aura {
+  background: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--hs-accent) 28%, transparent) 0%,
+    color-mix(in srgb, var(--hs-accent) 10%, transparent) 42%,
+    transparent 70%
+  );
 }
 @keyframes hs-spin {
   to { transform: rotate(360deg); }
@@ -256,9 +333,17 @@
 @keyframes hs-spin-rev {
   to { transform: rotate(-360deg); }
 }
-@keyframes hs-pulse {
-  0%, 100% { transform: scale(0.9); opacity: 0.75; }
-  50% { transform: scale(1.12); opacity: 1; }
+@keyframes hs-aura {
+  0%, 100% { transform: scale(0.96); opacity: 0.7; }
+  50% { transform: scale(1.05); opacity: 1; }
+}
+@keyframes hs-core-breathe {
+  0%, 100% { transform: scale(0.97); }
+  50% { transform: scale(1.04); }
+}
+@keyframes hs-expand {
+  0% { transform: scale(0.85); opacity: 0.55; }
+  100% { transform: scale(2.1); opacity: 0; }
 }
 
 .hs-hello {
@@ -405,6 +490,9 @@
   .hs-ring,
   .hs-sweep,
   .hs-core,
+  .hs-aura,
+  .hs-ticks,
+  .hs-pulse,
   .hs-p,
   .hs-scan,
   .hs-void {
