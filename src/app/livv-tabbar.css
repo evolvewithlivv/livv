@@ -180,3 +180,21 @@ html[data-theme="light"] .livv-tabbar .livv-tab.is-active {
   border: 0 !important;
   box-shadow: none !important;
 }
+
+/* ------------------------------------------------------------------ */
+/* Full-bleed under iOS status bar / home indicator (Instagram-style) */
+/* Shell has no top inset; main content owns safe-area padding.       */
+/* ------------------------------------------------------------------ */
+.livv-app-shell {
+  background-color: var(--livv-bg, #030405);
+}
+
+.livv-app-shell main {
+  /* Readable content clears the notch / Dynamic Island */
+  padding-top: max(0.5rem, env(safe-area-inset-top, 0px));
+}
+
+.livv-tabbar.livv-glass-dock {
+  padding-left: env(safe-area-inset-left, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
+}
