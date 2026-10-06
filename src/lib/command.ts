@@ -1,3 +1,4 @@
+import { loadIdentity } from "./identity";
 import { isCheckedInToday, loadRecord, todaysObjectives } from "./record";
 import { dayKey } from "./dates";
 
@@ -5,12 +6,12 @@ export type Move = { title: string; reason: string; cta: string; href: string; p
 export type DayPillar = { id: string; name: string; done: boolean };
 
 export function contextGreeting(now = new Date(), rec = loadRecord()) {
-  const me = require("./identity").loadIdentity();
+  const me = loadIdentity();
   const first = (me.displayName || "there").split(" ")[0];
   const hour = now.getHours();
   const checked = isCheckedInToday(rec);
   const objs = todaysObjectives(rec);
-  const done = objs.filter((o: { completed: boolean }) => o.completed).length;
+  const done = objs.filter((o) => o.completed).length;
   let salutation = `Hey, ${first}`;
   if (hour < 5) salutation = `Still up, ${first}`;
   else if (hour < 12) salutation = `Morning, ${first}`;

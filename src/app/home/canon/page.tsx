@@ -3,10 +3,11 @@
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 
-export default function CanonRedirect() {
+/** Legacy Canon route — V1 routes Mind work through Daily. */
+export default function CanonRedirectPage() {
   const router = useRouter();
   useEffect(() => {
-    router.replace("/home/mind");
+    router.replace("/home/daily");
   }, [router]);
-  return <main className="min-h-dvh bg-[#050505]" />;
+  return null;
 }
