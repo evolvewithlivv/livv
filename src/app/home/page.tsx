@@ -5,10 +5,10 @@ import Link from "next/link";
 import { loadIdentity, addEmbers, type Identity } from "@/lib/identity";
 import { checkInRecord, isCheckedInToday, loadRecord, type LivvRecord } from "@/lib/record";
 import { feedback } from "@/lib/sensory";
-import { dailySummary } from "@/lib/daily";
+import { dailySummary, dailyQuestion } from "@/lib/daily";
 import { quoteForSession, type Quote } from "@/lib/quotes";
 import { embersFromAction } from "@/lib/embers";
-import { nextMove, focusCard, type Move } from "@/lib/command";
+import { nextMove, type Move } from "@/lib/command";
 import "./home-signal.css";
 
 function greetingForHour(hour: number): string {
@@ -32,7 +32,7 @@ export default function HomePage() {
   const [me, setMe] = useState<Identity | null>(null);
   const [quote, setQuote] = useState<Quote | null>(null);
   const [move, setMove] = useState<Move | null>(null);
-  const [focus, setFocus] = useState<{ theme: string; principle: string; detail: string } | null>(null);
+  const [question, setQuestion] = useState("");
   const [now, setNow] = useState(() => new Date());
 
   const pull = () => {
@@ -40,7 +40,7 @@ export default function HomePage() {
     setRec(r);
     setMe(loadIdentity());
     setMove(nextMove(r));
-    setFocus(focusCard(new Date()));
+    setQuestion(dailyQuestion(new Date()));
     dailySummary();
   };
 
@@ -175,14 +175,14 @@ export default function HomePage() {
           </section>
         ) : null}
 
-        {focus ? (
-          <section className="hs-panel hs-panel-soft" aria-label="Today focus">
-            <p className="hs-panel-kicker">Today</p>
-            <p className="hs-panel-title">{focus.theme}</p>
-            <p className="hs-panel-body">{focus.principle}</p>
-            {focus.detail ? (
-              <p className="hs-panel-detail">{focus.detail}</p>
-            ) : null}
+        {question ? (
+          <section className="hs-panel hs-panel-soft" aria-label="Today's reflection">
+            <p className="hs-panel-kicker">Reflect</p>
+            <p className="hs-panel-title">{question}</p>
+            <Link href="/home/daily" className="hs-panel-cta">
+              <span>Open Daily</span>
+              <span aria-hidden>→</span>
+            </Link>
           </section>
         ) : null}
 
