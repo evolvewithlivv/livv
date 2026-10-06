@@ -1,0 +1,130 @@
+.ed-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  min-height: 2.5rem;
+}
+.ed-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  font-size: 12px;
+  font-weight: 650;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgb(var(--livv-muted));
+  text-decoration: none;
+}
+.ed-save {
+  min-height: 2.35rem;
+  padding: 0 1rem;
+  border: 0;
+  border-radius: 999px;
+  background: rgb(var(--livv-ink));
+  color: var(--livv-bg);
+  font-size: 13px;
+  font-weight: 650;
+  cursor: pointer;
+}
+.ed-save:disabled { opacity: 0.45; }
+.ed-title {
+  margin: 1.25rem 0 0;
+  font-family: var(--font-display), var(--font-body), system-ui, sans-serif;
+  font-size: 1.75rem;
+  font-weight: 600;
+  letter-spacing: -0.04em;
+}
+.ed-photo {
+  margin-top: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+.ed-photo-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.55rem;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  padding: 0;
+  cursor: pointer;
+  text-align: left;
+}
+.ed-photo-label {
+  font-size: 13px;
+  font-weight: 650;
+  color: rgb(var(--livv-accent));
+}
+.ed-remove {
+  border: 0;
+  background: transparent;
+  color: rgb(var(--livv-muted));
+  font-size: 12px;
+  font-weight: 600;
+  padding: 0;
+  cursor: pointer;
+}
+.ed-fields {
+  margin-top: 1.25rem;
+  border-top: 1px solid rgb(var(--livv-border));
+}
+.ed-field {
+  display: block;
+  padding: 1rem 0;
+  border-bottom: 1px solid rgb(var(--livv-border));
+}
+.ed-field > span {
+  display: block;
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: rgb(var(--livv-muted));
+}
+.ed-field input,
+.ed-field textarea {
+  margin-top: 0.45rem;
+  width: 100%;
+  border: 0;
+  outline: none;
+  background: transparent;
+  color: rgb(var(--livv-ink));
+  font-size: 1.05rem;
+  font-weight: 500;
+  letter-spacing: -0.015em;
+  resize: vertical;
+}
+.ed-field input:disabled {
+  opacity: 0.55;
+}
+.ed-hint {
+  display: block;
+  margin-top: 0.35rem;
+  font-size: 11px;
+  font-style: normal;
+  color: rgb(var(--livv-muted));
+}
+.ed-error {
+  margin: 1rem 0 0;
+  font-size: 0.9rem;
+  color: #ff6b6b;
+}
+.ed-status {
+  margin: 1rem 0 0;
+  font-size: 0.9rem;
+  color: rgb(var(--livv-accent));
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
