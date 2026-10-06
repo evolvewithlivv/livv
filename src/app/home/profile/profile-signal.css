@@ -42,8 +42,11 @@
 
 .you-id {
   padding: 1.35rem 0 0.25rem;
-  text-align: left;
+  text-align: center;
 }
+.you-photo-wrap { margin: 0 auto; }
+.you-bio { margin-left:auto; margin-right:auto; }
+.you-edit { margin-left:auto; margin-right:auto; }
 .you-photo-wrap {
   width: 5.5rem;
   height: 5.5rem;
@@ -182,3 +185,8 @@
   color: var(--muted);
   flex-shrink: 0;
 }
+
+.you-account-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.you-account-grid .you-link{min-height:8.2rem;padding:1rem;border:1px solid color-mix(in srgb,var(--line) 75%,transparent);border-radius:18px;background:color-mix(in srgb,var(--ink) 2.5%,transparent);align-items:flex-start}
+.you-account-grid .you-link:last-child{border-bottom:1px solid color-mix(in srgb,var(--line) 75%,transparent)}
+.you-account-grid .you-link>div{min-width:0}.you-account-grid .you-link-v{margin-left:auto}.you-account-grid .you-chev{margin-left:auto}
