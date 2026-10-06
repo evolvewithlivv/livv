@@ -44,6 +44,13 @@ export default function RecipesPage() {
             <p className="hsys-sub">{selected.blurb}</p>
             <div className="hsys-recipe-meta"><span><Clock3 size={10} /> {selected.time} min</span><span>{selected.servings}</span><span>{selected.tag}</span></div>
           </header>
+        <nav className="hsys-nav" aria-label="Health systems">
+          <Link href="/home/health/sleep" aria-current="">Sleep</Link>
+          <Link href="/home/health/meditation">Mind</Link>
+          <Link href="/home/health/recipes" aria-current="page">Food</Link>
+          <Link href="/home/health/trails">Move</Link>
+          <Link href="/home/health/dictionary">Knowledge</Link>
+        </nav>
           <section className="hsys-section"><p className="hsys-label">Ingredients</p><div className="hsys-list">{selected.ingredients.map((ing) => <div key={ing} className="hsys-item"><p className="hsys-item-t" style={{ fontWeight: 500 }}>{ing}</p></div>)}</div></section>
           <section className="hsys-section"><p className="hsys-label">Method</p><div className="hsys-list">{selected.steps.map((step, i) => <div key={step} className="hsys-item"><div><p className="hsys-item-t">{String(i + 1).padStart(2, "0")}</p><p className="hsys-item-s">{step}</p></div></div>)}</div></section>
           <button type="button" className="hsys-btn ghost" onClick={() => toggleSave(selected.id)}><Bookmark size={12} style={{ verticalAlign: -2, marginRight: 5 }} />{saved.includes(selected.id) ? "Saved to kitchen" : "Save to kitchen"}</button>
