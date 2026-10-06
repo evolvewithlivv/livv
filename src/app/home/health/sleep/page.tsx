@@ -67,6 +67,13 @@ export default function SleepPage() {
             <div><strong>{avgQ || "00"}</strong><span>Quality · / 5</span></div>
           </div>
         </header>
+        <nav className="hsys-nav" aria-label="Health systems">
+          <Link href="/home/health/sleep" aria-current="page" aria-current="">Sleep</Link>
+          <Link href="/home/health/meditation">Mind</Link>
+          <Link href="/home/health/recipes">Food</Link>
+          <Link href="/home/health/trails">Move</Link>
+          <Link href="/home/health/dictionary">Knowledge</Link>
+        </nav>
 
         <section className="hsys-section">
           <p className="hsys-label">Log the night</p>
