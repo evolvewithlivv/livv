@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { ChevronLeft, Plus } from "lucide-react";
 import { feedback } from "@/lib/sensory";
+import { blankDay, loadHealthDays, todayKey, upsertHealthDay } from "@/lib/health";
 import "../health-systems.css";
 
 const KEY = "livv-sleep-v2";
@@ -47,6 +48,10 @@ export default function SleepPage() {
     const next = [...entries.filter((e) => e.date !== localDate()), { date: localDate(), bedtime, wake, quality, note: note.trim() }].slice(-90);
     setEntries(next);
     localStorage.setItem(KEY, JSON.stringify(next));
+    const date = todayKey();
+    const history = loadHealthDays();
+    const base = history.find((d) => d.date === date) ?? blankDay(date);
+    upsertHealthDay({ ...base, sleep: duration(bedtime, wake) }, history);
     setBedtime("");
     setWake("");
     setNote("");
