@@ -1,0 +1,159 @@
+/* Embers — balance first, rules quiet */
+.em {
+  --ink: rgb(var(--livv-ink));
+  --bg: var(--livv-bg);
+  --muted: rgb(var(--livv-muted));
+  --line: rgb(var(--livv-border));
+  --accent: rgb(var(--livv-accent));
+  min-height: calc(100dvh - 5.75rem);
+  color: var(--ink);
+}
+
+.em-inner {
+  max-width: 26rem;
+  margin: 0 auto;
+  padding: 0.85rem 1.35rem max(2.75rem, calc(5.5rem + env(safe-area-inset-bottom, 0px)));
+}
+
+.em-top {
+  display: flex;
+  align-items: center;
+  min-height: 2.25rem;
+}
+
+.em-back {
+  font-size: 12px;
+  font-weight: 650;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-decoration: none;
+  min-height: 44px;
+  display: inline-flex;
+  align-items: center;
+}
+.em-back:active {
+  opacity: 0.7;
+}
+
+.em-hero {
+  padding: 1.75rem 0 0.25rem;
+  text-align: center;
+}
+
+.em-k {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.em-balance {
+  margin: 0.45rem 0 0;
+  font-family: var(--font-display), var(--font-body), system-ui, sans-serif;
+  font-size: clamp(3.25rem, 14vw, 4rem);
+  font-weight: 600;
+  letter-spacing: -0.05em;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.em-value {
+  margin: 0.65rem 0 0;
+  font-size: 0.95rem;
+  color: var(--muted);
+  letter-spacing: -0.01em;
+}
+
+.em-progress {
+  margin-top: 2rem;
+}
+
+.em-progress-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--muted);
+  letter-spacing: 0.01em;
+}
+
+.em-track {
+  margin-top: 0.55rem;
+  height: 3px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--line) 80%, transparent);
+  overflow: hidden;
+}
+
+.em-fill {
+  height: 100%;
+  border-radius: 999px;
+  background: var(--ink);
+  transition: width 0.35s ease;
+}
+
+.em-progress-note {
+  margin: 0.55rem 0 0;
+  font-size: 0.85rem;
+  color: color-mix(in srgb, var(--muted) 85%, transparent);
+  line-height: 1.4;
+}
+
+.em-rules {
+  margin-top: 2.25rem;
+}
+
+.em-rules .em-k {
+  margin-bottom: 0.35rem;
+}
+
+.em-rule {
+  padding: 1rem 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--line) 70%, transparent);
+}
+
+.em-rule:first-of-type {
+  border-top: 1px solid color-mix(in srgb, var(--line) 70%, transparent);
+}
+
+.em-rule-t {
+  margin: 0;
+  font-size: 1.02rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+
+.em-rule-s {
+  margin: 0.3rem 0 0;
+  font-size: 0.9rem;
+  line-height: 1.45;
+  color: var(--muted);
+  max-width: 36ch;
+}
+
+.em-cta {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 3.15rem;
+  margin-top: 2rem;
+  border-radius: 14px;
+  background: rgb(var(--livv-ink));
+  color: var(--livv-bg);
+  font-size: 15px;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+  text-decoration: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.em-cta:active {
+  opacity: 0.88;
+  transform: scale(0.985);
+}
