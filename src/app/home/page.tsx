@@ -9,6 +9,7 @@ import { dailySummary, dailyQuestion } from "@/lib/daily";
 import { quoteForSession, type Quote } from "@/lib/quotes";
 import { embersFromAction } from "@/lib/embers";
 import { nextMove, type Move } from "@/lib/command";
+import { consumeFirstSessionPending } from "@/lib/onboarding";
 import "./home-signal.css";
 
 function greetingForHour(hour: number): string {
@@ -27,11 +28,12 @@ function displayName(me: Identity): string {
   return "there";
 }
 
-function presenceLine(checkedIn: boolean, streak: number): string {
+function presenceLine(checkedIn: boolean, streak: number, firstSession: boolean): string {
   if (checkedIn) {
     if (streak > 1) return `${streak} days present.`;
     return "You showed up today.";
   }
+  if (firstSession) return "Start here. Mark today, then open Daily.";
   if (streak > 0) return `${streak}-day streak. Mark today.`;
   return "Mark the day.";
 }
@@ -43,6 +45,7 @@ export default function HomePage() {
   const [move, setMove] = useState<Move | null>(null);
   const [question, setQuestion] = useState("");
   const [now, setNow] = useState(() => new Date());
+  const [firstSession, setFirstSession] = useState(false);
 
   const pull = () => {
     const r = loadRecord();
@@ -56,6 +59,7 @@ export default function HomePage() {
   useEffect(() => {
     pull();
     setQuote(quoteForSession());
+    if (consumeFirstSessionPending()) setFirstSession(true);
     const events = ["livv-identity", "livv-record", "livv-daily"];
     events.forEach((e) => window.addEventListener(e, pull));
     const clock = window.setInterval(() => setNow(new Date()), 30_000);
@@ -121,7 +125,7 @@ export default function HomePage() {
         <section className="ho-today">
           <p className="ho-hello">{hello}</p>
           <h1 className="ho-name">{name}</h1>
-          <p className="ho-presence">{presenceLine(checkedIn, streak)}</p>
+          <p className="ho-presence">{presenceLine(checkedIn, streak, firstSession)}</p>
 
           {showCheckIn ? (
             <button type="button" className="ho-primary" onClick={checkIn}>
