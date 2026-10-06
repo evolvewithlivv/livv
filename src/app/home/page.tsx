@@ -106,7 +106,7 @@ export default function HomePage() {
           <div className="hs-signal" aria-hidden>
             <div className="hs-mark">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/livv-logo.png" alt="" width={72} height={72} />
+              <img src="/livv-logo.png" alt="" width={360} height={360} />
             </div>
           </div>
 
