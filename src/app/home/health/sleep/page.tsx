@@ -68,7 +68,7 @@ export default function SleepPage() {
           </div>
         </header>
         <nav className="hsys-nav" aria-label="Health systems">
-          <Link href="/home/health/sleep" aria-current="page" aria-current="">Sleep</Link>
+          <Link href="/home/health/sleep" aria-current="page">Sleep</Link>
           <Link href="/home/health/meditation">Mind</Link>
           <Link href="/home/health/recipes">Food</Link>
           <Link href="/home/health/trails">Move</Link>
