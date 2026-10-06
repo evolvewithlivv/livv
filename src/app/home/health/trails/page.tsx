@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { ChevronLeft, MapPin, Play, Square } from "lucide-react";
 import "../health-systems.css";
+import { blankDay, loadHealthDays, todayKey, upsertHealthDay } from "@/lib/health";
 
 type Activity = "Walk" | "Run" | "Bike";
 type Log = { id: string; date: string; activity: Activity; distance: number; duration: number; note: string };
@@ -55,7 +56,12 @@ export default function TrailsPage() {
     if (!dist) return;
     const entry: Log = { id: String(Date.now()), date: new Date().toLocaleDateString(), activity, distance: Math.round(dist * 100) / 100, duration: sec, note: note.trim() };
     const next = [...logs, entry].slice(-100);
-    setLogs(next); localStorage.setItem(KEY, JSON.stringify(next)); setNote("");
+    setLogs(next); localStorage.setItem(KEY, JSON.stringify(next));
+    const date = todayKey();
+    const history = loadHealthDays();
+    const base = history.find((d) => d.date === date) ?? blankDay(date);
+    upsertHealthDay({ ...base, movement: true, movementNote: note.trim() }, history);
+    setNote("");
   }
 
   const total = useMemo(() => logs.reduce((s, x) => s + x.distance, 0), [logs]);
