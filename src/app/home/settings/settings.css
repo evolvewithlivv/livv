@@ -1,0 +1,103 @@
+/* Settings — grouped list, not dashboard cards */
+.st {
+  --ink: rgb(var(--livv-ink));
+  --bg: var(--livv-bg);
+  --muted: rgb(var(--livv-muted));
+  --line: rgb(var(--livv-border));
+  --accent: rgb(var(--livv-accent));
+  min-height: calc(100dvh - 5.75rem);
+  color: var(--ink);
+}
+.st-inner {
+  max-width: 26rem;
+  margin: 0 auto;
+  padding: 0.85rem 1.35rem 3rem;
+}
+.st-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.2rem;
+  font-size: 12px;
+  font-weight: 650;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-decoration: none;
+}
+.st-title {
+  margin: 1.1rem 0 0;
+  font-family: var(--font-display), var(--font-body), system-ui, sans-serif;
+  font-size: 1.85rem;
+  font-weight: 600;
+  letter-spacing: -0.04em;
+}
+.st-group {
+  margin-top: 1.65rem;
+}
+.st-group-k {
+  margin: 0 0 0.45rem;
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.st-list {
+  border-top: 1px solid color-mix(in srgb, var(--line) 75%, transparent);
+}
+.st-row {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  width: 100%;
+  min-height: 3.35rem;
+  padding: 0.85rem 0;
+  border: 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--line) 75%, transparent);
+  background: transparent;
+  color: inherit;
+  text-align: left;
+  text-decoration: none;
+  cursor: pointer;
+  font: inherit;
+}
+.st-row:active { opacity: 0.72; }
+.st-row-main { min-width: 0; flex: 1; }
+.st-row-t {
+  margin: 0;
+  font-size: 0.98rem;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+.st-row-s {
+  margin: 0.2rem 0 0;
+  font-size: 0.82rem;
+  color: var(--muted);
+  line-height: 1.35;
+}
+.st-row-v {
+  flex-shrink: 0;
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+.st-row-v.on { color: var(--accent); }
+.st-chev { color: var(--muted); flex-shrink: 0; }
+.st-danger .st-row-t { color: #ff6b6b; }
+.st-msg {
+  margin: 1rem 0 0;
+  font-size: 0.88rem;
+  color: var(--accent);
+}
+.st-err {
+  margin: 1rem 0 0;
+  font-size: 0.88rem;
+  color: #ff6b6b;
+}
+.st-foot {
+  margin: 1.75rem 0 0;
+  text-align: center;
+  font-size: 11px;
+  color: var(--muted);
+  letter-spacing: 0.04em;
+}
