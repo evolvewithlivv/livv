@@ -1,12 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import Link from "next/link";
 import { loadIdentity, addEmbers, type Identity } from "@/lib/identity";
 import { checkInRecord, isCheckedInToday, loadRecord, type LivvRecord } from "@/lib/record";
 import { feedback } from "@/lib/sensory";
 import { dailySummary } from "@/lib/daily";
 import { quoteForSession, type Quote } from "@/lib/quotes";
 import { embersFromAction } from "@/lib/embers";
+import { nextMove, focusCard, type Move } from "@/lib/command";
 import "./home-signal.css";
 
 function greetingForHour(hour: number): string {
@@ -29,11 +31,16 @@ export default function HomePage() {
   const [rec, setRec] = useState<LivvRecord | null>(null);
   const [me, setMe] = useState<Identity | null>(null);
   const [quote, setQuote] = useState<Quote | null>(null);
+  const [move, setMove] = useState<Move | null>(null);
+  const [focus, setFocus] = useState<{ theme: string; principle: string; detail: string } | null>(null);
   const [now, setNow] = useState(() => new Date());
 
   const pull = () => {
-    setRec(loadRecord());
+    const r = loadRecord();
+    setRec(r);
     setMe(loadIdentity());
+    setMove(nextMove(r));
+    setFocus(focusCard(new Date()));
     dailySummary();
   };
 
@@ -106,7 +113,12 @@ export default function HomePage() {
           <div className="hs-signal" aria-hidden>
             <div className="hs-mark">
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src="/livv-logo.png" alt="" width={360} height={360} />
+              <img
+                src="/livv-logo.png"
+                alt="LIVV"
+                width={160}
+                height={160}
+              />
             </div>
           </div>
 
@@ -151,6 +163,29 @@ export default function HomePage() {
             </span>
           </button>
         </section>
+
+        {move ? (
+          <section className="hs-panel" aria-label="Next move">
+            <p className="hs-panel-kicker">Next move</p>
+            <p className="hs-panel-title">{move.title}</p>
+            <p className="hs-panel-body">{move.reason}</p>
+            <Link href={move.href} className="hs-panel-cta">
+              <span>{move.cta}</span>
+              <span aria-hidden>→</span>
+            </Link>
+          </section>
+        ) : null}
+
+        {focus ? (
+          <section className="hs-panel hs-panel-soft" aria-label="Today focus">
+            <p className="hs-panel-kicker">Today</p>
+            <p className="hs-panel-title">{focus.theme}</p>
+            <p className="hs-panel-body">{focus.principle}</p>
+            {focus.detail ? (
+              <p className="hs-panel-detail">{focus.detail}</p>
+            ) : null}
+          </section>
+        ) : null}
 
         {quote ? (
           <footer className="hs-quote">
