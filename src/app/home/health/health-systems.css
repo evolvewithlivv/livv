@@ -65,3 +65,26 @@
 .hsys-context strong{color:var(--hs-ink);font-weight:700}
 .hsys-mast + .hsys-nav{margin-top:16px}
 .hsys-empty{padding:18px 0;color:var(--hs-muted);font-size:10px;line-height:1.5}
+
+
+/* LIVV Health visual refinement: soften the utility layer without losing the editorial system. */
+.hsys-inner{padding-top:20px}
+.hsys-back{transition:color .2s ease,transform .2s ease}
+.hsys-back:hover{color:var(--hs-ink);transform:translateX(-2px)}
+.hsys-mast{border-bottom-color:color-mix(in srgb,var(--hs-line) 58%,transparent)}
+.hsys-stats{border:1px solid var(--hs-line);border-radius:14px;overflow:hidden;background:color-mix(in srgb,var(--hs-ink) 2%,transparent)}
+.hsys-stats>div{padding:15px 13px}
+.hsys-field input,.hsys-field textarea{border-radius:12px;background:color-mix(in srgb,var(--hs-ink) 2%,transparent);transition:border-color .2s ease,background .2s ease}
+.hsys-field input:focus,.hsys-field textarea:focus{background:color-mix(in srgb,var(--hs-ink) 4%,transparent)}
+.hsys-chip{border-radius:999px;transition:border-color .2s ease,background .2s ease,color .2s ease}
+.hsys-nav a{border-radius:999px}
+.hsys-btn{border-radius:12px;transition:transform .18s ease,opacity .18s ease,background .18s ease}
+.hsys-btn:not(:disabled):active{transform:scale(.985)}
+.hsys-btn.ghost{background:color-mix(in srgb,var(--hs-ink) 2%,transparent)}
+.hsys-list{border-top-color:color-mix(in srgb,var(--hs-line) 65%,transparent)}
+.hsys-item{padding:16px 2px}
+.hsys-timer{border-color:color-mix(in srgb,var(--hs-line) 65%,transparent);padding:44px 0}
+.hsys-note{border-left:0;border-radius:12px;background:color-mix(in srgb,var(--hs-ink) 4%,transparent);padding:13px 14px}
+.hsys-recipe,.hsys-entry{transition:padding .2s ease,background .2s ease;border-radius:10px}
+.hsys-recipe:hover,.hsys-entry:hover{padding-left:10px;padding-right:10px;background:color-mix(in srgb,var(--hs-ink) 3%,transparent)}
+.hsys-recipe:focus-visible,.hsys-entry:focus-visible{outline:2px solid color-mix(in srgb,var(--hs-accent) 65%,transparent);outline-offset:2px}
