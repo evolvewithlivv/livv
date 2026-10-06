@@ -43,7 +43,7 @@ export default function RecipesPage() {
 
   if (selected) {
     return (
-      <main className="hsys" aria-label={selected.title}>
+      <main className="hsys hsys-recipes" aria-label={selected.title}>
         <div className="hsys-inner">
           <button type="button" className="hsys-back" onClick={() => setSelId(null)} style={{ border: 0, background: "none", padding: 0, cursor: "pointer" }}><ChevronLeft size={13} /> Recipes</button>
           <header className="hsys-mast">
