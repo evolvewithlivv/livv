@@ -1,0 +1,226 @@
+.hz {
+  --hz-ink: rgb(var(--livv-ink));
+  --hz-bg: rgb(var(--livv-bg));
+  --hz-muted: rgb(var(--livv-muted));
+  --hz-line: rgb(var(--livv-border));
+  --hz-accent: rgb(var(--livv-accent));
+  position: relative;
+  min-height: calc(100dvh - 5.5rem);
+  color: var(--hz-ink);
+}
+.hz-inner {
+  max-width: 26rem;
+  margin: 0 auto;
+  padding: 1.1rem 1.4rem 2.5rem;
+}
+.hz-mast {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  gap: 1rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--hz-line) 80%, transparent);
+}
+.hz-mast-k,
+.hz-mast-d {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--hz-muted);
+}
+.hz-mast-k {
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+.hz-head {
+  padding: 1.5rem 0 1.15rem;
+}
+.hz-title {
+  margin: 0;
+  font-family: var(--font-display), var(--font-body), system-ui, sans-serif;
+  font-size: clamp(2.1rem, 8vw, 2.6rem);
+  font-weight: 600;
+  letter-spacing: -0.045em;
+  line-height: 1.05;
+}
+.hz-sub {
+  margin: 0.45rem 0 0;
+  font-size: 0.95rem;
+  color: var(--hz-muted);
+  line-height: 1.45;
+  max-width: 32ch;
+}
+.hz-progress {
+  margin-top: 1.1rem;
+}
+.hz-progress-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 0.45rem;
+}
+.hz-progress-meta span {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  color: var(--hz-muted);
+}
+.hz-bar {
+  height: 3px;
+  border-radius: 999px;
+  background: color-mix(in srgb, var(--hz-line) 70%, transparent);
+  overflow: hidden;
+}
+.hz-bar > i {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: var(--hz-accent);
+  transition: width 0.35s ease;
+}
+.hz-section {
+  margin-top: 1.75rem;
+}
+.hz-section-label {
+  margin: 0 0 0.35rem;
+  font-size: 10px;
+  font-weight: 650;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--hz-muted);
+}
+.hz-log {
+  border-top: 1px solid color-mix(in srgb, var(--hz-line) 80%, transparent);
+}
+.hz-row {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.75rem 1rem;
+  align-items: center;
+  padding: 1.05rem 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--hz-line) 75%, transparent);
+}
+.hz-row-main {
+  min-width: 0;
+}
+.hz-row-name {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+.hz-row-detail {
+  margin: 0.25rem 0 0;
+  font-size: 0.86rem;
+  color: var(--hz-muted);
+  line-height: 1.35;
+}
+.hz-row-value {
+  margin: 0.35rem 0 0;
+  font-size: 1.35rem;
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.03em;
+}
+.hz-row-value.is-goal {
+  color: var(--hz-accent);
+}
+.hz-ctrl {
+  display: flex;
+  gap: 0.4rem;
+}
+.hz-ctrl button {
+  width: 2.5rem;
+  height: 2.5rem;
+  border-radius: 10px;
+  border: 1px solid color-mix(in srgb, var(--hz-line) 90%, transparent);
+  background: transparent;
+  color: var(--hz-ink);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+.hz-mark {
+  min-width: 4.5rem;
+  height: 2.5rem;
+  border-radius: 10px;
+  border: 1px solid color-mix(in srgb, var(--hz-line) 90%, transparent);
+  background: transparent;
+  color: var(--hz-muted);
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: 0.04em;
+  cursor: pointer;
+}
+.hz-mark.on {
+  border-color: color-mix(in srgb, var(--hz-accent) 55%, var(--hz-line));
+  color: var(--hz-accent);
+  background: color-mix(in srgb, var(--hz-accent) 10%, transparent);
+}
+.hz-tools {
+  border-top: 1px solid color-mix(in srgb, var(--hz-line) 80%, transparent);
+}
+.hz-tool {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--hz-line) 75%, transparent);
+  text-decoration: none;
+  color: inherit;
+}
+.hz-tool-t {
+  margin: 0;
+  font-size: 0.98rem;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+.hz-tool-s {
+  margin: 0.2rem 0 0;
+  font-size: 0.84rem;
+  color: var(--hz-muted);
+  line-height: 1.35;
+}
+.hz-tool-go {
+  flex-shrink: 0;
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--hz-muted);
+}
+.hz-week {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 0.35rem;
+  margin-top: 0.75rem;
+}
+.hz-day {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+}
+.hz-day-bar {
+  width: 100%;
+  height: 2.75rem;
+  border-radius: 6px;
+  background: color-mix(in srgb, var(--hz-line) 55%, transparent);
+  position: relative;
+  overflow: hidden;
+}
+.hz-day-bar > i {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: var(--hz-accent);
+  transition: height 0.35s ease;
+}
+.hz-day-lab {
+  font-size: 9px;
+  font-weight: 650;
+  letter-spacing: 0.04em;
+  color: var(--hz-muted);
+  text-transform: uppercase;
+}
