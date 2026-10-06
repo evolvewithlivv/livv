@@ -283,21 +283,24 @@ export default function TrainPage() {
           <section className="tr-section">
             <p className="tr-section-k">Day</p>
             <div className="tr-chips">
-              {split.days.map((d) => (
-                <button
-                  key={d.id}
-                  type="button"
-                  className={"tr-chip" + (selectedDayId === d.id ? " on" : "")}
-                  onClick={() => {
-                    if (d.rest) return;
-                    setSelectedDayId(d.id);
-                    feedback("tick");
-                  }}
-                  disabled={d.rest}
-                >
-                  {dayName(d.day)} · {d.rest ? "Rest" : d.label}
-                </button>
-              ))}
+              <div className="tr-days">
+                {split.days.map((d) => (
+                  <button
+                    key={d.id}
+                    type="button"
+                    className={"tr-day" + (selectedDayId === d.id ? " on" : "") + (d.rest ? " rest" : "")}
+                    onClick={() => {
+                      if (d.rest) return;
+                      setSelectedDayId(d.id);
+                      feedback("tick");
+                    }}
+                    disabled={d.rest}
+                  >
+                    <span>{dayName(d.day)}</span>
+                    <strong>{d.rest ? "Rest" : d.label}</strong>
+                  </button>
+                ))}
+              </div>
             </div>
           </section>
         ) : null}
