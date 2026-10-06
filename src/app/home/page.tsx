@@ -37,25 +37,37 @@ export default function HomePage() {
   const [now, setNow] = useState(() => new Date());
   const [light, setLight] = useState(false);
 
+  const readLight = () => {
+    if (typeof document !== "undefined" && document.documentElement.dataset.theme) {
+      return document.documentElement.dataset.theme === "light";
+    }
+    return resolvedAppearance(loadIdentity().appearance) === "light";
+  };
+
   const pull = () => {
     const r = loadRecord();
     setRec(r);
     setMe(loadIdentity());
     setMove(nextMove(r));
     setQuestion(dailyQuestion(new Date()));
-    setLight(resolvedAppearance(loadIdentity().appearance) === "light");
+    setLight(readLight());
     dailySummary();
   };
 
   useEffect(() => {
     pull();
     setQuote(quoteForSession());
+    setLight(readLight());
     const events = ["livv-identity", "livv-record", "livv-daily"];
     events.forEach((e) => window.addEventListener(e, pull));
     const clock = window.setInterval(() => setNow(new Date()), 30_000);
+    const root = document.documentElement;
+    const mo = new MutationObserver(() => setLight(readLight()));
+    mo.observe(root, { attributes: true, attributeFilter: ["data-theme"] });
     return () => {
       events.forEach((e) => window.removeEventListener(e, pull));
       window.clearInterval(clock);
+      mo.disconnect();
     };
   }, []);
 
@@ -161,7 +173,7 @@ export default function HomePage() {
           >
             <span>{checkedIn ? "Checked in" : "Check in"}</span>
             <span className="hs-primary-meta" aria-hidden>
-              {checkedIn ? "\u2713" : "\u2192"}
+              {checkedIn ? "✓" : "→"}
             </span>
           </button>
         </section>
@@ -173,7 +185,7 @@ export default function HomePage() {
             <p className="hs-panel-body">{move.reason}</p>
             <Link href={move.href} className="hs-panel-cta">
               <span>{move.cta}</span>
-              <span aria-hidden>\u2192</span>
+              <span aria-hidden>→</span>
             </Link>
           </section>
         ) : null}
@@ -184,15 +196,15 @@ export default function HomePage() {
             <p className="hs-panel-title">{question}</p>
             <Link href="/home/daily" className="hs-panel-cta">
               <span>Open Daily</span>
-              <span aria-hidden>\u2192</span>
+              <span aria-hidden>→</span>
             </Link>
           </section>
         ) : null}
 
         {quote ? (
           <footer className="hs-quote">
-            <p className="hs-quote-text">\u201c{quote.text}\u201d</p>
-            <p className="hs-quote-author">\u2014 {quote.author}</p>
+            <p className="hs-quote-text">“{quote.text}”</p>
+            <p className="hs-quote-author">— {quote.author}</p>
           </footer>
         ) : null}
       </div>
