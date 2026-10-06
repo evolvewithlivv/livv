@@ -50,3 +50,8 @@
 .hsys-entry-meta{margin:9px 0 0;color:var(--hs-muted);font-size:10px;line-height:1.5}
 .hsys-note{margin-top:14px;padding:12px;border-left:2px solid var(--hs-accent);background:color-mix(in srgb,var(--hs-ink) 3%,transparent);color:var(--hs-muted);font-size:9px;line-height:1.5}
 @media(min-width:600px){.hsys-inner{padding-left:28px;padding-right:28px}}
+
+.hsys-recipe,.hsys-entry{width:100%;border:0;border-bottom:1px solid var(--hs-line);padding:15px 0;background:transparent;color:inherit;text-align:left;cursor:pointer;font:inherit}
+.hsys-recipe:last-child,.hsys-entry:last-child{border-bottom:0}
+.hsys-recipe:focus-visible,.hsys-entry:focus-visible{outline:1px solid var(--hs-accent);outline-offset:-1px}
+.hsys-entry-meta strong{font-weight:750}
