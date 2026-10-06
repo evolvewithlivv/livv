@@ -85,14 +85,7 @@ export default function SettingsPage() {
     const next = { ...prefs, [key]: !prefs[key] };
     patchPrefs(next);
     setPrefs(loadPrefs());
-
-    // Haptics are intentionally tested after enabling so the user gets
-    // immediate confirmation that the preference is active.
-    if (key === "haptics" && next.haptics) {
-      feedback("medium");
-    } else {
-      feedback("tick");
-    }
+    feedback("tick");
   };
 
   const onExport = () => {
@@ -231,15 +224,7 @@ export default function SettingsPage() {
                 {prefs.sound ? "On" : "Off"}
               </span>
             </button>
-            <button type="button" className="st-row" onClick={() => togglePref("haptics")}>
-              <div className="st-row-main">
-                <p className="st-row-t">Haptics</p>
-                <p className="st-row-s">Vibration feedback</p>
-              </div>
-              <span className={"st-row-v" + (prefs.haptics ? " on" : "")}>
-                {prefs.haptics ? "On" : "Off"}
-              </span>
-            </button>
+
           </div>
         </section>
 
