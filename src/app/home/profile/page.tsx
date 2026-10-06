@@ -60,7 +60,7 @@ export default function ProfilePage() {
   const pct = Math.min(100, Math.round((rec.currentXp / xpToNext) * 100));
   const embers = me.embers || 0;
   const emberDollars = embersToDollars(embers);
-  const name = me.displayName || me.username || "Member";
+  const name = me.displayName || me.username || "LIVV";
   const handle = me.username ? `@${me.username.replace(/^@/, "")}` : "@livv";
 
   const photo = async (file?: File) => {
@@ -84,7 +84,7 @@ export default function ProfilePage() {
       const bg =
         LIVV_SHARE_BACKGROUNDS[0]?.src || "/share-backgrounds/IMG_1400.jpeg";
       const data: ShareCardData = {
-        displayName: me.displayName || me.username || "LIVV member",
+        displayName: me.displayName || me.username || "LIVV",
         username: me.username || "livv",
         level: rec.level || 1,
         evolutionName: evo.name,
