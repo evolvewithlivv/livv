@@ -15,7 +15,7 @@ export default function DictionaryPage() {
   }, [q]);
 
   return (
-    <main className="hsys" aria-label="Dictionary">
+    <main className="hsys hsys-dictionary" aria-label="Dictionary">
       <div className="hsys-inner">
         <Link href="/home/health" className="hsys-back"><ChevronLeft size={13} /> Health</Link>
         <header className="hsys-mast">
