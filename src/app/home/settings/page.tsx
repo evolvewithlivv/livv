@@ -2,7 +2,6 @@
 
 import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 import {
   loadIdentity,
   patchIdentity,
@@ -134,26 +133,40 @@ export default function SettingsPage() {
     }
     deleteAllLivvData();
     setConfirmDelete(false);
+    setKeyCount(countManagedKeysPresent());
     setMe(loadIdentity());
     setPrefs(loadPrefs());
-    setKeyCount(0);
     setStatus("Local data cleared.");
+    setError("");
     feedback("complete");
   };
 
-  const onSignOut = () => {
-    signOut();
-    window.location.href = "/";
+  const onSignOut = async () => {
+    setBusy(true);
+    try {
+      await signOut();
+      window.location.href = "/auth";
+    } catch {
+      setError("Could not sign out.");
+      setBusy(false);
+    }
   };
 
-  const name = me?.displayName || me?.username || "Account";
-  const handle = me?.username ? `@${me.username.replace(/^@/, "")}` : null;
+  if (!me) return <main className="st" aria-hidden />;
+
+  const accountLine = [
+    me.displayName || null,
+    me.username ? (me.username.startsWith("@") ? me.username : `@${me.username}`) : null,
+    accountEmail,
+  ]
+    .filter(Boolean)
+    .join(" · ");
 
   return (
     <main className="st" aria-label="Settings">
       <div className="st-inner">
         <Link href="/home/profile" className="st-back">
-          <ChevronLeft size={14} /> You
+          You
         </Link>
         <h1 className="st-title">Settings</h1>
 
@@ -163,35 +176,35 @@ export default function SettingsPage() {
             <Link href="/home/profile/edit" className="st-row">
               <div className="st-row-main">
                 <p className="st-row-t">Edit profile</p>
-                <p className="st-row-s">
-                  {name}
-                  {handle ? ` · ${handle}` : ""}
-                  {accountEmail ? ` · ${accountEmail}` : ""}
-                </p>
+                <p className="st-row-s">{accountLine || "Name, username, photo"}</p>
               </div>
-              <ChevronRight size={16} className="st-chev" />
+              <span className="st-chev" aria-hidden>
+                ›
+              </span>
             </Link>
           </div>
         </section>
 
         <section className="st-group">
           <p className="st-group-k">Appearance</p>
-          <div className="st-list">
+          <div className="st-list" role="radiogroup" aria-label="Appearance">
             {LOOK_OPTIONS.map((opt) => {
-              const active = me ? isLookActive(me, opt) : false;
+              const active = isLookActive(me, opt);
               return (
                 <button
                   key={opt.id}
                   type="button"
                   className="st-row"
+                  role="radio"
+                  aria-checked={active}
                   onClick={() => setLook(opt)}
                 >
                   <div className="st-row-main">
                     <p className="st-row-t">{opt.label}</p>
                     <p className="st-row-s">{opt.hint}</p>
                   </div>
-                  <span className={"st-row-v" + (active ? " on" : "")}>
-                    {active ? "On" : ""}
+                  <span className={"st-check" + (active ? " on" : "")} aria-hidden>
+                    ✓
                   </span>
                 </button>
               );
@@ -231,7 +244,9 @@ export default function SettingsPage() {
                 <p className="st-row-t">Export backup</p>
                 <p className="st-row-s">{keyCount} keys on this device</p>
               </div>
-              <ChevronRight size={16} className="st-chev" />
+              <span className="st-chev" aria-hidden>
+                ›
+              </span>
             </button>
             <button
               type="button"
@@ -243,7 +258,9 @@ export default function SettingsPage() {
                 <p className="st-row-t">Import backup</p>
                 <p className="st-row-s">Restore from a LIVV file</p>
               </div>
-              <ChevronRight size={16} className="st-chev" />
+              <span className="st-chev" aria-hidden>
+                ›
+              </span>
             </button>
             <button type="button" className="st-row st-danger" onClick={onDeleteAll}>
               <div className="st-row-main">
@@ -270,7 +287,7 @@ export default function SettingsPage() {
         <section className="st-group">
           <p className="st-group-k">Session</p>
           <div className="st-list">
-            <button type="button" className="st-row st-danger" onClick={onSignOut}>
+            <button type="button" className="st-row st-danger" onClick={onSignOut} disabled={busy}>
               <div className="st-row-main">
                 <p className="st-row-t">Sign out</p>
                 <p className="st-row-s">End this session on the device</p>
@@ -281,6 +298,7 @@ export default function SettingsPage() {
 
         {status ? <p className="st-msg">{status}</p> : null}
         {error ? <p className="st-err">{error}</p> : null}
+
         <p className="st-foot">LIVV · V1</p>
       </div>
     </main>

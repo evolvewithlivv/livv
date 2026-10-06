@@ -50,14 +50,17 @@
   color: var(--muted);
 }
 
+/* Body font + lining nums — display face was shifting digit baselines (8 vs 7/0) */
 .em-balance {
-  margin: 0.45rem 0 0;
-  font-family: var(--font-display), var(--font-body), system-ui, sans-serif;
-  font-size: clamp(3.25rem, 14vw, 4rem);
-  font-weight: 600;
-  letter-spacing: -0.05em;
-  line-height: 1;
-  font-variant-numeric: tabular-nums;
+  margin: 0.55rem 0 0;
+  font-family: var(--font-body), system-ui, -apple-system, sans-serif;
+  font-size: clamp(3.1rem, 13vw, 3.75rem);
+  font-weight: 650;
+  letter-spacing: -0.03em;
+  line-height: 1.05;
+  font-variant-numeric: lining-nums tabular-nums;
+  font-feature-settings: "tnum" 1, "lnum" 1;
+  white-space: nowrap;
 }
 
 .em-value {
@@ -80,6 +83,7 @@
   font-weight: 600;
   color: var(--muted);
   letter-spacing: 0.01em;
+  font-variant-numeric: tabular-nums;
 }
 
 .em-track {

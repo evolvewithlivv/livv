@@ -1,4 +1,4 @@
-/* Settings — grouped list, not dashboard cards */
+/* Settings — system list, no dashboard chrome */
 .st {
   --ink: rgb(var(--livv-ink));
   --bg: var(--livv-bg);
@@ -8,43 +8,54 @@
   min-height: calc(100dvh - 5.75rem);
   color: var(--ink);
 }
+
 .st-inner {
   max-width: 26rem;
   margin: 0 auto;
-  padding: 0.85rem 1.35rem 3rem;
+  padding: 0.85rem 1.35rem max(3rem, calc(5.5rem + env(safe-area-inset-bottom, 0px)));
 }
+
 .st-back {
   display: inline-flex;
   align-items: center;
-  gap: 0.2rem;
+  min-height: 44px;
   font-size: 12px;
   font-weight: 650;
-  letter-spacing: 0.08em;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
   color: var(--muted);
   text-decoration: none;
 }
+.st-back:active {
+  opacity: 0.7;
+}
+
 .st-title {
-  margin: 1.1rem 0 0;
+  margin: 0.35rem 0 0;
   font-family: var(--font-display), var(--font-body), system-ui, sans-serif;
-  font-size: 1.85rem;
+  font-size: clamp(1.85rem, 7vw, 2.25rem);
   font-weight: 600;
   letter-spacing: -0.04em;
+  line-height: 1.05;
 }
+
 .st-group {
-  margin-top: 1.65rem;
+  margin-top: 1.75rem;
 }
+
 .st-group-k {
-  margin: 0 0 0.45rem;
+  margin: 0 0 0.35rem;
   font-size: 11px;
   font-weight: 650;
-  letter-spacing: 0.12em;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
   color: var(--muted);
 }
+
 .st-list {
   border-top: 1px solid color-mix(in srgb, var(--line) 75%, transparent);
 }
+
 .st-row {
   display: flex;
   align-items: center;
@@ -60,44 +71,87 @@
   text-decoration: none;
   cursor: pointer;
   font: inherit;
+  -webkit-tap-highlight-color: transparent;
 }
-.st-row:active { opacity: 0.72; }
-.st-row-main { min-width: 0; flex: 1; }
+.st-row:active {
+  opacity: 0.72;
+}
+.st-row:disabled {
+  opacity: 0.45;
+  cursor: default;
+}
+
+.st-row-main {
+  min-width: 0;
+  flex: 1;
+}
+
 .st-row-t {
   margin: 0;
   font-size: 0.98rem;
   font-weight: 600;
   letter-spacing: -0.015em;
 }
+
 .st-row-s {
   margin: 0.2rem 0 0;
   font-size: 0.82rem;
   color: var(--muted);
   line-height: 1.35;
 }
+
 .st-row-v {
   flex-shrink: 0;
   font-size: 0.88rem;
   font-weight: 600;
   color: var(--muted);
 }
-.st-row-v.on { color: var(--accent); }
-.st-chev { color: var(--muted); flex-shrink: 0; }
-.st-danger .st-row-t { color: #ff6b6b; }
+
+/* Selected state uses ink — not hard blue */
+.st-row-v.on {
+  color: var(--ink);
+}
+
+.st-check {
+  flex-shrink: 0;
+  width: 1.1rem;
+  text-align: center;
+  font-size: 0.95rem;
+  font-weight: 650;
+  color: var(--ink);
+  opacity: 0;
+}
+.st-check.on {
+  opacity: 1;
+}
+
+.st-chev {
+  color: var(--muted);
+  flex-shrink: 0;
+  opacity: 0.55;
+}
+
+.st-danger .st-row-t {
+  color: #e85d5d;
+}
+
 .st-msg {
   margin: 1rem 0 0;
   font-size: 0.88rem;
-  color: var(--accent);
+  color: var(--muted);
 }
+
 .st-err {
   margin: 1rem 0 0;
   font-size: 0.88rem;
-  color: #ff6b6b;
+  color: #e85d5d;
 }
+
 .st-foot {
-  margin: 1.75rem 0 0;
+  margin: 2rem 0 0;
   text-align: center;
   font-size: 11px;
-  color: var(--muted);
-  letter-spacing: 0.04em;
+  color: color-mix(in srgb, var(--muted) 80%, transparent);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
