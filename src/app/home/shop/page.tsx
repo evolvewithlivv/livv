@@ -8,11 +8,11 @@ import { EMBERS_PER_DOLLAR, MIN_REDEEM_EMBERS, REDEEM_RULES_COPY, embersToDollar
 import "./shop-rack.css";
 
 const PRODUCTS = [
-  { no:"01", name:"Heavyweight Tee", variant:"White Logo", price:"$39.95", image:"https://cdn.shopify.com/s/files/1/1091/3644/5726/files/mens-premium-heavyweight-tee-black-front-6ac2572409a64.png?v=1791121207", href:"/products/men-s-premium-heavyweight-tee-1" },
-  { no:"02", name:"Heavyweight Tee", variant:"Black Logo", price:"$39.95", image:"https://cdn.shopify.com/s/files/1/1091/3644/5726/files/mens-premium-heavyweight-tee-white-front-6ac256bda7240.png?v=1791121101", href:"/products/men-s-premium-heavyweight-tee" },
-  { no:"03", name:"Heavyweight Long Sleeve", variant:"White Logo", price:"$44.95", image:"https://cdn.shopify.com/s/files/1/1091/3644/5726/files/mens-heavyweight-long-sleeve-t-shirt-black-front-6ac2573c45416.png?v=1791121222", href:"/products/mens-heavyweight-long-sleeve-t-shirt-1" },
-  { no:"04", name:"Heavyweight Long Sleeve", variant:"Black Logo", price:"$44.95", image:"https://cdn.shopify.com/s/files/1/1091/3644/5726/files/mens-heavyweight-long-sleeve-t-shirt-white-front-6ac256f65cc22.png?v=1791121157", href:"/products/mens-heavyweight-long-sleeve-t-shirt" },
-  { no:"05", name:"Tough iPhone Case", variant:"Collection 001", price:"$34.95", image:"https://cdn.shopify.com/s/files/1/1091/3644/5726/files/tough-case-for-iphone-matte-iphone-17-pro-max-front-6ac255eaa6549.png?v=1791120889", href:"/products/tough-case-for-iphone" },
+  { no:"01", name:"Heavyweight Tee", variant:"White Logo", price:"$39.95", image:"https://cdn.shopify.com/s/files/1/1091/3644/5726/files/mens-premium-heavyweight-tee-black-front-6ac2572409a64.png?v=1791121207", href:"https://n8tv6p-pu.myshopify.com/products/men-s-premium-heavyweight-tee-1" },
+  { no:"02", name:"Heavyweight Tee", variant:"Black Logo", price:"$39.95", image:"https://cdn.shopify.com/s/files/1/1091/3644/5726/files/mens-premium-heavyweight-tee-white-front-6ac256bda7240.png?v=1791121101", href:"https://n8tv6p-pu.myshopify.com/products/men-s-premium-heavyweight-tee" },
+  { no:"03", name:"Heavyweight Long Sleeve", variant:"White Logo", price:"$44.95", image:"https://cdn.shopify.com/s/files/1/1091/3644/5726/files/mens-heavyweight-long-sleeve-t-shirt-black-front-6ac2573c45416.png?v=1791121222", href:"https://n8tv6p-pu.myshopify.com/products/mens-heavyweight-long-sleeve-t-shirt-1" },
+  { no:"04", name:"Heavyweight Long Sleeve", variant:"Black Logo", price:"$44.95", image:"https://cdn.shopify.com/s/files/1/1091/3644/5726/files/mens-heavyweight-long-sleeve-t-shirt-white-front-6ac256f65cc22.png?v=1791121157", href:"https://n8tv6p-pu.myshopify.com/products/mens-heavyweight-long-sleeve-t-shirt" },
+  { no:"05", name:"Tough iPhone Case", variant:"Collection 001", price:"$34.95", image:"https://cdn.shopify.com/s/files/1/1091/3644/5726/files/tough-case-for-iphone-matte-iphone-17-pro-max-front-6ac255eaa6549.png?v=1791120889", href:"https://n8tv6p-pu.myshopify.com/products/tough-case-for-iphone®" },
 ];
 
 export default function ShopPage() {
