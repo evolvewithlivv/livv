@@ -104,11 +104,6 @@
   object-position: center;
 }
 
-html[data-theme="light"] .hs-mark img {
-  filter: brightness(0) saturate(100%);
-  opacity: 0.92;
-}
-
 .hs-hello {
   margin: 0;
   font-size: 11px;
@@ -128,7 +123,7 @@ html[data-theme="light"] .hs-mark img {
 }
 .hs-sub {
   margin: 0.7rem 0 0;
-  max-width: 24ch;
+  max-width: 32ch;
   font-size: 0.98rem;
   line-height: 1.45;
   color: var(--hs-muted);
