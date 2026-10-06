@@ -45,7 +45,7 @@ export default function MeditationPage() {
   const ss = String(sec % 60).padStart(2, "0");
 
   return (
-    <main className="hsys" aria-label="Meditation">
+    <main className="hsys hsys-meditation" aria-label="Meditation">
       <div className="hsys-inner">
         <Link href="/home/health" className="hsys-back"><ChevronLeft size={13} /> Health</Link>
         <header className="hsys-mast">
