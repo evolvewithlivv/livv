@@ -24,7 +24,7 @@ export default function DictionaryPage() {
           <p className="hsys-sub">Words are useful when they change what you notice, decide, and do.</p>
         </header>
         <nav className="hsys-nav" aria-label="Health systems">
-          <Link href="/home/health/sleep" aria-current="">Sleep</Link>
+          <Link href="/home/health/sleep">Sleep</Link>
           <Link href="/home/health/meditation">Mind</Link>
           <Link href="/home/health/recipes">Food</Link>
           <Link href="/home/health/trails">Move</Link>
