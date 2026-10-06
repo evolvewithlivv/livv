@@ -50,3 +50,16 @@
 .shop-embers-progress{height:4px;margin-top:22px;border-radius:99px}.shop-embers-progress span{border-radius:99px}.shop-embers-meta{font-family:inherit;font-size:7px;letter-spacing:.1em}
 .shop-embers-rules{border-top:0;margin-top:16px;padding-top:0}.shop-embers-rules summary{font-family:inherit;font-size:8px}
 .shop-footer{display:none}
+
+.shop-embers{margin-top:52px;padding:26px 22px 22px;border:0;border-radius:30px 30px 18px 30px;background:linear-gradient(145deg,color-mix(in srgb,rgb(var(--livv-ink)) 5%,transparent),color-mix(in srgb,rgb(var(--livv-ink)) 1.5%,transparent));box-shadow:inset 0 0 0 1px color-mix(in srgb,rgb(var(--livv-border)) 45%,transparent)}
+.shop-embers-top{gap:12px}
+.shop-embers-mark{width:38px;height:38px;border:0;border-radius:50%;background:color-mix(in srgb,rgb(var(--livv-accent)) 10%,transparent);color:rgb(var(--livv-accent))}
+.shop-embers-open{width:30px;height:30px;border:0;border-radius:50%;background:color-mix(in srgb,rgb(var(--livv-ink)) 5%,transparent)}
+.shop-embers-reading{display:grid;grid-template-columns:auto 1fr auto;align-items:end;gap:10px;margin-top:28px}
+.shop-embers-reading strong{font-family:var(--font-display),var(--font-body),system-ui,sans-serif;font-size:clamp(48px,14vw,68px);line-height:.78;font-weight:560;letter-spacing:-.09em}
+.shop-embers-reading>span{margin-bottom:3px;font-size:8px;font-weight:800;letter-spacing:.16em}
+.shop-embers-reading .shop-embers-value{margin:0 0 4px;text-align:right;font-size:10px;font-weight:650;letter-spacing:0}
+.shop-embers-progress{height:3px;margin-top:24px;background:color-mix(in srgb,rgb(var(--livv-border)) 65%,transparent)}
+.shop-embers-meta{margin-top:10px;font-size:7px}
+.shop-embers-rules{margin-top:18px;padding-top:14px;border-top:1px solid color-mix(in srgb,rgb(var(--livv-border)) 55%,transparent)}
+.shop-footer{display:none}
