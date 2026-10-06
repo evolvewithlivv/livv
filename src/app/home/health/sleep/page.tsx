@@ -59,7 +59,7 @@ export default function SleepPage() {
   }
 
   return (
-    <main className="hsys" aria-label="Sleep">
+    <main className="hsys hsys-sleep" aria-label="Sleep">
       <div className="hsys-inner">
         <Link href="/home/health" className="hsys-back"><ChevronLeft size={13} /> Health</Link>
         <header className="hsys-mast">
