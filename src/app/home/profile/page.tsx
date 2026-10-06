@@ -87,24 +87,26 @@ export default function ProfilePage() {
 
         <section className="you-section" aria-label="Account">
           <p className="you-section-k">Account</p>
-          <Link href="/home/profile/embers" className="you-link">
-            <div>
-              <p className="you-link-t">Embers</p>
-              <p className="you-link-s">
-                {dollars > 0
-                  ? `≈ $${dollars.toFixed(2)} toward Collection 001`
-                  : `${MIN_REDEEM_EMBERS.toLocaleString()} to unlock redemption`}
-              </p>
-            </div>
-            <span className="you-link-v">{embers.toLocaleString()}</span>
-          </Link>
-          <Link href="/home/settings" className="you-link">
-            <div>
-              <p className="you-link-t">Settings</p>
-              <p className="you-link-s">Appearance, data, sign out</p>
-            </div>
-            <ChevronRight size={18} className="you-chev" />
-          </Link>
+          <div className="you-account-grid">
+            <Link href="/home/profile/embers" className="you-link">
+              <div>
+                <p className="you-link-t">Embers</p>
+                <p className="you-link-s">
+                  {dollars > 0
+                    ? `≈ ${dollars.toFixed(2)} toward Collection 001`
+                    : `${MIN_REDEEM_EMBERS.toLocaleString()} to unlock redemption`}
+                </p>
+              </div>
+              <span className="you-link-v">{embers.toLocaleString()}</span>
+            </Link>
+            <Link href="/home/settings" className="you-link">
+              <div>
+                <p className="you-link-t">Settings</p>
+                <p className="you-link-s">Appearance, data, sign out</p>
+              </div>
+              <ChevronRight size={18} className="you-chev" />
+            </Link>
+          </div>
         </section>
       </div>
     </main>
