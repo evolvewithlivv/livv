@@ -2,20 +2,13 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import {
-  Bookmark,
-  BookmarkCheck,
-  ChevronLeft,
-  Clock3,
-  Users,
-  Utensils,
-} from "lucide-react";
-import { SearchField } from "@/components/ui/search-field";
+import { ChevronLeft } from "lucide-react";
 import {
   CATEGORIES,
   RECIPES,
   type CategoryFilter,
 } from "@/lib/recipes-data";
+import "../health-systems.css";
 
 const SAVED_KEY = "livv-recipes-saved-v1";
 
@@ -50,11 +43,24 @@ export default function RecipesPage() {
     return RECIPES.filter((r) => {
       if (cat !== "All" && r.category !== cat) return false;
       if (!needle) return true;
-      return (r.title + " " + r.tag + " " + r.category + " " + r.blurb + " " + r.ingredients.join(" "))
+      return (
+        r.title +
+        " " +
+        r.tag +
+        " " +
+        r.category +
+        " " +
+        r.blurb +
+        " " +
+        r.ingredients.join(" ")
+      )
         .toLowerCase()
         .includes(needle);
     });
   }, [q, cat]);
+
+  const selected =
+    list.find((r) => r.id === selId) ?? RECIPES.find((r) => r.id === selId) ?? null;
 
   function toggleSave(id: string) {
     setSaved((prev) => {
@@ -64,188 +70,135 @@ export default function RecipesPage() {
     });
   }
 
-  return (
-    <main className="livv-page min-h-full">
-      <div className="mx-auto w-full max-w-xl px-5 pb-14 sm:px-6">
-        <header className="pt-6 sm:pt-9">
-          <Link
-            href="/home/health"
-            className="inline-flex items-center gap-1 text-[10px] font-semibold uppercase tracking-[.18em] text-livv-muted"
+  if (selected) {
+    return (
+      <main className="hsys" aria-label={selected.title}>
+        <div className="hsys-inner">
+          <button
+            type="button"
+            className="hsys-back"
+            onClick={() => setSelId(null)}
+            style={{ background: "none", border: 0, padding: 0, cursor: "pointer" }}
           >
-            <ChevronLeft size={13} /> Health
-          </Link>
-          <div className="mt-7 flex items-center gap-2 text-[10px] font-semibold uppercase tracking-[.2em] text-livv-accent">
-            <Utensils size={13} /> Food
-          </div>
-          <h1 className="mt-2 text-[40px] font-semibold leading-[.96] tracking-[-.06em] sm:text-[48px]">
-            Cook real food.
-          </h1>
-          <p className="mt-4 max-w-[42ch] text-[13px] leading-6 text-livv-muted">
-            Everyday meals with clear steps. Breakfast through dessert. Built for normal weeks, not special occasions.
-          </p>
+            ← Recipes
+          </button>
+          <header className="hsys-mast">
+            <p className="hsys-k">{selected.category}</p>
+            <h1 className="hsys-title">{selected.title}</h1>
+            <p className="hsys-sub">{selected.blurb}</p>
+            <div className="hsys-recipe-meta" style={{ marginTop: "0.85rem" }}>
+              <span>{selected.time} min</span>
+              <span>{selected.servings}</span>
+              <span>{selected.tag}</span>
+            </div>
+          </header>
+
+          <section className="hsys-section">
+            <p className="hsys-label">Ingredients</p>
+            <div className="hsys-list">
+              {selected.ingredients.map((ing) => (
+                <div key={ing} className="hsys-item">
+                  <p className="hsys-item-t" style={{ fontWeight: 500, fontSize: "0.95rem" }}>
+                    {ing}
+                  </p>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          <section className="hsys-section">
+            <p className="hsys-label">Method</p>
+            <div className="hsys-list">
+              {selected.steps.map((step, i) => (
+                <div key={step} className="hsys-item">
+                  <div>
+                    <p className="hsys-item-t">{String(i + 1).padStart(2, "0")}</p>
+                    <p className="hsys-item-s">{step}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+
+          <button type="button" className="hsys-btn ghost" onClick={() => toggleSave(selected.id)}>
+            {saved.includes(selected.id) ? "Saved" : "Save recipe"}
+          </button>
+        </div>
+      </main>
+    );
+  }
+
+  return (
+    <main className="hsys" aria-label="Recipes">
+      <div className="hsys-inner">
+        <Link href="/home/health" className="hsys-back">
+          <ChevronLeft size={13} /> Health
+        </Link>
+        <header className="hsys-mast">
+          <p className="hsys-k">Food</p>
+          <h1 className="hsys-title">Recipes</h1>
+          <p className="hsys-sub">Real food you can cook tonight.</p>
         </header>
 
-        <SearchField
-          value={q}
-          onChange={setQ}
-          placeholder="Search recipes or ingredients..."
-          aria-label="Search recipes"
-          className="mt-8"
-        />
-
-        <div className="mt-5 flex gap-2 overflow-x-auto pb-1 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-          {CATEGORIES.map((c) => {
-            const on = cat === c;
-            return (
+        <section className="hsys-section">
+          <label className="hsys-field">
+            <span>Search</span>
+            <input
+              value={q}
+              onChange={(e) => setQ(e.target.value)}
+              placeholder="Ingredient, dish, category"
+            />
+          </label>
+          <div className="hsys-chips" style={{ marginTop: "0.85rem" }}>
+            {CATEGORIES.map((c) => (
               <button
                 key={c}
                 type="button"
+                className={"hsys-chip" + (cat === c ? " on" : "")}
                 onClick={() => setCat(c)}
-                className={
-                  "shrink-0 rounded-full border px-4 py-2 text-[11px] font-semibold tracking-[-.01em] transition " +
-                  (on
-                    ? "border-livv-accent bg-livv-accent-soft text-[rgb(var(--livv-ink))]"
-                    : "border-livv-border text-livv-muted")
-                }
-                aria-pressed={on}
               >
                 {c}
               </button>
-            );
-          })}
-        </div>
-
-        <section className="mt-9">
-          <div className="flex items-end justify-between gap-4">
-            <div>
-              <p className="text-[10px] font-semibold uppercase tracking-[.19em] text-livv-muted">
-                Collection
-              </p>
-              <h2 className="mt-1 text-[27px] font-semibold tracking-[-.045em]">
-                Simple. Repeatable. Good.
-              </h2>
-            </div>
-            <span className="text-[10px] uppercase tracking-[.14em] text-livv-muted">
-              {list.length} {list.length === 1 ? "recipe" : "recipes"}
-            </span>
+            ))}
           </div>
+        </section>
 
-          <div className="mt-6 grid gap-4">
-            {list.map((r) => {
-              const isSaved = saved.includes(r.id);
-              const open = selId === r.id;
-              return (
-                <div
-                  key={r.id}
-                  className="overflow-hidden rounded-[22px] border border-livv-border bg-[color-mix(in_srgb,rgb(var(--livv-ink))_2.5%,transparent)]"
-                >
-                  <button
-                    type="button"
-                    onClick={() => setSelId(open ? null : r.id)}
-                    className="group w-full text-left"
-                    aria-expanded={open}
-                  >
-                    <div className="px-5 pb-5 pt-5">
-                      <div className="flex items-start justify-between gap-3">
-                        <div className="min-w-0">
-                          <span className="rounded-full border border-livv-border px-2.5 py-1 text-[10px] font-semibold uppercase tracking-[.12em] text-livv-muted">
-                            {r.category}
-                          </span>
-                          <h3 className="mt-3 text-[17px] font-semibold leading-snug tracking-[-.03em]">
-                            {r.title}
-                          </h3>
-                        </div>
-                        <span className="mt-0.5 shrink-0 text-livv-muted" aria-hidden>
-                          {isSaved ? (
-                            <BookmarkCheck size={16} className="text-livv-accent" />
-                          ) : (
-                            <Bookmark size={16} />
-                          )}
-                        </span>
-                      </div>
-                      <p className="mt-2 line-clamp-2 text-[12px] leading-5 text-livv-muted">{r.blurb}</p>
-                      <div className="mt-3.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-[11px] text-livv-muted">
-                        <span className="font-medium text-[rgb(var(--livv-ink)/0.75)]">{r.tag}</span>
-                        <span className="flex items-center gap-1">
-                          <Clock3 size={12} />
-                          {r.time} min
-                        </span>
-                        <span className="flex items-center gap-1">
-                          <Users size={12} />
-                          {r.servings}
-                        </span>
-                        <span className="ml-auto font-semibold">{open ? "Close" : "Open"}</span>
-                      </div>
-                    </div>
-                  </button>
-
-                  {open && (
-                    <div className="border-t border-livv-border px-5 pb-6 pt-5">
-                      <div className="grid gap-8 sm:grid-cols-[.85fr_1.15fr]">
-                        <div>
-                          <h3 className="text-[10px] font-semibold uppercase tracking-[.18em] text-livv-muted">
-                            Ingredients
-                          </h3>
-                          <ul className="mt-4 space-y-3 text-[13px] leading-5">
-                            {r.ingredients.map((x) => (
-                              <li key={x} className="flex gap-2.5">
-                                <span className="mt-2 h-1 w-1 shrink-0 rounded-full bg-livv-accent" />
-                                <span>{x}</span>
-                              </li>
-                            ))}
-                          </ul>
-                        </div>
-                        <div>
-                          <h3 className="text-[10px] font-semibold uppercase tracking-[.18em] text-livv-muted">Method</h3>
-                          <ol className="mt-4 space-y-4">
-                            {r.steps.map((x, i) => (
-                              <li key={`${i}-${x.slice(0, 20)}`} className="flex gap-3 text-[13px] leading-6">
-                                <span className="font-semibold tabular-nums text-livv-accent">{i + 1}.</span>
-                                <span>{x}</span>
-                              </li>
-                            ))}
-                          </ol>
-                          {r.tip && (
-                            <div className="mt-7 border-t border-livv-border pt-5">
-                              <p className="text-[10px] font-semibold uppercase tracking-[.18em] text-livv-muted">
-                                Tip
-                              </p>
-                              <p className="mt-2 text-[12px] leading-5 text-livv-muted">{r.tip}</p>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-
-                      <button
-                        type="button"
-                        onClick={() => toggleSave(r.id)}
-                        className={
-                          "mt-6 flex w-full items-center justify-center gap-2 rounded-full border py-3.5 text-[12px] font-semibold uppercase tracking-[.14em] transition " +
-                          (isSaved
-                            ? "border-livv-accent bg-livv-accent-soft text-[rgb(var(--livv-ink))]"
-                            : "border-livv-border text-livv-muted")
-                        }
-                      >
-                        {isSaved ? (
-                          <>
-                            <BookmarkCheck size={15} /> Saved
-                          </>
-                        ) : (
-                          <>
-                            <Bookmark size={15} /> Save recipe
-                          </>
-                        )}
-                      </button>
-                    </div>
-                  )}
+        <section className="hsys-section">
+          <p className="hsys-label">
+            {list.length} recipe{list.length === 1 ? "" : "s"}
+          </p>
+          <div className="hsys-list">
+            {list.map((r) => (
+              <button
+                key={r.id}
+                type="button"
+                className="hsys-recipe"
+                style={{
+                  width: "100%",
+                  textAlign: "left",
+                  background: "none",
+                  border: 0,
+                  borderBottom:
+                    "1px solid color-mix(in srgb, rgb(var(--livv-border)) 75%, transparent)",
+                  cursor: "pointer",
+                  color: "inherit",
+                  padding: "1.15rem 0",
+                }}
+                onClick={() => setSelId(r.id)}
+              >
+                <p className="hsys-recipe-t">
+                  {r.title}
+                  {saved.includes(r.id) ? " · Saved" : ""}
+                </p>
+                <p className="hsys-recipe-s">{r.blurb}</p>
+                <div className="hsys-recipe-meta">
+                  <span>{r.category}</span>
+                  <span>{r.time} min</span>
+                  <span>{r.tag}</span>
                 </div>
-              );
-            })}
+              </button>
+            ))}
           </div>
-
-          {!list.length && (
-            <p className="py-14 text-center text-[13px] text-livv-muted">Nothing matched that search.</p>
-          )}
         </section>
       </div>
     </main>
