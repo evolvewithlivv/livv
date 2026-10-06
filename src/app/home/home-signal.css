@@ -1,5 +1,4 @@
 .ho {
-  /* ink/muted/border are channel triples; bg is a full color */
   --ink: rgb(var(--livv-ink));
   --bg: var(--livv-bg);
   --muted: rgb(var(--livv-muted));
@@ -12,7 +11,7 @@
   max-width: 26rem;
   margin: 0 auto;
   min-height: calc(100dvh - 5.75rem);
-  padding: 0.85rem 1.35rem 1.5rem;
+  padding: 0.85rem 1.35rem max(1.5rem, calc(5.5rem + env(safe-area-inset-bottom, 0px)));
   display: flex;
   flex-direction: column;
 }

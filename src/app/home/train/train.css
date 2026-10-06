@@ -11,7 +11,7 @@
 .tr-inner {
   max-width: 26rem;
   margin: 0 auto;
-  padding: 0.9rem 1.35rem 2.75rem;
+  padding: 0.9rem 1.35rem max(2.75rem, calc(5.5rem + env(safe-area-inset-bottom, 0px)));
 }
 .tr-k {
   margin: 0;
