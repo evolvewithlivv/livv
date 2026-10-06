@@ -85,7 +85,14 @@ export default function SettingsPage() {
     const next = { ...prefs, [key]: !prefs[key] };
     patchPrefs(next);
     setPrefs(loadPrefs());
-    feedback("tick");
+
+    // Haptics are intentionally tested after enabling so the user gets
+    // immediate confirmation that the preference is active.
+    if (key === "haptics" && next.haptics) {
+      feedback("medium");
+    } else {
+      feedback("tick");
+    }
   };
 
   const onExport = () => {
@@ -168,7 +175,7 @@ export default function SettingsPage() {
         <Link href="/home/profile" className="st-back">
           You
         </Link>
-        <div className="st-heading"><div><p className="st-kicker">ACCOUNT / CONTROL</p><h1 className="st-title">Settings</h1></div><span className="st-version">V1</span></div>
+        <div className="st-heading"><div><p className="st-kicker">ACCOUNT / CONTROL</p><h1 className="st-title">Settings</h1></div></div>
 
         <section className="st-group st-account">
           <p className="st-group-k">Account</p>
@@ -299,7 +306,7 @@ export default function SettingsPage() {
         {status ? <p className="st-msg">{status}</p> : null}
         {error ? <p className="st-err">{error}</p> : null}
 
-        <p className="st-foot">LIVV · V1</p>
+        <p className="st-foot">LIVV · CONTROL YOUR EXPERIENCE</p>
       </div>
     </main>
   );
