@@ -96,7 +96,6 @@ export default function HomePage() {
       aria-label="LIVV Home"
     >
       <div className="hs-void" aria-hidden />
-      <div className="hs-grid" aria-hidden />
 
       <div className="hs-inner">
         <header className="hs-top">
