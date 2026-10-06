@@ -23,6 +23,13 @@ export default function DictionaryPage() {
           <h1 className="hsys-title">Dictionary</h1>
           <p className="hsys-sub">Words are useful when they change what you notice, decide, and do.</p>
         </header>
+        <nav className="hsys-nav" aria-label="Health systems">
+          <Link href="/home/health/sleep" aria-current="">Sleep</Link>
+          <Link href="/home/health/meditation">Mind</Link>
+          <Link href="/home/health/recipes">Food</Link>
+          <Link href="/home/health/trails">Move</Link>
+          <Link href="/home/health/dictionary" aria-current="page">Knowledge</Link>
+        </nav>
 
         <section className="hsys-section">
           <label className="hsys-field"><span><Search size={10} style={{ verticalAlign: -1, marginRight: 4 }} /> Search the language</span><input value={q} onChange={(e) => setQ(e.target.value)} placeholder="Word or idea" /></label>
