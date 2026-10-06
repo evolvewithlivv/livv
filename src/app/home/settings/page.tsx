@@ -151,7 +151,7 @@ export default function SettingsPage() {
     window.location.href = "/";
   };
 
-  const username = me?.username ? `@${me.username}` : "Member";
+  const username = me?.username ? `@${me.username}` : "Account";
 
   return (
     <main className="livv-page min-h-full text-livv-ink pb-32">
