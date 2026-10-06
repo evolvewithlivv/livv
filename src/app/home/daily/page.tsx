@@ -1,416 +1,229 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
-import { feedback } from "@/lib/sensory";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import {
+  claimDailyDrop,
   completeDailyTask,
   dailyQuestion,
   dailySummary,
   dailyTasks,
-  journalHistory,
-  loadBuffs,
   loadDailyState,
   saveDailyJournal,
-  type DailyJournalEntry,
+  type DailyTask,
 } from "@/lib/daily";
-
-const TRACKER_KEY = "livv-daily-trackers-v1";
-
-type Trackers = { water: number; meals: number; movement: boolean; reset: boolean };
-type StoredTrackers = Trackers & { date: string };
-
-const DEFAULT_TRACKERS: Trackers = { water: 0, meals: 0, movement: false, reset: false };
-
-function localDayKey(d = new Date()) {
-  const y = d.getFullYear();
-  const m = String(d.getMonth() + 1).padStart(2, "0");
-  const day = String(d.getDate()).padStart(2, "0");
-  return `${y}-${m}-${day}`;
-}
-
-function loadTrackersForToday(): Trackers {
-  try {
-    const raw = window.localStorage.getItem(TRACKER_KEY);
-    if (!raw) return { ...DEFAULT_TRACKERS };
-    const saved = JSON.parse(raw) as Partial<StoredTrackers>;
-    if (saved.date !== localDayKey()) return { ...DEFAULT_TRACKERS };
-    return {
-      water: typeof saved.water === "number" ? saved.water : 0,
-      meals: typeof saved.meals === "number" ? saved.meals : 0,
-      movement: Boolean(saved.movement),
-      reset: Boolean(saved.reset),
-    };
-  } catch {
-    return { ...DEFAULT_TRACKERS };
-  }
-}
-
-function questionForDayKey(key: string): string {
-  const parts = key.split("-").map((n) => Number(n));
-  if (parts.length !== 3 || parts.some((n) => !Number.isFinite(n))) return "";
-  const [y, m, d] = parts;
-  const date = new Date(y, m - 1, d);
-  if (Number.isNaN(date.getTime())) return "";
-  try {
-    return dailyQuestion(date);
-  } catch {
-    return "";
-  }
-}
+import { feedback } from "@/lib/sensory";
+import "./daily.css";
 
 export default function DailyPage() {
   const [now] = useState(() => new Date());
   const [completed, setCompleted] = useState<string[]>([]);
   const [answer, setAnswer] = useState("");
-  const [journal, setJournal] = useState<DailyJournalEntry[]>([]);
-  const [doubleXp, setDoubleXp] = useState(false);
-  const [trackers, setTrackers] = useState<Trackers>(DEFAULT_TRACKERS);
+  const [savedNote, setSavedNote] = useState("");
+  const [status, setStatus] = useState("");
+  const [dropClaimed, setDropClaimed] = useState(false);
+  const [dropName, setDropName] = useState<string | null>(null);
 
-  const tasks = useMemo(() => dailyTasks(now), [now]);
   const question = useMemo(() => dailyQuestion(now), [now]);
-  const summary = useMemo(() => dailySummary(now), [now]);
+  const tasks = useMemo(() => dailyTasks(now), [now]);
+  const summary = useMemo(() => dailySummary(now), [now, completed, savedNote, dropClaimed]);
 
-  const refresh = () => {
+  const dateLabel = useMemo(
+    () =>
+      new Intl.DateTimeFormat("en-US", {
+        weekday: "long",
+        month: "long",
+        day: "numeric",
+      }).format(now),
+    [now],
+  );
+
+  const sync = useCallback(() => {
     const state = loadDailyState(now);
     setCompleted(state.completed);
-    setJournal(state.journal);
-    const today = state.journal.find((item) => item.key === state.key);
-    if (today) setAnswer(today.answer);
-    setDoubleXp(Boolean(loadBuffs().doubleXpUntil));
-  };
+    setDropClaimed(state.dropClaimed);
+    const todayJournal = state.journal.find((j) => j.key === state.key);
+    if (todayJournal?.answer) {
+      setAnswer(todayJournal.answer);
+      setSavedNote(todayJournal.answer);
+    }
+  }, [now]);
 
   useEffect(() => {
-    refresh();
-    setTrackers(loadTrackersForToday());
-    const id = window.setInterval(() => {
-      setTrackers((prev) => {
-        try {
-          const raw = window.localStorage.getItem(TRACKER_KEY);
-          if (!raw) return prev;
-          const saved = JSON.parse(raw) as Partial<StoredTrackers>;
-          if (saved.date && saved.date !== localDayKey()) {
-            window.localStorage.setItem(
-              TRACKER_KEY,
-              JSON.stringify({ ...DEFAULT_TRACKERS, date: localDayKey() }),
-            );
-            return { ...DEFAULT_TRACKERS };
-          }
-        } catch {}
-        return prev;
-      });
-    }, 60_000);
-    for (const event of ["livv-daily", "livv-record", "livv-buffs"])
-      window.addEventListener(event, refresh);
+    sync();
+    window.addEventListener("livv-daily", sync);
+    window.addEventListener("livv-record", sync);
     return () => {
-      window.clearInterval(id);
-      for (const event of ["livv-daily", "livv-record", "livv-buffs"])
-        window.removeEventListener(event, refresh);
+      window.removeEventListener("livv-daily", sync);
+      window.removeEventListener("livv-record", sync);
     };
-  }, []);
-
-  const saveTrackers = (next: Trackers) => {
-    setTrackers(next);
-    try {
-      const payload: StoredTrackers = { ...next, date: localDayKey() };
-      window.localStorage.setItem(TRACKER_KEY, JSON.stringify(payload));
-    } catch {}
-  };
+  }, [sync]);
 
   const doneCount = completed.length;
-  const archive = journalHistory().slice(0, 8);
+  const allDone = doneCount >= 3;
+  const hasActed = doneCount > 0 || Boolean(savedNote);
 
-  const saveAnswer = () => {
-    if (!answer.trim()) return;
-    feedback("complete");
-    saveDailyJournal(answer, now);
-    refresh();
-  };
-
-  const complete = (id: "body" | "life") => {
+  function complete(id: DailyTask["id"]) {
     if (completed.includes(id)) return;
+    if (id === "mind") {
+      document.getElementById("daily-reflect")?.scrollIntoView({
+        behavior: "smooth",
+        block: "center",
+      });
+      return;
+    }
+    const next = completeDailyTask(id, now);
+    setCompleted(next.completed);
     feedback("complete");
-    completeDailyTask(id, now);
-    refresh();
-  };
+    window.dispatchEvent(new Event("livv-daily"));
+  }
 
-  const toggle = (key: "movement" | "reset") => {
-    const turningOn = !trackers[key];
-    const next = { ...trackers, [key]: turningOn };
-    saveTrackers(next);
-    feedback(turningOn ? "complete" : "tick");
-  };
+  function saveAnswer() {
+    const clean = answer.trim();
+    if (!clean) return;
+    const next = saveDailyJournal(clean, now);
+    setCompleted(next.completed);
+    setSavedNote(clean);
+    setStatus("Saved.");
+    feedback("complete");
+    window.dispatchEvent(new Event("livv-daily"));
+    window.setTimeout(() => setStatus(""), 1800);
+  }
 
-  const step = (key: "water" | "meals", max: number) => {
-    const nextVal = Math.min(max, trackers[key] + 1);
-    const next = { ...trackers, [key]: nextVal };
-    saveTrackers(next);
-    feedback(nextVal >= max ? "complete" : "tick");
-  };
+  function claimDrop() {
+    const result = claimDailyDrop(now);
+    if (result.claimed) {
+      setDropClaimed(true);
+      setDropName(result.drop.name);
+      feedback("complete");
+      window.dispatchEvent(new Event("livv-daily"));
+    }
+  }
 
   return (
-    <main className="livv-page min-h-full pb-20">
-      <div className="livv-stagger mx-auto max-w-xl px-5 pt-6 pb-8">
-        <header className="livv-page-hero livv-daily-hero">
-          <div className="livv-page-hero-main">
-            <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-[var(--livv-pro-muted)]">
-              {now.toLocaleDateString("en-US", { weekday: "long", month: "long", day: "numeric" })}
-            </p>
-            <p className="mt-4 text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--livv-pro-accent)]">
-              Reflect
-            </p>
-            <h1 className="mt-2 max-w-[24ch] text-[28px] font-semibold leading-[1.08] tracking-[-0.045em] text-[var(--livv-pro-ink)] sm:text-[32px]">
-              {question}
-            </h1>
-            <div className="mt-5 flex items-center gap-3">
-            <div className="h-1 flex-1 overflow-hidden rounded-full bg-[var(--livv-pro-surface-2)]">
+    <main className="dy" aria-label="Daily">
+      <div className="dy-inner">
+        <header>
+          <p className="dy-k">Today</p>
+          <p className="dy-date">{dateLabel}</p>
+          <h1 className="dy-question">{question}</h1>
+          <div
+            className="dy-progress"
+            aria-label={`${doneCount} of 3 actions complete`}
+          >
+            <div className="dy-progress-bar">
               <div
-                className="h-full rounded-full bg-[var(--livv-pro-accent)] transition-[width] duration-500 ease-out"
+                className="dy-progress-fill"
                 style={{ width: `${Math.min(100, (doneCount / 3) * 100)}%` }}
               />
             </div>
-            <span className="shrink-0 text-[11px] tabular-nums text-[var(--livv-pro-muted)]">
-              {doneCount}/3
-            </span>
-            {doubleXp ? (
-              <span className="shrink-0 text-[10px] font-semibold text-[var(--livv-pro-accent)]">2× XP</span>
-            ) : null}
-            </div>
+            <span className="dy-progress-n">{doneCount}/3</span>
           </div>
         </header>
 
-        <section id="daily-question" className="mt-8">
-          <textarea
-            value={answer}
-            onChange={(e) => setAnswer(e.target.value)}
-            placeholder="Write your answer here. It stays in your LIVV journal."
-            aria-label="Daily reflection"
-            className="min-h-32 w-full resize-none rounded-2xl border border-[var(--livv-pro-line)] bg-[var(--livv-pro-surface-2)] p-4 text-[14px] leading-relaxed text-[var(--livv-pro-ink)] outline-none placeholder:text-[var(--livv-pro-muted)] focus:border-[var(--livv-pro-accent)]"
-          />
-          <div className="mt-3 flex items-center justify-between gap-3">
-            <span className="text-[10px] uppercase tracking-[.16em] text-[var(--livv-pro-muted)]">
-              Private journal
-            </span>
-            <button
-              type="button"
-              onClick={saveAnswer}
-              disabled={!answer.trim()}
-              className="livv-press rounded-full bg-[var(--livv-pro-ink)] px-4 py-2.5 text-[10px] font-semibold uppercase tracking-[.14em] text-[var(--livv-pro-bg)] disabled:opacity-30"
-            >
-              Save answer
-            </button>
-          </div>
-        </section>
-
-        <section className="mt-12">
-          <SectionHead label="Act" title="Three things worth doing." sub="Body, life, and mind. On your schedule." />
-          <div className="mt-5 divide-y divide-[var(--livv-pro-line)] border-t border-[var(--livv-pro-line)]">
-            {tasks.map((task, index) => {
-              const done = completed.includes(task.id);
-              const isMind = task.id === "mind";
-              return (
-                <button
-                  key={task.id}
-                  type="button"
-                  onClick={() => {
-                    if (done) return;
-                    if (isMind)
-                      document.getElementById("daily-question")?.scrollIntoView({
-                        behavior: "smooth",
-                      });
-                    else complete(task.id as "body" | "life");
-                  }}
-                  className="livv-press group flex w-full items-start gap-4 px-1 py-5 text-left transition-colors active:bg-[var(--livv-pro-surface-2)]/40"
-                >
-                  <span
-                    className={
-                      "grid h-10 w-10 shrink-0 place-items-center rounded-full border text-[10px] font-bold transition-all duration-300 " +
-                      (done
-                        ? "border-[var(--livv-pro-accent)] bg-[var(--livv-pro-accent-soft)] text-[var(--livv-pro-accent)] scale-105"
-                        : "border-[var(--livv-pro-line)] text-[var(--livv-pro-muted)]")
-                    }
-                  >
-                    {done ? "✓" : String(index + 1).padStart(2, "0")}
-                  </span>
-                  <span className="min-w-0 flex-1">
-                    <span className="block text-[9px] font-semibold uppercase tracking-[.18em] text-[var(--livv-pro-muted)]">
-                      {task.label}
-                    </span>
-                    <span
-                      className={
-                        "mt-1.5 block text-[18px] font-semibold " +
-                        (done
-                          ? "text-[var(--livv-pro-muted)] line-through"
-                          : "text-[var(--livv-pro-ink)]")
-                      }
-                    >
-                      {task.title}
-                    </span>
-                    <span className="mt-1.5 block text-[12px] leading-relaxed text-[var(--livv-pro-muted)]">
-                      {task.description}
-                      {isMind && !done ? " Answer above to finish this step." : ""}
-                    </span>
-                  </span>
-                  <span className="pt-2 text-[var(--livv-pro-muted)]">→</span>
-                </button>
-              );
-            })}
-          </div>
-        </section>
-
-        <section className="mt-12">
-          <SectionHead label="Trackers" title="The basics." sub="Resets at midnight." />
-          <div className="mt-5 divide-y divide-[var(--livv-pro-line)] border-t border-[var(--livv-pro-line)]">
-            <TrackerRow
-              label="Water"
-              value={`${trackers.water} / 8`}
-              detail="glasses"
-              action={trackers.water >= 8 ? "Complete" : "+ 1 glass"}
-              done={trackers.water >= 8}
-              onClick={() => step("water", 8)}
-            />
-            <TrackerRow
-              label="Meals"
-              value={`${trackers.meals} / 3`}
-              detail="logged"
-              action={trackers.meals >= 3 ? "Complete" : "+ 1 meal"}
-              done={trackers.meals >= 3}
-              onClick={() => step("meals", 3)}
-            />
-            <TrackerRow
-              label="Movement"
-              value={trackers.movement ? "Done" : "Open"}
-              detail="move your body"
-              action={trackers.movement ? "Complete" : "Mark done"}
-              done={trackers.movement}
-              onClick={() => toggle("movement")}
-            />
-            <TrackerRow
-              label="Reset"
-              value={trackers.reset ? "Done" : "Open"}
-              detail="tidy, plan, or reset your space"
-              action={trackers.reset ? "Complete" : "Mark done"}
-              done={trackers.reset}
-              onClick={() => toggle("reset")}
-              last
-            />
-          </div>
-        </section>
-
-        {summary.callback && (
-          <section className="mt-12">
-            <p className="text-[10px] uppercase tracking-[.2em] text-[var(--livv-pro-muted)]">
-              A month ago
-            </p>
-            <p className="mt-3 text-[10px] uppercase tracking-[.14em] text-[var(--livv-pro-muted)]">
-              You wrote
-            </p>
-            <p className="mt-2 text-[18px] leading-snug">“{summary.callback.answer}”</p>
-            <p className="mt-3 text-[12px] text-[var(--livv-pro-muted)]">
-              Look at the evidence, not the story you tell yourself.
-            </p>
-          </section>
-        )}
-
-        <section className="mt-12 pb-4">
-          <div className="flex items-end justify-between">
-            <div>
-              <p className="text-[10px] font-semibold uppercase tracking-[.2em] text-[var(--livv-pro-muted)]">
-                Archive
-              </p>
-              <h2 className="mt-1.5 text-[26px] font-semibold tracking-tight">Your days live here.</h2>
-            </div>
-          </div>
-          <div className="mt-6 space-y-4">
-            {archive.map((entry, index) => {
-              const q = questionForDayKey(entry.key);
-              return (
-                <div
-                  key={entry.key + String(index)}
-                  className="rounded-2xl border border-[var(--livv-pro-line)] bg-[var(--livv-pro-surface)] px-4 py-4"
-                >
-                  <div className="flex items-center justify-between gap-3">
-                    <span className="text-[10px] font-semibold uppercase tracking-[.14em] text-[var(--livv-pro-muted)]">
-                      Entry {archive.length - index}
-                    </span>
-                    <span className="text-[10px] text-[var(--livv-pro-muted)]">{entry.key}</span>
-                  </div>
-                  {q ? (
-                    <p className="mt-2 text-[13px] font-medium leading-snug text-[var(--livv-pro-ink)]">
-                      {q}
-                    </p>
-                  ) : null}
-                  <p className="mt-1.5 text-[13px] leading-relaxed text-[var(--livv-pro-muted)]">
-                    {entry.answer}
+        <section className="dy-section" aria-label="Today's actions">
+          <p className="dy-section-k">Today&apos;s actions</p>
+          {tasks.map((task, index) => {
+            const done = completed.includes(task.id);
+            return (
+              <button
+                key={task.id}
+                type="button"
+                className={"dy-action" + (done ? " is-done" : "")}
+                onClick={() => complete(task.id)}
+                disabled={done}
+                aria-pressed={done}
+              >
+                <span className="dy-mark" aria-hidden>
+                  {done ? "✓" : String(index + 1)}
+                </span>
+                <span className="dy-action-main">
+                  <p className="dy-action-label">{task.label}</p>
+                  <p className="dy-action-t">{task.title}</p>
+                  <p className="dy-action-s">
+                    {task.description}
+                    {task.id === "mind" && !done
+                      ? " Write your reflection below to complete this."
+                      : ""}
                   </p>
-                </div>
-              );
-            })}
-            {!archive.length && (
-              <p className="px-1 py-8 text-center text-[13px] text-[var(--livv-pro-muted)]">
-                No journal entries yet.
-              </p>
-            )}
+                </span>
+              </button>
+            );
+          })}
+        </section>
+
+        <section id="daily-reflect" className="dy-section" aria-label="Reflect">
+          <p className="dy-section-k">Reflect</p>
+          {!hasActed ? (
+            <p className="dy-action-s">
+              Take an action first. Then write what changed.
+            </p>
+          ) : null}
+          <div className="dy-reflect-box">
+            <textarea
+              value={answer}
+              onChange={(e) => setAnswer(e.target.value)}
+              placeholder={
+                hasActed
+                  ? "What changed? What did you learn?"
+                  : "Your private note for today…"
+              }
+              aria-label="Daily reflection"
+            />
+            <div className="dy-reflect-row">
+              <span className="dy-reflect-hint">
+                {savedNote ? "Saved to your record" : "Private · stays with you"}
+              </span>
+              <button
+                type="button"
+                className="dy-btn"
+                onClick={saveAnswer}
+                disabled={!answer.trim()}
+              >
+                {savedNote && answer.trim() === savedNote ? "Saved" : "Save"}
+              </button>
+            </div>
+            {status ? <p className="dy-status">{status}</p> : null}
           </div>
         </section>
+
+        {allDone ? (
+          <section className="dy-drop" aria-label="Day complete">
+            <p className="dy-section-k">Day complete</p>
+            {dropClaimed ? (
+              <>
+                <p className="dy-drop-t">{dropName || "Claimed"}</p>
+                <p className="dy-drop-s">Today is logged. Come back tomorrow.</p>
+              </>
+            ) : (
+              <>
+                <p className="dy-drop-t">You finished today&apos;s three.</p>
+                <p className="dy-drop-s">
+                  Claim what the day returns — then rest the system.
+                </p>
+                <button
+                  type="button"
+                  className="dy-btn"
+                  style={{ marginTop: "0.85rem" }}
+                  onClick={claimDrop}
+                >
+                  Claim
+                </button>
+              </>
+            )}
+          </section>
+        ) : null}
+
+        {summary.callback ? (
+          <section className="dy-callback" aria-label="One month ago">
+            <p className="dy-k">One month ago</p>
+            {summary.callback.question ? (
+              <p className="dy-callback-q">{summary.callback.question}</p>
+            ) : null}
+            <p className="dy-callback-a">“{summary.callback.answer}”</p>
+            <p className="dy-callback-foot">Look at the distance.</p>
+          </section>
+        ) : null}
       </div>
     </main>
-  );
-}
-
-function SectionHead({ label, title, sub }: { label: string; title: string; sub?: string }) {
-  return (
-    <div>
-      <p className="text-[10px] font-semibold uppercase tracking-[.2em] text-[var(--livv-pro-muted)]">
-        {label}
-      </p>
-      <h2 className="mt-1.5 text-[26px] font-semibold tracking-tight">{title}</h2>
-      {sub && <p className="mt-1.5 text-[12px] text-[var(--livv-pro-muted)]">{sub}</p>}
-    </div>
-  );
-}
-
-function TrackerRow({
-  label,
-  value,
-  detail,
-  action,
-  done,
-  onClick,
-  last,
-}: {
-  label: string;
-  value: string;
-  detail: string;
-  action: string;
-  done: boolean;
-  onClick: () => void;
-  last?: boolean;
-}) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className="livv-press flex w-full items-center gap-4 px-1 py-4 text-left transition-colors active:bg-[var(--livv-pro-surface-2)]/40"
-    >
-      <span
-        className={
-          "grid h-9 w-9 shrink-0 place-items-center rounded-full border text-[11px] font-semibold transition-all duration-300 " +
-          (done
-            ? "border-[var(--livv-pro-accent)] bg-[var(--livv-pro-accent-soft)] text-[var(--livv-pro-accent)] scale-105"
-            : "border-[var(--livv-pro-line)] text-[var(--livv-pro-muted)]")
-        }
-      >
-        {done ? "✓" : "+"}
-      </span>
-      <span className="min-w-0 flex-1">
-        <span className="block text-[14px] font-semibold">{label}</span>
-        <span className="mt-0.5 block text-[10px] text-[var(--livv-pro-muted)]">
-          {value} · {detail}
-        </span>
-      </span>
-      <span className="text-[10px] font-semibold uppercase tracking-[.12em] text-[var(--livv-pro-muted)]">
-        {action}
-      </span>
-    </button>
   );
 }
