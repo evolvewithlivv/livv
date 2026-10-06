@@ -188,7 +188,7 @@ export default function TrainPage() {
                       className="livv-press rounded-full border px-4 py-2.5 text-[12px] font-semibold"
                       style={chipStyle("#1769ff", selectedDayId === d.id)}
                     >
-                      {d.rest ? "Rest" : d.label}
+                      {d.rest ? "Rest day" : d.label}
                     </button>
                   ))}
                 </div>
