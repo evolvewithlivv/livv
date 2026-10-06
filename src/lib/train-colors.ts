@@ -18,7 +18,7 @@ export type SplitDef = {
   color: string;
 };
 
-const ACCENT = "#1769ff";
+const ACCENT = "#FF9D23";
 
 export const LIVV_COLORS = {
   blue: ACCENT,
@@ -158,7 +158,7 @@ export function chipStyle(_hex: string, on: boolean) {
       ? ACCENT
       : "color-mix(in srgb, rgb(var(--livv-ink)) 14%, transparent)",
     background: on
-      ? "rgba(23,105,255,.10)"
+      ? "rgba(255,157,35,.10)"
       : "color-mix(in srgb, rgb(var(--livv-ink)) 4%, transparent)",
     boxShadow: "none",
     color: on ? "rgb(var(--livv-ink))" : "rgb(var(--livv-muted))",
