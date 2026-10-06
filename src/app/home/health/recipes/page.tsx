@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { Bookmark, ChevronLeft, Clock3 } from "lucide-react";
 import { CATEGORIES, RECIPES, type CategoryFilter } from "@/lib/recipes-data";
+import { blankDay, loadHealthDays, todayKey, upsertHealthDay } from "@/lib/health";
 import "../health-systems.css";
 
 const SAVED_KEY = "livv-recipes-saved-v1";
@@ -33,6 +34,13 @@ export default function RecipesPage() {
     setSaved((prev) => { const next = prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]; persistSaved(next); return next; });
   }
 
+  function logMeal() {
+    const date = todayKey();
+    const history = loadHealthDays();
+    const base = history.find((d) => d.date === date) ?? blankDay(date);
+    upsertHealthDay({ ...base, meals: Math.min(6, base.meals + 1) }, history);
+  }
+
   if (selected) {
     return (
       <main className="hsys" aria-label={selected.title}>
@@ -53,7 +61,10 @@ export default function RecipesPage() {
         </nav>
           <section className="hsys-section"><p className="hsys-label">Ingredients</p><div className="hsys-list">{selected.ingredients.map((ing) => <div key={ing} className="hsys-item"><p className="hsys-item-t" style={{ fontWeight: 500 }}>{ing}</p></div>)}</div></section>
           <section className="hsys-section"><p className="hsys-label">Method</p><div className="hsys-list">{selected.steps.map((step, i) => <div key={step} className="hsys-item"><div><p className="hsys-item-t">{String(i + 1).padStart(2, "0")}</p><p className="hsys-item-s">{step}</p></div></div>)}</div></section>
-          <button type="button" className="hsys-btn ghost" onClick={() => toggleSave(selected.id)}><Bookmark size={12} style={{ verticalAlign: -2, marginRight: 5 }} />{saved.includes(selected.id) ? "Saved to kitchen" : "Save to kitchen"}</button>
+          <div className="hsys-actions">
+            <button type="button" className="hsys-btn" style={{ marginTop: 0 }} onClick={logMeal}>Log meal</button>
+            <button type="button" className="hsys-btn ghost" style={{ marginTop: 0 }} onClick={() => toggleSave(selected.id)}><Bookmark size={12} style={{ verticalAlign: -2, marginRight: 5 }} />{saved.includes(selected.id) ? "Saved to kitchen" : "Save to kitchen"}</button>
+          </div>
         </div>
       </main>
     );
