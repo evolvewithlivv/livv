@@ -2,14 +2,13 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { loadIdentity, addEmbers, resolvedAppearance, type Identity } from "@/lib/identity";
+import { loadIdentity, addEmbers, type Identity } from "@/lib/identity";
 import { checkInRecord, isCheckedInToday, loadRecord, type LivvRecord } from "@/lib/record";
 import { feedback } from "@/lib/sensory";
 import { dailySummary, dailyQuestion } from "@/lib/daily";
 import { quoteForSession, type Quote } from "@/lib/quotes";
 import { embersFromAction } from "@/lib/embers";
 import { nextMove, type Move } from "@/lib/command";
-import { LIVV_ICON_BLACK } from "@/lib/header-logo-black";
 import "./home-signal.css";
 
 function greetingForHour(hour: number): string {
@@ -28,6 +27,15 @@ function displayName(me: Identity): string {
   return "there";
 }
 
+function presenceLine(checkedIn: boolean, streak: number): string {
+  if (checkedIn) {
+    if (streak > 1) return `${streak} days present.`;
+    return "You showed up today.";
+  }
+  if (streak > 0) return `${streak}-day streak. Mark today.`;
+  return "Mark the day.";
+}
+
 export default function HomePage() {
   const [rec, setRec] = useState<LivvRecord | null>(null);
   const [me, setMe] = useState<Identity | null>(null);
@@ -35,14 +43,6 @@ export default function HomePage() {
   const [move, setMove] = useState<Move | null>(null);
   const [question, setQuestion] = useState("");
   const [now, setNow] = useState(() => new Date());
-  const [light, setLight] = useState(false);
-
-  const readLight = () => {
-    if (typeof document !== "undefined" && document.documentElement.dataset.theme) {
-      return document.documentElement.dataset.theme === "light";
-    }
-    return resolvedAppearance(loadIdentity().appearance) === "light";
-  };
 
   const pull = () => {
     const r = loadRecord();
@@ -50,42 +50,39 @@ export default function HomePage() {
     setMe(loadIdentity());
     setMove(nextMove(r));
     setQuestion(dailyQuestion(new Date()));
-    setLight(readLight());
     dailySummary();
   };
 
   useEffect(() => {
     pull();
     setQuote(quoteForSession());
-    setLight(readLight());
     const events = ["livv-identity", "livv-record", "livv-daily"];
     events.forEach((e) => window.addEventListener(e, pull));
     const clock = window.setInterval(() => setNow(new Date()), 30_000);
-    const root = document.documentElement;
-    const mo = new MutationObserver(() => setLight(readLight()));
-    mo.observe(root, { attributes: true, attributeFilter: ["data-theme"] });
     return () => {
       events.forEach((e) => window.removeEventListener(e, pull));
       window.clearInterval(clock);
-      mo.disconnect();
     };
   }, []);
 
   if (!rec || !me) {
-    return <main className="hs min-h-[70dvh]" aria-hidden />;
+    return <main className="ho" aria-hidden />;
   }
 
   const checkedIn = isCheckedInToday(rec);
   const name = displayName(me);
   const hello = greetingForHour(now.getHours());
   const dateLabel = new Intl.DateTimeFormat("en-US", {
-    weekday: "long",
-    month: "long",
+    weekday: "short",
+    month: "short",
     day: "numeric",
   }).format(now);
   const streak = rec.streak || 0;
   const embers = me.embers || 0;
   const sessions = rec.workoutsCompleted || 0;
+
+  const showCheckIn = !checkedIn;
+  const actionableMove = move && move.href !== "/home" ? move : null;
 
   const checkIn = () => {
     if (checkedIn) return;
@@ -102,97 +99,85 @@ export default function HomePage() {
   };
 
   return (
-    <main
-      className={"hs" + (checkedIn ? " is-present" : "")}
-      aria-label="LIVV Home"
-    >
-      <div className="hs-void" aria-hidden />
-
-      <div className="hs-inner">
-        <header className="hs-mast">
-          <p className="hs-mast-date">{dateLabel}</p>
-          <p className={"hs-mast-state" + (checkedIn ? " on" : "")}>
-            {checkedIn ? "Present" : "Not checked in"}
-          </p>
+    <main className={"ho" + (checkedIn ? " is-present" : "")} aria-label="Home">
+      <div className="ho-shell">
+        <header className="ho-top">
+          <p className="ho-date">{dateLabel}</p>
+          <Link href="/home/profile" className="ho-identity" aria-label="Open profile">
+            {me.photo ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={me.photo} alt="" className="ho-avatar" width={28} height={28} />
+            ) : (
+              <span className="ho-avatar-fallback" aria-hidden>
+                {(name[0] || "L").toUpperCase()}
+              </span>
+            )}
+            <span className={"ho-status" + (checkedIn ? " on" : "")}>
+              {checkedIn ? "Present" : "Away"}
+            </span>
+          </Link>
         </header>
 
-        <section className="hs-identity">
-          <div className="hs-mark-wrap" aria-hidden>
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={light ? LIVV_ICON_BLACK : "/livv-logo.png"}
-              alt=""
-              width={72}
-              height={72}
-              className="hs-logo"
-            />
-          </div>
-          <p className="hs-hello">{hello}</p>
-          <h1 className="hs-name">{name}</h1>
-          <p className="hs-line">
-            {checkedIn
-              ? streak > 1
-                ? `${streak} days present.`
-                : "You showed up today."
-              : "Mark the day."}
-          </p>
+        <section className="ho-today">
+          <p className="ho-hello">{hello}</p>
+          <h1 className="ho-name">{name}</h1>
+          <p className="ho-presence">{presenceLine(checkedIn, streak)}</p>
+
+          {showCheckIn ? (
+            <button type="button" className="ho-primary" onClick={checkIn}>
+              Check in
+            </button>
+          ) : actionableMove ? (
+            <Link href={actionableMove.href} className="ho-primary">
+              {actionableMove.cta}
+            </Link>
+          ) : (
+            <p className="ho-done">Today is logged.</p>
+          )}
+          {!showCheckIn && actionableMove ? (
+            <p className="ho-context">{actionableMove.reason}</p>
+          ) : null}
         </section>
 
-        <div className="hs-metrics" aria-label="Presence">
-          <div>
-            <span className="hs-m-v">{streak}</span>
-            <span className="hs-m-l">Streak</span>
-          </div>
-          <div>
-            <span className="hs-m-v">{embers.toLocaleString()}</span>
-            <span className="hs-m-l">Embers</span>
-          </div>
-          <div>
-            <span className="hs-m-v">{sessions}</span>
-            <span className="hs-m-l">Sessions</span>
-          </div>
-        </div>
-
-        <button
-          type="button"
-          className={"hs-check" + (checkedIn ? " done" : "")}
-          onClick={checkIn}
-          disabled={checkedIn}
-        >
-          {checkedIn ? "Checked in" : "Check in"}
-        </button>
-
-        <div className="hs-actions-list">
-          {move ? (
-            <Link href={move.href} className="hs-action-row">
-              <div>
-                <p className="hs-action-k">Next</p>
-                <p className="hs-action-t">{move.title}</p>
-                <p className="hs-action-s">{move.reason}</p>
+        {move && showCheckIn ? (
+          <section className="ho-block">
+            <p className="ho-k">Next</p>
+            <Link href={move.href} className="ho-row">
+              <div className="ho-row-main">
+                <p className="ho-row-t">{move.title}</p>
+                <p className="ho-row-s">{move.reason}</p>
               </div>
-              <span className="hs-action-go" aria-hidden>
-                {move.cta} →
-              </span>
+              <span className="ho-row-cta">{move.cta}</span>
             </Link>
-          ) : null}
+          </section>
+        ) : null}
 
-          {question ? (
-            <Link href="/home/daily" className="hs-action-row">
-              <div>
-                <p className="hs-action-k">Reflect</p>
-                <p className="hs-action-t">{question}</p>
+        {question ? (
+          <section className="ho-block">
+            <p className="ho-k">Reflect</p>
+            <Link href="/home/daily" className="ho-row">
+              <div className="ho-row-main">
+                <p className="ho-row-t ho-row-t-soft">{question}</p>
               </div>
-              <span className="hs-action-go" aria-hidden>
-                Daily →
-              </span>
+              <span className="ho-row-cta">Daily</span>
             </Link>
-          ) : null}
-        </div>
+          </section>
+        ) : null}
+
+        <p className="ho-signal" aria-label="Signal">
+          <span>{streak}d present</span>
+          <span className="ho-dot" aria-hidden />
+          <span>{embers.toLocaleString()} embers</span>
+          <span className="ho-dot" aria-hidden />
+          <span>
+            {sessions} session{sessions === 1 ? "" : "s"}
+          </span>
+        </p>
 
         {quote ? (
-          <footer className="hs-foot">
-            <p className="hs-q">“{quote.text}”</p>
-            <p className="hs-qa">{quote.author}</p>
+          <footer className="ho-quote">
+            <p className="ho-q">“{quote.text}”</p>
+            <p className="ho-qa">{quote.author}</p>
           </footer>
         ) : null}
       </div>
