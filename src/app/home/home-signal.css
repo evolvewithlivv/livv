@@ -17,20 +17,15 @@
   pointer-events: none;
   z-index: 0;
   background:
-    radial-gradient(ellipse 90% 55% at 50% -5%, color-mix(in srgb, var(--hs-accent) 18%, transparent), transparent 58%),
-    radial-gradient(ellipse 50% 35% at 50% 55%, color-mix(in srgb, var(--hs-accent) 6%, transparent), transparent 70%),
+    radial-gradient(ellipse 90% 55% at 50% -5%, color-mix(in srgb, var(--hs-accent) 16%, transparent), transparent 58%),
+    radial-gradient(ellipse 50% 35% at 50% 55%, color-mix(in srgb, var(--hs-accent) 5%, transparent), transparent 70%),
     radial-gradient(ellipse 70% 40% at 50% 110%, color-mix(in srgb, var(--hs-ink) 5%, transparent), transparent 55%);
-  animation: hs-void-breathe 8s ease-in-out infinite;
 }
 .hs.is-present .hs-void {
   background:
-    radial-gradient(ellipse 90% 55% at 50% -5%, color-mix(in srgb, var(--hs-accent) 22%, transparent), transparent 58%),
-    radial-gradient(ellipse 50% 35% at 50% 55%, color-mix(in srgb, var(--hs-accent) 8%, transparent), transparent 70%),
+    radial-gradient(ellipse 90% 55% at 50% -5%, color-mix(in srgb, var(--hs-accent) 20%, transparent), transparent 58%),
+    radial-gradient(ellipse 50% 35% at 50% 55%, color-mix(in srgb, var(--hs-accent) 7%, transparent), transparent 70%),
     radial-gradient(ellipse 70% 40% at 50% 110%, color-mix(in srgb, var(--hs-ink) 5%, transparent), transparent 55%);
-}
-@keyframes hs-void-breathe {
-  0%, 100% { opacity: 0.9; }
-  50% { opacity: 1; }
 }
 
 .hs-grid {
@@ -44,54 +39,6 @@
     linear-gradient(90deg, color-mix(in srgb, var(--hs-ink) 45%, transparent) 1px, transparent 1px);
   background-size: 40px 40px;
   mask-image: radial-gradient(ellipse 75% 65% at 50% 42%, black, transparent 78%);
-}
-
-.hs-particles {
-  position: absolute;
-  inset: 0;
-  pointer-events: none;
-  z-index: 1;
-  opacity: 0;
-  transition: opacity 1.2s ease;
-}
-.hs.awake .hs-particles {
-  opacity: 0.7;
-}
-.hs-p {
-  position: absolute;
-  width: 2px;
-  height: 2px;
-  border-radius: 50%;
-  background: color-mix(in srgb, var(--hs-accent) 75%, var(--hs-ink));
-  animation: hs-drift linear infinite;
-  box-shadow: 0 0 6px color-mix(in srgb, var(--hs-accent) 40%, transparent);
-}
-.hs-p.p0 { left: 8%; top: 18%; animation-duration: 26s; }
-.hs-p.p1 { left: 18%; top: 68%; animation-duration: 32s; }
-.hs-p.p2 { left: 28%; top: 12%; animation-duration: 28s; }
-.hs-p.p3 { left: 38%; top: 58%; animation-duration: 24s; }
-.hs-p.p4 { left: 48%; top: 28%; animation-duration: 34s; }
-.hs-p.p5 { left: 58%; top: 76%; animation-duration: 30s; }
-.hs-p.p6 { left: 68%; top: 16%; animation-duration: 36s; }
-.hs-p.p7 { left: 78%; top: 48%; animation-duration: 22s; }
-.hs-p.p8 { left: 88%; top: 22%; animation-duration: 38s; }
-.hs-p.p9 { left: 12%; top: 42%; animation-duration: 27s; }
-.hs-p.p10 { left: 22%; top: 86%; animation-duration: 33s; }
-.hs-p.p11 { left: 42%; top: 8%; animation-duration: 29s; }
-.hs-p.p12 { left: 62%; top: 40%; animation-duration: 31s; }
-.hs-p.p13 { left: 82%; top: 72%; animation-duration: 25s; }
-.hs-p.p14 { left: 5%; top: 55%; animation-duration: 35s; }
-.hs-p.p15 { left: 35%; top: 78%; animation-duration: 21s; }
-.hs-p.p16 { left: 55%; top: 50%; animation-duration: 40s; }
-.hs-p.p17 { left: 75%; top: 8%; animation-duration: 23s; }
-.hs-p.p18 { left: 92%; top: 38%; animation-duration: 37s; }
-.hs-p.p19 { left: 15%; top: 30%; animation-duration: 19s; }
-.hs-p.p20 { left: 45%; top: 92%; animation-duration: 41s; }
-.hs-p.p21 { left: 70%; top: 62%; animation-duration: 26s; }
-@keyframes hs-drift {
-  0% { transform: translate3d(0, 0, 0); opacity: 0.2; }
-  40% { transform: translate3d(4px, -18px, 0); opacity: 0.65; }
-  100% { transform: translate3d(-4px, -42px, 0); opacity: 0.15; }
 }
 
 .hs-inner {
@@ -110,13 +57,6 @@
   align-items: flex-start;
   justify-content: space-between;
   gap: 1rem;
-  opacity: 0;
-  transform: translateY(-8px);
-  transition: opacity 0.8s ease 0.1s, transform 0.8s ease 0.1s;
-}
-.hs.awake .hs-top {
-  opacity: 1;
-  transform: none;
 }
 .hs-top-left {
   display: flex;
@@ -154,13 +94,6 @@
   align-items: center;
   text-align: center;
   padding: 1.25rem 0 0.85rem;
-  opacity: 0;
-  transform: translateY(16px);
-  transition: opacity 0.95s cubic-bezier(0.16, 1, 0.3, 1) 0.18s, transform 0.95s cubic-bezier(0.16, 1, 0.3, 1) 0.18s;
-}
-.hs.awake .hs-hero {
-  opacity: 1;
-  transform: none;
 }
 
 .hs-signal {
@@ -172,44 +105,6 @@
   align-items: center;
   justify-content: center;
 }
-.hs-glow {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 7.5rem;
-  height: 7.5rem;
-  transform: translate(-50%, -50%);
-  border-radius: 50%;
-  background: radial-gradient(
-    circle,
-    color-mix(in srgb, var(--hs-accent) 28%, transparent) 0%,
-    color-mix(in srgb, var(--hs-accent) 10%, transparent) 38%,
-    transparent 68%
-  );
-  animation: hs-glow 4s ease-in-out infinite;
-  pointer-events: none;
-}
-.hs-orbit {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 8.25rem;
-  height: 8.25rem;
-  margin: 0;
-  transform: translate(-50%, -50%);
-  border-radius: 50%;
-  background: conic-gradient(
-    from 0deg,
-    transparent 0deg,
-    color-mix(in srgb, var(--hs-accent) 32%, transparent) 16deg,
-    transparent 42deg,
-    transparent 100%
-  );
-  mask-image: radial-gradient(circle, transparent 46%, black 47.5%, black 49.2%, transparent 50.5%);
-  -webkit-mask-image: radial-gradient(circle, transparent 46%, black 47.5%, black 49.2%, transparent 50.5%);
-  animation: hs-orbit 11s linear infinite;
-  opacity: 0.45;
-}
 
 .hs-mark {
   position: relative;
@@ -219,22 +114,8 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  animation: hs-mark-pulse 2.8s ease-in-out infinite;
-  filter: drop-shadow(0 0 18px color-mix(in srgb, var(--hs-accent) 45%, transparent))
-          drop-shadow(0 0 36px color-mix(in srgb, var(--hs-accent) 22%, transparent));
-}
-.hs-mark::before {
-  content: "";
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 100%;
-  height: 100%;
-  transform: translate(-50%, -50%);
-  border-radius: 50%;
-  border: 1px solid color-mix(in srgb, var(--hs-accent) 28%, transparent);
-  animation: hs-ring-pulse 2.8s ease-out infinite;
-  pointer-events: none;
+  filter: drop-shadow(0 0 18px color-mix(in srgb, var(--hs-accent) 40%, transparent))
+          drop-shadow(0 0 36px color-mix(in srgb, var(--hs-accent) 18%, transparent));
 }
 .hs-mark img {
   display: block;
@@ -244,33 +125,9 @@
   object-position: center;
   opacity: 1;
 }
-.hs.is-present .hs-glow {
-  background: radial-gradient(
-    circle,
-    color-mix(in srgb, var(--hs-accent) 36%, transparent) 0%,
-    color-mix(in srgb, var(--hs-accent) 14%, transparent) 40%,
-    transparent 70%
-  );
-}
 .hs.is-present .hs-mark {
-  filter: drop-shadow(0 0 22px color-mix(in srgb, var(--hs-accent) 60%, transparent))
-          drop-shadow(0 0 48px color-mix(in srgb, var(--hs-accent) 30%, transparent));
-}
-@keyframes hs-orbit {
-  to { transform: translate(-50%, -50%) rotate(360deg); }
-}
-@keyframes hs-glow {
-  0%, 100% { opacity: 0.75; transform: translate(-50%, -50%) scale(0.96); }
-  50% { opacity: 1; transform: translate(-50%, -50%) scale(1.06); }
-}
-@keyframes hs-mark-pulse {
-  0%, 100% { transform: scale(1); filter: drop-shadow(0 0 14px color-mix(in srgb, var(--hs-accent) 35%, transparent)) drop-shadow(0 0 28px color-mix(in srgb, var(--hs-accent) 16%, transparent)); }
-  50% { transform: scale(1.05); filter: drop-shadow(0 0 22px color-mix(in srgb, var(--hs-accent) 55%, transparent)) drop-shadow(0 0 44px color-mix(in srgb, var(--hs-accent) 28%, transparent)); }
-}
-@keyframes hs-ring-pulse {
-  0% { transform: translate(-50%, -50%) scale(0.92); opacity: 0.5; }
-  70% { transform: translate(-50%, -50%) scale(1.55); opacity: 0; }
-  100% { transform: translate(-50%, -50%) scale(1.55); opacity: 0; }
+  filter: drop-shadow(0 0 22px color-mix(in srgb, var(--hs-accent) 55%, transparent))
+          drop-shadow(0 0 48px color-mix(in srgb, var(--hs-accent) 25%, transparent));
 }
 
 .hs-hello {
@@ -308,13 +165,6 @@
   border-radius: 16px;
   border: 1px solid color-mix(in srgb, var(--hs-line) 90%, transparent);
   background: color-mix(in srgb, var(--hs-ink) 2.5%, transparent);
-  opacity: 0;
-  transform: translateY(12px);
-  transition: opacity 0.85s ease 0.28s, transform 0.85s ease 0.28s;
-}
-.hs.awake .hs-readouts {
-  opacity: 1;
-  transform: none;
 }
 .hs-read {
   flex: 1;
@@ -343,15 +193,6 @@
   opacity: 0.7;
 }
 
-.hs-actions {
-  opacity: 0;
-  transform: translateY(14px);
-  transition: opacity 0.85s ease 0.38s, transform 0.85s ease 0.38s;
-}
-.hs.awake .hs-actions {
-  opacity: 1;
-  transform: none;
-}
 .hs-primary {
   display: flex;
   align-items: center;
@@ -368,14 +209,10 @@
   letter-spacing: 0.14em;
   text-transform: uppercase;
   cursor: pointer;
-  transition: opacity 0.25s, transform 0.2s, box-shadow 0.3s;
   box-shadow: 0 0 0 transparent;
 }
 .hs-primary:not(.done) {
   box-shadow: 0 0 28px color-mix(in srgb, var(--hs-accent) 18%, transparent);
-}
-.hs-primary:active:not(:disabled) {
-  transform: scale(0.98);
 }
 .hs-primary.done {
   background: transparent;
@@ -393,11 +230,6 @@
   margin-top: 1.35rem;
   padding-top: 1.1rem;
   border-top: 1px solid var(--hs-line);
-  opacity: 0;
-  transition: opacity 1s ease 0.55s;
-}
-.hs.awake .hs-quote {
-  opacity: 1;
 }
 .hs-quote-text {
   margin: 0;
@@ -411,25 +243,4 @@
   font-size: 11px;
   letter-spacing: 0.06em;
   color: color-mix(in srgb, var(--hs-muted) 80%, transparent);
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .hs-orbit,
-  .hs-glow,
-  .hs-mark,
-  .hs-mark::before,
-  .hs-p,
-  .hs-void {
-    animation: none !important;
-  }
-  .hs-top,
-  .hs-hero,
-  .hs-actions,
-  .hs-quote,
-  .hs-readouts,
-  .hs-particles {
-    opacity: 1 !important;
-    transform: none !important;
-    transition: none !important;
-  }
 }
