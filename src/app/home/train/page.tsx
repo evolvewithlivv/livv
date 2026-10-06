@@ -33,6 +33,8 @@ function saveFullWorkout(w: Workout) {
   }
 }
 
+function dayName(code: string) { return ({MON:"Monday",TUE:"Tuesday",WED:"Wednesday",THU:"Thursday",FRI:"Friday",SAT:"Saturday",SUN:"Sunday"} as Record<string,string>)[code] || code; }
+
 function todayCode() {
   return ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"][new Date().getDay()];
 }
@@ -293,7 +295,7 @@ export default function TrainPage() {
                   }}
                   disabled={d.rest}
                 >
-                  {d.rest ? "Rest" : d.label}
+                  {dayName(d.day)} · {d.rest ? "Rest" : d.label}
                 </button>
               ))}
             </div>
