@@ -8,7 +8,6 @@ import {
   CalendarCheck2,
   Dumbbell,
   HeartPulse,
-  LayoutGrid,
   ShoppingBag,
   UserRound,
 } from "lucide-react";
@@ -19,12 +18,6 @@ const NAV = [
   { href: "/home/daily", label: "Daily", Icon: CalendarCheck2, match: (p: string) => p.startsWith("/home/daily") },
   { href: "/home/train", label: "Train", Icon: Dumbbell, match: (p: string) => p.startsWith("/home/train") },
   { href: "/home/health", label: "Health", Icon: HeartPulse, match: (p: string) => p.startsWith("/home/health") },
-  {
-    href: "/home/bulletin",
-    label: "Bulletin",
-    Icon: LayoutGrid,
-    match: (p: string) => p.startsWith("/home/bulletin"),
-  },
   { href: "/home/shop", label: "Shop", Icon: ShoppingBag, match: (p: string) => p.startsWith("/home/shop") },
   {
     href: "/home/profile",
@@ -33,8 +26,7 @@ const NAV = [
     match: (p: string) =>
       p.startsWith("/home/profile") ||
       p.startsWith("/home/settings") ||
-      p.startsWith("/home/progress") ||
-      p.startsWith("/home/share"),
+      p.startsWith("/home/settings"),
   },
 ] as const;
 
