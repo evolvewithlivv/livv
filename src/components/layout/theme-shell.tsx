@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
-import { applyAppearance, loadIdentity } from "@/lib/identity";
+import { applyAppearance, loadIdentity, resolvedAppearance } from "@/lib/identity";
+import { LIVV_ICON_BLACK } from "@/lib/header-logo-black";
 import { hydrateServerEntitlement } from "@/lib/billing";
 import { startCloudMemberStateSync } from "@/lib/supabase/cloud-state";
 import { ensureCloudAuthForCurrentBrowser } from "@/lib/supabase/real-auth";
@@ -11,7 +12,7 @@ import "@/app/loading-screen.css";
 const BOOT_MS = 2400;
 const BOOT_KEY = "livv-boot-shown";
 
-function BootOverlay({ onDone }: { onDone: () => void }) {
+function BootOverlay({ onDone, mark }: { onDone: () => void; mark: string }) {
   useEffect(() => {
     const reduced =
       typeof window !== "undefined" &&
@@ -33,7 +34,7 @@ function BootOverlay({ onDone }: { onDone: () => void }) {
           <div className="ll-ring r3" />
           <div className="ll-core">
             {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/livv-logo.png" alt="" width={48} height={48} />
+            <img className="ll-mark" src={mark} alt="" width={48} height={48} />
           </div>
         </div>
         <p className="ll-line">Loading your world.</p>
@@ -45,6 +46,7 @@ function BootOverlay({ onDone }: { onDone: () => void }) {
 export function ThemeShell({ children }: { children: React.ReactNode }) {
   const [offline, setOffline] = useState(false);
   const [boot, setBoot] = useState(false);
+  const [mark, setMark] = useState("/livv-logo.png");
   const pathname = usePathname();
   const isPublicDiscovery = pathname.startsWith("/go/");
 
@@ -58,7 +60,7 @@ export function ThemeShell({ children }: { children: React.ReactNode }) {
     try {
       if (sessionStorage.getItem(BOOT_KEY) === "1") return;
     } catch {
-      // private mode — still show boot
+      // private mode \u2014 still show boot
     }
     setBoot(true);
   }, [isPublicDiscovery]);
@@ -76,6 +78,7 @@ export function ThemeShell({ children }: { children: React.ReactNode }) {
     const apply = () => {
       const me = loadIdentity();
       applyAppearance(me.appearance, me.accent, me.theme);
+      setMark(resolvedAppearance(me.appearance) === "light" ? LIVV_ICON_BLACK : "/livv-logo.png");
       const mode =
         me.appearance === "light"
           ? "light"
@@ -136,6 +139,7 @@ export function ThemeShell({ children }: { children: React.ReactNode }) {
       if (document.visibilityState !== "visible") return;
       const me = loadIdentity();
       applyAppearance(me.appearance, me.accent, me.theme);
+      setMark(resolvedAppearance(me.appearance) === "light" ? LIVV_ICON_BLACK : "/livv-logo.png");
     };
     document.addEventListener("visibilitychange", onVisible);
     return () => document.removeEventListener("visibilitychange", onVisible);
@@ -143,14 +147,14 @@ export function ThemeShell({ children }: { children: React.ReactNode }) {
 
   return (
     <>
-      {boot && !isPublicDiscovery ? <BootOverlay onDone={finishBoot} /> : null}
+      {boot && !isPublicDiscovery ? <BootOverlay onDone={finishBoot} mark={mark} /> : null}
       {offline && !isPublicDiscovery && (
         <div
           role="status"
           aria-live="polite"
           className="fixed inset-x-3 top-2 z-[100] mx-auto max-w-xl rounded-2xl border border-white/10 bg-black/90 px-4 py-3 text-center text-[11px] font-medium tracking-wide text-white/75 shadow-lg backdrop-blur-xl"
         >
-          Offline mode · Your local changes are safe and will sync when you reconnect.
+          Offline mode \u00b7 Your local changes are safe and will sync when you reconnect.
         </div>
       )}
       {children}

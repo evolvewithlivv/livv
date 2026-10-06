@@ -2,13 +2,14 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { loadIdentity, addEmbers, type Identity } from "@/lib/identity";
+import { loadIdentity, addEmbers, resolvedAppearance, type Identity } from "@/lib/identity";
 import { checkInRecord, isCheckedInToday, loadRecord, type LivvRecord } from "@/lib/record";
 import { feedback } from "@/lib/sensory";
 import { dailySummary, dailyQuestion } from "@/lib/daily";
 import { quoteForSession, type Quote } from "@/lib/quotes";
 import { embersFromAction } from "@/lib/embers";
 import { nextMove, type Move } from "@/lib/command";
+import { LIVV_ICON_BLACK } from "@/lib/header-logo-black";
 import "./home-signal.css";
 
 function greetingForHour(hour: number): string {
@@ -34,6 +35,7 @@ export default function HomePage() {
   const [move, setMove] = useState<Move | null>(null);
   const [question, setQuestion] = useState("");
   const [now, setNow] = useState(() => new Date());
+  const [light, setLight] = useState(false);
 
   const pull = () => {
     const r = loadRecord();
@@ -41,6 +43,7 @@ export default function HomePage() {
     setMe(loadIdentity());
     setMove(nextMove(r));
     setQuestion(dailyQuestion(new Date()));
+    setLight(resolvedAppearance(loadIdentity().appearance) === "light");
     dailySummary();
   };
 
@@ -113,7 +116,7 @@ export default function HomePage() {
             <div className="hs-mark">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img
-                src="/livv-logo.png"
+                src={light ? LIVV_ICON_BLACK : "/livv-logo.png"}
                 alt="LIVV"
                 width={160}
                 height={160}
@@ -158,7 +161,7 @@ export default function HomePage() {
           >
             <span>{checkedIn ? "Checked in" : "Check in"}</span>
             <span className="hs-primary-meta" aria-hidden>
-              {checkedIn ? "✓" : "→"}
+              {checkedIn ? "\u2713" : "\u2192"}
             </span>
           </button>
         </section>
@@ -170,7 +173,7 @@ export default function HomePage() {
             <p className="hs-panel-body">{move.reason}</p>
             <Link href={move.href} className="hs-panel-cta">
               <span>{move.cta}</span>
-              <span aria-hidden>→</span>
+              <span aria-hidden>\u2192</span>
             </Link>
           </section>
         ) : null}
@@ -181,15 +184,15 @@ export default function HomePage() {
             <p className="hs-panel-title">{question}</p>
             <Link href="/home/daily" className="hs-panel-cta">
               <span>Open Daily</span>
-              <span aria-hidden>→</span>
+              <span aria-hidden>\u2192</span>
             </Link>
           </section>
         ) : null}
 
         {quote ? (
           <footer className="hs-quote">
-            <p className="hs-quote-text">“{quote.text}”</p>
-            <p className="hs-quote-author">— {quote.author}</p>
+            <p className="hs-quote-text">\u201c{quote.text}\u201d</p>
+            <p className="hs-quote-author">\u2014 {quote.author}</p>
           </footer>
         ) : null}
       </div>
