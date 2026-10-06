@@ -1,8 +1,6 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { Container } from "@/components/ui/container";
-import { PageHero } from "@/components/layout/page-hero";
 import {
   LOCATION_OPTIONS,
   DURATION_OPTIONS,
@@ -14,16 +12,14 @@ import {
   type Exercise,
 } from "@/lib/train-data";
 import {
-  LOCATION_COLOR,
-  DURATION_COLOR,
   SPLITS,
-  chipStyle,
   loadActiveSplit,
   saveActiveSplit,
   type SplitId,
 } from "@/lib/train-colors";
 import { completeWorkout } from "@/lib/record";
 import { feedback } from "@/lib/sensory";
+import "./train.css";
 
 type Phase = "select" | "preview" | "session" | "complete";
 
@@ -32,7 +28,9 @@ const FULL_KEY = "livv-last-workout-full";
 function saveFullWorkout(w: Workout) {
   try {
     window.localStorage.setItem(FULL_KEY, JSON.stringify(w));
-  } catch {}
+  } catch {
+    /* ignore */
+  }
 }
 
 function todayCode() {
@@ -42,14 +40,29 @@ function todayCode() {
 function exerciseCue(ex: Exercise) {
   const n = ex.name.toLowerCase();
   if (n.includes("push-up") || n.includes("press"))
-    return "Keep your ribs down, brace your core, and control the lowering phase.";
-  if (n.includes("squat") || n.includes("lunge") || n.includes("thrust") || n.includes("bridge") || n.includes("deadlift"))
-    return "Move with control, keep your knee tracking over your foot, and finish the rep fully.";
+    return "Ribs down. Brace. Control the lower.";
+  if (
+    n.includes("squat") ||
+    n.includes("lunge") ||
+    n.includes("thrust") ||
+    n.includes("bridge") ||
+    n.includes("deadlift")
+  )
+    return "Knee tracks over foot. Finish every rep.";
   if (n.includes("plank") || n.includes("hold") || n.includes("dead bug") || n.includes("twist"))
-    return "Brace first. Breathe steadily. Stop the set if you lose clean control.";
+    return "Brace first. Breathe. Stop if form breaks.";
   if (n.includes("row") || n.includes("pull") || n.includes("curl"))
-    return "Keep your shoulders controlled and pull with the target muscles instead of swinging.";
-  return "Use a controlled pace and clean range of motion. Quality reps beat rushed reps.";
+    return "Shoulders quiet. Pull with the muscle, not momentum.";
+  return "Controlled pace. Clean range. Quality over rush.";
+}
+
+function metaLine(ex: Exercise) {
+  const parts: string[] = [];
+  if (ex.sets) parts.push(`${ex.sets} sets`);
+  if (ex.reps) parts.push(ex.reps);
+  if (ex.duration) parts.push(ex.duration);
+  if (ex.rest) parts.push(`${ex.rest} rest`);
+  return parts.join(" · ");
 }
 
 export default function TrainPage() {
@@ -150,188 +163,190 @@ export default function TrainPage() {
     setPhase("complete");
   };
 
-  if (phase === "select") {
+  const reset = () => {
+    setPhase("select");
+    setWorkout(null);
+    setCurrentIndex(0);
+    setLogged(false);
+    setRest(0);
+  };
+
+  if (phase === "session" && workout) {
+    const ex = workout.exercises[currentIndex];
     return (
-      <main className="livv-page min-h-full overflow-hidden pb-28 pt-5">
-        <Container className="livv-stagger relative z-10">
-          <PageHero eyebrow="Train" title="Build the session." subtitle="Pick your split, place, and time. Then execute." />
-          <div className="mt-6 space-y-5">
-            <div>
-              <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-livv-muted">Split</p>
-              <div className="mt-2 flex flex-wrap gap-2">
-                {SPLITS.map((s) => (
-                  <button
-                    key={s.id}
-                    type="button"
-                    onClick={() => chooseSplit(s.id)}
-                    className="livv-press rounded-full border px-4 py-2.5 text-[12px] font-semibold"
-                    style={chipStyle("#1769ff", splitId === s.id)}
-                  >
-                    {s.name}
-                  </button>
-                ))}
-              </div>
+      <main className="tr" aria-label="Session">
+        <div className="tr-inner">
+          <div className="tr-session-top">
+            <p className="tr-k">{workout.name}</p>
+            <p className="tr-session-count">
+              {currentIndex + 1}/{workout.exercises.length}
+            </p>
+          </div>
+          <div className="tr-ex-hero">
+            <p className="tr-k">Now</p>
+            <h1 className="tr-ex-hero-name">{ex.name}</h1>
+            <p className="tr-ex-hero-meta">{metaLine(ex)}</p>
+            <p className="tr-ex-hero-cue">{exerciseCue(ex)}</p>
+          </div>
+          {rest > 0 ? (
+            <div className="tr-rest">
+              <p className="tr-k">Rest</p>
+              <p className="tr-rest-n">{rest}s</p>
             </div>
-            {split ? (
-              <div>
-                <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-livv-muted">Day</p>
-                <div className="mt-2 flex flex-wrap gap-2">
-                  {split.days.map((d) => (
-                    <button
-                      key={d.id}
-                      type="button"
-                      onClick={() => {
-                        if (d.rest) return;
-                        setSelectedDayId(d.id);
-                        feedback("tick");
-                      }}
-                      className="livv-press rounded-full border px-4 py-2.5 text-[12px] font-semibold"
-                      style={chipStyle("#1769ff", selectedDayId === d.id)}
-                    >
-                      {d.rest ? "Rest day" : d.label}
-                    </button>
-                  ))}
-                </div>
-              </div>
-            ) : null}
-            <div>
-              <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-livv-muted">Location</p>
-              <div className="mt-2 flex flex-wrap gap-2">
-                {LOCATION_OPTIONS.map((loc) => (
-                  <button
-                    key={loc}
-                    type="button"
-                    onClick={() => {
-                      setLocation(loc);
-                      feedback("tick");
-                    }}
-                    className="livv-press rounded-full border px-4 py-2.5 text-[12px] font-semibold"
-                    style={chipStyle(LOCATION_COLOR[loc], location === loc)}
-                  >
-                    {loc}
-                  </button>
-                ))}
-              </div>
-            </div>
-            <div>
-              <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-livv-muted">Duration</p>
-              <div className="mt-2 flex flex-wrap gap-2">
-                {DURATION_OPTIONS.map((d) => (
-                  <button
-                    key={d.value}
-                    type="button"
-                    onClick={() => {
-                      setDuration(d.value);
-                      feedback("tick");
-                    }}
-                    className="livv-press rounded-full border px-4 py-2.5 text-[12px] font-semibold"
-                    style={chipStyle(DURATION_COLOR[d.value], duration === d.value)}
-                  >
-                    {d.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-            <button
-              type="button"
-              disabled={!canGenerate}
-              onClick={build}
-              className="livv-press mt-9 w-full rounded-full py-4 text-[14px] font-semibold disabled:opacity-40"
-              style={{ background: "rgb(var(--livv-ink))", color: "var(--livv-bg)" }}
-            >
-              Generate workout
+          ) : null}
+          <div className="tr-session-actions">
+            <button type="button" className="tr-primary" onClick={next}>
+              {currentIndex >= workout.exercises.length - 1 ? "Finish session" : "Next exercise"}
+            </button>
+            <button type="button" className="tr-ghost" onClick={finish}>
+              End early
             </button>
           </div>
-        </Container>
+        </div>
+      </main>
+    );
+  }
+
+  if (phase === "complete" && workout) {
+    return (
+      <main className="tr" aria-label="Session complete">
+        <div className="tr-inner">
+          <p className="tr-k">Done</p>
+          <h1 className="tr-done-title">Session logged.</h1>
+          <p className="tr-done-sub">
+            {workout.name} · {workout.exercises.length} movements · {workout.duration} min
+          </p>
+          <p className="tr-done-sub">Evidence is on your record.</p>
+          <button type="button" className="tr-primary" onClick={reset}>
+            Build another
+          </button>
+        </div>
       </main>
     );
   }
 
   if (phase === "preview" && workout) {
     return (
-      <main className="livv-page min-h-full overflow-hidden pb-28 pt-5">
-        <Container className="livv-stagger relative z-10">
-          <PageHero
-            eyebrow="Preview"
-            title={workout.name}
-            subtitle={workout.exercises.length + " movements · " + workout.duration + " min"}
-          />
-          <ul className="mt-6 space-y-3">
-            {workout.exercises.map((ex, i) => (
-              <li key={i} className="rounded-2xl border border-livv-border px-4 py-3">
-                <p className="text-[14px] font-semibold">{ex.name}</p>
-                <p className="mt-1 text-[12px] text-livv-muted">
-                  {ex.sets} × {ex.reps || ex.duration}
-                </p>
-              </li>
+      <main className="tr" aria-label="Session preview">
+        <div className="tr-inner">
+          <p className="tr-k">Session</p>
+          <h1 className="tr-title">{workout.name}</h1>
+          <p className="tr-sub">
+            {workout.exercises.length} movements · {workout.duration} min · {workout.location}
+          </p>
+          <section className="tr-section">
+            <p className="tr-section-k">Work</p>
+            {workout.exercises.map((ex) => (
+              <div key={ex.id} className="tr-ex">
+                <p className="tr-ex-n">{ex.name}</p>
+                <p className="tr-ex-m">{metaLine(ex)}</p>
+              </div>
             ))}
-          </ul>
-          <button
-            type="button"
-            onClick={start}
-            className="livv-press mt-9 w-full rounded-full py-4 text-[14px] font-semibold"
-            style={{ background: "rgb(var(--livv-ink))", color: "var(--livv-bg)" }}
-          >
+          </section>
+          <button type="button" className="tr-primary" onClick={start}>
             Start session
           </button>
-          <button
-            type="button"
-            onClick={() => setPhase("select")}
-            className="livv-press mt-3 w-full rounded-full border border-livv-border py-3 text-[13px] font-semibold text-livv-muted"
-          >
-            Back
+          <button type="button" className="tr-ghost" onClick={() => setPhase("select")}>
+            Change setup
           </button>
-        </Container>
-      </main>
-    );
-  }
-
-  if (phase === "session" && workout) {
-    const ex = workout.exercises[currentIndex];
-    return (
-      <main className="livv-page min-h-full overflow-hidden pb-28 pt-5">
-        <Container className="livv-stagger relative z-10">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-livv-muted">
-            {currentIndex + 1} / {workout.exercises.length}
-          </p>
-          <h1 className="mt-3 text-[28px] font-semibold tracking-tight">{ex.name}</h1>
-          <p className="mt-2 text-[15px] text-livv-muted">
-            {ex.sets} sets · {ex.reps || ex.duration}
-          </p>
-          <p className="mt-6 text-[14px] leading-relaxed text-livv-muted">{exerciseCue(ex)}</p>
-          {rest > 0 ? (
-            <p className="mt-6 text-center text-[24px] font-semibold tabular-nums">Rest {rest}s</p>
-          ) : null}
-          <button
-            type="button"
-            onClick={next}
-            className="livv-press mt-10 w-full rounded-full py-4 text-[14px] font-semibold"
-            style={{ background: "rgb(var(--livv-ink))", color: "var(--livv-bg)" }}
-          >
-            {currentIndex >= workout.exercises.length - 1 ? "Finish" : "Next"}
-          </button>
-        </Container>
+        </div>
       </main>
     );
   }
 
   return (
-    <main className="livv-page min-h-full overflow-hidden pb-28 pt-5">
-      <Container className="livv-stagger relative z-10">
-        <PageHero eyebrow="Complete" title="Session logged." subtitle="Show up again tomorrow." />
+    <main className="tr" aria-label="Train">
+      <div className="tr-inner">
+        <p className="tr-k">Train</p>
+        <h1 className="tr-title">Build the session.</h1>
+        <p className="tr-sub">Pick split, place, and time. Then execute.</p>
+
+        <section className="tr-section">
+          <p className="tr-section-k">Split</p>
+          <div className="tr-chips">
+            {SPLITS.map((s) => (
+              <button
+                key={s.id}
+                type="button"
+                className={"tr-chip" + (splitId === s.id ? " on" : "")}
+                onClick={() => chooseSplit(s.id)}
+              >
+                {s.name}
+              </button>
+            ))}
+          </div>
+        </section>
+
+        {split ? (
+          <section className="tr-section">
+            <p className="tr-section-k">Day</p>
+            <div className="tr-chips">
+              {split.days.map((d) => (
+                <button
+                  key={d.id}
+                  type="button"
+                  className={"tr-chip" + (selectedDayId === d.id ? " on" : "")}
+                  onClick={() => {
+                    if (d.rest) return;
+                    setSelectedDayId(d.id);
+                    feedback("tick");
+                  }}
+                  disabled={d.rest}
+                >
+                  {d.rest ? "Rest" : d.label}
+                </button>
+              ))}
+            </div>
+          </section>
+        ) : null}
+
+        <section className="tr-section">
+          <p className="tr-section-k">Where</p>
+          <div className="tr-chips">
+            {LOCATION_OPTIONS.map((loc) => (
+              <button
+                key={loc}
+                type="button"
+                className={"tr-chip" + (location === loc ? " on" : "")}
+                onClick={() => {
+                  setLocation(loc);
+                  feedback("tick");
+                }}
+              >
+                {loc}
+              </button>
+            ))}
+          </div>
+        </section>
+
+        <section className="tr-section">
+          <p className="tr-section-k">Time</p>
+          <div className="tr-chips">
+            {DURATION_OPTIONS.map((d) => (
+              <button
+                key={d.value}
+                type="button"
+                className={"tr-chip" + (duration === d.value ? " on" : "")}
+                onClick={() => {
+                  setDuration(d.value);
+                  feedback("tick");
+                }}
+              >
+                {d.label}
+              </button>
+            ))}
+          </div>
+        </section>
+
         <button
           type="button"
-          onClick={() => {
-            setPhase("select");
-            setWorkout(null);
-            setRest(0);
-          }}
-          className="livv-press mt-9 w-full rounded-full py-4 text-[14px] font-semibold"
-          style={{ background: "rgb(var(--livv-ink))", color: "var(--livv-bg)" }}
+          className="tr-primary"
+          disabled={!canGenerate}
+          onClick={build}
         >
-          Done
+          Build session
         </button>
-      </Container>
+      </div>
     </main>
   );
 }
