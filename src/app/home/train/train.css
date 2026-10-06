@@ -1,0 +1,200 @@
+/* Train — session is the hero */
+.tr {
+  --ink: rgb(var(--livv-ink));
+  --bg: var(--livv-bg);
+  --muted: rgb(var(--livv-muted));
+  --line: rgb(var(--livv-border));
+  --accent: rgb(var(--livv-accent));
+  min-height: calc(100dvh - 5.75rem);
+  color: var(--ink);
+}
+.tr-inner {
+  max-width: 26rem;
+  margin: 0 auto;
+  padding: 0.9rem 1.35rem 2.75rem;
+}
+.tr-k {
+  margin: 0;
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.tr-title {
+  margin: 0.35rem 0 0;
+  font-family: var(--font-display), var(--font-body), system-ui, sans-serif;
+  font-size: clamp(1.75rem, 7vw, 2.15rem);
+  font-weight: 600;
+  letter-spacing: -0.04em;
+  line-height: 1.05;
+}
+.tr-sub {
+  margin: 0.45rem 0 0;
+  font-size: 0.95rem;
+  color: var(--muted);
+  line-height: 1.4;
+  max-width: 32ch;
+}
+.tr-section {
+  margin-top: 1.65rem;
+}
+.tr-section-k {
+  margin: 0 0 0.55rem;
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.tr-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+.tr-chip {
+  min-height: 2.4rem;
+  padding: 0 0.95rem;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--line) 85%, transparent);
+  background: transparent;
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  cursor: pointer;
+}
+.tr-chip.on {
+  border-color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  color: var(--accent);
+}
+.tr-chip:disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+.tr-chip:active:not(:disabled) { opacity: 0.75; }
+
+.tr-primary {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 3.15rem;
+  margin-top: 1.5rem;
+  border: 0;
+  border-radius: 14px;
+  background: rgb(var(--livv-ink));
+  color: var(--livv-bg);
+  font-size: 15px;
+  font-weight: 650;
+  cursor: pointer;
+  text-decoration: none;
+}
+.tr-primary:disabled { opacity: 0.35; cursor: default; }
+.tr-primary:active:not(:disabled) { opacity: 0.88; }
+.tr-ghost {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  min-height: 2.75rem;
+  margin-top: 0.65rem;
+  border: 1px solid color-mix(in srgb, var(--line) 85%, transparent);
+  border-radius: 14px;
+  background: transparent;
+  color: var(--ink);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.tr-ex {
+  padding: 0.85rem 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--line) 70%, transparent);
+}
+.tr-ex:first-child {
+  border-top: 1px solid color-mix(in srgb, var(--line) 70%, transparent);
+}
+.tr-ex-n {
+  margin: 0;
+  font-size: 1.02rem;
+  font-weight: 600;
+  letter-spacing: -0.02em;
+}
+.tr-ex-m {
+  margin: 0.25rem 0 0;
+  font-size: 0.88rem;
+  color: var(--muted);
+}
+
+.tr-session-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.tr-session-count {
+  font-size: 12px;
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+  color: var(--muted);
+}
+.tr-ex-hero {
+  margin: 1.75rem 0 0;
+}
+.tr-ex-hero-name {
+  margin: 0.35rem 0 0;
+  font-family: var(--font-display), var(--font-body), system-ui, sans-serif;
+  font-size: clamp(1.85rem, 8vw, 2.4rem);
+  font-weight: 600;
+  letter-spacing: -0.045em;
+  line-height: 1.05;
+}
+.tr-ex-hero-meta {
+  margin: 0.75rem 0 0;
+  font-size: 1.05rem;
+  font-weight: 600;
+  color: var(--accent);
+  letter-spacing: -0.01em;
+}
+.tr-ex-hero-cue {
+  margin: 0.85rem 0 0;
+  font-size: 0.95rem;
+  line-height: 1.45;
+  color: var(--muted);
+  max-width: 34ch;
+}
+.tr-rest {
+  margin-top: 1.5rem;
+  padding: 1rem 0;
+  border-top: 1px solid color-mix(in srgb, var(--line) 70%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--line) 70%, transparent);
+}
+.tr-rest-n {
+  margin: 0.25rem 0 0;
+  font-size: 2.5rem;
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.04em;
+}
+.tr-session-actions {
+  margin-top: 1.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
+}
+
+.tr-done-title {
+  margin: 1.25rem 0 0;
+  font-family: var(--font-display), var(--font-body), system-ui, sans-serif;
+  font-size: clamp(1.85rem, 7vw, 2.25rem);
+  font-weight: 600;
+  letter-spacing: -0.04em;
+}
+.tr-done-sub {
+  margin: 0.5rem 0 0;
+  color: var(--muted);
+  font-size: 0.95rem;
+  line-height: 1.4;
+}
