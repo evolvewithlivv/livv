@@ -83,7 +83,7 @@ export default function ShopPage() {
             <div><p>Embers convert at {EMBERS_PER_DOLLAR} per dollar.</p>{REDEEM_RULES_COPY.map((rule) => <p key={rule}>• {rule}</p>)}</div>
           </details>
         </section>
-        <footer className="shop-footer"><span>LIVV / 001</span><span>Nothing extra.</span></footer>
+        <footer className="shop-footer"></footer>
       </div>
     </main>
   );
