@@ -97,7 +97,7 @@ export default function HealthPage() {
             <p className="health-eyebrow">LIVV / HEALTH</p>
             <p className="health-date">{dateLabel}</p>
           </div>
-          <span className="health-status"><Waves size={12} /> LIFESTYLE SYSTEM</span>
+          
         </header>
 
         <section className="health-hero">
