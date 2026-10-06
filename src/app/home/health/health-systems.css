@@ -1,0 +1,271 @@
+/* Shared craft for Health system screens */
+.hsys {
+  --ink: rgb(var(--livv-ink));
+  --bg: rgb(var(--livv-bg));
+  --muted: rgb(var(--livv-muted));
+  --line: rgb(var(--livv-border));
+  --accent: rgb(var(--livv-accent));
+  min-height: calc(100dvh - 5.5rem);
+  color: var(--ink);
+}
+.hsys-inner {
+  max-width: 26rem;
+  margin: 0 auto;
+  padding: 1.1rem 1.4rem 2.75rem;
+}
+.hsys-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  text-decoration: none;
+}
+.hsys-mast {
+  margin-top: 1.35rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--line) 80%, transparent);
+}
+.hsys-k {
+  margin: 0;
+  font-size: 10px;
+  font-weight: 650;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.hsys-title {
+  margin: 0.4rem 0 0;
+  font-family: var(--font-display), var(--font-body), system-ui, sans-serif;
+  font-size: clamp(2rem, 8vw, 2.5rem);
+  font-weight: 600;
+  letter-spacing: -0.045em;
+  line-height: 1.05;
+}
+.hsys-sub {
+  margin: 0.45rem 0 0;
+  font-size: 0.92rem;
+  line-height: 1.45;
+  color: var(--muted);
+  max-width: 34ch;
+}
+.hsys-stats {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.5rem;
+  margin-top: 1.15rem;
+  padding: 0.9rem 0;
+  border-top: 1px solid color-mix(in srgb, var(--line) 75%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--line) 75%, transparent);
+  text-align: center;
+}
+.hsys-stats strong {
+  display: block;
+  font-size: 1.15rem;
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.02em;
+}
+.hsys-stats span {
+  display: block;
+  margin-top: 0.25rem;
+  font-size: 9px;
+  font-weight: 650;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.hsys-section { margin-top: 1.65rem; }
+.hsys-label {
+  margin: 0 0 0.35rem;
+  font-size: 10px;
+  font-weight: 650;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.hsys-field {
+  display: block;
+  padding: 0.95rem 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--line) 75%, transparent);
+}
+.hsys-field > span {
+  display: block;
+  font-size: 10px;
+  font-weight: 650;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.hsys-field input,
+.hsys-field textarea,
+.hsys-field select {
+  margin-top: 0.45rem;
+  width: 100%;
+  background: transparent;
+  border: 0;
+  outline: none;
+  color: var(--ink);
+  font-size: 1.05rem;
+  font-weight: 500;
+  letter-spacing: -0.015em;
+}
+.hsys-field textarea {
+  min-height: 4.5rem;
+  resize: vertical;
+  font-size: 0.95rem;
+  line-height: 1.45;
+  font-weight: 400;
+}
+.hsys-field input::placeholder,
+.hsys-field textarea::placeholder {
+  color: color-mix(in srgb, var(--muted) 70%, transparent);
+}
+.hsys-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.4rem;
+  margin-top: 0.55rem;
+}
+.hsys-chip {
+  min-height: 2.25rem;
+  padding: 0 0.85rem;
+  border-radius: 999px;
+  border: 1px solid color-mix(in srgb, var(--line) 90%, transparent);
+  background: transparent;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+}
+.hsys-chip.on {
+  border-color: color-mix(in srgb, var(--accent) 50%, var(--line));
+  color: var(--ink);
+  background: color-mix(in srgb, var(--accent) 12%, transparent);
+}
+.hsys-btn {
+  margin-top: 1.15rem;
+  width: 100%;
+  min-height: 3.1rem;
+  border: 0;
+  border-radius: 12px;
+  background: var(--ink);
+  color: var(--bg);
+  font-size: 14px;
+  font-weight: 650;
+  cursor: pointer;
+}
+.hsys-btn:disabled { opacity: 0.35; cursor: default; }
+.hsys-btn.ghost {
+  background: transparent;
+  color: var(--ink);
+  border: 1px solid color-mix(in srgb, var(--line) 90%, transparent);
+}
+.hsys-list { border-top: 1px solid color-mix(in srgb, var(--line) 80%, transparent); }
+.hsys-item {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1rem 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--line) 75%, transparent);
+}
+.hsys-item-t {
+  margin: 0;
+  font-size: 0.98rem;
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+.hsys-item-s {
+  margin: 0.25rem 0 0;
+  font-size: 0.84rem;
+  line-height: 1.4;
+  color: var(--muted);
+}
+.hsys-item-r {
+  flex-shrink: 0;
+  font-size: 0.9rem;
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+  color: var(--muted);
+}
+.hsys-entry {
+  padding: 1.15rem 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--line) 75%, transparent);
+}
+.hsys-entry-word {
+  margin: 0;
+  font-size: 1.2rem;
+  font-weight: 650;
+  letter-spacing: -0.025em;
+}
+.hsys-entry-body {
+  margin: 0.45rem 0 0;
+  font-size: 0.92rem;
+  line-height: 1.5;
+  color: var(--muted);
+}
+.hsys-entry-meta {
+  margin: 0.55rem 0 0;
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: color-mix(in srgb, var(--muted) 90%, transparent);
+}
+.hsys-timer {
+  margin-top: 1.25rem;
+  text-align: center;
+  padding: 1.5rem 0;
+  border-top: 1px solid color-mix(in srgb, var(--line) 75%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--line) 75%, transparent);
+}
+.hsys-timer-v {
+  margin: 0;
+  font-size: clamp(3rem, 14vw, 3.75rem);
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.04em;
+}
+.hsys-timer-s {
+  margin: 0.35rem 0 0;
+  font-size: 11px;
+  font-weight: 650;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.hsys-actions {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+.hsys-recipe {
+  padding: 1.15rem 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--line) 75%, transparent);
+}
+.hsys-recipe-t {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 650;
+  letter-spacing: -0.02em;
+}
+.hsys-recipe-s {
+  margin: 0.3rem 0 0;
+  font-size: 0.86rem;
+  color: var(--muted);
+  line-height: 1.4;
+}
+.hsys-recipe-meta {
+  margin: 0.55rem 0 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem 0.85rem;
+  font-size: 10px;
+  font-weight: 650;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
