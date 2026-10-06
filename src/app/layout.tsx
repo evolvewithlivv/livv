@@ -39,30 +39,13 @@ export const metadata: Metadata = {
     icon: [
       { url: "/api/icon?s=32", sizes: "32x32", type: "image/png" },
       { url: "/api/icon?s=64", sizes: "64x64", type: "image/png" },
-      { url: "/api/icon?s=192", sizes: "192x192", type: "image/png" },
-      { url: "/api/icon?s=512", sizes: "512x512", type: "image/png" },
     ],
-    apple: [{ url: "/api/icon?s=180", sizes: "180x180", type: "image/png" }],
+    apple: [{ url: "/api/icon?s=180", sizes: "180x180" }],
+    shortcut: ["/api/icon?s=32"],
   },
+  other: { "mobile-web-app-capable": "yes" },
 };
-
-export const viewport: Viewport = {
-  themeColor: [
-    { media: "(prefers-color-scheme: light)", color: "#f7f7f5" },
-    { media: "(prefers-color-scheme: dark)", color: "#090a0c" },
-  ],
-  width: "device-width",
-  initialScale: 1,
-  maximumScale: 1,
-  viewportFit: "cover",
-};
-
-export default function RootLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <html lang="en" suppressHydrationWarning className={`${body.variable} ${display.variable}`}>
-      <body className="min-h-dvh font-sans antialiased">
-        <ThemeShell>{children}</ThemeShell>
-      </body>
-    </html>
-  );
-}
+export const viewport:Viewport={width:"device-width",initialScale:1,maximumScale:5,viewportFit:"cover",themeColor:[{media:"(prefers-color-scheme: light)",color:"#f7f7f5"},{media:"(prefers-color-scheme: dark)",color:"#090a0c"}]};
+const THEME_BOOT=`(function(){try{var a='dark',t='ember';var raw=localStorage.getItem('livv-identity-v1');if(raw){var p=JSON.parse(raw);if(p&&p.appearance)a=p.appearance;if(p&&p.theme)t=p.theme;}var mode=a==='light'?'light':a==='system'?(window.matchMedia('(prefers-color-scheme: light)').matches?'light':'dark'):'dark';var root=document.documentElement;root.setAttribute('data-theme',mode);root.setAttribute('data-livv-theme',t);root.style.colorScheme=mode;/* kill white flash before CSS */root.style.backgroundColor=mode==='light'?'#f7f7f5':'#030405';if(document.body)document.body.style.backgroundColor=root.style.backgroundColor;}catch(e){}})();`;
+const PWA_BOOT=`(function(){try{if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('/sw.js',{scope:'/'}).catch(function(){});});}}catch(e){}})();`;
+export default function RootLayout({children}:{children:React.ReactNode}){return <html lang="en" className={`${body.variable} ${display.variable}`} suppressHydrationWarning><head><script dangerouslySetInnerHTML={{__html:THEME_BOOT}}/><script dangerouslySetInnerHTML={{__html:PWA_BOOT}}/><link rel="apple-touch-icon" href="/api/icon?s=180" sizes="180x180"/><link rel="icon" href="/api/icon?s=32" type="image/png" sizes="32x32"/><link rel="icon" href="/api/icon?s=64" type="image/png" sizes="64x64"/></head><body className="min-h-dvh bg-[var(--livv-bg,#030405)] text-[rgb(var(--livv-fg))] antialiased"><ThemeShell>{children}</ThemeShell></body></html>;}
