@@ -23,12 +23,6 @@ function sizeFromAmount(amount: number): "small" | "standard" | "major" {
   return "standard";
 }
 
-/**
- * Request a server-authoritative Ember award.
- * Preferred: addEmbers("checkin" | "workout" | "objective" | "custom", opts)
- * Legacy: addEmbers(amount, eventKey?) — amount is mapped to a size band;
- * client event keys are ignored (server derives keys).
- */
 export function addEmbers(
   actionOrAmount: EmberAction | number,
   optsOrEventKey?: { detail?: string; size?: "small" | "standard" | "major" } | string,
@@ -39,7 +33,6 @@ export function addEmbers(
   let opts: { detail?: string; size?: "small" | "standard" | "major" } | undefined;
 
   if (typeof actionOrAmount === "number") {
-    // Legacy callers: never trust client amount beyond size banding.
     action = "custom";
     opts = {
       detail: typeof optsOrEventKey === "string" && optsOrEventKey.includes("checkin")
@@ -84,7 +77,7 @@ export function addEmbers(
           patchIdentity({ embers: Math.max(0, payload.total) });
         }
       } catch {
-        /* Server remains authoritative; failed awards do not inflate local totals. */
+        /* Server remains authoritative */
       }
     })();
     return current;
@@ -94,4 +87,35 @@ export function addEmbers(
   });
 }
 
-export function fileToPhoto(file:File):Promise<string>{return new Promise((resolve,reject)=>{const img=new Image(),url=URL.createObjectURL(file);img.onload=()=>{const size=512,canvas=document.createElement("canvas");canvas.width=size;canvas.height=size;const ctx=canvas.getContext("2d");if(!ctx){URL.revokeObjectURL(url);reject(new Error("canvas"));return;}const min=Math.min(img.width,img.height),sx=(img.width-min)/2,sy=(img.height-min)/2;ctx.drawImage(img,sx,sy,min,min,0,0,size,size);URL.revokeObjectURL(url);resolve(canvas.toDataURL("image/jpeg",.86));};img.onerror=()=>{URL.revokeObjectURL(url);reject(new Error("image"));};img.src=url;});}
+const MAX_PHOTO_BYTES = 8 * 1024 * 1024;
+export function fileToPhoto(file: File): Promise<string> {
+  if (file.size > MAX_PHOTO_BYTES) return Promise.reject(new Error("too-large"));
+  if (!file.type.startsWith("image/")) return Promise.reject(new Error("type"));
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = () => {
+      const size = 512;
+      const canvas = document.createElement("canvas");
+      canvas.width = size;
+      canvas.height = size;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) {
+        URL.revokeObjectURL(url);
+        reject(new Error("canvas"));
+        return;
+      }
+      const min = Math.min(img.width, img.height);
+      const sx = (img.width - min) / 2;
+      const sy = (img.height - min) / 2;
+      ctx.drawImage(img, sx, sy, min, min, 0, 0, size, size);
+      URL.revokeObjectURL(url);
+      resolve(canvas.toDataURL("image/jpeg", 0.86));
+    };
+    img.onerror = () => {
+      URL.revokeObjectURL(url);
+      reject(new Error("image"));
+    };
+    img.src = url;
+  });
+}
