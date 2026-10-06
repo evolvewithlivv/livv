@@ -287,3 +287,20 @@
   font-style: normal;
   font-weight: 600;
 }
+
+html[data-theme="light"] .hs-void {
+  background:
+    radial-gradient(ellipse 85% 48% at 50% -8%, color-mix(in srgb, var(--hs-accent) 10%, transparent), transparent 62%),
+    radial-gradient(ellipse 60% 40% at 50% 100%, color-mix(in srgb, var(--hs-ink) 3%, transparent), transparent 55%);
+}
+html[data-theme="light"] .hs-panel {
+  background: color-mix(in srgb, var(--hs-ink) 1.5%, transparent);
+  border-color: color-mix(in srgb, var(--hs-line) 85%, transparent);
+}
+html[data-theme="light"] .hs-panel-cta {
+  background: color-mix(in srgb, var(--hs-accent) 6%, transparent);
+  border-color: color-mix(in srgb, var(--hs-accent) 22%, var(--hs-line));
+}
+html[data-theme="light"] .hs-primary:not(.done) {
+  box-shadow: 0 8px 24px color-mix(in srgb, var(--hs-ink) 12%, transparent);
+}
