@@ -71,7 +71,7 @@ export default function RecipesPage() {
   }
 
   return (
-    <main className="hsys" aria-label="Recipes">
+    <main className="hsys hsys-recipes" aria-label="Recipes">
       <div className="hsys-inner">
         <Link href="/home/health" className="hsys-back"><ChevronLeft size={13} /> Health</Link>
         <header className="hsys-mast">
