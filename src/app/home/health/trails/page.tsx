@@ -72,7 +72,7 @@ export default function TrailsPage() {
           <div className="hsys-stats"><div><strong>{dist.toFixed(2)}</strong><span>Miles now</span></div><div><strong>{time}</strong><span>Time</span></div><div><strong>{total.toFixed(1)}</strong><span>Total miles</span></div></div>
         </header>
         <nav className="hsys-nav" aria-label="Health systems">
-          <Link href="/home/health/sleep" aria-current="">Sleep</Link>
+          <Link href="/home/health/sleep">Sleep</Link>
           <Link href="/home/health/meditation">Mind</Link>
           <Link href="/home/health/recipes">Food</Link>
           <Link href="/home/health/trails" aria-current="page">Move</Link>
