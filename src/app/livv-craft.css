@@ -1,0 +1,110 @@
+/* LIVV Craft System — intentional product surfaces, not template UI.
+   Loaded last so it can override professional/visual-redesign soft-card defaults. */
+
+:root {
+  --livv-r-sm: 8px;
+  --livv-r-md: 12px;
+  --livv-r-lg: 16px;
+  --livv-hair: color-mix(in srgb, var(--livv-pro-line) 90%, transparent);
+}
+
+/* Flatten the repeated inflated pill card language */
+.livv-page section[class*="rounded-["],
+.livv-page [class*="rounded-[22px]"],
+.livv-page [class*="rounded-[24px]"],
+.livv-page [class*="rounded-[28px]"],
+.livv-page .rounded-2xl,
+.livv-page .rounded-3xl {
+  border-radius: var(--livv-r-md) !important;
+}
+
+/* Primary CTAs: solid bars, not candy pills */
+.livv-page button.rounded-full:not(.livv-press-chip),
+.livv-page a.rounded-full.livv-press {
+  border-radius: var(--livv-r-md) !important;
+  letter-spacing: 0.04em !important;
+  font-weight: 600 !important;
+  text-transform: none !important;
+}
+
+/* Page hero — editorial, less startup */
+.livv-page-eyebrow {
+  font-size: 10px !important;
+  font-weight: 600 !important;
+  letter-spacing: 0.14em !important;
+  text-transform: uppercase !important;
+  color: var(--livv-pro-muted) !important;
+  opacity: 0.85;
+}
+.livv-page-title {
+  font-family: var(--font-display), var(--font-body), system-ui, sans-serif !important;
+  font-size: clamp(1.85rem, 6.5vw, 2.35rem) !important;
+  font-weight: 600 !important;
+  letter-spacing: -0.04em !important;
+  line-height: 1.08 !important;
+  color: var(--livv-pro-ink) !important;
+}
+.livv-page-subtitle {
+  font-size: 0.95rem !important;
+  line-height: 1.5 !important;
+  color: var(--livv-pro-muted) !important;
+  max-width: 36ch;
+  margin-top: 0.65rem !important;
+}
+.livv-page-hero {
+  padding-bottom: 1.25rem !important;
+  border-bottom: 1px solid var(--livv-hair);
+  margin-bottom: 1.35rem !important;
+}
+
+/* Kill decorative page washes that read as AI gradient soup */
+.livv-page {
+  background: var(--livv-pro-bg) !important;
+}
+
+/* Quiet list rows */
+.livv-row {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.95rem 0;
+  border-bottom: 1px solid var(--livv-hair);
+}
+.livv-row:last-child {
+  border-bottom: 0;
+}
+
+.livv-page .livv-press.rounded-full {
+  border-radius: 999px !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+}
+
+.you .you-stat,
+.you .you-embers,
+.you .you-link {
+  border-radius: var(--livv-r-md) !important;
+}
+
+.livv-page img {
+  border-radius: var(--livv-r-sm);
+}
+
+.livv-page [class*="shadow"] {
+  box-shadow: none !important;
+}
+
+.livv-craft-kicker {
+  margin: 0;
+  font-size: 10px;
+  font-weight: 650;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--livv-pro-muted);
+}
+.livv-craft-rule {
+  height: 1px;
+  background: var(--livv-hair);
+  border: 0;
+  margin: 1.25rem 0;
+}
