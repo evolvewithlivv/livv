@@ -29,7 +29,6 @@ export default function HomePage() {
   const [rec, setRec] = useState<LivvRecord | null>(null);
   const [me, setMe] = useState<Identity | null>(null);
   const [quote, setQuote] = useState<Quote | null>(null);
-  const [awake, setAwake] = useState(false);
   const [now, setNow] = useState(() => new Date());
 
   const pull = () => {
@@ -43,11 +42,9 @@ export default function HomePage() {
     setQuote(quoteForSession());
     const events = ["livv-identity", "livv-record", "livv-daily"];
     events.forEach((e) => window.addEventListener(e, pull));
-    const t = window.setTimeout(() => setAwake(true), 120);
     const clock = window.setInterval(() => setNow(new Date()), 30_000);
     return () => {
       events.forEach((e) => window.removeEventListener(e, pull));
-      window.clearTimeout(t);
       window.clearInterval(clock);
     };
   }, []);
@@ -88,16 +85,11 @@ export default function HomePage() {
 
   return (
     <main
-      className={"hs" + (awake ? " awake" : "") + (checkedIn ? " is-present" : "")}
+      className={"hs" + (checkedIn ? " is-present" : "")}
       aria-label="LIVV Home"
     >
       <div className="hs-void" aria-hidden />
       <div className="hs-grid" aria-hidden />
-      <div className="hs-particles" aria-hidden>
-        {Array.from({ length: 22 }).map((_, i) => (
-          <span key={i} className={"hs-p p" + i} />
-        ))}
-      </div>
 
       <div className="hs-inner">
         <header className="hs-top">
@@ -112,8 +104,6 @@ export default function HomePage() {
 
         <section className="hs-hero">
           <div className="hs-signal" aria-hidden>
-            <div className="hs-glow" />
-            <div className="hs-orbit" />
             <div className="hs-mark">
               {/* eslint-disable-next-line @next/next/no-img-element */}
               <img src="/livv-logo.png" alt="" width={72} height={72} />
