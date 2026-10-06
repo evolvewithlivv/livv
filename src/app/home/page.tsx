@@ -83,10 +83,6 @@ export default function HomePage() {
     month: "long",
     day: "numeric",
   }).format(now);
-  const timeLabel = new Intl.DateTimeFormat("en-US", {
-    hour: "numeric",
-    minute: "2-digit",
-  }).format(now);
   const streak = rec.streak || 0;
   const embers = me.embers || 0;
   const sessions = rec.workoutsCompleted || 0;
@@ -113,98 +109,90 @@ export default function HomePage() {
       <div className="hs-void" aria-hidden />
 
       <div className="hs-inner">
-        <header className="hs-top">
-          <div className="hs-top-left">
-            <p className="hs-date">{dateLabel}</p>
-            <p className="hs-time">{timeLabel}</p>
-          </div>
-          <p className={"hs-status" + (checkedIn ? " on" : "")}>
-            {checkedIn ? "PRESENT" : "AWAITING"}
+        <header className="hs-mast">
+          <p className="hs-mast-date">{dateLabel}</p>
+          <p className={"hs-mast-state" + (checkedIn ? " on" : "")}>
+            {checkedIn ? "Present" : "Not checked in"}
           </p>
         </header>
 
-        <section className="hs-hero">
-          <div className="hs-signal" aria-hidden>
-            <div className="hs-mark">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={light ? LIVV_ICON_BLACK : "/livv-logo.png"}
-                alt="LIVV"
-                width={160}
-                height={160}
-              />
-            </div>
+        <section className="hs-identity">
+          <div className="hs-mark-wrap" aria-hidden>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={light ? LIVV_ICON_BLACK : "/livv-logo.png"}
+              alt=""
+              width={72}
+              height={72}
+              className="hs-logo"
+            />
           </div>
-
           <p className="hs-hello">{hello}</p>
-          <h1 className="hs-name">{name}.</h1>
-          <p className="hs-sub">
+          <h1 className="hs-name">{name}</h1>
+          <p className="hs-line">
             {checkedIn
               ? streak > 1
-                ? `${streak} days present. Keep the line clean.`
+                ? `${streak} days present.`
                 : "You showed up today."
-              : "One check-in. Mark the day."}
+              : "Mark the day."}
           </p>
         </section>
 
-        <section className="hs-readouts" aria-label="Presence">
-          <div className="hs-read">
-            <p className="hs-read-v">{streak}</p>
-            <p className="hs-read-l">Streak</p>
+        <div className="hs-metrics" aria-label="Presence">
+          <div>
+            <span className="hs-m-v">{streak}</span>
+            <span className="hs-m-l">Streak</span>
           </div>
-          <div className="hs-read-div" aria-hidden />
-          <div className="hs-read">
-            <p className="hs-read-v">{embers.toLocaleString()}</p>
-            <p className="hs-read-l">Embers</p>
+          <div>
+            <span className="hs-m-v">{embers.toLocaleString()}</span>
+            <span className="hs-m-l">Embers</span>
           </div>
-          <div className="hs-read-div" aria-hidden />
-          <div className="hs-read">
-            <p className="hs-read-v">{sessions}</p>
-            <p className="hs-read-l">Sessions</p>
+          <div>
+            <span className="hs-m-v">{sessions}</span>
+            <span className="hs-m-l">Sessions</span>
           </div>
-        </section>
+        </div>
 
-        <section className="hs-actions">
-          <button
-            type="button"
-            className={"hs-primary" + (checkedIn ? " done" : "")}
-            onClick={checkIn}
-            disabled={checkedIn}
-          >
-            <span>{checkedIn ? "Checked in" : "Check in"}</span>
-            <span className="hs-primary-meta" aria-hidden>
-              {checkedIn ? "✓" : "→"}
-            </span>
-          </button>
-        </section>
+        <button
+          type="button"
+          className={"hs-check" + (checkedIn ? " done" : "")}
+          onClick={checkIn}
+          disabled={checkedIn}
+        >
+          {checkedIn ? "Checked in" : "Check in"}
+        </button>
 
-        {move ? (
-          <section className="hs-panel" aria-label="Next move">
-            <p className="hs-panel-kicker">Next move</p>
-            <p className="hs-panel-title">{move.title}</p>
-            <p className="hs-panel-body">{move.reason}</p>
-            <Link href={move.href} className="hs-panel-cta">
-              <span>{move.cta}</span>
-              <span aria-hidden>→</span>
+        <div className="hs-actions-list">
+          {move ? (
+            <Link href={move.href} className="hs-action-row">
+              <div>
+                <p className="hs-action-k">Next</p>
+                <p className="hs-action-t">{move.title}</p>
+                <p className="hs-action-s">{move.reason}</p>
+              </div>
+              <span className="hs-action-go" aria-hidden>
+                {move.cta} →
+              </span>
             </Link>
-          </section>
-        ) : null}
+          ) : null}
 
-        {question ? (
-          <section className="hs-panel hs-panel-soft" aria-label="Today's reflection">
-            <p className="hs-panel-kicker">Reflect</p>
-            <p className="hs-panel-title">{question}</p>
-            <Link href="/home/daily" className="hs-panel-cta">
-              <span>Open Daily</span>
-              <span aria-hidden>→</span>
+          {question ? (
+            <Link href="/home/daily" className="hs-action-row">
+              <div>
+                <p className="hs-action-k">Reflect</p>
+                <p className="hs-action-t">{question}</p>
+              </div>
+              <span className="hs-action-go" aria-hidden>
+                Daily →
+              </span>
             </Link>
-          </section>
-        ) : null}
+          ) : null}
+        </div>
 
         {quote ? (
-          <footer className="hs-quote">
-            <p className="hs-quote-text">“{quote.text}”</p>
-            <p className="hs-quote-author">— {quote.author}</p>
+          <footer className="hs-foot">
+            <p className="hs-q">“{quote.text}”</p>
+            <p className="hs-qa">{quote.author}</p>
           </footer>
         ) : null}
       </div>
