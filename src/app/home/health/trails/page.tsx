@@ -68,7 +68,7 @@ export default function TrailsPage() {
   const time = String(Math.floor(sec / 3600)).padStart(2, "0") + ":" + String(Math.floor(sec / 60) % 60).padStart(2, "0") + ":" + String(sec % 60).padStart(2, "0");
 
   return (
-    <main className="hsys" aria-label="Movement">
+    <main className="hsys hsys-move" aria-label="Movement">
       <div className="hsys-inner">
         <Link href="/home/health" className="hsys-back"><ChevronLeft size={13} /> Health</Link>
         <header className="hsys-mast">
