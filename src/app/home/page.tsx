@@ -129,7 +129,7 @@ export default function HomePage() {
             </button>
           ) : actionableMove ? (
             <Link href={actionableMove.href} className="ho-primary">
-              {actionableMove.cta}
+              {actionableMove.cta || actionableMove.title || "Continue"}
             </Link>
           ) : (
             <p className="ho-done">Today is logged.</p>

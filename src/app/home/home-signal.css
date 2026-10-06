@@ -1,6 +1,7 @@
 .ho {
+  /* ink/muted/border are channel triples; bg is a full color */
   --ink: rgb(var(--livv-ink));
-  --bg: rgb(var(--livv-bg));
+  --bg: var(--livv-bg);
   --muted: rgb(var(--livv-muted));
   --line: rgb(var(--livv-border));
   --accent: rgb(var(--livv-accent));
@@ -11,7 +12,7 @@
   max-width: 26rem;
   margin: 0 auto;
   min-height: calc(100dvh - 5.75rem);
-  padding: 0.85rem 1.35rem 2rem;
+  padding: 0.85rem 1.35rem 1.5rem;
   display: flex;
   flex-direction: column;
 }
@@ -69,7 +70,7 @@
 }
 
 .ho-today {
-  padding: 1.75rem 0 0.25rem;
+  padding: 1.5rem 0 0.15rem;
 }
 .ho-hello {
   margin: 0;
@@ -87,23 +88,24 @@
   line-height: 1.02;
 }
 .ho-presence {
-  margin: 0.55rem 0 0;
+  margin: 0.5rem 0 0;
   font-size: 0.98rem;
   line-height: 1.4;
   color: var(--muted);
   max-width: 28ch;
 }
+
 .ho-primary {
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-top: 1.35rem;
+  margin-top: 1.25rem;
   width: 100%;
   min-height: 3.15rem;
   border: 0;
   border-radius: 14px;
-  background: var(--ink);
-  color: var(--bg);
+  background: rgb(var(--livv-ink));
+  color: var(--livv-bg);
   font-size: 15px;
   font-weight: 650;
   letter-spacing: -0.01em;
@@ -116,12 +118,12 @@
   transform: scale(0.985);
 }
 .ho-done {
-  margin: 1.25rem 0 0;
+  margin: 1.1rem 0 0;
   font-size: 0.95rem;
   color: var(--muted);
 }
 .ho-context {
-  margin: 0.65rem 0 0;
+  margin: 0.55rem 0 0;
   font-size: 0.9rem;
   line-height: 1.4;
   color: var(--muted);
@@ -129,10 +131,10 @@
 }
 
 .ho-block {
-  margin-top: 1.85rem;
+  margin-top: 1.55rem;
 }
 .ho-k {
-  margin: 0 0 0.55rem;
+  margin: 0 0 0.45rem;
   font-size: 11px;
   font-weight: 650;
   letter-spacing: 0.12em;
@@ -144,7 +146,7 @@
   align-items: flex-start;
   justify-content: space-between;
   gap: 1rem;
-  padding: 0.15rem 0;
+  padding: 0.1rem 0;
   text-decoration: none;
   color: inherit;
   -webkit-tap-highlight-color: transparent;
@@ -186,7 +188,7 @@
 }
 
 .ho-signal {
-  margin: 1.75rem 0 0;
+  margin: 1.45rem 0 0;
   display: flex;
   flex-wrap: wrap;
   align-items: center;
@@ -209,7 +211,7 @@
 
 .ho-quote {
   margin-top: auto;
-  padding-top: 2rem;
+  padding-top: 1.75rem;
 }
 .ho-q {
   margin: 0;
