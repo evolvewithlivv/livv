@@ -168,9 +168,9 @@ export default function SettingsPage() {
         <Link href="/home/profile" className="st-back">
           You
         </Link>
-        <h1 className="st-title">Settings</h1>
+        <div className="st-heading"><div><p className="st-kicker">ACCOUNT / CONTROL</p><h1 className="st-title">Settings</h1></div><span className="st-version">V1</span></div>
 
-        <section className="st-group">
+        <section className="st-group st-account">
           <p className="st-group-k">Account</p>
           <div className="st-list">
             <Link href="/home/profile/edit" className="st-row">
@@ -185,7 +185,7 @@ export default function SettingsPage() {
           </div>
         </section>
 
-        <section className="st-group">
+        <section className="st-group st-appearance">
           <p className="st-group-k">Appearance</p>
           <div className="st-list" role="radiogroup" aria-label="Appearance">
             {LOOK_OPTIONS.map((opt) => {
@@ -212,7 +212,7 @@ export default function SettingsPage() {
           </div>
         </section>
 
-        <section className="st-group">
+        <section className="st-group st-preferences">
           <p className="st-group-k">Preferences</p>
           <div className="st-list">
             <button type="button" className="st-row" onClick={() => togglePref("sound")}>
@@ -236,7 +236,7 @@ export default function SettingsPage() {
           </div>
         </section>
 
-        <section className="st-group">
+        <section className="st-group st-data">
           <p className="st-group-k">Data</p>
           <div className="st-list">
             <button type="button" className="st-row" onClick={onExport} disabled={busy}>
@@ -284,7 +284,7 @@ export default function SettingsPage() {
           />
         </section>
 
-        <section className="st-group">
+        <section className="st-group st-session">
           <p className="st-group-k">Session</p>
           <div className="st-list">
             <button type="button" className="st-row st-danger" onClick={onSignOut} disabled={busy}>
