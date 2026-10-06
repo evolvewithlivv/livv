@@ -1,259 +1,85 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
-import {
-  ChevronRight,
-  Flame,
-  Settings2,
-  Share2,
-} from "lucide-react";
-import { Avatar } from "@/components/identity/avatar";
-import { fileToPhoto, loadIdentity, patchIdentity, type Identity } from "@/lib/identity";
+import { ChevronRight, Flame, Settings2 } from "lucide-react";
+import { useEffect, useState } from "react";
+import { loadIdentity, type Identity } from "@/lib/identity";
 import { loadRecord } from "@/lib/record";
-import { evolutionTitle } from "@/lib/levels";
-import { feedback, haptic } from "@/lib/sensory";
-import { syncIdentityToCloud } from "@/lib/auth";
 import { MIN_REDEEM_EMBERS, embersToDollars } from "@/lib/ember-economy";
-import { LIVV_SHARE_BACKGROUNDS } from "@/lib/share-backgrounds";
-import {
-  renderLIVVShareCard,
-  shareOrDownloadBlob,
-  type ShareCardData,
-} from "@/lib/share-card";
 import "./profile-signal.css";
 
 export default function ProfilePage() {
   const [me, setMe] = useState<Identity | null>(null);
   const [rec, setRec] = useState<ReturnType<typeof loadRecord> | null>(null);
-  const [status, setStatus] = useState("");
-  const [sharing, setSharing] = useState(false);
-  const [awake, setAwake] = useState(false);
-  const fileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const sync = () => {
-      try {
-        setMe(loadIdentity());
-        setRec(loadRecord());
-      } catch {
-        /* keep last good state */
-      }
+      setMe(loadIdentity());
+      setRec(loadRecord());
     };
     sync();
-    for (const event of ["livv-identity", "livv-record"]) {
-      window.addEventListener(event, sync);
-    }
-    const t = window.setTimeout(() => setAwake(true), 80);
+    window.addEventListener("livv-identity", sync);
+    window.addEventListener("livv-record", sync);
     return () => {
-      for (const event of ["livv-identity", "livv-record"]) {
-        window.removeEventListener(event, sync);
-      }
-      window.clearTimeout(t);
+      window.removeEventListener("livv-identity", sync);
+      window.removeEventListener("livv-record", sync);
     };
   }, []);
 
-  if (!me || !rec) return <main className="you min-h-[70dvh]" aria-hidden />;
+  if (!me || !rec) return <main className="you" aria-hidden />;
 
-  const evo = evolutionTitle(rec.level);
-  const xpToNext = Math.max(1, rec.xpToNext || 1);
-  const pct = Math.min(100, Math.round((rec.currentXp / xpToNext) * 100));
-  const embers = me.embers || 0;
-  const emberDollars = embersToDollars(embers);
   const name = me.displayName || me.username || "LIVV";
-  const handle = me.username ? `@${me.username.replace(/^@/, "")}` : "@livv";
-
-  const photo = async (file?: File) => {
-    if (!file) return;
-    try {
-      const next = patchIdentity({ photo: await fileToPhoto(file) });
-      setMe(next);
-      void syncIdentityToCloud(next);
-      setStatus("");
-      feedback("tick");
-    } catch {
-      setStatus("Could not update photo.");
-    }
-  };
-
-  const shareProfileCard = async () => {
-    if (sharing) return;
-    setSharing(true);
-    setStatus("");
-    try {
-      const bg =
-        LIVV_SHARE_BACKGROUNDS[0]?.src || "/share-backgrounds/IMG_1400.jpeg";
-      const data: ShareCardData = {
-        displayName: me.displayName || me.username || "LIVV",
-        username: me.username || "livv",
-        level: rec.level || 1,
-        evolutionName: evo.name,
-        streak: rec.streak || 0,
-        tierLabel: "LIVV",
-        tierColor: "#FFFFFF",
-        embers: me.embers || 0,
-        workoutsCompleted: rec.workoutsCompleted || 0,
-        dailyScore: pct,
-        bodyScore: pct,
-        weeklyActive: 0,
-        weeklyWorkouts: 0,
-        mindSessions: rec.mindObjectives || 0,
-        customPhoto: me.photo || null,
-        backgroundSrc: bg,
-        workoutName: "",
-        focus: "",
-        duration: "",
-        exerciseCount: 0,
-        font: "sans",
-        textColor: "#FFFFFF",
-        logo: "white",
-      };
-      const blob = await renderLIVVShareCard("identity", data);
-      const result = await shareOrDownloadBlob(
-        blob,
-        `livv-profile-${me.username || "card"}.png`,
-        "My LIVV profile"
-      );
-      feedback("tick");
-      setStatus(
-        result === "shared"
-          ? "Share sheet open — Save Image to add to Photos."
-          : "Profile card saved to your device."
-      );
-    } catch {
-      setStatus("Could not create the profile card.");
-    } finally {
-      setSharing(false);
-    }
-  };
+  const handle = me.username ? "@" + me.username.replace(/^@/, "") : "@livv";
+  const embers = me.embers || 0;
+  const dollars = embersToDollars(embers);
 
   return (
-    <main className={"you" + (awake ? " awake" : "")} aria-label="Profile">
-      <div className="you-void" aria-hidden />
-
+    <main className="you" aria-label="Profile">
       <div className="you-inner">
         <header className="you-top">
-          <p className="you-eyebrow">You</p>
-          <div className="you-actions">
-            <button
-              type="button"
-              onClick={() => void shareProfileCard()}
-              disabled={sharing}
-              aria-label="Share profile card"
-              className="you-icon-btn"
-            >
-              <Share2 size={16} strokeWidth={1.9} />
-            </button>
-            <Link href="/home/settings" aria-label="Settings" className="you-icon-btn">
-              <Settings2 size={16} strokeWidth={1.9} />
-            </Link>
-          </div>
+          <p className="you-eyebrow">YOU</p>
+          <Link href="/home/settings" aria-label="Settings" className="you-icon-btn"><Settings2 size={16} strokeWidth={1.7} /></Link>
         </header>
 
         <section className="you-hero">
-          <div className="you-identity">
-            <div className="you-avatar-wrap">
-              <button
-                type="button"
-                onClick={() => fileRef.current?.click()}
-                className="you-avatar-btn"
-                aria-label="Change profile photo"
-              >
-                <Avatar identity={me} size={118} fit="contain" className="you-avatar" showTierRing />
-              </button>
-              <p className="you-photo-hint">Tap to edit</p>
-              <input
-                ref={fileRef}
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={(e) => void photo(e.target.files?.[0])}
-              />
-            </div>
-
-            <div className="you-identity-text">
-              <h1 className="you-name">{name}</h1>
-              <p className="you-handle">{handle}</p>
-              {me.bio ? <p className="you-bio">{me.bio}</p> : null}
-              {status ? (
-                <p className={"you-status" + (status.startsWith("Could") ? " is-err" : "")}>
-                  {status}
-                </p>
-              ) : null}
-            </div>
+          <div className="you-brand-mark" aria-hidden>
+            <img src="/livv-logo.png" alt="" width="82" height="82" />
           </div>
-
-          <div className="you-evo">
-            <p className="you-evo-label">Evolution</p>
-            <p className="you-evo-name">{evo.name}</p>
-            <p className="you-evo-meta">
-              Level {rec.level} · {rec.currentXp} / {xpToNext} XP
-            </p>
-            <div
-              className="you-xp-bar"
-              role="progressbar"
-              aria-valuenow={pct}
-              aria-valuemin={0}
-              aria-valuemax={100}
-              aria-label={`${pct} percent toward next level`}
-            >
-              <div className="you-xp-bar-fill" style={{ width: `${pct}%` }} />
-            </div>
-          </div>
+          <p className="you-kicker">LIVV MEMBER</p>
+          <h1 className="you-name">{name}</h1>
+          <p className="you-handle">{handle}</p>
+          {me.bio ? <p className="you-bio">{me.bio}</p> : null}
         </section>
 
-        <section className="you-stats" aria-label="Stats">
-          <div className="you-stat">
-            <p className="you-stat-v">{rec.streak || 0}</p>
-            <p className="you-stat-l">Streak</p>
+        <section className="you-record" aria-label="Your record">
+          <div className="you-record-head">
+            <div>
+              <p className="you-label">YOUR RECORD</p>
+              <h2>Built over time.</h2>
+            </div>
+            <span>{rec.streak || 0} day streak</span>
           </div>
-          <div className="you-stat">
-            <p className="you-stat-v">{rec.workoutsCompleted || 0}</p>
-            <p className="you-stat-l">Sessions</p>
-          </div>
-          <div className="you-stat">
-            <p className="you-stat-v">{rec.goalsCompleted || 0}</p>
-            <p className="you-stat-l">Objectives</p>
+          <div className="you-stats">
+            <div><strong>{rec.streak || 0}</strong><span>Streak</span></div>
+            <div><strong>{rec.workoutsCompleted || 0}</strong><span>Sessions</span></div>
+            <div><strong>{rec.goalsCompleted || 0}</strong><span>Objectives</span></div>
           </div>
         </section>
 
         <section className="you-embers">
-          <div className="you-embers-icon" aria-hidden>
-            <Flame size={18} />
-          </div>
+          <div className="you-embers-icon"><Flame size={16} /></div>
           <div className="you-embers-body">
-            <p className="you-embers-label">Embers</p>
-            <p className="you-embers-value">{embers.toLocaleString()}</p>
-            <p className="you-embers-note">
-              {emberDollars >= 1
-                ? `≈ $${emberDollars.toFixed(2)} toward Collection · min ${MIN_REDEEM_EMBERS.toLocaleString()}`
-                : `${MIN_REDEEM_EMBERS.toLocaleString()} Embers unlock redeem`}
-            </p>
+            <p className="you-label">EMBER BALANCE</p>
+            <strong>{embers.toLocaleString()}</strong>
+            <span>{dollars > 0 ? "≈ $" + dollars.toFixed(2) + " toward Collection 001" : MIN_REDEEM_EMBERS.toLocaleString() + " to unlock redemption"}</span>
           </div>
-          <Link
-            href="/home/shop"
-            className="you-embers-go"
-            aria-label="Open shop"
-            onClick={() => haptic("light")}
-          >
-            <ChevronRight size={18} />
-          </Link>
+          <Link href="/home/shop" className="you-embers-go" aria-label="Open Shop"><ChevronRight size={17} /></Link>
         </section>
 
-        <Link
-          href="/home/progress"
-          className="you-link"
-          onClick={() => haptic("light")}
-        >
-          <div>
-            <p className="you-link-label">Record</p>
-            <p className="you-link-title">How you are moving</p>
-            <p className="you-link-sub">Actions, streaks, pillars, evidence.</p>
-          </div>
-          <span className="you-link-chev" aria-hidden>
-            <ChevronRight size={18} />
-          </span>
-        </Link>
+        <section className="you-status">
+          <p className="you-label">LIVV STATUS</p>
+          <p>Keep the standard practical. Build the evidence. Then keep going.</p>
+        </section>
       </div>
     </main>
   );
