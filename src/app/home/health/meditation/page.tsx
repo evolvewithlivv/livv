@@ -47,6 +47,13 @@ export default function MeditationPage() {
           <h1 className="hsys-title">Meditation</h1>
           <p className="hsys-sub">Attention is a skill. Practice it in minutes, then carry it into the rest of the day.</p>
         </header>
+        <nav className="hsys-nav" aria-label="Health systems">
+          <Link href="/home/health/sleep" aria-current="">Sleep</Link>
+          <Link href="/home/health/meditation" aria-current="page">Mind</Link>
+          <Link href="/home/health/recipes">Food</Link>
+          <Link href="/home/health/trails">Move</Link>
+          <Link href="/home/health/dictionary">Knowledge</Link>
+        </nav>
 
         <section className="hsys-section">
           <p className="hsys-label">Choose a practice</p>
@@ -60,7 +67,7 @@ export default function MeditationPage() {
         </div>
 
         <div className="hsys-actions">
-          <button type="button" className="hsys-btn" style={{ marginTop: 0 }} onClick={() => { setRunning((v) => !v); feedback("tick"); }}>{running ? "Pause" : sec === 0 ? "Complete" : <><Play size={12} style={{ verticalAlign: -2, marginRight: 5 }} /> Start</>}</button>
+          <button type="button" className="hsys-btn" style={{ marginTop: 0 }} onClick={() => { setRunning((v) => !v); feedback("tick"); }}>{running ? "Pause" : sec === 0 ? "Complete" : sec === 0 ? "Complete" : <><Play size={12} style={{ verticalAlign: -2, marginRight: 5 }} /> Start</>}</button>
           <button type="button" className="hsys-btn ghost" style={{ marginTop: 0 }} onClick={reset}><RotateCcw size={12} style={{ verticalAlign: -2, marginRight: 5 }} /> Reset</button>
         </div>
 
