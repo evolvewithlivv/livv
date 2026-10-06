@@ -45,7 +45,7 @@ export default function RecipesPage() {
             <div className="hsys-recipe-meta"><span><Clock3 size={10} /> {selected.time} min</span><span>{selected.servings}</span><span>{selected.tag}</span></div>
           </header>
         <nav className="hsys-nav" aria-label="Health systems">
-          <Link href="/home/health/sleep" aria-current="">Sleep</Link>
+          <Link href="/home/health/sleep">Sleep</Link>
           <Link href="/home/health/meditation">Mind</Link>
           <Link href="/home/health/recipes" aria-current="page">Food</Link>
           <Link href="/home/health/trails">Move</Link>
