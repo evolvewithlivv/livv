@@ -6,6 +6,8 @@ import { ChevronLeft, Play, RotateCcw } from "lucide-react";
 import { feedback } from "@/lib/sensory";
 import "../health-systems.css";
 
+const DONE_KEY = "livv-meditation-done-v1";
+
 const PRACTICES = [
   { name: "Reset", minutes: 3, purpose: "Downshift when the mind is noisy.", steps: ["Sit and let the shoulders drop.", "Breathe slowly through the nose.", "Notice thoughts without solving them.", "Return attention to the breath.", "Choose one next action."] },
   { name: "Focus", minutes: 5, purpose: "Create a clean transition into work or training.", steps: ["Sit upright and put the phone away.", "Take five slow breaths.", "Notice when attention wanders.", "Return without judging yourself.", "Name the one task you are about to do."] },
@@ -17,6 +19,10 @@ export default function MeditationPage() {
   const [sec, setSec] = useState(PRACTICES[0].minutes * 60);
   const [running, setRunning] = useState(false);
   const [done, setDone] = useState(0);
+
+  useEffect(() => {
+    try { setDone(Number(localStorage.getItem(DONE_KEY) || "0")); } catch {}
+  }, []);
   const item = PRACTICES[idx];
 
   useEffect(() => {
@@ -24,7 +30,7 @@ export default function MeditationPage() {
     const id = window.setInterval(() => setSec((v) => {
       if (v <= 1) {
         setRunning(false);
-        setDone((n) => n + 1);
+        setDone((n) => { const next = n + 1; try { localStorage.setItem(DONE_KEY, String(next)); } catch {} return next; });
         feedback("complete");
         return 0;
       }
