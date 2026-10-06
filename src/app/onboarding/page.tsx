@@ -16,17 +16,17 @@ import { getAuthenticatedUser } from "@/lib/supabase/real-auth";
 import { cn } from "@/lib/utils";
 
 const GOALS = [
-  { id: "fitness", label: "Get stronger & leaner" },
-  { id: "mindset", label: "Build better habits" },
-  { id: "identity", label: "Define who I want to become" },
+  { id: "fitness", label: "Train the body with intent" },
+  { id: "mindset", label: "Stay honest with myself" },
+  { id: "identity", label: "Know who I am becoming" },
   { id: "capability", label: "Build practical capability" },
-  { id: "progress", label: "Track my growth over time" },
-  { id: "premium", label: "Access premium tools & products" },
+  { id: "progress", label: "Keep a real record of progress" },
+  { id: "standard", label: "Live a higher daily standard" },
 ];
 
 const INTERESTS = [
-  "Training", "Nutrition", "Mindset", "Recovery",
-  "Style", "Longevity", "Discipline", "Capability",
+  "Training", "Food", "Mind", "Recovery",
+  "Craft", "Longevity", "Discipline", "Capability",
 ];
 
 type Step = "why" | "goals" | "interests" | "profile";
@@ -52,7 +52,6 @@ export default function OnboardingPage() {
         }
         return;
       }
-      // Prefer session restore (iOS PWA cold start) over a bare getUser() race.
       const user = await getAuthenticatedUser();
       if (cancelled) return;
       if (!user || user.is_anonymous || !user.email) {
@@ -68,8 +67,6 @@ export default function OnboardingPage() {
         router.replace("/home");
         return;
       }
-      // Durable gate is cloud profile. Local draft can be missing after iOS
-      // storage eviction or a fresh PWA container while the account is complete.
       try {
         const cloudComplete = await isCloudOnboardingComplete();
         if (cancelled) return;
@@ -80,7 +77,6 @@ export default function OnboardingPage() {
         }
       } catch {
         if (cancelled) return;
-        // Fall through to wizard; user can still finish if cloud is unreachable.
       }
       setCheckingAccess(false);
     };
@@ -103,8 +99,6 @@ export default function OnboardingPage() {
     setBusy(true);
     setError("");
     try {
-      // Cloud onboarding is the durable gate. Only mark the local wizard complete
-      // after the server confirms the member profile update succeeded.
       await markCloudOnboardingComplete(name);
       await completeDeviceOnboarding({ displayName: name });
       persist({ why, goals: selectedGoals, interests: selectedInterests, displayName: name });
