@@ -2,30 +2,29 @@
 
 import { useCallback, useEffect, useMemo, useState } from "react";
 import {
-  claimDailyDrop,
   completeDailyTask,
-  dailyQuestion,
   dailySummary,
   dailyTasks,
   loadDailyState,
-  saveDailyJournal,
+  saveDailyAnswer,
+  saveDailyNote,
   type DailyTask,
 } from "@/lib/daily";
 import { feedback } from "@/lib/sensory";
 import "./daily.css";
 
 export default function DailyPage() {
-  const [now] = useState(() => new Date());
+  const [now, setNow] = useState(() => new Date());
   const [completed, setCompleted] = useState<string[]>([]);
   const [answer, setAnswer] = useState("");
+  const [note, setNote] = useState("");
+  const [savedAnswer, setSavedAnswer] = useState("");
   const [savedNote, setSavedNote] = useState("");
   const [status, setStatus] = useState("");
-  const [dropClaimed, setDropClaimed] = useState(false);
-  const [dropName, setDropName] = useState<string | null>(null);
 
-  const question = useMemo(() => dailyQuestion(now), [now]);
+  const question = useMemo(() => dailySummary(now).question, [now]);
   const tasks = useMemo(() => dailyTasks(now), [now]);
-  const summary = useMemo(() => dailySummary(now), [now, completed, savedNote, dropClaimed]);
+  const summary = useMemo(() => dailySummary(now), [now, completed, savedAnswer, savedNote]);
 
   const dateLabel = useMemo(
     () =>
@@ -40,12 +39,11 @@ export default function DailyPage() {
   const sync = useCallback(() => {
     const state = loadDailyState(now);
     setCompleted(state.completed);
-    setDropClaimed(state.dropClaimed);
     const todayJournal = state.journal.find((j) => j.key === state.key);
-    if (todayJournal?.answer) {
-      setAnswer(todayJournal.answer);
-      setSavedNote(todayJournal.answer);
-    }
+    setAnswer(todayJournal?.answer || "");
+    setSavedAnswer(todayJournal?.answer || "");
+    setNote(todayJournal?.note || "");
+    setSavedNote(todayJournal?.note || "");
   }, [now]);
 
   useEffect(() => {
@@ -57,6 +55,14 @@ export default function DailyPage() {
       window.removeEventListener("livv-record", sync);
     };
   }, [sync]);
+
+  useEffect(() => {
+    const timer = window.setInterval(() => {
+      const next = new Date();
+      setNow((current) => next.getDate() !== current.getDate() || next.getMonth() !== current.getMonth() || next.getFullYear() !== current.getFullYear() ? next : current);
+    }, 15000);
+    return () => window.clearInterval(timer);
+  }, []);
 
   const doneCount = completed.length;
   const allDone = doneCount >= 3;
@@ -80,23 +86,24 @@ export default function DailyPage() {
   function saveAnswer() {
     const clean = answer.trim();
     if (!clean) return;
-    const next = saveDailyJournal(clean, now);
+    const next = saveDailyAnswer(clean, now);
     setCompleted(next.completed);
-    setSavedNote(clean);
-    setStatus("Saved.");
+    setSavedAnswer(clean);
+    setStatus("Answer saved.");
     feedback("complete");
     window.dispatchEvent(new Event("livv-daily"));
     window.setTimeout(() => setStatus(""), 1800);
   }
 
-  function claimDrop() {
-    const result = claimDailyDrop(now);
-    if (result.claimed) {
-      setDropClaimed(true);
-      setDropName(result.drop.name);
-      feedback("complete");
-      window.dispatchEvent(new Event("livv-daily"));
-    }
+  function saveNote() {
+    const clean = note.trim();
+    if (!clean) return;
+    saveDailyNote(clean, now);
+    setSavedNote(clean);
+    setStatus("Reflection saved.");
+    feedback("complete");
+    window.dispatchEvent(new Event("livv-daily"));
+    window.setTimeout(() => setStatus(""), 1800);
   }
 
   return (
@@ -151,69 +158,49 @@ export default function DailyPage() {
           })}
         </section>
 
-        <section id="daily-reflect" className="dy-section" aria-label="Reflect">
-          <p className="dy-section-k">Reflect</p>
-          {!hasActed ? (
-            <p className="dy-action-s">
-              Take an action first. Then write what changed.
-            </p>
-          ) : null}
+        <section className="dy-question-answer" aria-label="Answer today's question">
+          <p className="dy-section-k">Your answer</p>
+          <p className="dy-answer-prompt">{question}</p>
           <div className="dy-reflect-box">
-            <textarea
-              value={answer}
-              onChange={(e) => setAnswer(e.target.value)}
-              placeholder={
-                hasActed
-                  ? "What changed? What did you learn?"
-                  : "Your private note for today…"
-              }
-              aria-label="Daily reflection"
-            />
+            <textarea value={answer} onChange={(e) => setAnswer(e.target.value)} placeholder="Answer the question in your own words…" aria-label="Answer today's question" />
             <div className="dy-reflect-row">
-              <span className="dy-reflect-hint">
-                {savedNote ? "Saved to your record" : "Private · stays with you"}
-              </span>
-              <button
-                type="button"
-                className="dy-btn"
-                onClick={saveAnswer}
-                disabled={!answer.trim()}
-              >
-                {savedNote && answer.trim() === savedNote ? "Saved" : "Save"}
+              <span className="dy-reflect-hint">{savedAnswer ? "Saved to your record" : "Private · stays with you"}</span>
+              <button type="button" className="dy-btn" onClick={saveAnswer} disabled={!answer.trim()}>
+                {savedAnswer && answer.trim() === savedAnswer ? "Saved" : "Save answer"}
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <section id="daily-reflect" className="dy-section" aria-label="Reflection note">
+          <p className="dy-section-k">Reflection note</p>
+          <p className="dy-action-s">Separate from the question. Write whatever you want to remember about today.</p>
+          <div className="dy-reflect-box">
+            <textarea value={note} onChange={(e) => setNote(e.target.value)} placeholder="What changed? What did you learn? What do you want to remember?" aria-label="Reflection note" />
+            <div className="dy-reflect-row">
+              <span className="dy-reflect-hint">{savedNote ? "Saved to your record" : "Private · stays with you"}</span>
+              <button type="button" className="dy-btn" onClick={saveNote} disabled={!note.trim()}>
+                {savedNote && note.trim() === savedNote ? "Saved" : "Save note"}
               </button>
             </div>
             {status ? <p className="dy-status">{status}</p> : null}
           </div>
         </section>
 
-        {allDone ? (
-          <section className="dy-drop" aria-label="Day complete">
-            <p className="dy-section-k">Day complete</p>
-            {dropClaimed ? (
-              <>
-                <p className="dy-drop-t">{dropName || "Claimed"}</p>
-                <p className="dy-drop-s">Today is logged. Come back tomorrow.</p>
-              </>
-            ) : (
-              <>
-                <p className="dy-drop-t">You finished today&apos;s three.</p>
-                <p className="dy-drop-s">
-                  Claim what the day returns — then rest the system.
-                </p>
-                <button
-                  type="button"
-                  className="dy-btn"
-                  style={{ marginTop: "0.85rem" }}
-                  onClick={claimDrop}
-                >
-                  Claim
-                </button>
-              </>
-            )}
+        {summary.callback ? (
+          <section className="dy-callback" aria-label="One month ago">
+            <p className="dy-k">One month ago</p>
+            {summary.callback.question ? (
+              <p className="dy-callback-q">{summary.callback.question}</p>
+            ) : null}
+            <p className="dy-callback-a">“{summary.callback.answer}”</p>
+            <p className="dy-callback-foot">Look at the distance.</p>
           </section>
         ) : null}
-
-        {summary.callback ? (
+      </div>
+    </main>
+  );
+}        {summary.callback ? (
           <section className="dy-callback" aria-label="One month ago">
             <p className="dy-k">One month ago</p>
             {summary.callback.question ? (
