@@ -27,6 +27,8 @@ import {
 import { feedback } from "@/lib/sensory";
 import "./health-signal.css";
 
+const SLEEP_TARGET = 8;
+
 const SYSTEMS = [
   { href: "/home/health/sleep", label: "Sleep", kicker: "RECOVERY", detail: "See the night as a pattern, not a guess.", Icon: Moon },
   { href: "/home/health/meditation", label: "Meditation", kicker: "MIND", detail: "Short practices for attention and reset.", Icon: Brain },
@@ -83,10 +85,12 @@ export default function HealthPage() {
 
   function update(patch: Partial<HealthDay>) {
     setDays((prev) => upsertHealthDay({ ...current, ...patch, date: today }, prev));
+    const nextSleep = patch.sleep ?? current.sleep;
+    const hitSleep = nextSleep >= SLEEP_TARGET && current.sleep < SLEEP_TARGET;
     const hitWater = (patch.water ?? current.water) >= WATER_TARGET && current.water < WATER_TARGET;
     const hitMeals = (patch.meals ?? current.meals) >= MEALS_TARGET && current.meals < MEALS_TARGET;
     const hitMove = patch.movement === true && !current.movement;
-    feedback(hitWater || hitMeals || hitMove ? "complete" : "tick");
+    feedback(hitSleep || hitWater || hitMeals || hitMove ? "complete" : "tick");
   }
 
   return (
@@ -131,7 +135,7 @@ export default function HealthPage() {
             <div className="health-metric">
               <div className="health-metric-head"><Moon size={15} /><span>SLEEP</span></div>
               <strong>{current.sleep ? current.sleep + "h" : "00"}</strong>
-              <p>{current.sleep ? "Logged" : "Not logged"}</p>
+              <p>{current.sleep >= SLEEP_TARGET ? "8h baseline reached" : current.sleep ? "Logged" : "Suggested: 8h"}</p>
               <div className="health-stepper">
                 <button type="button" aria-label="Decrease sleep" onClick={() => update({ sleep: Math.max(0, Math.round((current.sleep - 0.5) * 10) / 10) })}>−</button>
                 <button type="button" aria-label="Increase sleep" onClick={() => update({ sleep: Math.min(16, Math.round((current.sleep + 0.5) * 10) / 10) })}>+</button>
