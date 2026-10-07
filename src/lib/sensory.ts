@@ -15,22 +15,35 @@ function audio() {
   return ctx;
 }
 
-function tone(freq: number, duration: number, type: OscillatorType, gain = 0.04) {
+function tone(freq: number, duration: number, type: OscillatorType, gain = 0.025, delay = 0) {
   const a = audio();
   if (!a) return;
   const osc = a.createOscillator();
   const g = a.createGain();
+  const filter = a.createBiquadFilter();
   osc.type = type;
   osc.frequency.value = freq;
-  g.gain.value = gain;
-  osc.connect(g);
+  filter.type = "lowpass";
+  filter.frequency.value = 2600;
+  filter.Q.value = 0.35;
+  osc.connect(filter);
+  filter.connect(g);
   g.connect(a.destination);
-  const now = a.currentTime;
-  g.gain.setValueAtTime(gain, now);
-  g.gain.exponentialRampToValueAtTime(0.001, now + duration);
+  const now = a.currentTime + delay;
+  g.gain.setValueAtTime(0.0001, now);
+  g.gain.exponentialRampToValueAtTime(gain, now + 0.012);
+  g.gain.exponentialRampToValueAtTime(0.0001, now + duration);
   osc.start(now);
-  osc.stop(now + duration + 0.02);
+  osc.stop(now + duration + 0.03);
 }
+
+function successChord() {
+  tone(523.25, 0.16, "sine", 0.026);
+  tone(659.25, 0.18, "sine", 0.021, 0.045);
+  tone(783.99, 0.24, "sine", 0.018, 0.09);
+}
+
+
 
 export type HapticStyle = "light" | "medium" | "success";
 
@@ -91,20 +104,18 @@ export function playSound(
   if (!loadPrefs().sound) return;
   try {
     if (kind === "checkin") {
-      tone(420, 0.08, "sine", 0.035);
-      setTimeout(() => tone(560, 0.12, "sine", 0.03), 70);
+      tone(392, 0.11, "sine", 0.018);
+      tone(587.33, 0.18, "sine", 0.015, 0.055);
     } else if (kind === "complete") {
-      tone(380, 0.1, "triangle", 0.04);
-      setTimeout(() => tone(520, 0.14, "triangle", 0.035), 90);
-      setTimeout(() => tone(660, 0.18, "sine", 0.03), 180);
+      successChord();
     } else if (kind === "unlock") {
-      tone(500, 0.1, "sine", 0.04);
-      setTimeout(() => tone(750, 0.2, "sine", 0.035), 100);
+      tone(659.25, 0.13, "sine", 0.02);
+      tone(987.77, 0.22, "sine", 0.016, 0.07);
     } else if (kind === "tick") {
-      tone(880, 0.03, "square", 0.012);
+      tone(740, 0.028, "sine", 0.008);
     } else if (kind === "rest") {
-      tone(300, 0.12, "sine", 0.04);
-      setTimeout(() => tone(300, 0.12, "sine", 0.03), 160);
+      tone(329.63, 0.14, "sine", 0.018);
+      tone(246.94, 0.16, "sine", 0.012, 0.12);
     }
   } catch {
     // ignore
