@@ -101,7 +101,7 @@ export default function AuthPage() {
     if (mode === "signup" && (!ageBand || ageBand === "under13" || !ageConfirmed)) {
       throw new Error("Confirm that you are 13 or older before creating an account.");
     }
-    await startEmailAuth(email, mode === "signup", mode === "signup" && ageBand !== "under13" ? ageBand : undefined);
+    await startEmailAuth(email, mode === "signup", ageBand === "13to17" || ageBand === "18plus" ? ageBand : undefined);
     setPending(true);
     setOtp("");
     setResendIn(RESEND_SECONDS);
