@@ -10,7 +10,6 @@ import {
   type Identity,
 } from "@/lib/identity";
 import {
-  getCurrentAccount,
   changeUsernameOnServer,
   normalizeUsername,
 } from "@/lib/auth";
@@ -24,8 +23,7 @@ export default function EditProfilePage() {
   const [username, setUsername] = useState("");
   const [bio, setBio] = useState("");
   const [photo, setPhoto] = useState<string | null>(null);
-  const [locked, setLocked] = useState(false);
-  const [error, setError] = useState("");
+   const [error, setError] = useState("");
   const [status, setStatus] = useState("");
   const [saving, setSaving] = useState(false);
   const fileRef = useRef<HTMLInputElement>(null);
@@ -37,8 +35,6 @@ export default function EditProfilePage() {
     setUsername((id.username || "").replace(/^@/, ""));
     setBio(id.bio || "");
     setPhoto(id.photo);
-    const acc = getCurrentAccount();
-    setLocked(false);
   }, []);
 
   if (!me) return <main className="you" aria-hidden />;
