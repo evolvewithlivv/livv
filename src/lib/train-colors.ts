@@ -174,11 +174,11 @@ export function saveCustomSplit(split: CustomSplit) {
   try { window.localStorage.setItem(CUSTOM_SPLIT_KEY, JSON.stringify(split)); } catch {}
 }
 
-export function loadActiveSplit(): SplitId | null {
+export function loadActiveSplit(): SplitId | "custom" | null {
   if (typeof window === "undefined") return null;
   try {
     const raw = window.localStorage.getItem(SPLIT_KEY);
-    return raw === "ppl" || raw === "upper-lower" || raw === "bro" || raw === "full" || raw === "hybrid"
+    return raw === "ppl" || raw === "upper-lower" || raw === "bro" || raw === "full" || raw === "hybrid" || raw === "custom"
       ? raw
       : null;
   } catch {
