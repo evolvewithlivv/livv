@@ -13,8 +13,13 @@ import {
 } from "@/lib/train-data";
 import {
   SPLITS,
+  FOCUS_COLOR,
+  FOCUS_OPTIONS,
   loadActiveSplit,
+  loadCustomSplit,
   saveActiveSplit,
+  saveCustomSplit,
+  type CustomSplit,
   type SplitId,
 } from "@/lib/train-colors";
 import { completeWorkout } from "@/lib/record";
@@ -81,7 +86,9 @@ function metaLine(ex: Exercise) {
 
 export default function TrainPage() {
   const [phase, setPhase] = useState<Phase>("select");
-  const [splitId, setSplitId] = useState<SplitId | null>(null);
+  const [splitId, setSplitId] = useState<SplitId | "custom" | null>(null);
+  const [customSplit, setCustomSplit] = useState<CustomSplit | null>(null);
+  const [editingCustom, setEditingCustom] = useState(false);
   const [selectedDayId, setSelectedDayId] = useState<string | null>(null);
   const [location, setLocation] = useState<Location | null>(null);
   const [duration, setDuration] = useState<Duration | null>(null);
@@ -93,6 +100,8 @@ export default function TrainPage() {
 
   useEffect(() => {
     const saved = loadActiveSplit();
+    const custom = loadCustomSplit();
+    setCustomSplit(custom);
     if (saved) {
       const s = SPLITS.find((x) => x.id === saved);
       if (s) {
@@ -117,19 +126,50 @@ export default function TrainPage() {
     };
   }, [rest > 0]);
 
-  const split = SPLITS.find((s) => s.id === splitId) || null;
+  const split = splitId === "custom" ? customSplit : SPLITS.find((s) => s.id === splitId) || null;
   const selectedDay = split?.days.find((d) => d.id === selectedDayId) || null;
   const focus: Focus | null = selectedDay?.focus || null;
   const canGenerate = Boolean(split && selectedDay && !selectedDay.rest && focus && location && duration);
 
-  const chooseSplit = (id: SplitId) => {
+  const chooseSplit = (id: SplitId | "custom") => {
+    if (id === "custom") {
+      const existing = customSplit || {
+        id: "custom" as const,
+        name: "My Weekly Split",
+        line: "Your week. Your structure.",
+        detail: "Set a focus for every day and LIVV builds the session.",
+        color: "#0F7FFF",
+        days: ["MON","TUE","WED","THU","FRI","SAT","SUN"].map((day, i) => ({
+          id: `custom-${day}`, day, label: i === 6 ? "Rest" : "Full Body",
+          focus: i === 6 ? null : "Full Body" as Focus,
+          muscles: i === 6 ? "Off." : "Whole body",
+          rest: i === 6,
+        })),
+      };
+      setCustomSplit(existing);
+      setSplitId("custom");
+      saveActiveSplit("custom" as SplitId);
+      setEditingCustom(true);
+      feedback("tick");
+      return;
+    }
+
     const s = SPLITS.find((x) => x.id === id);
     if (!s) return;
     feedback("tick");
     setSplitId(id);
     saveActiveSplit(id);
+    setEditingCustom(false);
     const today = s.days.find((d) => d.day === todayCode());
     setSelectedDayId(today?.id || s.days.find((d) => !d.rest)?.id || null);
+  };
+
+  const updateCustomDay = (index: number, patch: Partial<CustomSplit["days"][number]>) => {
+    if (!customSplit) return;
+    const days = customSplit.days.map((day, i) => i === index ? { ...day, ...patch, rest: patch.focus === null ? true : false, muscles: patch.focus === null ? "Off." : (patch.muscles || day.muscles) } : day);
+    const next = { ...customSplit, days };
+    setCustomSplit(next);
+    saveCustomSplit(next);
   };
 
   const build = () => {
@@ -276,7 +316,9 @@ export default function TrainPage() {
         <p className="tr-sub">Pick split, place, and time. Then execute.</p>
 
         <section className="tr-section">
-          <p className="tr-section-k">Split</p>
+          <div className="tr-section-head">
+            <div><p className="tr-section-k">Weekly split</p><p className="tr-section-note">Choose a system or build your own.</p></div>
+          </div>
           <div className="tr-chips">
             {SPLITS.map((s) => (
               <button
@@ -288,8 +330,39 @@ export default function TrainPage() {
                 {s.name}
               </button>
             ))}
+            <button
+              type="button"
+              className={"tr-chip tr-chip-custom" + (splitId === "custom" ? " on" : "")}
+              onClick={() => chooseSplit("custom")}
+            >
+              {customSplit ? "My split" : "Build your split"}
+            </button>
           </div>
         </section>
+
+        {splitId === "custom" && customSplit && editingCustom ? (
+          <section className="tr-section tr-custom-editor">
+            <div className="tr-custom-head">
+              <div><p className="tr-section-k">Your week</p><p className="tr-section-note">Set the focus. You can change it later.</p></div>
+              <button type="button" className="tr-ghost-inline" onClick={() => setEditingCustom(false)}>Done</button>
+            </div>
+            <label className="tr-custom-name">Name<input value={customSplit.name} maxLength={32} onChange={e => { const next={...customSplit,name:e.target.value}; setCustomSplit(next); saveCustomSplit(next); }} /></label>
+            <div className="tr-custom-days">
+              {customSplit.days.map((day,index) => (
+                <div key={day.id} className="tr-custom-day">
+                  <span className="tr-custom-day-name">{dayName(day.day)}</span>
+                  <select value={day.rest ? "" : day.focus || ""} onChange={e => {
+                    const value=e.target.value as Focus | "";
+                    updateCustomDay(index, value ? { focus:value, label:value, muscles:value } : { focus:null, label:"Rest", muscles:"Off." });
+                  }}>
+                    <option value="">Rest</option>
+                    {FOCUS_OPTIONS.map(option => <option key={option} value={option}>{option}</option>)}
+                  </select>
+                </div>
+              ))}
+            </div>
+          </section>
+        ) : null}
 
         {split ? (
           <section className="tr-section">
@@ -365,6 +438,10 @@ export default function TrainPage() {
             ))}
           </div>
         </section>
+
+        {splitId === "custom" && customSplit && !editingCustom ? (
+          <button type="button" className="tr-secondary" onClick={() => setEditingCustom(true)}>Edit my weekly split</button>
+        ) : null}
 
         <button type="button" className="tr-primary" disabled={!canGenerate} onClick={build}>
           Build session
