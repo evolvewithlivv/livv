@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { ArrowUpRight, HeartPulse, Dumbbell, Sprout, Brain } from "lucide-react";
 import Link from "next/link";
 import { loadIdentity, addEmbers, type Identity } from "@/lib/identity";
 import { checkInRecord, isCheckedInToday, loadRecord, type LivvRecord } from "@/lib/record";
@@ -22,7 +23,7 @@ function greetingForHour(hour: number): string {
 
 function displayName(me: Identity): string {
   const raw = (me.displayName || "").trim();
-  if (raw) return raw.split(/\s+/)[0];
+  if (raw) return raw;
   const user = (me.username || "").trim();
   if (user) return user.startsWith("@") ? user.slice(1) : user;
   return "there";
@@ -168,6 +169,16 @@ export default function HomePage() {
           </section>
         ) : null}
 
+        <section className="ho-systems" aria-label="LIVV systems">
+          <div className="ho-systems-head"><div><p className="ho-k">LIVV SYSTEM</p><h2>Your world, in motion.</h2></div><span>04</span></div>
+          <div className="ho-system-grid">
+            <Link href="/home/daily" className="ho-system ho-system-daily"><span><Brain size={16}/></span><strong>Daily</strong><small>Mind · life · action</small><ArrowUpRight size={15}/></Link>
+            <Link href="/home/train" className="ho-system ho-system-train"><span><Dumbbell size={16}/></span><strong>Train</strong><small>Build · execute · record</small><ArrowUpRight size={15}/></Link>
+            <Link href="/home/health" className="ho-system ho-system-health"><span><HeartPulse size={16}/></span><strong>Health</strong><small>Sleep · food · movement</small><ArrowUpRight size={15}/></Link>
+            <Link href="/home/field" className="ho-system ho-system-field"><span><Sprout size={16}/></span><strong>Field</strong><small>Grow · keep · preserve</small><ArrowUpRight size={15}/></Link>
+          </div>
+        </section>
+
         <p className="ho-signal" aria-label="Signal">
           <span>{streak}d present</span>
           <span className="ho-dot" aria-hidden />
@@ -184,6 +195,9 @@ export default function HomePage() {
             <p className="ho-qa">{quote.author}</p>
           </footer>
         ) : null}
+        <div className="ho-pillars" aria-hidden>
+          <img src="/LIVV%20Pillars%20Logo%20-%20BLACK.PNG" alt="" />
+        </div>
       </div>
     </main>
   );
