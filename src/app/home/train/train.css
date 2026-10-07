@@ -28,3 +28,21 @@
 .tr-day-hint{margin:.65rem 0 0;font-size:.88rem;line-height:1.4;color:var(--muted);max-width:34ch}
 
 @media(max-width:390px){.tr-inner{padding-left:18px;padding-right:18px}.tr-chip{flex-basis:100%}}
+
+.tr-section-head,.tr-custom-head{display:flex;align-items:flex-start;justify-content:space-between;gap:1rem}
+.tr-section-note{margin:.15rem 0 0;font-size:.8rem;color:var(--muted);line-height:1.35}
+.tr-chip:nth-child(1).on{border-color:#0F7FFF;background:rgba(15,127,255,.12)}
+.tr-chip:nth-child(2).on{border-color:#9A00FF;background:rgba(154,0,255,.12)}
+.tr-chip:nth-child(3).on{border-color:#39B54A;background:rgba(57,181,74,.12)}
+.tr-chip:nth-child(4).on{border-color:#F61981;background:rgba(246,25,129,.12)}
+.tr-chip:nth-child(5).on{border-color:#F93827;background:rgba(249,56,39,.12)}
+.tr-chip-custom.on{border-color:#0F7FFF;background:rgba(15,127,255,.12)}
+.tr-secondary{width:100%;min-height:2.8rem;margin-top:.65rem;border:1px solid color-mix(in srgb,var(--line) 80%,transparent);border-radius:14px;background:transparent;color:var(--ink);font-size:13px;font-weight:650}
+.tr-ghost-inline{border:0;background:transparent;color:var(--accent);font-size:12px;font-weight:700}
+.tr-custom-editor{padding:1rem;border:1px solid color-mix(in srgb,var(--line) 80%,transparent);border-radius:20px;background:color-mix(in srgb,var(--ink) 3%,transparent)}
+.tr-custom-name{display:block;margin-top:1rem;font-size:9px;font-weight:750;letter-spacing:.12em;text-transform:uppercase;color:var(--muted)}
+.tr-custom-name input{display:block;width:100%;margin-top:.45rem;min-height:2.65rem;padding:0 .8rem;border:1px solid color-mix(in srgb,var(--line) 80%,transparent);border-radius:12px;background:transparent;color:var(--ink);font:inherit;font-size:14px}
+.tr-custom-days{margin-top:1rem;border-top:1px solid color-mix(in srgb,var(--line) 60%,transparent)}
+.tr-custom-day{display:grid;grid-template-columns:72px minmax(0,1fr);gap:.75rem;align-items:center;padding:.7rem 0;border-bottom:1px solid color-mix(in srgb,var(--line) 55%,transparent)}
+.tr-custom-day-name{font-size:11px;font-weight:700;color:var(--muted)}
+.tr-custom-day select{width:100%;min-height:2.4rem;padding:0 .7rem;border:1px solid color-mix(in srgb,var(--line) 75%,transparent);border-radius:10px;background:var(--bg);color:var(--ink);font:inherit;font-size:12px}
