@@ -108,6 +108,15 @@ export default function ProfilePage() {
             </Link>
           </div>
         </section>
+
+        <section className="you-section" aria-label="Stay connected">
+          <p className="you-section-k">Stay connected</p>
+          <a className="you-social" href="https://x.com/ewl_official" target="_blank" rel="noreferrer">
+            <span className="you-social-mark">𝕏</span>
+            <span><strong>@ewl_official</strong><small>Official LIVV on X</small></span>
+            <ChevronRight size={17} className="you-chev" />
+          </a>
+        </section>
       </div>
     </main>
   );
