@@ -19,15 +19,16 @@ export type SplitDef = {
 };
 
 const ACCENT = "#FF9D23";
+const CUSTOM_SPLIT_KEY = "livv-custom-split-v1";
 
 export const LIVV_COLORS = {
-  blue: ACCENT,
-  yellow: ACCENT,
-  red: ACCENT,
-  pink: ACCENT,
-  purple: ACCENT,
-  green: ACCENT,
-  orange: ACCENT,
+  blue: "#0F7FFF",
+  yellow: "#F5D90A",
+  red: "#F93827",
+  pink: "#F61981",
+  purple: "#9A00FF",
+  green: "#39B54A",
+  orange: "#FF9D23",
 } as const;
 
 export const SPLITS: SplitDef[] = [
@@ -113,9 +114,20 @@ export const SPLITS: SplitDef[] = [
   },
 ];
 
-export const FOCUS_COLOR: Record<Focus, string> = Object.fromEntries(
-  ["Full Body", "Upper Body", "Lower Body", "Push", "Pull", "Legs", "Core", "Cardio", "Chest", "Back", "Shoulders", "Arms"].map((x) => [x, ACCENT])
-) as Record<Focus, string>;
+export const FOCUS_COLOR: Record<Focus, string> = {
+  "Full Body": LIVV_COLORS.blue,
+  "Upper Body": LIVV_COLORS.purple,
+  "Lower Body": LIVV_COLORS.green,
+  Push: LIVV_COLORS.red,
+  Pull: LIVV_COLORS.blue,
+  Legs: LIVV_COLORS.green,
+  Core: LIVV_COLORS.yellow,
+  Cardio: LIVV_COLORS.pink,
+  Chest: LIVV_COLORS.red,
+  Back: LIVV_COLORS.blue,
+  Shoulders: LIVV_COLORS.purple,
+  Arms: LIVV_COLORS.orange,
+};
 
 export const LOCATION_COLOR: Record<Location, string> = {
   Home: ACCENT,
@@ -132,6 +144,35 @@ export const DURATION_COLOR: Record<Duration, string> = {
 };
 
 const SPLIT_KEY = "livv-active-split";
+
+export type CustomSplit = {
+  id: "custom";
+  name: string;
+  line: string;
+  detail: string;
+  days: SplitDay[];
+  color: string;
+};
+
+export const FOCUS_OPTIONS: Focus[] = [
+  "Full Body","Upper Body","Lower Body","Push","Pull","Legs","Core","Cardio","Chest","Back","Shoulders","Arms",
+];
+
+export function loadCustomSplit(): CustomSplit | null {
+  if (typeof window === "undefined") return null;
+  try {
+    const raw = window.localStorage.getItem(CUSTOM_SPLIT_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw) as CustomSplit;
+    if (!parsed || !Array.isArray(parsed.days) || parsed.days.length !== 7) return null;
+    return parsed;
+  } catch { return null; }
+}
+
+export function saveCustomSplit(split: CustomSplit) {
+  if (typeof window === "undefined") return;
+  try { window.localStorage.setItem(CUSTOM_SPLIT_KEY, JSON.stringify(split)); } catch {}
+}
 
 export function loadActiveSplit(): SplitId | null {
   if (typeof window === "undefined") return null;
