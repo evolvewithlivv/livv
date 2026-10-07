@@ -73,9 +73,11 @@ export default function EditProfilePage() {
       setError("Username must be 24 characters or fewer.");
       return;
     }
+    const currentMe = me;
+    if (!currentMe) return;
     setSaving(true);
     try {
-      if (nextUser && nextUser !== normalizeUsername(me.username)) {
+      if (nextUser && nextUser !== normalizeUsername(currentMe.username)) {
         await changeUsernameOnServer(nextUser);
       }
       patchIdentity({
