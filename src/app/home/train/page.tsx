@@ -13,7 +13,6 @@ import {
 } from "@/lib/train-data";
 import {
   SPLITS,
-  FOCUS_COLOR,
   FOCUS_OPTIONS,
   loadActiveSplit,
   loadCustomSplit,
@@ -102,7 +101,11 @@ export default function TrainPage() {
     const saved = loadActiveSplit();
     const custom = loadCustomSplit();
     setCustomSplit(custom);
-    if (saved) {
+    if (saved === "custom" && custom) {
+      setSplitId("custom");
+      const today = custom.days.find((d) => d.day === todayCode());
+      setSelectedDayId(today?.id || custom.days.find((d) => !d.rest)?.id || null);
+    } else if (saved) {
       const s = SPLITS.find((x) => x.id === saved);
       if (s) {
         setSplitId(saved);
@@ -170,6 +173,7 @@ export default function TrainPage() {
     const next = { ...customSplit, days };
     setCustomSplit(next);
     saveCustomSplit(next);
+    if (next.days[selectedDayId ? next.days.findIndex(d => d.id === selectedDayId) : -1]?.rest) setSelectedDayId(null);
   };
 
   const build = () => {
