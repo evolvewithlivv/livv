@@ -8,6 +8,8 @@ import { isCloudOnboardingComplete, markCloudOnboardingComplete } from "@/lib/su
 
 const LOGO = "/livv-logo.png";
 const RESEND_SECONDS = 30;
+const AGE_KEY = "livv-age-gate-v1";
+type AgeBand = "under13" | "13to17" | "18plus";
 
 export default function AuthPage() {
   const [email, setEmail] = useState("");
@@ -18,6 +20,18 @@ export default function AuthPage() {
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
   const [mode, setMode] = useState<"signin" | "signup">("signin");
+  const [ageBand, setAgeBand] = useState<AgeBand | null>(null);
+  const [ageConfirmed, setAgeConfirmed] = useState(false);
+
+  useEffect(() => {
+    try {
+      const saved = window.localStorage.getItem(AGE_KEY);
+      if (saved === "13to17" || saved === "18plus") {
+        setAgeBand(saved);
+        setAgeConfirmed(true);
+      }
+    } catch {}
+  }, []);
 
   useEffect(() => {
     if (resendIn <= 0) return;
@@ -68,9 +82,26 @@ export default function AuthPage() {
     finally { setBusy(false); }
   };
 
+  const chooseAge = (value: AgeBand) => {
+    setAgeBand(value);
+    setAgeConfirmed(false);
+    setError("");
+    setNotice(value === "under13" ? "LIVV is for people 13 and older. You cannot create an account yet." : "");
+  };
+
+  const confirmAge = () => {
+    if (!ageBand || ageBand === "under13") return;
+    try { window.localStorage.setItem(AGE_KEY, ageBand); } catch {}
+    setAgeConfirmed(true);
+    setNotice("Age eligibility confirmed.");
+  };
+
   const sendEmail = (resend = false) => void run(async () => {
     if (resend && resendIn > 0) return;
-    await startEmailAuth(email, mode === "signup");
+    if (mode === "signup" && (!ageBand || ageBand === "under13" || !ageConfirmed)) {
+      throw new Error("Confirm that you are 13 or older before creating an account.");
+    }
+    await startEmailAuth(email, mode === "signup", ageBand === "13to17" || ageBand === "18plus" ? ageBand : undefined);
     setPending(true);
     setOtp("");
     setResendIn(RESEND_SECONDS);
@@ -114,8 +145,35 @@ export default function AuthPage() {
 
           {!pending ? (
             <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); sendEmail(false); }}>
+              {mode === "signup" ? (
+                <section className="space-y-3" aria-labelledby="age-title">
+                  <div>
+                    <p id="age-title" className="text-[11px] font-medium uppercase tracking-[0.14em] text-white/35">Age</p>
+                    <p className="mt-1.5 text-[12px] leading-5 text-white/35">LIVV accounts are for people 13 and older.</p>
+                  </div>
+                  <div className="grid grid-cols-3 gap-2" role="radiogroup" aria-label="Age range">
+                    {([
+                      ["under13", "Under 13"],
+                      ["13to17", "13-17"],
+                      ["18plus", "18+"],
+                    ] as const).map(([value, label]) => (
+                      <button key={value} type="button" role="radio" aria-checked={ageBand === value} onClick={() => chooseAge(value)}
+                        className={`rounded-2xl border px-2 py-3 text-[12px] transition ${ageBand === value ? "border-white/40 bg-white text-black" : "border-white/10 bg-white/[0.03] text-white/55 hover:border-white/20"}`}>
+                        {label}
+                      </button>
+                    ))}
+                  </div>
+                  {ageBand === "under13" ? <p className="text-[12px] text-red-400">You must be at least 13 to create an account.</p> : null}
+                  {ageBand && ageBand !== "under13" ? (
+                    <label className="flex items-start gap-3 text-[11px] leading-5 text-white/45">
+                      <input type="checkbox" checked={ageConfirmed} onChange={(e) => { setAgeConfirmed(e.target.checked); if (e.target.checked) confirmAge(); }} className="mt-1 accent-[rgb(var(--livv-accent))]" />
+                      <span>I confirm that I am 13 or older and agree to the <a className="text-white/70 underline" href="/legal/terms">Terms</a> and <a className="text-white/70 underline" href="/legal/privacy">Privacy Policy</a>.</span>
+                    </label>
+                  ) : null}
+                </section>
+              ) : null}
               <Field label="Email" value={email} onChange={setEmail} type="email" autoComplete="email" placeholder="you@example.com" />
-              <Button className="w-full" disabled={busy || !email.includes("@")} type="submit">
+              <Button className="w-full" disabled={busy || !email.includes("@") || (mode === "signup" && (!ageBand || ageBand === "under13" || !ageConfirmed))} type="submit">
                 {busy ? "Sending…" : mode === "signin" ? "Sign in with email" : "Create account with email"}
               </Button>
             </form>
@@ -143,6 +201,8 @@ export default function AuthPage() {
           <a href="/legal/privacy" className="underline-offset-2 hover:underline">Privacy</a>
           {" · "}
           <a href="/legal/terms" className="underline-offset-2 hover:underline">Terms</a>
+          {" · "}
+          <a href="/legal/dmca" className="underline-offset-2 hover:underline">Copyright</a>
         </p>
       </div>
     </main>

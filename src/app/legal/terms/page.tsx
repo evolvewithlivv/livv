@@ -8,7 +8,7 @@ export default function TermsPage() {
         <header className="mt-10 border-b border-livv-border pb-8">
           <p className="text-[10px] font-semibold uppercase tracking-[.22em] text-livv-muted">Legal</p>
           <h1 className="mt-2 text-4xl font-semibold tracking-[-.05em]">Terms &amp; Conditions</h1>
-          <p className="mt-3 text-sm text-livv-muted">Effective September 24, 2026</p>
+          <p className="mt-3 text-sm text-livv-muted">Effective October 6, 2026</p>
         </header>
         <article className="prose prose-sm mt-10 max-w-none prose-headings:font-semibold prose-headings:tracking-tight prose-p:leading-7">
           <p><strong>In plain English:</strong> LIVV is a lifestyle, training, wellness, learning, and personal-development product. Use it lawfully, use your account responsibly, and understand that its educational content is not professional advice.</p>
