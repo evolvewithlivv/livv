@@ -249,6 +249,10 @@ async function authenticatedFetch(input: RequestInfo | URL, init: RequestInit = 
 export async function startCheckout(
   tier: Exclude<LivvTier, "spark">,
 ): Promise<{ ok: boolean; error?: string }> {
+  void tier;
+  return { ok: false, error: "Paid LIVV memberships are not offered in V1." };
+  /*
+
   if (typeof window === "undefined") return { ok: false, error: "client only" };
   const me = loadIdentity();
   try {
