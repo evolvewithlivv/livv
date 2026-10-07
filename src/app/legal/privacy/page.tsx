@@ -8,7 +8,7 @@ export default function PrivacyPage() {
         <header className="mt-10 border-b border-livv-border pb-8">
           <p className="text-[10px] font-semibold uppercase tracking-[.22em] text-livv-muted">Legal</p>
           <h1 className="mt-2 text-4xl font-semibold tracking-[-.05em]">Privacy Policy</h1>
-          <p className="mt-3 text-sm text-livv-muted">Effective September 24, 2026</p>
+          <p className="mt-3 text-sm text-livv-muted">Effective October 6, 2026</p>
         </header>
         <article className="prose prose-sm mt-10 max-w-none prose-headings:font-semibold prose-headings:tracking-tight prose-p:leading-7">
           <p><strong>In plain English:</strong> LIVV collects the information needed to run your account, provide the features you use, process memberships, and keep the service secure. We do not sell your personal information.</p>
@@ -34,7 +34,7 @@ export default function PrivacyPage() {
           <p>Some LIVV features let you record health and wellness information. These tools are designed for personal organization and wellness tracking. LIVV is not a medical provider and does not provide diagnosis or treatment.</p>
           <h2>11. Changes</h2>
           <p>We may update this policy as LIVV changes. The effective date at the top identifies the current version.</p>
-          <h2>12. Contact</h2>
+          <h2>12. Copyright</h2><p>Copyright complaints are handled under the <a href="/legal/dmca" className="underline">DMCA &amp; Copyright Policy</a>.</p><h2>13. Contact</h2>
           <p>For privacy questions or requests, use the current contact information published by LIVV on the website.</p>
         </article>
       </div>
