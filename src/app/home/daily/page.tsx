@@ -200,17 +200,4 @@ export default function DailyPage() {
       </div>
     </main>
   );
-}        {summary.callback ? (
-          <section className="dy-callback" aria-label="One month ago">
-            <p className="dy-k">One month ago</p>
-            {summary.callback.question ? (
-              <p className="dy-callback-q">{summary.callback.question}</p>
-            ) : null}
-            <p className="dy-callback-a">“{summary.callback.answer}”</p>
-            <p className="dy-callback-foot">Look at the distance.</p>
-          </section>
-        ) : null}
-      </div>
-    </main>
-  );
 }
