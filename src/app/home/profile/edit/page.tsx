@@ -11,7 +11,7 @@ import {
 } from "@/lib/identity";
 import {
   getCurrentAccount,
-  isUsernameAvailable,
+  changeUsernameOnServer,
   normalizeUsername,
 } from "@/lib/auth";
 import { feedback } from "@/lib/sensory";
@@ -38,7 +38,7 @@ export default function EditProfilePage() {
     setBio(id.bio || "");
     setPhoto(id.photo);
     const acc = getCurrentAccount();
-    setLocked(Boolean(acc?.usernameLocked));
+    setLocked(false);
   }, []);
 
   if (!me) return <main className="you" aria-hidden />;
@@ -60,7 +60,7 @@ export default function EditProfilePage() {
     }
   }
 
-  function onSave() {
+  async function onSave() {
     setError("");
     setStatus("");
     const name = displayName.trim();
@@ -68,32 +68,31 @@ export default function EditProfilePage() {
       setError("Display name is required.");
       return;
     }
-    let nextUser = username.trim();
-    if (!locked) {
-      nextUser = normalizeUsername(nextUser);
-      if (nextUser && nextUser.length < 3) {
-        setError("Username needs at least 3 characters.");
-        return;
-      }
-      const acc = getCurrentAccount();
-      if (nextUser && !isUsernameAvailable(nextUser, acc?.id)) {
-        setError("That username is taken.");
-        return;
-      }
+    const nextUser = normalizeUsername(username.trim());
+    if (nextUser && nextUser.length < 3) {
+      setError("Username needs at least 3 characters.");
+      return;
+    }
+    if (nextUser.length > 24) {
+      setError("Username must be 24 characters or fewer.");
+      return;
     }
     setSaving(true);
     try {
+      if (nextUser && nextUser !== normalizeUsername(me.username)) {
+        await changeUsernameOnServer(nextUser);
+      }
       patchIdentity({
         displayName: name,
-        username: locked ? me!.username : nextUser || me!.username,
         bio: bio.trim().slice(0, 160),
         photo,
       });
       feedback("complete");
       setStatus("Saved.");
       setMe(loadIdentity());
-    } catch {
-      setError("Could not save. Try again.");
+      setUsername(loadIdentity().username);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Could not save. Try again.");
     } finally {
       setSaving(false);
     }
@@ -175,9 +174,7 @@ export default function EditProfilePage() {
               autoCapitalize="none"
               autoCorrect="off"
             />
-            {locked ? (
-              <em className="ed-hint">Username is locked to this account.</em>
-            ) : null}
+            <em className="ed-hint">3–24 characters · letters, numbers, and underscores · once every 30 days</em>
           </label>
           <label className="ed-field">
             <span>Bio</span>
