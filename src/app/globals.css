@@ -64,3 +64,12 @@ html[data-theme="dark"]{
   --livv-shadow:0 18px 50px rgba(0,0,0,.55);
   color-scheme:dark;
 }
+
+*{box-sizing:border-box}
+html,body{max-width:100%;overflow-x:hidden}
+body{background:var(--livv-bg);color:rgb(var(--livv-ink))}
+html[data-theme="light"] .livv-page .text-white{color:rgb(var(--livv-ink)) !important}
+html[data-theme="light"] .livv-page .bg-white{background:rgb(var(--livv-ink)) !important;color:var(--livv-bg) !important}
+html[data-theme="light"] .livv-page [class*="border-white"]{border-color:rgb(var(--livv-border)) !important}
+html[data-theme="light"] .livv-page [class*="text-white/"]{color:rgb(var(--livv-muted)) !important}
+html[data-theme="light"] .livv-page [class*="bg-white/"]{background:color-mix(in srgb,rgb(var(--livv-ink)) 4%,transparent) !important}
