@@ -12,6 +12,8 @@ import {
   Moon,
   Salad,
   Waves,
+  Timer,
+  Sprout,
 } from "lucide-react";
 import {
   blankDay,
@@ -34,6 +36,8 @@ const SYSTEMS = [
   { href: "/home/health/meditation", label: "Meditation", kicker: "MIND", detail: "Short practices for attention and reset.", Icon: Brain },
   { href: "/home/health/recipes", label: "Recipes", kicker: "FOOD", detail: "Real meals built around ingredients you can use.", Icon: Salad },
   { href: "/home/health/trails", label: "Move", kicker: "MOVEMENT", detail: "Walk, run, or ride. Keep the record.", Icon: Footprints },
+  { href: "/home/train/fasting", label: "Fasting", kicker: "METABOLIC RHYTHM", detail: "Track your fasting window without turning it into a religion.", Icon: Timer },
+  { href: "/home/field", label: "Field", kicker: "SELF-SUFFICIENCY", detail: "Grow, keep, preserve, and build practical capability.", Icon: Sprout },
   { href: "/home/health/dictionary", label: "Dictionary", kicker: "KNOWLEDGE", detail: "Language that turns information into action.", Icon: CircleDot },
 ] as const;
 
