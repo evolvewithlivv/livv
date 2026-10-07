@@ -11,7 +11,7 @@ const CLOUD_MAP_KEY = "livv-cloud-account-v1";
 const USERNAMES_KEY = "livv-usernames-v1";
 
 function saveAccounts(accounts: Account[]) { window.localStorage.setItem(ACCOUNTS_KEY, JSON.stringify(accounts)); }
-function saveIdentity(account: Account) { const identity: Identity = { displayName: account.displayName, username: account.username, bio: account.bio, goal: account.goal || "", photo: account.photo, accent: account.accent, appearance: account.appearance, tier: account.tier, theme: account.theme, embers: account.embers }; window.localStorage.setItem(IDENTITY_KEY, JSON.stringify(identity)); applyAppearance(account.appearance, account.accent, account.theme || "ember"); window.dispatchEvent(new Event("livv-identity")); }
+function saveIdentity(account: Account) { const identity: Identity = { displayName: account.displayName, username: account.username, bio: account.bio, goal: account.goal || "", photo: account.photo, accent: account.accent, appearance: account.appearance, tier: account.tier, theme: account.theme, embers: account.embers }; window.localStorage.setItem(IDENTITY_KEY, JSON.stringify(identity)); applyAppearance(account.appearance, account.accent, account.theme || "daylight"); window.dispatchEvent(new Event("livv-identity")); }
 function saveSession(accountId: string) { window.localStorage.setItem(SESSION_KEY, JSON.stringify({ accountId, signedInAt: Date.now() })); window.dispatchEvent(new Event("livv-auth")); window.dispatchEvent(new Event("livv-identity")); }
 function loadCloudMap(): Record<string, string> { try { const raw = window.localStorage.getItem(CLOUD_MAP_KEY); return raw ? (JSON.parse(raw) as Record<string, string>) : {}; } catch { return {}; } }
 function saveCloudMap(map: Record<string, string>) { window.localStorage.setItem(CLOUD_MAP_KEY, JSON.stringify(map)); }
@@ -39,7 +39,7 @@ async function hydrateCloudProfile(user: User, account: Account): Promise<Accoun
       ? profile.appearance
       : account.appearance;
   const theme =
-    profile.theme === "ember" || profile.theme === "midnight" || profile.theme === "bone"
+    profile.theme === "daylight" || profile.theme === "midnight"
       ? profile.theme
       : account.theme;
   const hydrated: Account = {
