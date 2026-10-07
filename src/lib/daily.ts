@@ -21,6 +21,7 @@ export type DailyJournalEntry = {
   key: string;
   question: string;
   answer: string;
+  note?: string;
   savedAt: number;
 };
 
@@ -269,7 +270,7 @@ export function completeDailyTask(id: DailyTask["id"], date = new Date()) {
   return loadDailyState(date);
 }
 
-export function saveDailyJournal(answer: string, date = new Date()) {
+export function saveDailyAnswer(answer: string, date = new Date()) {
   const clean = answer.trim();
   if (!clean) return loadDailyState(date);
   const data = storage();
@@ -277,12 +278,44 @@ export function saveDailyJournal(answer: string, date = new Date()) {
   const journal = Array.isArray(data.journal)
     ? (data.journal as DailyJournalEntry[]).filter((x) => x && typeof x === "object" && typeof x.key === "string")
     : [];
-  const entry: DailyJournalEntry = { key, question: dailyQuestion(date), answer: clean, savedAt: Date.now() };
+  const existing = journal.find((item) => item.key === key);
+  const entry: DailyJournalEntry = {
+    key,
+    question: dailyQuestion(date),
+    answer: clean,
+    note: existing?.note || "",
+    savedAt: Date.now(),
+  };
   data.journal = [...journal.filter((item) => item.key !== key), entry].slice(-90);
   save(data);
   return completeDailyTask("mind", date);
 }
 
+export function saveDailyNote(note: string, date = new Date()) {
+  const clean = note.trim();
+  if (!clean) return loadDailyState(date);
+  const data = storage();
+  const key = dayKey(date);
+  const journal = Array.isArray(data.journal)
+    ? (data.journal as DailyJournalEntry[]).filter((x) => x && typeof x === "object" && typeof x.key === "string")
+    : [];
+  const existing = journal.find((item) => item.key === key);
+  const entry: DailyJournalEntry = {
+    key,
+    question: existing?.question || dailyQuestion(date),
+    answer: existing?.answer || "",
+    note: clean,
+    savedAt: Date.now(),
+  };
+  data.journal = [...journal.filter((item) => item.key !== key), entry].slice(-90);
+  save(data);
+  return loadDailyState(date);
+}
+
+/** Backward-compatible helper: saves the answer to the daily question. */
+export function saveDailyJournal(answer: string, date = new Date()) {
+  return saveDailyAnswer(answer, date);
+}
 function applyDropEffects(drop: DailyDrop) {
   // Server-authoritative when signed in. Size band only — never trust drop.embers as client amount.
   if (drop.embers > 0) {
