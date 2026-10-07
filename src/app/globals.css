@@ -4,30 +4,30 @@
 @import "./livv-page-header.css";
 @import "./livv-header-icon-fix.css";
 
-:root,
-html[data-theme="dark"] {
-  --livv-accent: 255 157 35;
-  --livv-accent-soft: 255 157 35;
-  --livv-accent-hex: #FF9D23;
-  --livv-blue: #FF9D23;
-  --livv-yellow: #FCF927;
-  --livv-red: #FF9D23;
+html,
+:root {
+  --livv-accent: 15 127 255;
+  --livv-accent-soft: 15 127 255;
+  --livv-accent-hex: #0F7FFF;
+  --livv-blue: #0F7FFF;
+  --livv-yellow: #F5D90A;
+  --livv-red: #F93827;
   --livv-pink: #F61981;
   --livv-purple: #9A00FF;
-  --livv-green: #4DFF00;
+  --livv-green: #39B54A;
   --livv-orange: #FF9D23;
-  --livv-bg: #030405;
+  --livv-bg: #f5f6f8;
   --livv-nav: transparent;
-  --livv-surface: 15 17 22;
-  --livv-border: 38 41 48;
-  --livv-muted: 138 141 151;
-  --livv-fg: 255 255 255;
-  --livv-ink: 255 255 255;
-  --livv-glass: 255 255 255;
-  --livv-glass-a: 0.035;
-  --livv-line: 255 255 255;
-  --livv-line-a: 0.1;
-  --livv-shadow: 0 18px 50px rgba(0, 0, 0, 0.55);
+  --livv-surface: 255 255 255;
+  --livv-border: 170 174 182;
+  --livv-muted: 74 78 88;
+  --livv-fg: 18 19 22;
+  --livv-ink: 18 19 22;
+  --livv-glass: 18 19 22;
+  --livv-glass-a: 0.045;
+  --livv-line: 18 19 22;
+  --livv-line-a: 0.16;
+  --livv-shadow: 0 18px 40px rgba(18, 19, 22, 0.08);
 }
 
 html[data-theme="light"] {
@@ -45,4 +45,22 @@ html[data-theme="light"] {
   --livv-accent-soft: 255 157 35;
   --livv-shadow: 0 18px 40px rgba(17, 17, 20, 0.08);
   color-scheme: light;
+}
+
+html[data-theme="dark"]{
+  --livv-accent:15 127 255;
+  --livv-accent-soft:15 127 255;
+  --livv-accent-hex:#0F7FFF;
+  --livv-bg:#06080b;
+  --livv-surface:16 19 24;
+  --livv-border:42 47 56;
+  --livv-muted:145 151 161;
+  --livv-fg:248 249 251;
+  --livv-ink:248 249 251;
+  --livv-glass:255 255 255;
+  --livv-glass-a:.035;
+  --livv-line:255 255 255;
+  --livv-line-a:.1;
+  --livv-shadow:0 18px 50px rgba(0,0,0,.55);
+  color-scheme:dark;
 }
