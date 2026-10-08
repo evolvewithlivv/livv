@@ -26,6 +26,7 @@ export default function EditProfilePage() {
    const [error, setError] = useState("");
   const [status, setStatus] = useState("");
   const [saving, setSaving] = useState(false);
+  const locked = false;
   const fileRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
