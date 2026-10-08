@@ -40,10 +40,10 @@ export function RequireAuth({ children }: { children: React.ReactNode }) {
 
   if (state === "checking") {
     return (
-      <main className="flex min-h-dvh items-center justify-center bg-livv-black px-6 text-white">
+      <main className="flex min-h-dvh items-center justify-center bg-livv-bg px-6 text-livv-ink">
         <div className="text-center" role="status" aria-live="polite">
-          <div className="mx-auto mb-4 h-7 w-7 animate-spin rounded-full border-2 border-white/15 border-t-white/70" />
-          <p className="text-sm text-white/50">Checking your LIVV session…</p>
+          <div className="mx-auto mb-4 h-7 w-7 animate-spin rounded-full border-2 border-black/10 border-t-black/60" />
+          <p className="text-sm text-livv-muted">Checking your LIVV session…</p>
         </div>
       </main>
     );
