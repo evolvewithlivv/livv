@@ -127,19 +127,19 @@ export default function AuthPage() {
   });
 
   return (
-    <main className="relative min-h-dvh overflow-hidden bg-[#050505] text-white">
+    <main className="relative min-h-dvh overflow-hidden bg-[rgb(var(--livv-bg))] text-[rgb(var(--livv-ink))]">
       <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgb(var(--livv-accent)/0.12),transparent_55%)]" />
       <div className="relative z-10 mx-auto flex min-h-dvh w-full max-w-md flex-col justify-center px-6 py-12">
         <div className="mb-9 flex flex-col items-center">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={LOGO} alt="LIVV" className="h-14 w-14 object-contain" />
           <h1 className="mt-5 font-display text-3xl font-semibold tracking-tight">LIVV</h1>
-          <p className="mt-2 text-center text-[13px] text-white/40">{mode === "signin" ? "Sign in to continue your journey." : "Create your account and start evolving."}</p>
+          <p className="mt-2 text-center text-[13px] text-[rgb(var(--livv-muted))]">{mode === "signin" ? "Sign in to continue your journey." : "Create your account and start evolving."}</p>
         </div>
 
-        <div className="rounded-3xl border border-white/10 bg-white/[0.03] p-5 backdrop-blur-sm">
-          <div className="mb-5 grid grid-cols-2 gap-1 rounded-2xl bg-white/[0.04] p-1">
-              <button type="button" onClick={() => { setMode("signin"); setError(""); setNotice(""); }} className={`rounded-xl px-3 py-2.5 text-[12px] font-medium transition ${mode === "signin" ? "bg-white text-black" : "text-white/45 hover:text-white/70"}`}>Sign in</button>
+        <div className="rounded-3xl border border-[rgb(var(--livv-border))] bg-[rgb(var(--livv-surface))] p-5 backdrop-blur-sm">
+          <div className="mb-5 grid grid-cols-2 gap-1 rounded-2xl bg-[rgb(var(--livv-border))]/20 p-1">
+              <button type="button" onClick={() => { setMode("signin"); setError(""); setNotice(""); }} className={`rounded-xl px-3 py-2.5 text-[12px] font-medium transition ${mode === "signin" ? "bg-[rgb(var(--livv-ink))] text-[rgb(var(--livv-bg))]" : "text-[rgb(var(--livv-muted))] hover:text-[rgb(var(--livv-ink))]"}`}>Sign in</button>
               <button type="button" onClick={() => { setMode("signup"); setError(""); setNotice(""); }} className={`rounded-xl px-3 py-2.5 text-[12px] font-medium transition ${mode === "signup" ? "bg-white text-black" : "text-white/45 hover:text-white/70"}`}>Create account</button>
           </div>
 
@@ -148,7 +148,7 @@ export default function AuthPage() {
               {mode === "signup" ? (
                 <section className="space-y-3" aria-labelledby="age-title">
                   <div>
-                    <p id="age-title" className="text-[11px] font-medium uppercase tracking-[0.14em] text-white/35">Age</p>
+                    <p id="age-title" className="text-[11px] font-medium uppercase tracking-[0.14em] text-[rgb(var(--livv-muted))]">Age</p>
                     <p className="mt-1.5 text-[12px] leading-5 text-white/35">LIVV accounts are for people 13 and older.</p>
                   </div>
                   <div className="grid grid-cols-3 gap-2" role="radiogroup" aria-label="Age range">
@@ -158,16 +158,16 @@ export default function AuthPage() {
                       ["18plus", "18+"],
                     ] as const).map(([value, label]) => (
                       <button key={value} type="button" role="radio" aria-checked={ageBand === value} onClick={() => chooseAge(value)}
-                        className={`rounded-2xl border px-2 py-3 text-[12px] transition ${ageBand === value ? "border-white/40 bg-white text-black" : "border-white/10 bg-white/[0.03] text-white/55 hover:border-white/20"}`}>
+                        className={`rounded-2xl border px-2 py-3 text-[12px] transition ${ageBand === value ? "border-[rgb(var(--livv-accent))] bg-[rgb(var(--livv-ink))] text-[rgb(var(--livv-bg))]" : "border-[rgb(var(--livv-border))] bg-[rgb(var(--livv-surface))] text-[rgb(var(--livv-muted))] hover:border-[rgb(var(--livv-accent))]"}`}>
                         {label}
                       </button>
                     ))}
                   </div>
-                  {ageBand === "under13" ? <p className="text-[12px] text-red-400">You must be at least 13 to create an account.</p> : null}
+                  {ageBand === "under13" ? <p className="text-[12px] text-red-500">You must be at least 13 to create an account.</p> : null}
                   {ageBand && ageBand !== "under13" ? (
                     <label className="flex items-start gap-3 text-[11px] leading-5 text-white/45">
                       <input type="checkbox" checked={ageConfirmed} onChange={(e) => { setAgeConfirmed(e.target.checked); if (e.target.checked) confirmAge(); }} className="mt-1 accent-[rgb(var(--livv-accent))]" />
-                      <span>I confirm that I am 13 or older and agree to the <a className="text-white/70 underline" href="/legal/terms">Terms</a> and <a className="text-white/70 underline" href="/legal/privacy">Privacy Policy</a>.</span>
+                      <span>I confirm that I am 13 or older and agree to the <a className="text-[rgb(var(--livv-ink))] underline" href="/legal/terms">Terms</a> and <a className="text-white/70 underline" href="/legal/privacy">Privacy Policy</a>.</span>
                     </label>
                   ) : null}
                 </section>
@@ -180,7 +180,7 @@ export default function AuthPage() {
           ) : (
             <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); verifyEmail(); }}>
               <Field label="8-digit code" value={otp} onChange={(v) => setOtp(v.replace(/\D/g, "").slice(0, 8))} inputMode="numeric" autoComplete="one-time-code" placeholder="00000000" />
-              <p className="text-[12px] leading-5 text-white/35">Enter the code sent to <span className="text-white/60">{email.trim().toLowerCase()}</span>.</p>
+              <p className="text-[12px] leading-5 text-white/35">Enter the code sent to <span className="text-[rgb(var(--livv-ink))]">{email.trim().toLowerCase()}</span>.</p>
               <Button className="w-full" disabled={busy || otp.length !== 8} type="submit">
                 {busy ? "Verifying…" : "Continue"}
               </Button>
@@ -197,7 +197,7 @@ export default function AuthPage() {
           {notice && !error ? <p className="mt-4 text-center text-[13px] text-white/50" role="status">{notice}</p> : null}
         </div>
 
-        <p className="mt-8 text-center text-[11px] text-white/25">
+        <p className="mt-8 text-center text-[11px] text-[rgb(var(--livv-muted))]">
           <a href="/legal/privacy" className="underline-offset-2 hover:underline">Privacy</a>
           {" · "}
           <a href="/legal/terms" className="underline-offset-2 hover:underline">Terms</a>
@@ -220,7 +220,7 @@ function Field({ label, value, onChange, type = "text", autoComplete, inputMode,
         autoComplete={autoComplete}
         inputMode={inputMode}
         placeholder={placeholder}
-        className="w-full rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3.5 text-[15px] text-white outline-none placeholder:text-white/25 focus:border-white/25"
+        className="w-full rounded-2xl border border-[rgb(var(--livv-border))] bg-[rgb(var(--livv-surface))] px-4 py-3.5 text-[15px] text-[rgb(var(--livv-ink))] outline-none placeholder:text-[rgb(var(--livv-muted))] focus:border-[rgb(var(--livv-accent))]"
       />
     </label>
   );
