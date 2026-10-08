@@ -183,7 +183,7 @@ export default function HealthPage() {
               <p className="health-label">02 / SYSTEMS</p>
               <h2>Go deeper</h2>
             </div>
-            <span>Five ways in</span>
+            <span>Seven ways in</span>
           </div>
           <div className="health-system-list">
             {SYSTEMS.map(({ href, label, kicker, detail, Icon }, index) => (
