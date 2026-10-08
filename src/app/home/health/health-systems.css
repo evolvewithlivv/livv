@@ -78,6 +78,7 @@
   letter-spacing:.15em;text-transform:uppercase;
 }
 .hsys-card{
+  width:100%;max-width:100%;min-width:0;overflow:hidden;
   padding:1rem;border:1px solid color-mix(in srgb,var(--hs-line) 88%,transparent);
   border-radius:18px;background:color-mix(in srgb,var(--hs-ink) 2.5%,transparent);
 }
@@ -89,10 +90,17 @@
   letter-spacing:.12em;text-transform:uppercase;
 }
 .hsys-field input,.hsys-field textarea{
-  width:100%;max-width:100%;min-height:48px;border:1px solid var(--hs-line);border-radius:12px;
-  background:var(--hs-bg);color:var(--hs-ink);padding:0 13px;font:inherit;font-size:15px;outline:none;
+  display:block;width:100%;max-width:100%;min-width:0;min-height:48px;
+  box-sizing:border-box !important;border:1px solid var(--hs-line);border-radius:12px;
+  background:var(--hs-bg);color:var(--hs-ink);padding:0 13px;font:inherit;font-size:15px;
+  line-height:1.2;outline:none;overflow:hidden;
 }
-.hsys-field textarea{min-height:92px;padding:12px 13px;resize:vertical}
+.hsys-field input[type="time"],
+.hsys-field input[type="date"],
+.hsys-field input[type="number"]{
+  -webkit-appearance:none;appearance:none;min-width:0;width:100%;max-width:100%;
+}
+.hsys-field textarea{min-height:92px;padding:12px 13px;resize:vertical;overflow:auto}
 .hsys-field input:focus,.hsys-field textarea:focus{border-color:var(--hs-accent)}
 .hsys-field input::placeholder,.hsys-field textarea::placeholder{color:var(--hs-muted)}
 .hsys-chips{display:flex;flex-wrap:wrap;gap:7px}
@@ -104,12 +112,21 @@
 .hsys-chip.on{border-color:var(--hs-accent);background:color-mix(in srgb,var(--hs-accent) 9%,transparent);color:var(--hs-ink)}
 .hsys-chip:disabled{opacity:.35}
 .hsys-btn{
-  display:flex;align-items:center;justify-content:center;gap:4px;width:100%;min-height:48px;
-  margin-top:11px;border:0;border-radius:13px;background:var(--hs-ink);color:var(--hs-bg);
+  display:flex;align-items:center;justify-content:center;gap:4px;width:100%;min-width:0;min-height:48px;
+  margin-top:11px;border:1px solid var(--hs-accent);border-radius:13px;
+  background:var(--hs-accent);color:#fff;
   font-size:9px;font-weight:850;letter-spacing:.13em;text-transform:uppercase;cursor:pointer;
 }
-.hsys-btn.ghost{border:1px solid var(--hs-line);background:transparent;color:var(--hs-ink)}
-.hsys-btn:disabled{opacity:.3;cursor:not-allowed}
+.hsys-btn svg{flex:0 0 auto}
+.hsys-btn.ghost{
+  border:1px solid var(--hs-line);background:transparent;color:var(--hs-ink);
+}
+.hsys-btn:not(.ghost):disabled{
+  border-color:color-mix(in srgb,var(--hs-line) 85%,transparent);
+  background:color-mix(in srgb,var(--hs-line) 45%,transparent);
+  color:var(--hs-muted);
+}
+.hsys-btn:disabled{opacity:1;cursor:not-allowed}
 .hsys-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:10px}
 .hsys-note{
   margin-top:9px;padding:10px 0;color:var(--hs-muted);font-size:9px;line-height:1.5;
