@@ -74,7 +74,7 @@ export default function SettingsPage() {
   const setLook = (opt: LookOption) => {
     if (!me) return;
     const next = patchIdentity({ appearance: opt.appearance, theme: opt.theme });
-    applyAppearance(next.appearance, next.accent || "", next.theme || "ember");
+    applyAppearance(next.appearance, next.accent || "", next.theme || "daylight");
     setMe(loadIdentity());
     feedback("tick");
   };
