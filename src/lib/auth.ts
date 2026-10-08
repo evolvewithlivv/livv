@@ -17,6 +17,19 @@ export function changeUsername(username:string,accountId?:string){
  const old=accounts[idx].username;const map=loadUsernameMap();if(old)delete map[old];map[clean]=id;saveUsernameMap(map);
  accounts[idx]={...accounts[idx],username:clean,usernameLocked:false};saveAccounts(accounts);writeIdentityFromAccount(accounts[idx]);return accounts[idx];
 }
+export async function checkUsernameAvailability(username:string){
+ const session=getSession();
+ if(!session) return false;
+ const clean=normalizeUsername(username);
+ if(clean.length<3||clean.length>24) return false;
+ if(clean===normalizeUsername(getCurrentAccount()?.username||"")) return true;
+ if(!isSupabaseConfigured()) return isUsernameAvailable(clean,session.accountId);
+ const client=getSupabaseBrowserClient();
+ if(!client) return false;
+ const {data,error}=await client.rpc("is_username_available",{candidate:clean});
+ if(error) return false;
+ return data===true;
+}
 export async function changeUsernameOnServer(username:string){
  const session=getSession();if(!session)throw new Error("You need to be signed in");
  const clean=normalizeUsername(username);if(clean.length<3||clean.length>24)throw new Error("Username must be 3 to 24 characters");
