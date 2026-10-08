@@ -11,6 +11,7 @@ import {
 } from "@/lib/identity";
 import {
   changeUsernameOnServer,
+  checkUsernameAvailability,
   normalizeUsername,
 } from "@/lib/auth";
 import { feedback } from "@/lib/sensory";
@@ -26,6 +27,7 @@ export default function EditProfilePage() {
    const [error, setError] = useState("");
   const [status, setStatus] = useState("");
   const [saving, setSaving] = useState(false);
+  const [usernameState, setUsernameState] = useState<"idle" | "checking" | "available" | "taken">("idle");
   const locked = false;
   const fileRef = useRef<HTMLInputElement>(null);
 
@@ -34,6 +36,7 @@ export default function EditProfilePage() {
     setMe(id);
     setDisplayName(id.displayName || "");
     setUsername((id.username || "").replace(/^@/, ""));
+    setUsernameState("idle");
     setBio(id.bio || "");
     setPhoto(id.photo);
   }, []);
@@ -78,6 +81,13 @@ export default function EditProfilePage() {
     if (!currentMe) return;
     setSaving(true);
     try {
+      if (nextUser && nextUser !== normalizeUsername(currentMe.username)) {
+        const available = await checkUsernameAvailability(nextUser);
+        if (!available) {
+          setUsernameState("taken");
+          throw new Error("That username is already taken.");
+        }
+      }
       if (nextUser && nextUser !== normalizeUsername(currentMe.username)) {
         await changeUsernameOnServer(nextUser);
       }
@@ -166,14 +176,34 @@ export default function EditProfilePage() {
             <span>Username</span>
             <input
               value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              maxLength={24}
+              onChange={(e) => {
+                const value = e.target.value.toLowerCase().replace(/[^a-z0-9_@]/g, "");
+                const clean = value.replace(/^@+/, "@");
+                setUsername(clean);
+                setUsernameState("idle");
+                if (normalizeUsername(clean).length >= 3) {
+                  setUsernameState("checking");
+                  window.clearTimeout((window as Window & { __livvUsernameTimer?: number }).__livvUsernameTimer);
+                  (window as Window & { __livvUsernameTimer?: number }).__livvUsernameTimer = window.setTimeout(async () => {
+                    try {
+                      const normalized = normalizeUsername(clean);
+                      setUsernameState((await checkUsernameAvailability(normalized)) ? "available" : "taken");
+                    } catch {
+                      setUsernameState("idle");
+                    }
+                  }, 450);
+                }
+              }}
+              maxLength={25}
               placeholder="username"
               disabled={locked}
               autoCapitalize="none"
               autoCorrect="off"
             />
             <em className="ed-hint">3–24 characters · letters, numbers, and underscores · once every 30 days</em>
+            {usernameState === "checking" ? <span className="ed-username-state">Checking availability…</span> : null}
+            {usernameState === "available" ? <span className="ed-username-state is-good">Username available</span> : null}
+            {usernameState === "taken" ? <span className="ed-username-state is-bad">Username already taken</span> : null}
           </label>
           <label className="ed-field">
             <span>Bio</span>
