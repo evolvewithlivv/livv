@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { Container } from "@/components/ui/container";
+import "./fasting.css";
 import { PROTOCOLS, cancelFast, elapsedMs, endFast, fastingStats, formatClock, getActiveFast, loadFastState, progressPct, startFast, type FastSession } from "@/lib/fasting";
 
 export default function FastingPage() {
@@ -31,7 +32,7 @@ export default function FastingPage() {
   };
   const activeMs = active ? elapsedMs(active as FastSession, now) : 0;
 
-  return <main className="livv-page min-h-full pb-10 pt-5">
+  return <main className="fast-page">
     <Container>
       <div className="flex items-center justify-between gap-3">
         <div><p className="text-[10px] uppercase tracking-[0.28em] text-white/35">Train · Recovery</p><h1 className="mt-2 text-3xl font-semibold tracking-tight">Fasting</h1><p className="mt-1 text-sm text-white/50">Track the fast. Keep the data. You decide the protocol.</p></div>
