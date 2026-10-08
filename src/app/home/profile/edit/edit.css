@@ -128,3 +128,7 @@
   clip: rect(0, 0, 0, 0);
   border: 0;
 }
+
+.ed-username-state{display:block;margin-top:.3rem;font-size:11px;color:rgb(var(--livv-muted));}
+.ed-username-state.is-good{color:rgb(var(--livv-accent));}
+.ed-username-state.is-bad{color:#c93434;}
