@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { useEffect, useMemo, useState, type CSSProperties, type ReactNode } from "react";
-import { Caveat } from "next/font/google";
 import { Pencil, Plus, Trash2, X } from "lucide-react";
 import { addEmbers, loadIdentity, type Identity } from "@/lib/identity";
 import { checkInRecord, isCheckedInToday, loadRecord, type LivvRecord } from "@/lib/record";
@@ -13,7 +12,7 @@ import { embersFromAction } from "@/lib/embers";
 import { ANNOUNCEMENTS } from "@/lib/announcements";
 import { WIKI, type WikiArticle } from "@/lib/wiki";
 
-const hand = Caveat({ subsets: ["latin"], weight: ["500", "600", "700"], display: "swap" });
+const hand = { className: "livv-bulletin-hand" };
 
 type PaperTone = "cream" | "kraft" | "aged";
 type PersonalSticky = { id: string; text: string; tone: PaperTone; updatedAt: number };
