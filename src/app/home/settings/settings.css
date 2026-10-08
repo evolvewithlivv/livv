@@ -153,8 +153,13 @@
   border-right:1px solid color-mix(in srgb,var(--line) 65%,transparent);
   border-bottom:1px solid color-mix(in srgb,var(--line) 65%,transparent);
 }
-.st-appearance .st-row:nth-child(even){border-right:0}
-.st-appearance .st-row:nth-last-child(-n+2){border-bottom:0}
+.st-appearance .st-row:nth-child(2){border-right:0}
+.st-appearance .st-row:nth-child(3){
+  grid-column:1 / -1;
+  border-right:0;
+  border-bottom:0;
+  min-height:76px;
+}
 .st-appearance .st-row-main{align-self:flex-end}
 .st-appearance .st-check{align-self:flex-start}
 .st-preferences .st-row-v{font-size:8px}
