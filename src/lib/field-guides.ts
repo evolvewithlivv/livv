@@ -205,7 +205,7 @@ export const FIELD_GUIDES: FieldGuide[] = [
     slug: "keep-compost",
     pillar: "keep",
     title: "Build a home compost pile",
-    eyebrow: "Field guide 002 / Keep",
+    eyebrow: "Field guide 010 / Keep",
     summary: "Turn suitable kitchen scraps and yard material into finished compost with a simple, manageable routine.",
     level: "Beginner",
     duration: "A monitored pile commonly takes about 3 to 4 months; weather and materials change the timeline.",
@@ -354,7 +354,7 @@ export const FIELD_GUIDES: FieldGuide[] = [
     slug: "preserve-green-beans",
     pillar: "preserve",
     title: "Freeze green beans safely",
-    eyebrow: "Field guide 003 / Preserve",
+    eyebrow: "Field guide 011 / Preserve",
     summary: "Prepare, blanch, cool, package, label, and freeze green beans using tested home-freezing guidance.",
     level: "Beginner",
     duration: "About 45 to 90 minutes for a small batch, plus freezing time.",
@@ -513,7 +513,7 @@ export const FIELD_GUIDES: FieldGuide[] = [
     slug: "store-emergency-water",
     pillar: "store",
     title: "Build an emergency water reserve",
-    eyebrow: "Field guide 004 / Store",
+    eyebrow: "Field guide 016 / Store",
     summary: "Calculate a household baseline, choose safe containers, label stored water, and keep it ready for an interruption.",
     level: "Beginner",
     duration: "About 30 to 60 minutes to calculate, organize, and label an initial reserve.",
@@ -661,7 +661,7 @@ export const FIELD_GUIDES: FieldGuide[] = [
     "slug": "grow-beans",
     "pillar": "grow",
     "title": "Grow snap beans",
-    "eyebrow": "Field guide 005 / Grow",
+    "eyebrow": "Field guide 003 / Grow",
     "summary": "Choose bush or pole beans, sow at the right time, manage water and support, and harvest a useful crop.",
     "level": "Beginner",
     "duration": "Often 50–70 days from sowing, depending on variety and conditions.",
@@ -816,7 +816,7 @@ export const FIELD_GUIDES: FieldGuide[] = [
       {
         "title": "Growing beans in home gardens",
         "publisher": "University of Minnesota Extension",
-        "url": "https://extension.umn.edu/vegetables/growing-beans",
+        "url": "https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/growing-beans",
         "checked": "2026-10-09"
       },
       {
@@ -831,7 +831,7 @@ export const FIELD_GUIDES: FieldGuide[] = [
     "slug": "grow-herbs",
     "pillar": "grow",
     "title": "Grow useful culinary herbs",
-    "eyebrow": "Field guide 007 / Grow",
+    "eyebrow": "Field guide 005 / Grow",
     "summary": "Start with a few useful herbs, match each plant to its light and water needs, and harvest without exhausting it.",
     "level": "Beginner",
     "duration": "First light harvest may be possible in 3–8 weeks; plants and growing methods vary.",
@@ -1001,7 +1001,7 @@ export const FIELD_GUIDES: FieldGuide[] = [
     "slug": "keep-bees",
     "pillar": "keep",
     "title": "Prepare for responsible beekeeping",
-    "eyebrow": "Field guide 008 / Keep",
+    "eyebrow": "Field guide 009 / Keep",
     "summary": "Assess whether bees fit your site, learn from an experienced local beekeeper, and build a seasonal care and health plan before acquiring a colony.",
     "level": "Intermediate",
     "duration": "Preparation takes weeks to months; beekeeping is a seasonal, ongoing responsibility.",
@@ -1168,7 +1168,7 @@ export const FIELD_GUIDES: FieldGuide[] = [
     "slug": "preserve-fermented-vegetables",
     "pillar": "preserve",
     "title": "Ferment vegetables safely",
-    "eyebrow": "Field guide 009 / Preserve",
+    "eyebrow": "Field guide 013 / Preserve",
     "summary": "Set up a small vegetable fermentation using a tested recipe, clean equipment, controlled salt, and a reliable way to judge the result.",
     "level": "Intermediate",
     "duration": "Often several days to weeks, depending on the tested recipe, temperature, and vegetable.",
@@ -1325,7 +1325,7 @@ export const FIELD_GUIDES: FieldGuide[] = [
       {
         "title": "Fermenting",
         "publisher": "National Center for Home Food Preservation",
-        "url": "https://nchfp.uga.edu/how/ferment/",
+        "url": "https://nchfp.uga.edu/how/ferment/general-information-on-fermenting/general-information-on-fermenting/",
         "checked": "2026-10-09"
       },
       {
@@ -1340,7 +1340,7 @@ export const FIELD_GUIDES: FieldGuide[] = [
     "slug": "grow-tomatoes",
     "pillar": "grow",
     "title": "Grow tomatoes",
-    "eyebrow": "Field guide 006 / Grow",
+    "eyebrow": "Field guide 004 / Grow",
     "summary": "Choose a tomato type, plant after frost danger, support the plant, water consistently, and troubleshoot common problems.",
     "level": "Beginner",
     "duration": "Usually about 60–85 days after transplanting, depending on variety and conditions.",
@@ -1520,6 +1520,1302 @@ export const FIELD_GUIDES: FieldGuide[] = [
         "title": "Planting the vegetable garden",
         "publisher": "University of Minnesota Extension",
         "url": "https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/planting-the-vegetable-garden",
+        "checked": "2026-10-09"
+      }
+    ]
+  },
+  {
+    "slug": "grow-root-crops",
+    "pillar": "grow",
+    "title": "Grow root crops",
+    "eyebrow": "Field guide 002 / Grow",
+    "summary": "Grow carrots, radishes, and beets from direct sowing through thinning, root development, and harvest.",
+    "level": "Beginner",
+    "duration": "Timing depends on local conditions, variety, equipment, and the method selected.",
+    "reviewedAt": "2026-10-09",
+    "reviewStatus": "reviewed",
+    "overview": "Root crops need loose, stone-free soil, even moisture during establishment, and careful thinning. Carrots, radishes, and beets share a direct-sowing workflow but differ in spacing, maturity, and heat tolerance. Use the seed packet and local extension calendar for your variety and season.",
+    "budgetEstimate": "Rough U.S. estimate: $10–30 if you already have a bed and tools; deep containers and fresh potting mix add cost.",
+    "prerequisites": [
+      "A sunny site with loose, well-drained soil or a deep container.",
+      "Seeds suitable for the local season.",
+      "Gentle watering and a way to identify tiny seedlings."
+    ],
+    "supplies": [
+      {
+        "item": "Carrot, radish, or beet seeds",
+        "amount": "One packet per crop"
+      },
+      {
+        "item": "Prepared bed or deep container",
+        "amount": "Depth suited to crop, with drainage"
+      },
+      {
+        "item": "Watering can with gentle rose",
+        "amount": "1"
+      },
+      {
+        "item": "Plant labels",
+        "amount": "1 set"
+      },
+      {
+        "item": "Small scissors",
+        "amount": "For thinning"
+      }
+    ],
+    "safety": [
+      "Use clean soil and potable water for edible crops; wash hands after handling soil.",
+      "Do not use fresh manure on food beds; follow local guidance for amendments.",
+      "Wash roots under running water; never use soap or household disinfectant on produce."
+    ],
+    "steps": [
+      {
+        "id": "step-1",
+        "title": "Choose crop and timing",
+        "instruction": "Choose quick radishes, longer-season carrots, or beets for roots and greens. Check local planting guidance, variety notes, and packet maturity.",
+        "detail": "Heat and day length affect root quality; local variety fit matters more than a generic calendar.",
+        "checkpoint": "Crop, variety, and planting window are selected.",
+        "timing": "Before buying"
+      },
+      {
+        "id": "step-2",
+        "title": "Prepare loose soil",
+        "instruction": "Remove stones, clods, and weeds from the root zone. Loosen soil when it is not waterlogged; use a suitably deep container and fresh potting mix if growing in pots.",
+        "detail": "Obstacles and compaction can fork or distort roots. Amend based on soil condition, not guesswork.",
+        "checkpoint": "The sowing zone is loose, fine, and drains freely.",
+        "timing": "20–40 minutes"
+      },
+      {
+        "id": "step-3",
+        "title": "Sow and label",
+        "instruction": "Follow packet depth and spacing, cover lightly, water gently, and label each row with crop and date.",
+        "detail": "Tiny seeds are easy to sow too deep or too thickly. Keep the surface from crusting while seeds germinate.",
+        "checkpoint": "Rows are labeled and the seed zone is moist, not flooded.",
+        "timing": "10–20 minutes"
+      },
+      {
+        "id": "step-4",
+        "title": "Keep moisture steady and thin",
+        "instruction": "Check the seedbed frequently; water gently. Thin seedlings to packet spacing when they can be handled, snipping extras if pulling would disturb nearby roots.",
+        "detail": "Crowding makes small roots. Carrots may emerge slowly; avoid letting the seedbed dry during germination.",
+        "checkpoint": "Seedlings have space and the seedbed has not repeatedly dried out.",
+        "timing": "Daily at first"
+      },
+      {
+        "id": "step-5",
+        "title": "Maintain and inspect",
+        "instruction": "Remove weeds while small, avoid deep cultivation near roots, and check for pests, cracking, or stalled growth. Sample roots as they approach maturity.",
+        "detail": "Do not add fertilizer or pesticide without a reason. Diagnose symptoms using local extension guidance.",
+        "checkpoint": "You can identify the crop stage and any issue needing follow-up.",
+        "timing": "Weekly"
+      },
+      {
+        "id": "step-6",
+        "title": "Harvest and record",
+        "instruction": "Use packet timing as a guide and sample a root. Harvest radishes before they become pithy; lift carrots and beets carefully. Record variety, dates, yield, and issues.",
+        "detail": "Weather changes maturity. Remove diseased debris appropriately and rotate crop families where practical.",
+        "checkpoint": "Roots are usable and the record includes one improvement for next season.",
+        "timing": "At maturity"
+      }
+    ],
+    "troubleshoot": [
+      {
+        "problem": "Poor or patchy germination",
+        "cause": "Drying, crusted soil, cold conditions, or sowing depth may be responsible.",
+        "response": "Check the packet, moisture, temperature, and surface crust before resowing."
+      },
+      {
+        "problem": "Forked roots",
+        "cause": "Stones, compacted soil, or root injury can distort roots.",
+        "response": "Prepare a deeper, finer sowing zone and avoid disturbing roots after emergence."
+      },
+      {
+        "problem": "Small roots",
+        "cause": "Crowding, weeds, or immature harvest may be involved.",
+        "response": "Thin to packet spacing, weed gently, and reassess maturity."
+      },
+      {
+        "problem": "Cracked roots",
+        "cause": "Rapid moisture changes can contribute.",
+        "response": "Aim for steadier root-zone moisture and harvest mature roots promptly."
+      }
+    ],
+    "verification": [
+      "I chose a locally suitable crop and sowing window.",
+      "I sowed at the packet depth and thinned seedlings appropriately.",
+      "I kept the seed zone moist without waterlogging it.",
+      "I know how to sample for maturity and harvest carefully.",
+      "I recorded yield and a change to try next time."
+    ],
+    "maintenance": [
+      "Check moisture frequently during germination.",
+      "Water based on soil and weather, not a rigid timer.",
+      "Keep weeds small and avoid deep cultivation near roots.",
+      "Inspect leaves and roots before choosing treatment.",
+      "Record variety, sowing date, harvest, and rotation."
+    ],
+    "sources": [
+      {
+        "title": "Growing carrots",
+        "publisher": "University of Minnesota Extension",
+        "url": "https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/growing-carrots-and-parsnips",
+        "checked": "2026-10-09"
+      },
+      {
+        "title": "Seasonal planting guide for beets and root crops",
+        "publisher": "University of Minnesota Extension",
+        "url": "https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/planting-vegetables-in-midsummer-for-fall-harvest",
+        "checked": "2026-10-09"
+      },
+      {
+        "title": "Growing radishes",
+        "publisher": "University of Minnesota Extension",
+        "url": "https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/growing-radishes",
+        "checked": "2026-10-09"
+      }
+    ]
+  },
+
+
+
+  {
+    "slug": "grow-winter-crops",
+    "pillar": "grow",
+    "title": "Plan a winter crop garden",
+    "eyebrow": "Field guide 006 / Grow",
+    "summary": "Choose cold-tolerant crops, count backward from local weather, protect plants appropriately, and harvest through cold periods.",
+    "level": "Beginner",
+    "duration": "Timing depends on local conditions, variety, equipment, and the method selected.",
+    "reviewedAt": "2026-10-09",
+    "reviewStatus": "reviewed",
+    "overview": "Winter gardening depends on climate, daylight, soil temperature, and crop. Some regions support winter harvests under cover; others have only an autumn extension window. A calendar copied from another region is unreliable.",
+    "budgetEstimate": "Rough U.S. estimate: $10–50 for seeds and basic row cover; cold frames and hoops cost more.",
+    "prerequisites": [
+      "Local frost and hard-freeze patterns.",
+      "A draining site accessible in cold or wet weather.",
+      "Protection that can be secured against wind."
+    ],
+    "supplies": [
+      {
+        "item": "Locally recommended cold-tolerant seeds or starts",
+        "amount": "Choose varieties for your region"
+      },
+      {
+        "item": "Bed or container with drainage",
+        "amount": "As appropriate"
+      },
+      {
+        "item": "Row cover or cold frame",
+        "amount": "Optional"
+      },
+      {
+        "item": "Hoops, clips, or weights",
+        "amount": "To secure protection"
+      },
+      {
+        "item": "Thermometer and notebook",
+        "amount": "Useful for records"
+      }
+    ],
+    "safety": [
+      "Secure covers so they cannot blow away or entangle people or animals.",
+      "Covers do not guarantee protection from hard freezes; follow manufacturer limits.",
+      "Avoid working in unsafe weather or under unstable snow-loaded structures."
+    ],
+    "steps": [
+      {
+        "id": "step-1",
+        "title": "Map the local winter window",
+        "instruction": "Use local extension guidance for first frost, hard freeze, and suitable crops. Decide whether your goal is autumn harvest, overwintering, or winter harvest under cover.",
+        "detail": "These strategies need different sowing dates and varieties.",
+        "checkpoint": "The limiting weather and intended harvest are clear.",
+        "timing": "Planning"
+      },
+      {
+        "id": "step-2",
+        "title": "Choose crops and count backward",
+        "instruction": "Select locally recommended cold-tolerant crops and use packet maturity plus local advice to plan sowing dates.",
+        "detail": "Cold tolerance varies by cultivar; short days slow growth even when plants survive.",
+        "checkpoint": "Each crop has a locally appropriate planting window.",
+        "timing": "Before sowing"
+      },
+      {
+        "id": "step-3",
+        "title": "Prepare and plant",
+        "instruction": "Prepare a sunny, well-drained bed, remove weeds, and sow or transplant at packet spacing. Label each crop and date.",
+        "detail": "Late planting may leave plants too small to withstand cold; covers cannot fully make up for missed timing.",
+        "checkpoint": "Plants are established before expected limiting weather.",
+        "timing": "As scheduled"
+      },
+      {
+        "id": "step-4",
+        "title": "Install protection",
+        "instruction": "Secure row cover or a cold frame before damaging weather. Plan how to ventilate on sunny days and inspect after wind or snow.",
+        "detail": "Protection can overheat plants or collapse under snow; follow product limits.",
+        "checkpoint": "Cover is secure and can be opened or removed safely.",
+        "timing": "Before cold snaps"
+      },
+      {
+        "id": "step-5",
+        "title": "Monitor moisture and condition",
+        "instruction": "Check soil beneath cover, inspect for pests and damage, and follow forecasts. Water when needed without saturating cold soil.",
+        "detail": "Covered beds may receive little rain, while cold slows drying.",
+        "checkpoint": "Plants remain hydrated without standing water and damage is noticed early.",
+        "timing": "Weekly and after weather"
+      },
+      {
+        "id": "step-6",
+        "title": "Harvest and learn",
+        "instruction": "Harvest according to crop and local advice. Record survival, yield, cover performance, and dates for next season.",
+        "detail": "Frozen or contaminated produce may deteriorate quickly; follow food-safety advice when uncertain.",
+        "checkpoint": "You have harvest notes and a more accurate next-season plan.",
+        "timing": "As conditions allow"
+      }
+    ],
+    "troubleshoot": [
+      {
+        "problem": "Seedlings fail before winter",
+        "cause": "Sowing may have been too late or germination slow.",
+        "response": "Compare timing and temperatures with local extension guidance."
+      },
+      {
+        "problem": "Cover overheats plants",
+        "cause": "Sun can raise temperatures rapidly under cover.",
+        "response": "Ventilate or remove cover as appropriate and check forecasts."
+      },
+      {
+        "problem": "Growth stalls",
+        "cause": "Short days and low temperatures naturally slow growth.",
+        "response": "Adjust expectations and crop choice; survival does not mean fast growth."
+      },
+      {
+        "problem": "Cover tears or blows away",
+        "cause": "Anchoring or material strength may be inadequate.",
+        "response": "Secure with appropriate clips and weights before the next weather event."
+      }
+    ],
+    "verification": [
+      "I used local frost and hard-freeze guidance.",
+      "Crop varieties fit the intended winter strategy.",
+      "I planned sowing dates before planting.",
+      "Protection is secured and can be ventilated.",
+      "I recorded survival and harvest results."
+    ],
+    "maintenance": [
+      "Check covers after wind, rain, and snow.",
+      "Monitor moisture under cover.",
+      "Ventilate during warm sunny periods as appropriate.",
+      "Inspect for pests and damage.",
+      "Use records to refine sowing dates."
+    ],
+    "sources": [
+      {
+        "title": "Extending the growing season",
+        "publisher": "University of Minnesota Extension",
+        "url": "https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/extending-growing-season",
+        "checked": "2026-10-09"
+      },
+      {
+        "title": "Growing spinach",
+        "publisher": "University of Minnesota Extension",
+        "url": "https://extension.umn.edu/vegetables/growing-spinach",
+        "checked": "2026-10-09"
+      },
+      {
+        "title": "Growing kale",
+        "publisher": "University of Minnesota Extension",
+        "url": "https://extension.umn.edu/vegetables/growing-kale",
+        "checked": "2026-10-09"
+      }
+    ]
+  },
+  {
+    "slug": "keep-chickens",
+    "pillar": "keep",
+    "title": "Keep backyard chickens responsibly",
+    "eyebrow": "Field guide 007 / Keep",
+    "summary": "Prepare legal, predator-resistant housing and daily care before acquiring birds, then manage feed, water, hygiene, eggs, and health checks.",
+    "level": "Beginner",
+    "duration": "Timing depends on local conditions, variety, equipment, and the method selected.",
+    "reviewedAt": "2026-10-09",
+    "reviewStatus": "reviewed",
+    "overview": "Chickens are living animals with daily welfare needs, not low-maintenance equipment. Breed, age, climate, flock size, and local rules affect housing and care. Arrange a poultry-experienced veterinary contact before illness occurs.",
+    "budgetEstimate": "Costs vary widely; price housing, fencing, feed, bedding, veterinary care, and winterization for a full year before buying birds.",
+    "prerequisites": [
+      "Confirm local zoning, permits, setbacks, and rooster restrictions.",
+      "Secure, dry, ventilated housing sized for the flock.",
+      "A feed, water, biosecurity, and veterinary plan."
+    ],
+    "supplies": [
+      {
+        "item": "Predator-resistant coop and run",
+        "amount": "Sized to local welfare guidance"
+      },
+      {
+        "item": "Complete poultry feed",
+        "amount": "Matched to age and laying status"
+      },
+      {
+        "item": "Clean feeders and drinkers",
+        "amount": "Enough access for all birds"
+      },
+      {
+        "item": "Dry bedding and cleaning tools",
+        "amount": "Maintain clean conditions"
+      },
+      {
+        "item": "Dedicated footwear and handwashing supplies",
+        "amount": "For biosecurity"
+      },
+      {
+        "item": "Veterinary and emergency contact list",
+        "amount": "Before birds arrive"
+      }
+    ],
+    "safety": [
+      "Wash hands after handling birds, eggs, feed, bedding, or equipment; keep poultry out of kitchens.",
+      "Protect birds from wild birds and rodents and follow current avian-influenza guidance.",
+      "Do not improvise medication; contact a poultry-experienced veterinarian for sick birds.",
+      "Manage manure and bedding to reduce runoff, flies, and contamination."
+    ],
+    "steps": [
+      {
+        "id": "step-1",
+        "title": "Check laws and commitment",
+        "instruction": "Confirm flock limits, setbacks, permits, noise, waste, and egg-sale rules. Budget daily care, travel coverage, feed, bedding, and veterinary expenses.",
+        "detail": "Rules vary by municipality; eggs do not make a flock self-sustaining.",
+        "checkpoint": "You verified local rules and have a realistic care budget.",
+        "timing": "Before birds"
+      },
+      {
+        "id": "step-2",
+        "title": "Prepare secure housing",
+        "instruction": "Provide dry, ventilated, cleanable shelter with protection from predators, weather, and injury. Follow local extension guidance for space, roosts, nest boxes, and runs.",
+        "detail": "Overcrowding and poor ventilation increase stress and disease risk.",
+        "checkpoint": "Housing is secure, ventilated, and sized to current guidance.",
+        "timing": "Before birds"
+      },
+      {
+        "id": "step-3",
+        "title": "Set up feed and water",
+        "instruction": "Use complete feed appropriate to age and purpose; provide clean water continuously. Ask an expert about grit and calcium needs for the flock's stage.",
+        "detail": "Treats must not replace balanced feed; discard moldy feed.",
+        "checkpoint": "Feed matches the flock and water is clean and accessible.",
+        "timing": "Daily"
+      },
+      {
+        "id": "step-4",
+        "title": "Establish biosecurity",
+        "instruction": "Use dedicated footwear and tools, wash hands, limit visitors, and quarantine new birds as recommended by a veterinarian. Keep wild birds and rodents away from feed.",
+        "detail": "Disease can spread through people, equipment, and wild birds.",
+        "checkpoint": "You have a cleaning, visitor, and quarantine routine.",
+        "timing": "Ongoing"
+      },
+      {
+        "id": "step-5",
+        "title": "Inspect birds and eggs",
+        "instruction": "Observe appetite, water intake, breathing, posture, droppings, movement, and behavior. Collect eggs regularly and handle them according to current food-safety guidance.",
+        "detail": "Birds may hide illness. Sudden deaths, breathing problems, neurologic signs, or flock-wide changes need urgent expert advice.",
+        "checkpoint": "You know normal behavior and have a plan for health changes.",
+        "timing": "Daily"
+      },
+      {
+        "id": "step-6",
+        "title": "Manage manure and seasonal conditions",
+        "instruction": "Remove wet bedding, store manure away from runoff, and plan for shade, ventilation, winter water, and storm protection.",
+        "detail": "Heat stress can become urgent; never seal a coop so tightly that ventilation is lost.",
+        "checkpoint": "Manure has a safe destination and seasonal care is planned.",
+        "timing": "Weekly and seasonally"
+      },
+      {
+        "id": "step-7",
+        "title": "Prepare for veterinary emergencies",
+        "instruction": "Keep a poultry-experienced veterinary contact and know local reporting guidance. Plan for isolation, humane treatment, and safe carcass disposal.",
+        "detail": "Do not diagnose serious disease from social media or use unapproved medication.",
+        "checkpoint": "You know whom to call and what to do for a sick or injured bird.",
+        "timing": "Before birds"
+      }
+    ],
+    "troubleshoot": [
+      {
+        "problem": "Birds stop eating or drinking",
+        "cause": "Illness, heat, bullying, or water failure may be involved.",
+        "response": "Check feed and water immediately and contact a veterinarian promptly for severe or persistent symptoms."
+      },
+      {
+        "problem": "Ammonia smell or damp bedding",
+        "cause": "Leaks, poor ventilation, or crowding may be responsible.",
+        "response": "Fix leaks, improve ventilation, remove wet bedding, and reassess space."
+      },
+      {
+        "problem": "Egg production suddenly drops",
+        "cause": "Stress, molt, nutrition, parasites, or disease may contribute.",
+        "response": "Review feed, water, light, and recent changes; seek advice for abrupt flock-wide changes."
+      },
+      {
+        "problem": "Several birds become ill or die",
+        "cause": "A contagious disease or environmental exposure is possible.",
+        "response": "Limit movement and contact a veterinarian and local animal-health authority."
+      }
+    ],
+    "verification": [
+      "Local rules and costs were checked before acquisition.",
+      "Housing is dry, ventilated, secure, and properly sized.",
+      "Complete feed and clean water are continuously available.",
+      "A daily health and biosecurity routine is established.",
+      "I have veterinary and emergency contacts."
+    ],
+    "maintenance": [
+      "Observe birds and check feed and water daily.",
+      "Collect eggs and remove wet bedding routinely.",
+      "Inspect latches, fencing, and ventilation weekly.",
+      "Clean equipment according to appropriate instructions.",
+      "Review local disease alerts and seasonal preparations."
+    ],
+    "sources": [
+      {
+        "title": "Raising poultry in your backyard",
+        "publisher": "Penn State Extension",
+        "url": "https://extension.psu.edu/raising-poultry-in-your-backyard",
+        "checked": "2026-10-09"
+      },
+      {
+        "title": "Small scale poultry housing",
+        "publisher": "Penn State Extension",
+        "url": "https://extension.psu.edu/small-scale-poultry-housing",
+        "checked": "2026-10-09"
+      },
+      {
+        "title": "Avian influenza",
+        "publisher": "USDA APHIS",
+        "url": "https://www.aphis.usda.gov/livestock-poultry-disease/avian/avian-influenza",
+        "checked": "2026-10-09"
+      }
+    ]
+  },
+  {
+    "slug": "keep-rabbits",
+    "pillar": "keep",
+    "title": "Care for domestic rabbits",
+    "eyebrow": "Field guide 008 / Keep",
+    "summary": "Prepare a rabbit-safe home, high-fiber diet, daily exercise and enrichment, grooming, and access to veterinary care.",
+    "level": "Beginner",
+    "duration": "Timing depends on local conditions, variety, equipment, and the method selected.",
+    "reviewedAt": "2026-10-09",
+    "reviewStatus": "reviewed",
+    "overview": "Domestic rabbits have specific welfare needs. They need space to move, hide, forage, chew, and exercise, plus a high-fiber diet and prompt veterinary care. This guide is for companion rabbits; production systems require separate specialist welfare guidance.",
+    "budgetEstimate": "Budget for a large exercise area, hay, litter, rabbit-proofing, routine exams, and emergency care; initial costs can exceed adoption fees.",
+    "prerequisites": [
+      "A rabbit-savvy veterinarian and emergency contact.",
+      "A safe enclosure with exercise space and household hazard protection.",
+      "Reliable grass hay, fresh water, and daily care."
+    ],
+    "supplies": [
+      {
+        "item": "Large exercise pen or rabbit-proofed room",
+        "amount": "Room for hops, stretches, and normal movement"
+      },
+      {
+        "item": "Grass hay",
+        "amount": "Available continuously for most healthy adults"
+      },
+      {
+        "item": "Heavy water bowl or suitable bottle",
+        "amount": "Fresh water at all times"
+      },
+      {
+        "item": "Rabbit-safe litter tray",
+        "amount": "Avoid unsafe scented or clumping litter"
+      },
+      {
+        "item": "Hiding places and safe chew enrichment",
+        "amount": "Several options"
+      },
+      {
+        "item": "Carrier and grooming tools",
+        "amount": "Sized for rabbit"
+      },
+      {
+        "item": "Suitable greens and measured pellets",
+        "amount": "Matched to age and health"
+      }
+    ],
+    "safety": [
+      "If a rabbit stops eating or droppings sharply decrease, contact a rabbit-experienced veterinarian immediately.",
+      "Never lift by the ears or scruff; support chest and hindquarters.",
+      "Do not feed unknown wild plants or greens unless positively identified as safe.",
+      "Protect cords, toxic plants, chemicals, and heat sources from chewing."
+    ],
+    "steps": [
+      {
+        "id": "step-1",
+        "title": "Arrange veterinary care",
+        "instruction": "Identify a rabbit-savvy veterinarian before adoption and plan for routine exams, urgent care, and long-term costs.",
+        "detail": "Rabbits hide illness and require clinicians familiar with rabbit-specific medicine.",
+        "checkpoint": "You have a veterinary contact and realistic budget.",
+        "timing": "Before adoption"
+      },
+      {
+        "id": "step-2",
+        "title": "Set up space and rabbit-proofing",
+        "instruction": "Provide a spacious pen or safe room with room to run, stretch, stand, hide, and exercise. Block cords, toxic plants, narrow gaps, and hazards.",
+        "detail": "A small cage alone is not an adequate living environment.",
+        "checkpoint": "The rabbit can move normally and cannot reach common hazards.",
+        "timing": "Before arrival"
+      },
+      {
+        "id": "step-3",
+        "title": "Build a suitable diet",
+        "instruction": "Provide grass hay continuously for most healthy adults, fresh water, and appropriate pellets and leafy greens based on reputable rabbit-welfare and veterinary guidance. Introduce greens gradually.",
+        "detail": "Diet differs for growing rabbits and rabbits with health conditions; avoid sudden changes and sugary treats.",
+        "checkpoint": "Hay is always available and diet is documented for age and health.",
+        "timing": "Daily"
+      },
+      {
+        "id": "step-4",
+        "title": "Provide litter and enrichment",
+        "instruction": "Set up a litter tray with rabbit-safe litter, hideouts, tunnels, safe chew materials, and foraging opportunities. Plan daily social contact; many rabbits benefit from a compatible, neutered rabbit companion, but introductions should be gradual and supervised with rabbit-welfare guidance.",
+        "detail": "Avoid clumping cat litter and strong fragrances; keep food and water accessible.",
+        "checkpoint": "The rabbit can hide, forage, chew safely, and use a clean litter area.",
+        "timing": "Daily"
+      },
+      {
+        "id": "step-5",
+        "title": "Handle gently and observe",
+        "instruction": "Let the rabbit approach. Support chest and hindquarters when lifting is necessary; observe appetite, droppings, posture, movement, breathing, and behavior.",
+        "detail": "Many rabbits dislike being picked up; unsupported kicking can cause spinal injury.",
+        "checkpoint": "You know normal behavior and can handle the rabbit safely.",
+        "timing": "Daily"
+      },
+      {
+        "id": "step-6",
+        "title": "Groom and manage temperature",
+        "instruction": "Brush according to coat type, check nails and skin, and keep the rabbit in a ventilated temperature-safe area. Ask a veterinarian about nail trimming, spay/neuter, and parasite care.",
+        "detail": "Heat stress is dangerous; outdoor housing needs careful weather and predator protection.",
+        "checkpoint": "Grooming is calm and seasonal risks are managed.",
+        "timing": "Weekly and seasonally"
+      },
+      {
+        "id": "step-7",
+        "title": "Respond to warning signs",
+        "instruction": "If eating or droppings stop or sharply decrease, seek urgent veterinary advice. Keep records of weight, appetite, diet, and appointments.",
+        "detail": "Do not wait overnight or give human medications or force-feed without veterinary direction.",
+        "checkpoint": "You have a written emergency plan and routine health records.",
+        "timing": "Ongoing"
+      }
+    ],
+    "troubleshoot": [
+      {
+        "problem": "Rabbit stops eating or droppings decrease",
+        "cause": "Pain, dental problems, gastrointestinal stasis, or other illness may be involved.",
+        "response": "Contact a rabbit-experienced veterinarian immediately; do not wait or medicate at home."
+      },
+      {
+        "problem": "Chews cords or furniture",
+        "cause": "Normal chewing is reaching unsafe objects because barriers or enrichment are insufficient.",
+        "response": "Block access and provide safe chew and foraging options."
+      },
+      {
+        "problem": "Dirty rear end or urine scald",
+        "cause": "Diet, mobility, weight, or urinary disease may contribute.",
+        "response": "Arrange veterinary assessment rather than attempting aggressive cleaning or trimming."
+      },
+      {
+        "problem": "Rapid breathing or overheating",
+        "cause": "Heat stress may be life-threatening.",
+        "response": "Move to a cooler safe area and contact an emergency rabbit-savvy veterinarian."
+      }
+    ],
+    "verification": [
+      "A rabbit-savvy veterinarian is identified.",
+      "The enclosure allows normal movement and is rabbit-proofed.",
+      "Hay and fresh water are continuously available.",
+      "The rabbit has safe hiding, chewing, foraging, and exercise options.",
+      "I know appetite and droppings changes can be urgent."
+    ],
+    "maintenance": [
+      "Check appetite, droppings, water, and behavior daily.",
+      "Refresh hay, water, and litter regularly.",
+      "Inspect for chewing hazards and temperature risks.",
+      "Groom and check body condition according to vet advice.",
+      "Maintain weight, diet, and veterinary records."
+    ],
+    "sources": [
+      {
+        "title": "Rabbit care",
+        "publisher": "RSPCA",
+        "url": "https://www.rspca.org.uk/adviceandwelfare/pets/rabbits",
+        "checked": "2026-10-09"
+      },
+      {
+        "title": "Rabbit care",
+        "publisher": "House Rabbit Society",
+        "url": "https://rabbit.org/care/",
+        "checked": "2026-10-09"
+      },
+      {
+        "title": "Rabbits",
+        "publisher": "Merck Veterinary Manual",
+        "url": "https://www.merckvetmanual.com/all-other-pets/rabbits",
+        "checked": "2026-10-09"
+      }
+    ]
+  },
+
+  {
+    "slug": "preserve-drying",
+    "pillar": "preserve",
+    "title": "Dry and dehydrate foods safely",
+    "eyebrow": "Field guide 012 / Preserve",
+    "summary": "Choose suitable foods, prepare pieces evenly, use a tested method, confirm dryness, and store in moisture-proof packaging.",
+    "level": "Beginner",
+    "duration": "Timing depends on local conditions, equipment, and the specific method.",
+    "reviewedAt": "2026-10-09",
+    "reviewStatus": "reviewed",
+    "overview": "Drying removes enough moisture to slow spoilage, but safe results depend on the food and method. Use tested guidance for each food, especially vegetables and meat. This guide explains the workflow without inventing universal temperatures or times.",
+    "budgetEstimate": "Rough U.S. estimate: $10–40 for tools and packaging if you already own a suitable dehydrator; buying one adds cost.",
+    "prerequisites": [
+      "A tested food-specific drying method from a trusted source.",
+      "Clean equipment and a reliable dehydrator or approved method.",
+      "Moisture-proof packaging and a cool, dry storage location."
+    ],
+    "supplies": [
+      {
+        "item": "Fresh, sound food",
+        "amount": "Suitable for the selected drying method"
+      },
+      {
+        "item": "Dehydrator or tested setup",
+        "amount": "Follow recipe and manufacturer guidance"
+      },
+      {
+        "item": "Clean knife and cutting board",
+        "amount": "Separate raw animal products"
+      },
+      {
+        "item": "Pretreatment equipment",
+        "amount": "Only if recipe requires it"
+      },
+      {
+        "item": "Food-safe trays and sealed containers",
+        "amount": "Clean and moisture-resistant"
+      },
+      {
+        "item": "Labels and date marker",
+        "amount": "1 set"
+      }
+    ],
+    "safety": [
+      "Do not dry spoiled or temperature-abused food to rescue it.",
+      "Meat and fish require tested safety procedures, including required heating steps.",
+      "Use food-specific temperatures and pretreatments; appearance alone cannot guarantee safety.",
+      "Discard moldy or suspect food without tasting it."
+    ],
+    "steps": [
+      {
+        "id": "step-1",
+        "title": "Choose food and tested method",
+        "instruction": "Select sound produce and find tested instructions for that exact food. Confirm washing, peeling, slicing, blanching, pretreatment, equipment, and storage steps.",
+        "detail": "Different foods dry at different rates and may need different pretreatment.",
+        "checkpoint": "Full instructions and equipment requirements are understood before prep.",
+        "timing": "Before prep"
+      },
+      {
+        "id": "step-2",
+        "title": "Clean and prepare",
+        "instruction": "Wash hands and equipment, wash produce under running water, remove damaged portions, and cut uniformly as directed. Keep raw meat separate from ready-to-eat foods.",
+        "detail": "Uniform size helps even drying; cross-contamination can occur before drying begins.",
+        "checkpoint": "Food is sound, clean, and cut as directed.",
+        "timing": "15–45 minutes"
+      },
+      {
+        "id": "step-3",
+        "title": "Apply required pretreatment",
+        "instruction": "Blanch or pretreat only when the tested method requires it, using its specified time and technique. Drain thoroughly.",
+        "detail": "Pretreatment may be part of the tested process; skipping it can change results.",
+        "checkpoint": "All required pretreatment is complete.",
+        "timing": "As specified"
+      },
+      {
+        "id": "step-4",
+        "title": "Load and dry",
+        "instruction": "Arrange food in a single layer with airflow. Use tested settings and rotate trays only as directed.",
+        "detail": "Overloading blocks airflow and causes uneven drying. Do not use a universal drying time.",
+        "checkpoint": "Equipment is operating within the recipe and manufacturer instructions.",
+        "timing": "Time varies"
+      },
+      {
+        "id": "step-5",
+        "title": "Check the correct dryness endpoint",
+        "instruction": "Use the recipe's test for that food and let a sample cool before evaluating texture.",
+        "detail": "Warm food can seem softer; different foods finish at different textures.",
+        "checkpoint": "Food meets the tested endpoint rather than a guessed duration.",
+        "timing": "At end of cycle"
+      },
+      {
+        "id": "step-6",
+        "title": "Condition if required, then package",
+        "instruction": "For produce where the tested guidance calls for conditioning, cool and condition as directed while checking for condensation. Package fully cooled food in moisture-proof containers and label it.",
+        "detail": "Conditioning does not rescue under-dried food. Warm food can create condensation.",
+        "checkpoint": "Required conditioning is complete; containers are sealed and dated.",
+        "timing": "Per method"
+      },
+      {
+        "id": "step-7",
+        "title": "Store and inspect",
+        "instruction": "Keep packages cool, dark, and dry. Follow storage guidance and inspect before use; discard suspect food without tasting.",
+        "detail": "Heat, light, oxygen, and moisture reduce quality and can permit spoilage.",
+        "checkpoint": "Storage location and inspection routine are recorded.",
+        "timing": "Monthly"
+      }
+    ],
+    "troubleshoot": [
+      {
+        "problem": "Food remains moist",
+        "cause": "Pieces may be too thick, trays overloaded, or drying incomplete.",
+        "response": "Return to the tested method to assess whether drying can safely continue; discard if safety is uncertain."
+      },
+      {
+        "problem": "Condensation in storage",
+        "cause": "Food may have been packaged warm or under-dried.",
+        "response": "Do not assume it is safe; follow trusted guidance and discard if moisture or spoilage makes safety uncertain."
+      },
+      {
+        "problem": "Uneven pieces",
+        "cause": "Cut size or airflow may vary.",
+        "response": "Cut uniformly and rotate trays if the method directs."
+      },
+      {
+        "problem": "Mold or off odor",
+        "cause": "Moisture or contamination allowed spoilage.",
+        "response": "Discard the batch; do not scrape mold away or taste it."
+      }
+    ],
+    "verification": [
+      "I used a tested method for this specific food.",
+      "Preparation and pretreatment matched instructions.",
+      "Food met the correct dryness endpoint.",
+      "Food cooled before packaging and was labeled.",
+      "I understand safe storage and discard signs."
+    ],
+    "maintenance": [
+      "Clean trays and tools after every batch.",
+      "Inspect packages for moisture, pests, and damaged seals.",
+      "Record food, method, and outcome.",
+      "Use smaller packages to limit repeated air exposure.",
+      "Never reuse a questionable batch."
+    ],
+    "sources": [
+      {
+        "title": "Drying",
+        "publisher": "National Center for Home Food Preservation",
+        "url": "https://nchfp.uga.edu/how/dry",
+        "checked": "2026-10-09"
+      },
+      {
+        "title": "Drying vegetables",
+        "publisher": "National Center for Home Food Preservation",
+        "url": "https://nchfp.uga.edu/how/drydrying-vegetables/",
+        "checked": "2026-10-09"
+      },
+      {
+        "title": "Jerky food safety",
+        "publisher": "USDA FSIS",
+        "url": "https://www.fsis.usda.gov/food-safety/safe-food-handling-and-preparation/meat/jerky",
+        "checked": "2026-10-09"
+      }
+    ]
+  },
+
+  {
+    "slug": "preserve-canning",
+    "pillar": "preserve",
+    "title": "Can food using tested methods",
+    "eyebrow": "Field guide 014 / Preserve",
+    "summary": "Choose a tested recipe, identify the correct canner, prepare jars, process accurately, and inspect seals without guessing.",
+    "level": "Beginner",
+    "duration": "Timing depends on local conditions, equipment, and the specific method.",
+    "reviewedAt": "2026-10-09",
+    "reviewStatus": "reviewed",
+    "overview": "Home canning is a precision food-safety process. Properly acidified foods may use boiling-water processing; low-acid vegetables, meat, poultry, and many mixed foods require a tested pressure-canning process. A pressure cooker, oven, or improvised recipe is not a safe substitute. This guide teaches the workflow, not a universal recipe.",
+    "budgetEstimate": "A proper pressure canner can be a substantial upfront cost; do not substitute unsafe equipment to save money.",
+    "prerequisites": [
+      "A current tested recipe for the exact food and jar size.",
+      "The correct canner, jars, lids, and utensils.",
+      "Knowledge of altitude and the recipe's time, pressure, headspace, and venting requirements."
+    ],
+    "supplies": [
+      {
+        "item": "Tested recipe and processing table",
+        "amount": "Exact food, jar size, and method"
+      },
+      {
+        "item": "Correct boiling-water or pressure canner",
+        "amount": "As recipe specifies"
+      },
+      {
+        "item": "Suitable jars and lids",
+        "amount": "Inspect and prepare as directed"
+      },
+      {
+        "item": "Jar lifter, funnel, headspace tool",
+        "amount": "Food-safe"
+      },
+      {
+        "item": "Timer and gauge information",
+        "amount": "Follow equipment guidance"
+      },
+      {
+        "item": "Labels and date marker",
+        "amount": "1 set"
+      }
+    ],
+    "safety": [
+      "Never can low-acid foods in a boiling-water canner; use a tested pressure-canning process.",
+      "Never invent times, change jar sizes, thicken recipes, or change ingredients beyond tested allowances.",
+      "Do not use an electric pressure cooker, oven, dishwasher, or open-kettle method as a canner substitute.",
+      "Never taste jars that leak, spurt, bulge, or appear spoiled; follow official disposal guidance."
+    ],
+    "steps": [
+      {
+        "id": "step-1",
+        "title": "Choose exact tested recipe",
+        "instruction": "Use current NCHFP, USDA, or reputable extension instructions for the exact food and jar size. Confirm acidity and canner type.",
+        "detail": "Tomatoes and mixed foods may require acidification or pressure processing depending on the tested recipe.",
+        "checkpoint": "Recipe, ingredients, jar size, and canner are specified.",
+        "timing": "Before starting"
+      },
+      {
+        "id": "step-2",
+        "title": "Check equipment and altitude",
+        "instruction": "Inspect jars and lids, read canner instructions, identify altitude, and follow gauge testing advice where applicable.",
+        "detail": "Altitude affects processing requirements; do not guess pressure or time.",
+        "checkpoint": "Equipment is suitable and altitude adjustments are noted.",
+        "timing": "Before prep"
+      },
+      {
+        "id": "step-3",
+        "title": "Prepare food and jars exactly",
+        "instruction": "Follow ingredient preparation, pack style, jar preparation, and headspace from the tested recipe.",
+        "detail": "Piece size, density, and headspace affect heat transfer and safety.",
+        "checkpoint": "Food, jars, and headspace match the recipe.",
+        "timing": "As specified"
+      },
+      {
+        "id": "step-4",
+        "title": "Load and start correctly",
+        "instruction": "Use the required canner. For pressure canning, vent steam and build pressure according to equipment directions; for boiling-water canning, maintain required water coverage and boil.",
+        "detail": "Start timing only when the recipe's required condition is reached.",
+        "checkpoint": "The process starts according to recipe and equipment instructions.",
+        "timing": "As specified"
+      },
+      {
+        "id": "step-5",
+        "title": "Process fully",
+        "instruction": "Follow exact time, pressure, and altitude adjustment. If pressure drops below the required level, follow official instructions for restarting the process.",
+        "detail": "The correct time-temperature combination is critical; appearance cannot replace processing.",
+        "checkpoint": "The full prescribed process was completed and recorded.",
+        "timing": "As specified"
+      },
+      {
+        "id": "step-6",
+        "title": "Cool and inspect seals",
+        "instruction": "Cool jars undisturbed for the recommended period. Check seals according to tested guidance and handle failed seals as directed.",
+        "detail": "Do not tighten bands while cooling or invert jars to force a seal.",
+        "checkpoint": "Jars are cooled, inspected, and failures handled safely.",
+        "timing": "After processing"
+      },
+      {
+        "id": "step-7",
+        "title": "Label, store, and respond to failures",
+        "instruction": "Label contents and date and store cool, dark, and dry. For failed seals, use official advice for prompt refrigeration, freezing, or reprocessing only when permitted.",
+        "detail": "A sealed lid does not make an untested recipe safe. Never taste suspect jars.",
+        "checkpoint": "Jars are labeled and suspect containers are not tasted.",
+        "timing": "After cooling"
+      }
+    ],
+    "troubleshoot": [
+      {
+        "problem": "Lid fails to seal",
+        "cause": "Rim debris, damage, headspace, or lid issues may contribute.",
+        "response": "Follow official recipe guidance and time limits; refrigerate or freeze if appropriate."
+      },
+      {
+        "problem": "Pressure drops during processing",
+        "cause": "Heat setting or equipment operation may be involved.",
+        "response": "Follow canner instructions; pressure-canning timing generally must restart if required pressure is not maintained."
+      },
+      {
+        "problem": "Jar leaks, bulges, or spurts",
+        "cause": "Spoilage or dangerous contamination may be present.",
+        "response": "Do not taste or open casually; follow official disposal guidance."
+      },
+      {
+        "problem": "Recipe comes from an untested post",
+        "cause": "Heat penetration or acidity may not be validated.",
+        "response": "Use a current tested recipe instead."
+      }
+    ],
+    "verification": [
+      "I used a current tested recipe for the exact food.",
+      "The correct canner, jar size, headspace, and altitude adjustment were used.",
+      "Processing time and pressure were followed exactly.",
+      "Seals were inspected after proper cooling.",
+      "Jars are labeled and suspect food is never tasted."
+    ],
+    "maintenance": [
+      "Keep recipe and batch records.",
+      "Inspect jars and equipment before use.",
+      "Check pressure gauge as recommended.",
+      "Store jars cool, dark, and dry.",
+      "Review updated extension guidance."
+    ],
+    "sources": [
+      {
+        "title": "Ensuring safe canned foods",
+        "publisher": "National Center for Home Food Preservation",
+        "url": "https://nchfp.uga.edu/how/can/general-information/ensuring-safe-canned-foods/",
+        "checked": "2026-10-09"
+      },
+      {
+        "title": "Recommended canners",
+        "publisher": "National Center for Home Food Preservation",
+        "url": "https://nchfp.uga.edu/how/can/general-information/recommended-canners/",
+        "checked": "2026-10-09"
+      },
+      {
+        "title": "Home canning safety",
+        "publisher": "USDA NIFA",
+        "url": "https://www.nifa.usda.gov/about-nifa/blogs/keep-your-canned-food-safe",
+        "checked": "2026-10-09"
+      }
+    ]
+  },
+  {
+    "slug": "store-food-reserve",
+    "pillar": "store",
+    "title": "Build a household food reserve",
+    "eyebrow": "Field guide 015 / Store",
+    "summary": "Estimate a realistic reserve, prioritize familiar shelf-stable foods, store them safely, rotate stock, and plan for dietary and cooking needs.",
+    "level": "Beginner",
+    "duration": "Timing depends on local conditions, equipment, and the specific method.",
+    "reviewedAt": "2026-10-09",
+    "reviewStatus": "reviewed",
+    "overview": "A useful food reserve is a practical buffer, not a pile of emergency rations. Start with foods the household already eats, including dietary needs, and plan for water, cooking, storage space, and outages. Build gradually within budget.",
+    "budgetEstimate": "Highly variable. Set aside a small amount each grocery trip and use familiar shelf-stable foods rather than buying a full kit at once.",
+    "prerequisites": [
+      "List household members, dietary needs, pets, and likely disruptions.",
+      "A cool, dry storage area protected from pests and chemicals.",
+      "A budget and inventory system that supports rotation."
+    ],
+    "supplies": [
+      {
+        "item": "Familiar shelf-stable foods",
+        "amount": "Matched to household needs"
+      },
+      {
+        "item": "Manual can opener",
+        "amount": "If storing cans"
+      },
+      {
+        "item": "Clean bins or shelves",
+        "amount": "Dry and pest-resistant"
+      },
+      {
+        "item": "Inventory and date labels",
+        "amount": "Paper or digital"
+      },
+      {
+        "item": "Outage cooking plan",
+        "amount": "Include no-cook foods"
+      },
+      {
+        "item": "Water and pet-food plan",
+        "amount": "Calculate separately"
+      }
+    ],
+    "safety": [
+      "Keep food away from chemicals, pests, flooding, and excessive heat.",
+      "Never use charcoal grills, camp stoves, or generators indoors because of carbon monoxide risk.",
+      "Respect package storage directions and special requirements for infant formula or medically necessary foods.",
+      "Follow official guidance after power outages; discard temperature-abused foods."
+    ],
+    "steps": [
+      {
+        "id": "step-1",
+        "title": "List who the reserve serves",
+        "instruction": "Count household members, dietary restrictions, allergies, infants, medical nutrition needs, and pets. Note cooking ability during outages.",
+        "detail": "Generic kits may not fit allergies, disability, or pet requirements.",
+        "checkpoint": "Inventory reflects everyone who depends on the reserve.",
+        "timing": "30 minutes"
+      },
+      {
+        "id": "step-2",
+        "title": "Set a starter target",
+        "instruction": "Use official emergency guidance for a short reserve, then choose a realistic longer target based on budget and storage.",
+        "detail": "A large reserve is useful only if safe, familiar, and rotated.",
+        "checkpoint": "Duration and monthly budget are written down.",
+        "timing": "30 minutes"
+      },
+      {
+        "id": "step-3",
+        "title": "Build a familiar menu",
+        "instruction": "Choose shelf-stable foods your household already eats and include balanced meals, snacks, and no-cook options.",
+        "detail": "Avoid buying food that needs unavailable fuel or that nobody will eat.",
+        "checkpoint": "A simple menu covers the planned days.",
+        "timing": "1 hour"
+      },
+      {
+        "id": "step-4",
+        "title": "Plan water, tools, and cooking",
+        "instruction": "Include water for drinking and preparation, a manual can opener, utensils, and a safe cooking plan if needed.",
+        "detail": "Food planning fails if water or safe heat is unavailable.",
+        "checkpoint": "Each food can be prepared with the planned resources.",
+        "timing": "30–60 minutes"
+      },
+      {
+        "id": "step-5",
+        "title": "Buy gradually and rotate",
+        "instruction": "Add a few items during normal shopping. Put newer items behind older stock and record dates where useful.",
+        "detail": "Do not confuse quality dates with every food's safety status; follow package instructions.",
+        "checkpoint": "Inventory is current and older stock is easiest to use first.",
+        "timing": "Each shopping trip"
+      },
+      {
+        "id": "step-6",
+        "title": "Store safely and review needs",
+        "instruction": "Keep food cool, dry, clean, and pest-resistant. Include evacuation access, pet food, and special needs; replenish after use.",
+        "detail": "Heat, moisture, and pests damage stock. Some items require temperature control or professional advice.",
+        "checkpoint": "Storage is accessible and special needs are considered.",
+        "timing": "Monthly and quarterly"
+      }
+    ],
+    "troubleshoot": [
+      {
+        "problem": "Food reserve too expensive",
+        "cause": "Buying everything at once or choosing specialized kits may exceed budget.",
+        "response": "Build gradually with familiar foods and prioritize water, dietary needs, and a few meals first."
+      },
+      {
+        "problem": "Food expires unused",
+        "cause": "Stock does not match normal eating habits or dates are not visible.",
+        "response": "Rotate older items forward and buy foods the household already eats."
+      },
+      {
+        "problem": "Foods need unavailable cooking fuel",
+        "cause": "Menu planning ignored outage conditions.",
+        "response": "Add no-cook options and calculate water and safe cooking needs."
+      },
+      {
+        "problem": "Pests or moisture appear",
+        "cause": "Storage or packaging is unsuitable.",
+        "response": "Remove contaminated items safely, clean the area, and improve sealed storage."
+      }
+    ],
+    "verification": [
+      "Household dietary and accessibility needs are included.",
+      "There is a realistic target and budget.",
+      "Foods are familiar and can be prepared with available water and tools.",
+      "Stock is dated, rotated, and stored safely.",
+      "Pet, evacuation, and special needs are considered."
+    ],
+    "maintenance": [
+      "Inspect dates, packages, pests, and moisture monthly.",
+      "Rotate food through normal meals and replace what is used.",
+      "Review water and cooking plans alongside food.",
+      "Update after household changes.",
+      "Follow official food safety advice after outages."
+    ],
+    "sources": [
+      {
+        "title": "Build a kit",
+        "publisher": "Ready.gov",
+        "url": "https://www.ready.gov/kit",
+        "checked": "2026-10-09"
+      },
+      {
+        "title": "Food safety during power outages",
+        "publisher": "FoodSafety.gov",
+        "url": "https://www.foodsafety.gov/food-safety-charts/food-safety-during-power-outage",
+        "checked": "2026-10-09"
+      },
+      {
+        "title": "Emergency supplies",
+        "publisher": "FEMA",
+        "url": "https://www.fema.gov/press-release/20210318/how-build-kit-emergencies",
+        "checked": "2026-10-09"
+      }
+    ]
+  },
+  {
+    "slug": "store-tools-essentials",
+    "pillar": "store",
+    "title": "Organize tools and household essentials",
+    "eyebrow": "Field guide 017 / Store",
+    "summary": "Inventory the tools and supplies you use, store them safely, maintain them, and make essentials easy to find when needed.",
+    "level": "Beginner",
+    "duration": "Timing depends on local conditions, equipment, and the specific method.",
+    "reviewedAt": "2026-10-09",
+    "reviewStatus": "reviewed",
+    "overview": "Self-sufficiency is not owning every tool. It is knowing what you have, where it is, how to use it safely, and when a job exceeds your skills. Start with routine household repairs, gardening, lighting, first aid, and emergency supplies; rent or borrow rarely used tools when sensible.",
+    "budgetEstimate": "Start with what you own. Replace missing essentials gradually and do not buy powered tools without learning their safe use.",
+    "prerequisites": [
+      "A dry, organized storage area.",
+      "A list of common tasks and household risks.",
+      "A way to track inventory, batteries, and expiration dates."
+    ],
+    "supplies": [
+      {
+        "item": "Inventory sheet or notes app",
+        "amount": "One list by location and use"
+      },
+      {
+        "item": "Labeled bins or suitable mounts",
+        "amount": "Sized for tool weight"
+      },
+      {
+        "item": "Basic hand tools",
+        "amount": "Only those you can use safely"
+      },
+      {
+        "item": "Flashlight and backup lighting",
+        "amount": "For outages"
+      },
+      {
+        "item": "First aid and protective equipment",
+        "amount": "Matched to tasks"
+      },
+      {
+        "item": "Maintenance supplies",
+        "amount": "As manufacturer directs"
+      },
+      {
+        "item": "Lockable storage",
+        "amount": "For hazardous items"
+      }
+    ],
+    "safety": [
+      "Read manuals and use required eye, hearing, hand, and respiratory protection.",
+      "Disconnect power or remove batteries before cleaning or changing blades; never service energized equipment.",
+      "Store chemicals, fuel, sharp tools, and medicines securely away from food and water.",
+      "Do not attempt electrical, gas, structural, or other high-risk repairs beyond your training."
+    ],
+    "steps": [
+      {
+        "id": "step-1",
+        "title": "List real household tasks",
+        "instruction": "Write routine needs such as tightening hardware, watering plants, opening cans, changing batteries, and responding to a short outage. Separate occasional specialist work.",
+        "detail": "A large collection creates cost and clutter without building competence.",
+        "checkpoint": "Essential, useful, and rare tasks are distinguished.",
+        "timing": "30 minutes"
+      },
+      {
+        "id": "step-2",
+        "title": "Inventory what you own",
+        "instruction": "Record each tool, accessory, consumable, condition, and location. Note missing manuals, batteries, or parts.",
+        "detail": "A tool may be present but unsafe due to damaged cords, cracked handles, corrosion, or missing guards.",
+        "checkpoint": "Every essential item has a known location and condition.",
+        "timing": "1–2 hours"
+      },
+      {
+        "id": "step-3",
+        "title": "Prioritize gaps safely",
+        "instruction": "Prioritize basic hand tools, lighting, batteries, first aid, and task-specific protective equipment. Buy or borrow only what fits a real need.",
+        "detail": "Do not buy powered tools before learning manuals, guards, and safe operating practices.",
+        "checkpoint": "Each planned purchase has a specific use and safe-use plan.",
+        "timing": "As budget allows"
+      },
+      {
+        "id": "step-4",
+        "title": "Create zones and labels",
+        "instruction": "Group tools by household repair, garden, food storage, lighting, and first aid. Label bins and keep sharp or hazardous items secured.",
+        "detail": "Store heavy items low and avoid overloading wall mounts. Keep emergency supplies accessible but safe from children.",
+        "checkpoint": "A household member can locate essentials without opening every box.",
+        "timing": "1–2 hours"
+      },
+      {
+        "id": "step-5",
+        "title": "Inspect and maintain",
+        "instruction": "Follow manufacturer instructions for cleaning, lubrication, sharpening, batteries, and storage. Remove damaged tools from service.",
+        "detail": "Do not improvise repairs to guards, electrical insulation, ladders, or safety-critical parts.",
+        "checkpoint": "Tools are clean, functional, and stored safely.",
+        "timing": "Monthly or after use"
+      },
+      {
+        "id": "step-6",
+        "title": "Practice and know your limits",
+        "instruction": "Read manuals and practice low-risk tasks before an emergency. Keep instructions with unfamiliar equipment and know when to call a qualified professional.",
+        "detail": "Do not practice hazardous work on live electrical systems, gas lines, unstable ladders, or powered equipment without training.",
+        "checkpoint": "You have practiced safe use and know when to stop.",
+        "timing": "Quarterly"
+      },
+      {
+        "id": "step-7",
+        "title": "Review inventory and consumables",
+        "instruction": "Track batteries, filters, first-aid supplies, and other items with service lives. Replenish after use and review after moving or changing equipment.",
+        "detail": "An inventory only works when it matches reality.",
+        "checkpoint": "Inventory is current and critical items are ready.",
+        "timing": "Monthly"
+      }
+    ],
+    "troubleshoot": [
+      {
+        "problem": "Items are hard to find",
+        "cause": "Storage is not grouped or labels are unclear.",
+        "response": "Group by task, label locations, and maintain one inventory."
+      },
+      {
+        "problem": "Tools rust or batteries fail",
+        "cause": "Storage may be damp or too hot.",
+        "response": "Improve storage and follow manufacturer care instructions."
+      },
+      {
+        "problem": "Too much unused equipment",
+        "cause": "Purchases were not tied to tasks.",
+        "response": "Rent, borrow, sell, or donate rarely used tools when appropriate."
+      },
+      {
+        "problem": "Repair exceeds your skill",
+        "cause": "Electrical, gas, structural, or other serious hazards may be involved.",
+        "response": "Stop and call a qualified professional."
+      },
+      {
+        "problem": "Emergency supplies are expired",
+        "cause": "No rotation routine exists.",
+        "response": "Create monthly checks and replace items according to official guidance."
+      }
+    ],
+    "verification": [
+      "I know the essential tools for real household needs.",
+      "Each essential item has a known location and condition.",
+      "Hazardous items are secured away from food and water.",
+      "I have a maintenance and rotation routine.",
+      "I know which repairs need a qualified professional."
+    ],
+    "maintenance": [
+      "Return tools to labeled storage after use.",
+      "Inspect cords, guards, handles, and batteries before use.",
+      "Check emergency lights and consumables monthly.",
+      "Keep manuals and protective equipment accessible.",
+      "Review inventory after moves and major repairs."
+    ],
+    "sources": [
+      {
+        "title": "Hand and power tool safety",
+        "publisher": "Occupational Safety and Health Administration",
+        "url": "https://www.osha.gov/hand-power-tools",
+        "checked": "2026-10-09"
+      },
+      {
+        "title": "Build a kit",
+        "publisher": "Ready.gov",
+        "url": "https://www.ready.gov/kit",
+        "checked": "2026-10-09"
+      },
+      {
+        "title": "Home safety",
+        "publisher": "U.S. Consumer Product Safety Commission",
+        "url": "https://www.cpsc.gov/Safety-Education/Safety-Guides/Home",
         "checked": "2026-10-09"
       }
     ]
