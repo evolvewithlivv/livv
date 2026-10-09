@@ -8,7 +8,7 @@ const GROW = [
   { name: "Leafy greens", window: "Cool season", note: "Learn to sow, thin, water, troubleshoot, and harvest a first crop.", slug: "grow-leafy-greens", ready: true },
   { name: "Root crops", window: "Cool to mild", note: "Carrots, beets, radishes, and other storage-friendly crops.", ready: false },
   { name: "Beans", window: "Warm season", note: "Choose a variety, build support, water, harvest, and learn when pods are ready.", slug: "grow-beans", ready: true },
-  { name: "Tomatoes", window: "Warm season", note: "Seedlings, support, pruning choices, watering, and harvest.", ready: false },
+  { name: "Tomatoes", window: "Warm season", note: "Start or transplant, support, water consistently, diagnose problems, and harvest.", slug: "grow-tomatoes", ready: true },
   { name: "Herbs", window: "Most seasons", note: "Match light and water to each herb, harvest well, and keep useful plants productive.", slug: "grow-herbs", ready: true },
   { name: "Winter crops", window: "Cold season", note: "Plan sowing, protection, and harvest around local conditions.", ready: false },
 ];
@@ -86,7 +86,7 @@ export default function FieldPage() {
 
       <section className="field-next">
         <BookOpen size={17}/>
-        <div><strong>One skill at a time.</strong><p>Field guides are built as complete instructions, not quick tips. Eight complete guides are available now across the four pillars. Other topics will appear when their guidance and sources are ready.</p></div>
+        <div><strong>One skill at a time.</strong><p>Field guides are built as complete instructions, not quick tips. Nine complete guides are available now across the four pillars. Other topics will appear when their guidance and sources are ready.</p></div>
       </section>
 
       <p className="field-note">Field is practical education, not a substitute for local agricultural guidance, veterinary care, food-safety requirements, or emergency services. Follow local conditions and applicable rules.</p>
