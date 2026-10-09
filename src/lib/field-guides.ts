@@ -992,7 +992,7 @@ export const FIELD_GUIDES: FieldGuide[] = [
       {
         "title": "Growing herbs",
         "publisher": "University of Minnesota Extension",
-        "url": "https://extension.umn.edu/vegetables/growing-herbs",
+        "url": "https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/growing-herbs",
         "checked": "2026-10-09"
       }
     ]
@@ -1153,7 +1153,7 @@ export const FIELD_GUIDES: FieldGuide[] = [
       {
         "title": "Beekeeping",
         "publisher": "Penn State Extension",
-        "url": "https://extension.psu.edu/beekeeping",
+        "url": "https://extension.psu.edu/insects-pests-and-diseases/pollinators/beekeeping",
         "checked": "2026-10-09"
       },
       {
