@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { ArrowLeft, ExternalLink, Leaf, ShieldCheck } from "lucide-react";
 import { FIELD_GUIDES, getFieldGuide } from "@/lib/field-guides";
+import { FieldGuideOfflineRecord } from "@/components/field/field-guide-offline-record";
 import "@/app/home/field/guides/[slug]/field-guide.css";
 
 export function generateStaticParams() {
@@ -27,7 +28,7 @@ export default async function OfflineFieldGuidePage({ params }: { params: Promis
           <div className="field-guide-title-row"><h1 className="field-guide-title">{guide.title}.</h1><span className="field-guide-mark" aria-hidden="true"><Leaf size={23} /></span></div>
           <p className="field-guide-intro">{guide.summary}</p>
           <div className="field-guide-meta"><span>{guide.level}</span><span>{guide.duration}</span><span><ShieldCheck size={13} /> Read-only offline copy</span></div>
-          <p className="field-guide-save-note">This page is a saved, read-only copy of the instructional guide. Source links require a connection. Your checklist and field notes remain in the regular guide on this device and sync when LIVV is online.</p>
+          <p className="field-guide-save-note">This saved copy keeps the instructions available without a connection. You can record steps and field notes here; source links require a connection.</p>
         </header>
 
         <section className="field-guide-section">
@@ -48,11 +49,7 @@ export default async function OfflineFieldGuidePage({ params }: { params: Promis
           <div className="field-guide-troubleshooting">{guide.troubleshoot.map((item) => <article key={item.problem}><h3>{item.problem}</h3><p><strong>Possible cause:</strong> {item.cause}</p><p><strong>What to do:</strong> {item.response}</p></article>)}</div>
         </section>
 
-        <section className="field-guide-section">
-          <p className="field-guide-overline">04 / Verify</p><h2>Can you do it?</h2>
-          <ul className="field-guide-prerequisites">{guide.verification.map((item) => <li key={item}>{item}</li>)}</ul>
-          <p className="field-guide-body">When you are back online, open the regular guide to record completed steps, verification checks, and field notes.</p>
-        </section>
+        <FieldGuideOfflineRecord guide={guide} />
 
         <section className="field-guide-section">
           <p className="field-guide-overline">05 / Maintain</p><h2>Keep the skill alive</h2>
