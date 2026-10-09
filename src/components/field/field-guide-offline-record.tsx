@@ -43,6 +43,7 @@ function normalize(value?: Partial<GuideProgress>): GuideProgress {
 
 export function FieldGuideOfflineRecord({ guide }: { guide: FieldGuide }) {
   const [progress, setProgress] = useState<GuideProgress>(EMPTY_PROGRESS);
+  const [saveError, setSaveError] = useState(false);
 
   useEffect(() => {
     const hydrate = () => setProgress(normalize(readAllProgress()[guide.slug]));
@@ -68,9 +69,11 @@ export function FieldGuideOfflineRecord({ guide }: { guide: FieldGuide }) {
       all[guide.slug] = value;
       window.localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
       setProgress(value);
+      setSaveError(false);
       window.dispatchEvent(new Event("livv-field-progress"));
     } catch {
       setProgress(value);
+      setSaveError(true);
     }
   }, [guide.slug]);
 
@@ -122,7 +125,7 @@ export function FieldGuideOfflineRecord({ guide }: { guide: FieldGuide }) {
       <label className="field-guide-observation">Field notes
         <textarea value={progress.observation} onChange={(event) => save({ ...progress, observation: event.target.value })} rows={4} placeholder="What did you observe? What worked? What would you change next time?" />
       </label>
-      <p className="field-guide-saved-status" role="status">{progress.updatedAt ? `Saved on this device · ${new Date(progress.updatedAt).toLocaleString()}` : "Your record will appear here when you begin."}</p>
+      <p className="field-guide-saved-status" role="status">{saveError ? "Could not save on this device. Free up storage and try again." : progress.updatedAt ? `Saved on this device · ${new Date(progress.updatedAt).toLocaleString()}` : "Your record will appear here when you begin."}</p>
     </section>
   );
 }
