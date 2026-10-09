@@ -248,6 +248,6 @@
 .ho-system>svg{position:absolute;top:13px;right:13px;color:var(--muted)}
 .ho-system-daily{--system-accent:#9A00FF}.ho-system-train{--system-accent:#F93827}.ho-system-health{--system-accent:#0F7FFF}.ho-system-field{--system-accent:#39B54A}
 .ho-pillars{display:flex;justify-content:center;padding:2rem 0 .5rem;opacity:.7}
-.ho-pillars img{width:74px;height:auto;max-height:74px;object-fit:contain}
+.ho-pillars img{width:min(190px,72%);height:auto;max-height:none;object-fit:contain;display:block}
 html[data-theme="dark"] .ho-pillars img{filter:invert(1)}
 @media(max-width:360px){.ho-system-grid{grid-template-columns:1fr}.ho-system{min-height:92px}}
