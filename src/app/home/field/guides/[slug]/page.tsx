@@ -85,7 +85,7 @@ export default function FieldGuidePage() {
     if (progress.completedChecks.length >= (guide?.verification.length ?? 0) && (guide?.verification.length ?? 0) > 0) return "Maintain";
     if (!progress.observation.trim()) return "Practice";
     return "Verify";
-  }, [guide, progress.completedChecks.length, progress.completedSteps.length]);
+  }, [guide, progress.completedChecks.length, progress.completedSteps.length, progress.observation]);
 
   const updateProgress = useCallback((next: GuideProgress) => {
     if (!guide) return;
