@@ -494,6 +494,12 @@ export const FIELD_GUIDES: FieldGuide[] = [
         publisher: "National Center for Home Food Preservation, University of Georgia",
         url: "https://nchfp.uga.edu/how/freeze/freeze-general-information/blanching-vegetables/",
         checked: "2026-10-09"
+      },
+      {
+        title: "Food Safety During Power Outage",
+        publisher: "FoodSafety.gov",
+        url: "https://www.foodsafety.gov/food-safety-charts/food-safety-during-power-outage",
+        checked: "2026-10-09"
       }
     ]
   },
