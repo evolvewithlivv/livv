@@ -104,8 +104,12 @@ export default function FieldGuidePage() {
       return;
     }
     setOfflineStatus("saving");
-    navigator.serviceWorker.ready.then((registration) => {
-      const worker = registration.active ?? navigator.serviceWorker.controller;
+    window.setTimeout(() => {
+      setOfflineStatus((current) => current === "saving" ? "unavailable" : current);
+    }, 20000);
+    navigator.serviceWorker.register("/sw.js", { scope: "/" }).then(async (registration) => {
+      await registration.update().catch(() => undefined);
+      const worker = registration.waiting ?? registration.installing ?? registration.active ?? navigator.serviceWorker.controller;
       if (!worker) {
         setOfflineStatus("unavailable");
         return;
