@@ -34,6 +34,10 @@ const checks=[
 {name:"client paid checkout is disabled in free-core V1",file:"src/lib/billing.ts",patterns:["Paid LIVV memberships are not offered in V1.","return { ok: false"]},
 {name:"DMCA policy is public",file:"src/app/legal/dmca/page.tsx",patterns:["DMCA & Copyright Policy","DMCA NOTICE","evolvewithlivv@gmail.com"]},
 {name:"marketing email guardrails require postal address and unsubscribe",file:"src/lib/email-compliance.ts",patterns:["physical postal address","unsubscribeUrl","marketingEmailFooter"]},
+{name:"Field guide progress is included in member-state sync",file:"src/lib/supabase/cloud-state.ts",patterns:["livv-field-progress"]},
+{name:"Field offline copies are explicitly cached without private route caching",file:"public/sw.js",patterns:["FIELD_CACHE","CACHE_FIELD_GUIDE","/field-offline/","/_next/static/","/home","/api/"]},
+{name:"offline Field guide route is prebuilt and non-indexable",file:"src/app/field-offline/[slug]/page.tsx",patterns:["generateStaticParams","dynamicParams = false","index: false","follow: false","FIELD_GUIDES"]},
+{name:"offline Field guide copies are excluded from robots",file:"src/app/robots.ts",patterns:["/field-offline"]},
 ];
 const normalized=(source)=>source.replace(/\s+/g," ").replace(/(['\"])([^'\"]+)\1/g,"$2");
 let failed=0;for(const check of checks){let source;try{source=read(check.file);}catch{failed++;console.error(`FAIL  ${check.name} - missing ${check.file}`);continue;}const normalizedSource=normalized(source);const missing=(check.patterns||[]).filter(p=>!normalizedSource.includes(normalized(p)));const forbidden=(check.absentPatterns||[]).filter(p=>normalizedSource.includes(normalized(p)));if(missing.length||forbidden.length){failed++;console.error(`FAIL  ${check.name}`);for(const p of missing)console.error(`      missing: ${p}`);for(const p of forbidden)console.error(`      forbidden: ${p}`);}else console.log(`PASS  ${check.name}`);}if(failed){console.error(`\nShipping audit failed: ${failed} check(s).`);process.exit(1);}console.log(`\nShipping audit passed: ${checks.length}/${checks.length} invariants.`);
