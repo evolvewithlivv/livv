@@ -17,11 +17,11 @@ const KEEP = [
   { name: "Chickens", use: "Eggs · manure · pest control", note: "Housing, daily care, nutrition, biosecurity, and local rules." },
   { name: "Rabbits", use: "Species-specific care", note: "Housing, diet, temperature, enrichment, and veterinary care." },
   { name: "Bees", use: "Pollination · honey", note: "Specialized training, protective equipment, seasonal management." },
-  { name: "Compost", use: "Soil fertility", note: "Balance materials, moisture, airflow, and safe finished compost." },
+  { name: "Compost", use: "Soil fertility", note: "Balance materials, moisture, airflow, and safe finished compost.", slug: "keep-compost", ready: true },
 ];
 
 const PRESERVE = [
-  { name: "Freezing", note: "Prepare, package, label, and freeze food while protecting quality." },
+  { name: "Green beans", note: "Freeze a harvest using tested blanching, cooling, packaging, and labeling steps.", slug: "preserve-green-beans", ready: true },
   { name: "Drying and dehydrating", note: "Choose suitable foods, prepare evenly, dry fully, and store correctly." },
   { name: "Fermentation", note: "Use a tested recipe, correct salt levels, clean equipment, and safe conditions." },
   { name: "Canning", note: "Follow tested recipes and correct processing methods for each food." },
@@ -29,7 +29,7 @@ const PRESERVE = [
 
 const STORE = [
   { name: "Food reserve", note: "Estimate household needs, rotate supplies, and plan within a budget." },
-  { name: "Drinking water", note: "Plan quantities, use suitable containers, and understand safe treatment limits." },
+  { name: "Drinking water", note: "Calculate a household reserve, choose safe containers, label dates, and rotate stored water.", slug: "store-emergency-water", ready: true },
   { name: "Tools and essentials", note: "Keep an inventory, protect supplies, and make important items easy to find." },
 ];
 
@@ -86,7 +86,7 @@ export default function FieldPage() {
 
       <section className="field-next">
         <BookOpen size={17}/>
-        <div><strong>One skill at a time.</strong><p>Field guides are being built as complete instructions, not quick tips. The first guide is available now; other topics will appear as their guidance and sources are ready.</p></div>
+        <div><strong>One skill at a time.</strong><p>Field guides are built as complete instructions, not quick tips. Four guides are available now, one under each pillar. Other topics will appear as their guidance and sources are ready.</p></div>
       </section>
 
       <p className="field-note">Field is practical education, not a substitute for local agricultural guidance, veterinary care, food-safety requirements, or emergency services. Follow local conditions and applicable rules.</p>
