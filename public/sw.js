@@ -31,7 +31,9 @@ self.addEventListener("message",event=>{
       const response=await fetch(target.href,{credentials:"same-origin",cache:"reload"});
       if(!response.ok)throw new Error("Guide response was not successful");
       const html=await response.clone().text();
-      await(await caches.open(FIELD_CACHE)).put(target.pathname,response);
+      const fieldCache=await caches.open(FIELD_CACHE);
+      await fieldCache.put(target.pathname,response);
+      await fieldCache.put("/__livv_last_saved_field_guide__",new Response(target.pathname,{headers:{"Content-Type":"text/plain; charset=utf-8"}}));
       const assets=[...html.matchAll(/(?:src|href)=["']([^"']*\/_next\/static\/[^"']+)["']/g)]
         .map(match=>new URL(match[1],self.location.origin))
         .filter(asset=>asset.origin===self.location.origin&&asset.pathname.startsWith("/_next/static/"));
@@ -57,6 +59,22 @@ self.addEventListener("fetch",event=>{
 
   // Only public, read-only Field guide documents are eligible for page caching.
   // Authenticated pages and API responses are deliberately never cached.
+  if(url.pathname==="/"&&request.mode==="navigate"){
+    event.respondWith((async()=>{
+      try{return await fetch(request);}catch{
+        const fieldCache=await caches.open(FIELD_CACHE);
+        const last=await fieldCache.match("/__livv_last_saved_field_guide__");
+        if(last){
+          const path=(await last.text()).trim();
+          const saved=await fieldCache.match(path);
+          if(saved)return saved;
+        }
+        return(await caches.match(request))||new Response("Open LIVV online once and save a Field guide for offline use.",{status:503,headers:{"Content-Type":"text/plain; charset=utf-8","Cache-Control":"no-store"}});
+      }
+    })());
+    return;
+  }
+
   if(url.pathname.startsWith("/field-offline/")&&request.mode==="navigate"){
     event.respondWith((async()=>{
       const cache=await caches.open(FIELD_CACHE);
