@@ -1523,6 +1523,1075 @@ export const FIELD_GUIDES: FieldGuide[] = [
         "checked": "2026-10-09"
       }
     ]
+  },
+  {
+    "slug": "grow-root-crops",
+    "pillar": "grow",
+    "title": "Grow root crops",
+    "eyebrow": "Field guide 005 / Grow",
+    "summary": "Grow carrots, radishes, and beets from direct sowing through thinning, root development, and harvest.",
+    "level": "Beginner",
+    "duration": "Timing depends on local conditions, variety, equipment, and the method selected.",
+    "reviewedAt": "2026-10-09",
+    "reviewStatus": "reviewed",
+    "overview": "Root crops need loose, stone-free soil, even moisture during establishment, and careful thinning. Carrots, radishes, and beets share a direct-sowing workflow but differ in spacing, maturity, and heat tolerance. Use the seed packet and local extension calendar for your variety and season.",
+    "budgetEstimate": "Rough U.S. estimate: $10–30 if you already have a bed and tools; deep containers and fresh potting mix add cost.",
+    "prerequisites": [
+      "A sunny site with loose, well-drained soil or a deep container.",
+      "Seeds suitable for the local season.",
+      "Gentle watering and a way to identify tiny seedlings."
+    ],
+    "supplies": [
+      {
+        "item": "Carrot, radish, or beet seeds",
+        "amount": "One packet per crop"
+      },
+      {
+        "item": "Prepared bed or deep container",
+        "amount": "Depth suited to crop, with drainage"
+      },
+      {
+        "item": "Watering can with gentle rose",
+        "amount": "1"
+      },
+      {
+        "item": "Plant labels",
+        "amount": "1 set"
+      },
+      {
+        "item": "Small scissors",
+        "amount": "For thinning"
+      }
+    ],
+    "safety": [
+      "Use clean soil and potable water for edible crops; wash hands after handling soil.",
+      "Do not use fresh manure on food beds; follow local guidance for amendments.",
+      "Wash roots under running water; never use soap or household disinfectant on produce."
+    ],
+    "steps": [
+      {
+        "id": "step-1",
+        "title": "Choose crop and timing",
+        "instruction": "Choose quick radishes, longer-season carrots, or beets for roots and greens. Check local planting guidance, variety notes, and packet maturity.",
+        "detail": "Heat and day length affect root quality; local variety fit matters more than a generic calendar.",
+        "checkpoint": "Crop, variety, and planting window are selected.",
+        "timing": "Before buying"
+      },
+      {
+        "id": "step-2",
+        "title": "Prepare loose soil",
+        "instruction": "Remove stones, clods, and weeds from the root zone. Loosen soil when it is not waterlogged; use a suitably deep container and fresh potting mix if growing in pots.",
+        "detail": "Obstacles and compaction can fork or distort roots. Amend based on soil condition, not guesswork.",
+        "checkpoint": "The sowing zone is loose, fine, and drains freely.",
+        "timing": "20–40 minutes"
+      },
+      {
+        "id": "step-3",
+        "title": "Sow and label",
+        "instruction": "Follow packet depth and spacing, cover lightly, water gently, and label each row with crop and date.",
+        "detail": "Tiny seeds are easy to sow too deep or too thickly. Keep the surface from crusting while seeds germinate.",
+        "checkpoint": "Rows are labeled and the seed zone is moist, not flooded.",
+        "timing": "10–20 minutes"
+      },
+      {
+        "id": "step-4",
+        "title": "Keep moisture steady and thin",
+        "instruction": "Check the seedbed frequently; water gently. Thin seedlings to packet spacing when they can be handled, snipping extras if pulling would disturb nearby roots.",
+        "detail": "Crowding makes small roots. Carrots may emerge slowly; avoid letting the seedbed dry during germination.",
+        "checkpoint": "Seedlings have space and the seedbed has not repeatedly dried out.",
+        "timing": "Daily at first"
+      },
+      {
+        "id": "step-5",
+        "title": "Maintain and inspect",
+        "instruction": "Remove weeds while small, avoid deep cultivation near roots, and check for pests, cracking, or stalled growth. Sample roots as they approach maturity.",
+        "detail": "Do not add fertilizer or pesticide without a reason. Diagnose symptoms using local extension guidance.",
+        "checkpoint": "You can identify the crop stage and any issue needing follow-up.",
+        "timing": "Weekly"
+      },
+      {
+        "id": "step-6",
+        "title": "Harvest and record",
+        "instruction": "Use packet timing as a guide and sample a root. Harvest radishes before they become pithy; lift carrots and beets carefully. Record variety, dates, yield, and issues.",
+        "detail": "Weather changes maturity. Remove diseased debris appropriately and rotate crop families where practical.",
+        "checkpoint": "Roots are usable and the record includes one improvement for next season.",
+        "timing": "At maturity"
+      }
+    ],
+    "troubleshoot": [
+      {
+        "problem": "Poor or patchy germination",
+        "cause": "Drying, crusted soil, cold conditions, or sowing depth may be responsible.",
+        "response": "Check the packet, moisture, temperature, and surface crust before resowing."
+      },
+      {
+        "problem": "Forked roots",
+        "cause": "Stones, compacted soil, or root injury can distort roots.",
+        "response": "Prepare a deeper, finer sowing zone and avoid disturbing roots after emergence."
+      },
+      {
+        "problem": "Small roots",
+        "cause": "Crowding, weeds, or immature harvest may be involved.",
+        "response": "Thin to packet spacing, weed gently, and reassess maturity."
+      },
+      {
+        "problem": "Cracked roots",
+        "cause": "Rapid moisture changes can contribute.",
+        "response": "Aim for steadier root-zone moisture and harvest mature roots promptly."
+      }
+    ],
+    "verification": [
+      "I chose a locally suitable crop and sowing window.",
+      "I sowed at the packet depth and thinned seedlings appropriately.",
+      "I kept the seed zone moist without waterlogging it.",
+      "I know how to sample for maturity and harvest carefully.",
+      "I recorded yield and a change to try next time."
+    ],
+    "maintenance": [
+      "Check moisture frequently during germination.",
+      "Water based on soil and weather, not a rigid timer.",
+      "Keep weeds small and avoid deep cultivation near roots.",
+      "Inspect leaves and roots before choosing treatment.",
+      "Record variety, sowing date, harvest, and rotation."
+    ],
+    "sources": [
+      {
+        "title": "Growing carrots",
+        "publisher": "University of Minnesota Extension",
+        "url": "https://extension.umn.edu/vegetables/growing-carrots",
+        "checked": "2026-10-09"
+      },
+      {
+        "title": "Growing beets",
+        "publisher": "University of Minnesota Extension",
+        "url": "https://extension.umn.edu/vegetables/growing-beets",
+        "checked": "2026-10-09"
+      },
+      {
+        "title": "Growing radishes",
+        "publisher": "University of Minnesota Extension",
+        "url": "https://extension.umn.edu/vegetables/growing-radishes",
+        "checked": "2026-10-09"
+      }
+    ]
+  },
+  {
+    "slug": "grow-beans",
+    "pillar": "grow",
+    "title": "Grow beans",
+    "eyebrow": "Field guide 006 / Grow",
+    "summary": "Choose bush or pole beans, sow into warm soil, support climbing varieties, and harvest pods at the right stage.",
+    "level": "Beginner",
+    "duration": "Timing depends on local conditions, variety, equipment, and the method selected.",
+    "reviewedAt": "2026-10-09",
+    "reviewStatus": "reviewed",
+    "overview": "Beans are warm-season crops. Bush beans are compact and often need no trellis; pole beans climb and need strong support installed before vines tangle. This guide focuses on snap beans; dry-bean harvest has a different endpoint.",
+    "budgetEstimate": "Rough U.S. estimate: $8–25 if you have a bed and simple support; containers or a trellis add cost.",
+    "prerequisites": [
+      "A sunny site with draining soil after frost danger passes.",
+      "Seeds matched to your intended use and space.",
+      "A watering plan and support if growing pole beans."
+    ],
+    "supplies": [
+      {
+        "item": "Snap bean seeds",
+        "amount": "One packet"
+      },
+      {
+        "item": "Prepared bed or container",
+        "amount": "With drainage"
+      },
+      {
+        "item": "Sturdy trellis or poles",
+        "amount": "Required for pole beans"
+      },
+      {
+        "item": "Watering can or hose",
+        "amount": "1"
+      },
+      {
+        "item": "Plant labels and mulch",
+        "amount": "Optional"
+      }
+    ],
+    "safety": [
+      "Do not sow before frost danger passes and soil is warm enough.",
+      "Use only garden products labeled for edible beans and follow label directions.",
+      "Wash hands after handling soil and rinse pods under clean running water."
+    ],
+    "steps": [
+      {
+        "id": "step-1",
+        "title": "Choose bush or pole",
+        "instruction": "Choose bush beans for compact growth or pole beans for vertical growing and repeated harvests. Check maturity, disease-resistance notes, and local guidance.",
+        "detail": "Dry beans and snap beans are harvested at different stages; decide your kitchen use first.",
+        "checkpoint": "Variety, growth habit, and intended harvest are clear.",
+        "timing": "Before buying"
+      },
+      {
+        "id": "step-2",
+        "title": "Prepare bed and support",
+        "instruction": "Choose full sun and well-drained soil. Install stable trellis or poles before sowing pole beans.",
+        "detail": "Late installation can damage roots and tangled stems. Avoid excess nitrogen feeding.",
+        "checkpoint": "Bed drains well and support is stable.",
+        "timing": "Before sowing"
+      },
+      {
+        "id": "step-3",
+        "title": "Sow into warm soil",
+        "instruction": "Direct sow at the packet's depth and spacing after frost danger passes. Water gently and label the row.",
+        "detail": "Cold, wet soil slows emergence and can rot seed.",
+        "checkpoint": "Seeds are at the recommended depth in warm, moist soil.",
+        "timing": "10–20 minutes"
+      },
+      {
+        "id": "step-4",
+        "title": "Establish and water",
+        "instruction": "Keep the seed zone moist during germination, then water near the base as needed. Check more often during heat or in containers.",
+        "detail": "Flowering and pod development are sensitive to stress; avoid waterlogging.",
+        "checkpoint": "Plants establish without repeated severe wilting.",
+        "timing": "First weeks"
+      },
+      {
+        "id": "step-5",
+        "title": "Inspect and harvest",
+        "instruction": "Inspect leaves, flowers, and pods for chewing, spots, or poor set. Pick snap pods while firm and tender, using care not to damage vines.",
+        "detail": "Frequent picking encourages continued production on many varieties. Identify pest or disease causes before treatment.",
+        "checkpoint": "Pods are at the variety's recommended stage and issues are recorded.",
+        "timing": "As pods mature"
+      },
+      {
+        "id": "step-6",
+        "title": "Close and improve",
+        "instruction": "Remove diseased plants appropriately, compost healthy residue where suitable, and record first harvest, yield, pest issues, and support performance.",
+        "detail": "Avoid leaving heavily diseased residue in the bed. Rotate crop families where practical.",
+        "checkpoint": "You know what to repeat or change next season.",
+        "timing": "Season end"
+      }
+    ],
+    "troubleshoot": [
+      {
+        "problem": "Seeds fail to emerge",
+        "cause": "Cold or waterlogged soil, sowing depth, or seed quality may be responsible.",
+        "response": "Check temperature, drainage, and packet depth before resowing."
+      },
+      {
+        "problem": "Many leaves but few pods",
+        "cause": "Excess nitrogen, shade, heat, or stress may interfere with pod set.",
+        "response": "Review sunlight, feeding, moisture, and local weather."
+      },
+      {
+        "problem": "Flowers drop",
+        "cause": "Heat or dry soil can reduce fruit set.",
+        "response": "Maintain steadier root moisture and check variety-specific temperature guidance."
+      },
+      {
+        "problem": "Vines collapse",
+        "cause": "Support may be unstable or late.",
+        "response": "Secure support without damaging roots and guide new growth gently."
+      }
+    ],
+    "verification": [
+      "I chose bush or pole beans for my space.",
+      "I waited for warm soil and passed frost danger.",
+      "Pole beans have stable support installed early.",
+      "I can recognize harvest-ready pods.",
+      "I recorded yield and crop issues."
+    ],
+    "maintenance": [
+      "Check moisture during flowering and pod formation.",
+      "Weed gently and keep support stable.",
+      "Inspect leaves and pods before treatment.",
+      "Harvest frequently for quality.",
+      "Record results and rotate crop families."
+    ],
+    "sources": [
+      {
+        "title": "Growing beans",
+        "publisher": "University of Minnesota Extension",
+        "url": "https://extension.umn.edu/vegetables/growing-beans",
+        "checked": "2026-10-09"
+      },
+      {
+        "title": "Planting the vegetable garden",
+        "publisher": "University of Minnesota Extension",
+        "url": "https://extension.umn.edu/planting-and-growing-guides/planting-vegetable-garden",
+        "checked": "2026-10-09"
+      }
+    ]
+  },
+  {
+    "slug": "grow-tomatoes",
+    "pillar": "grow",
+    "title": "Grow tomatoes",
+    "eyebrow": "Field guide 007 / Grow",
+    "summary": "Choose a variety, transplant after frost danger, support plants, water steadily, and diagnose common fruit problems.",
+    "level": "Beginner",
+    "duration": "Timing depends on local conditions, variety, equipment, and the method selected.",
+    "reviewedAt": "2026-10-09",
+    "reviewStatus": "reviewed",
+    "overview": "Tomatoes need warmth, strong light, steady root-zone moisture, and enough space. Determinate types are more compact; indeterminate types keep growing and need stronger support. Local frost dates and variety guidance should shape the plan.",
+    "budgetEstimate": "Rough U.S. estimate: $10–35 for a starter plant, soil, and basic support if you reuse a bed or container.",
+    "prerequisites": [
+      "A sunny location with about 6–8 hours of direct sun.",
+      "A warm-season window after local frost danger.",
+      "A draining bed or large container and a support plan."
+    ],
+    "supplies": [
+      {
+        "item": "Healthy starter plant or seeds",
+        "amount": "Locally suitable variety"
+      },
+      {
+        "item": "Bed or large container",
+        "amount": "Adequate root space and drainage"
+      },
+      {
+        "item": "Sturdy cage, stake, or trellis",
+        "amount": "Install at planting"
+      },
+      {
+        "item": "Potting mix or prepared soil",
+        "amount": "As needed"
+      },
+      {
+        "item": "Watering can, mulch, clean snips",
+        "amount": "As appropriate"
+      }
+    ],
+    "safety": [
+      "Do not transplant before local frost danger passes.",
+      "Use only products labeled for tomatoes and observe harvest intervals.",
+      "Avoid fresh manure around edible crops; wash harvested tomatoes under running water."
+    ],
+    "steps": [
+      {
+        "id": "step-1",
+        "title": "Choose a variety",
+        "instruction": "Select determinate types for compact growth or indeterminate vines for longer production. Compare maturity, mature size, intended use, and disease-resistance notes.",
+        "detail": "Resistance reduces risk but does not guarantee a plant avoids disease.",
+        "checkpoint": "Growth habit, size, and support needs are known.",
+        "timing": "Before buying"
+      },
+      {
+        "id": "step-2",
+        "title": "Prepare a sunny site",
+        "instruction": "Use full sun and well-drained soil or a large container with fresh potting mix. Rotate away from tomatoes, potatoes, peppers, and eggplants where practical.",
+        "detail": "Cramped containers dry quickly; do not use garden soil as container mix.",
+        "checkpoint": "The root zone has room, light, and drainage.",
+        "timing": "Before planting"
+      },
+      {
+        "id": "step-3",
+        "title": "Harden and transplant",
+        "instruction": "Gradually acclimate sheltered seedlings outdoors over about a week. Transplant after frost danger passes and install support at planting.",
+        "detail": "Sudden exposure to sun and wind can scorch plants. Tie stems loosely.",
+        "checkpoint": "The plant is acclimated, stable, watered, and supported.",
+        "timing": "Planting day"
+      },
+      {
+        "id": "step-4",
+        "title": "Water consistently",
+        "instruction": "Check root-zone moisture and water thoroughly as needed, adjusting for rain, heat, soil, and container size. Water near the base.",
+        "detail": "Irregular moisture can contribute to cracking and blossom-end rot; extra calcium is not a universal fix.",
+        "checkpoint": "Moisture is reasonably steady and excess water drains.",
+        "timing": "Check daily in heat"
+      },
+      {
+        "id": "step-5",
+        "title": "Maintain and diagnose",
+        "instruction": "Keep support stable, weeds controlled, and airflow reasonable. Inspect leaves, stems, flowers, and fruit; identify symptoms with extension guidance before treatment.",
+        "detail": "Different diseases and environmental problems can look similar. Avoid excess nitrogen.",
+        "checkpoint": "You have a credible diagnosis or a plan to identify the cause.",
+        "timing": "Weekly"
+      },
+      {
+        "id": "step-6",
+        "title": "Harvest and record",
+        "instruction": "Harvest when fruit reaches expected size and color and releases easily, or use clean snips. Record dates, yield, watering, and disease issues.",
+        "detail": "Mature-green fruit may ripen indoors, but not every green fruit will finish well.",
+        "checkpoint": "Fruit is handled cleanly and notes identify one improvement.",
+        "timing": "At maturity"
+      }
+    ],
+    "troubleshoot": [
+      {
+        "problem": "Dark sunken patch at fruit end",
+        "cause": "Blossom-end rot is commonly linked to inconsistent moisture and calcium movement.",
+        "response": "Stabilize watering and review soil guidance; do not add calcium automatically."
+      },
+      {
+        "problem": "Fruit cracks after rain",
+        "cause": "Rapid changes in water uptake can crack fruit.",
+        "response": "Aim for steadier moisture and harvest ripe fruit promptly."
+      },
+      {
+        "problem": "Flowers but no fruit",
+        "cause": "Temperature stress, humidity, or other conditions can interfere with fruit set.",
+        "response": "Check local weather and variety guidance; avoid excess nitrogen."
+      },
+      {
+        "problem": "Spots or rapid decline",
+        "cause": "Disease, pests, and environmental damage can overlap.",
+        "response": "Use a local extension diagnostic resource before treatment."
+      }
+    ],
+    "verification": [
+      "I chose a variety suited to my space and season.",
+      "I acclimated sheltered plants and waited for frost danger to pass.",
+      "I installed support early and can maintain steady moisture.",
+      "I know to diagnose symptoms before treatment.",
+      "I recorded dates and yield."
+    ],
+    "maintenance": [
+      "Check moisture and drainage, especially in containers.",
+      "Inspect leaves, stems, and fruit weekly.",
+      "Keep support stable and weeds controlled.",
+      "Harvest ripe fruit promptly.",
+      "Record outcomes and rotate related crops."
+    ],
+    "sources": [
+      {
+        "title": "Growing tomatoes",
+        "publisher": "University of Minnesota Extension",
+        "url": "https://extension.umn.edu/vegetables/growing-tomatoes",
+        "checked": "2026-10-09"
+      },
+      {
+        "title": "Planting the vegetable garden",
+        "publisher": "University of Minnesota Extension",
+        "url": "https://extension.umn.edu/planting-and-growing-guides/planting-vegetable-garden",
+        "checked": "2026-10-09"
+      }
+    ]
+  },
+  {
+    "slug": "grow-herbs",
+    "pillar": "grow",
+    "title": "Grow culinary herbs",
+    "eyebrow": "Field guide 008 / Grow",
+    "summary": "Match herbs to light, drainage, and watering needs, harvest without exhausting plants, and keep a useful kitchen supply.",
+    "level": "Beginner",
+    "duration": "Timing depends on local conditions, variety, equipment, and the method selected.",
+    "reviewedAt": "2026-10-09",
+    "reviewStatus": "reviewed",
+    "overview": "Herbs are not one uniform crop. Rosemary, thyme, and oregano generally prefer strong light and well-drained soil; basil likes warmth and more even moisture; parsley and cilantro tolerate cooler conditions. Label each species and follow its own care needs.",
+    "budgetEstimate": "Rough U.S. estimate: $10–35 for several starter plants or seed packets, containers, and mix.",
+    "prerequisites": [
+      "Light suited to the herbs selected.",
+      "Containers with drainage or a prepared bed.",
+      "A way to label each species and track watering."
+    ],
+    "supplies": [
+      {
+        "item": "Herb seeds or healthy starter plants",
+        "amount": "Known culinary species"
+      },
+      {
+        "item": "Draining containers or bed",
+        "amount": "Separate plants with different needs"
+      },
+      {
+        "item": "Potting mix or prepared soil",
+        "amount": "Matched to species"
+      },
+      {
+        "item": "Plant labels and clean scissors",
+        "amount": "One set"
+      },
+      {
+        "item": "Watering can",
+        "amount": "1"
+      }
+    ],
+    "safety": [
+      "Only harvest herbs you can positively identify as edible.",
+      "Use food-safe growing media and products labeled for edible plants.",
+      "Wash harvested herbs; keep children and pets away from toxic ornamental lookalikes."
+    ],
+    "steps": [
+      {
+        "id": "step-1",
+        "title": "Choose useful herbs",
+        "instruction": "Start with herbs you actually cook with and that suit your climate and space. Check local hardiness and species-specific guidance.",
+        "detail": "Some herbs are perennial in mild climates but annual or indoor-only in colder regions.",
+        "checkpoint": "Each plant is identified and has a realistic location.",
+        "timing": "Before buying"
+      },
+      {
+        "id": "step-2",
+        "title": "Group by needs",
+        "instruction": "Place sun-loving, well-drained herbs together and keep moisture-loving herbs separate when possible. Use draining containers.",
+        "detail": "A single watering schedule can harm plants with different moisture needs.",
+        "checkpoint": "Each herb has suitable light, drainage, and space.",
+        "timing": "20–30 minutes"
+      },
+      {
+        "id": "step-3",
+        "title": "Plant and label",
+        "instruction": "Follow packet or nursery instructions for depth, spacing, and transplanting. Label species and date and water in gently.",
+        "detail": "Avoid burying crowns or stems beyond species guidance.",
+        "checkpoint": "Plants are labeled and planted at the correct depth.",
+        "timing": "Planting day"
+      },
+      {
+        "id": "step-4",
+        "title": "Water by checking soil",
+        "instruction": "Check root-zone moisture and water according to species, container, and weather. Allow drought-tolerant herbs to dry appropriately; avoid repeated wilting in basil and seedlings.",
+        "detail": "Container plants dry faster than in-ground plants; no universal daily rule works.",
+        "checkpoint": "You can describe each herb's watering pattern.",
+        "timing": "Several times weekly at first"
+      },
+      {
+        "id": "step-5",
+        "title": "Prune and harvest appropriately",
+        "instruction": "Use clean scissors and take modest amounts from established plants. Pinch or prune only as appropriate for the species; keep enough healthy foliage to recover.",
+        "detail": "Woody herbs do not respond like soft-stemmed annuals. Do not cut into old bare wood unless the species tolerates it.",
+        "checkpoint": "Plants retain enough foliage to continue growing.",
+        "timing": "As needed"
+      },
+      {
+        "id": "step-6",
+        "title": "Store surplus and review",
+        "instruction": "Rinse herbs and use fresh or choose a suitable tested drying or freezing method. Label stored herbs and record flavor, growth, and pests.",
+        "detail": "Do not store herbs in oil at room temperature unless using a validated process.",
+        "checkpoint": "Harvest is labeled and stored safely; notes guide next season.",
+        "timing": "After harvest"
+      }
+    ],
+    "troubleshoot": [
+      {
+        "problem": "Yellow leaves and wet mix",
+        "cause": "Overwatering, poor drainage, or root problems may be responsible.",
+        "response": "Check drainage and root moisture before feeding."
+      },
+      {
+        "problem": "Leggy growth",
+        "cause": "Light may be insufficient or plants overcrowded.",
+        "response": "Adjust placement or spacing to species needs."
+      },
+      {
+        "problem": "Woody herbs decline",
+        "cause": "Prolonged wet soil may stress rosemary, thyme, and similar herbs.",
+        "response": "Improve drainage and adjust watering based on root checks."
+      },
+      {
+        "problem": "Spots or insects",
+        "cause": "Pests, disease, and environmental damage can look similar.",
+        "response": "Identify the cause before applying a treatment."
+      }
+    ],
+    "verification": [
+      "I can identify each herb I planted.",
+      "Each species has appropriate light, drainage, and watering.",
+      "I harvest without removing too much growth.",
+      "I store surplus with a safe method.",
+      "I recorded which herbs thrive in my conditions."
+    ],
+    "maintenance": [
+      "Check moisture rather than watering automatically.",
+      "Inspect new growth and leaf undersides weekly.",
+      "Prune and harvest according to species guidance.",
+      "Label stored herbs and dates.",
+      "Plan seasonal protection for perennials."
+    ],
+    "sources": [
+      {
+        "title": "Herbs",
+        "publisher": "Penn State Extension",
+        "url": "https://extension.psu.edu/herbs",
+        "checked": "2026-10-09"
+      },
+      {
+        "title": "Growing herbs",
+        "publisher": "University of Minnesota Extension",
+        "url": "https://extension.umn.edu/vegetables/growing-herbs",
+        "checked": "2026-10-09"
+      }
+    ]
+  },
+  {
+    "slug": "grow-winter-crops",
+    "pillar": "grow",
+    "title": "Plan a winter crop garden",
+    "eyebrow": "Field guide 009 / Grow",
+    "summary": "Choose cold-tolerant crops, count backward from local weather, protect plants appropriately, and harvest through cold periods.",
+    "level": "Beginner",
+    "duration": "Timing depends on local conditions, variety, equipment, and the method selected.",
+    "reviewedAt": "2026-10-09",
+    "reviewStatus": "reviewed",
+    "overview": "Winter gardening depends on climate, daylight, soil temperature, and crop. Some regions support winter harvests under cover; others have only an autumn extension window. A calendar copied from another region is unreliable.",
+    "budgetEstimate": "Rough U.S. estimate: $10–50 for seeds and basic row cover; cold frames and hoops cost more.",
+    "prerequisites": [
+      "Local frost and hard-freeze patterns.",
+      "A draining site accessible in cold or wet weather.",
+      "Protection that can be secured against wind."
+    ],
+    "supplies": [
+      {
+        "item": "Locally recommended cold-tolerant seeds or starts",
+        "amount": "Choose varieties for your region"
+      },
+      {
+        "item": "Bed or container with drainage",
+        "amount": "As appropriate"
+      },
+      {
+        "item": "Row cover or cold frame",
+        "amount": "Optional"
+      },
+      {
+        "item": "Hoops, clips, or weights",
+        "amount": "To secure protection"
+      },
+      {
+        "item": "Thermometer and notebook",
+        "amount": "Useful for records"
+      }
+    ],
+    "safety": [
+      "Secure covers so they cannot blow away or entangle people or animals.",
+      "Covers do not guarantee protection from hard freezes; follow manufacturer limits.",
+      "Avoid working in unsafe weather or under unstable snow-loaded structures."
+    ],
+    "steps": [
+      {
+        "id": "step-1",
+        "title": "Map the local winter window",
+        "instruction": "Use local extension guidance for first frost, hard freeze, and suitable crops. Decide whether your goal is autumn harvest, overwintering, or winter harvest under cover.",
+        "detail": "These strategies need different sowing dates and varieties.",
+        "checkpoint": "The limiting weather and intended harvest are clear.",
+        "timing": "Planning"
+      },
+      {
+        "id": "step-2",
+        "title": "Choose crops and count backward",
+        "instruction": "Select locally recommended cold-tolerant crops and use packet maturity plus local advice to plan sowing dates.",
+        "detail": "Cold tolerance varies by cultivar; short days slow growth even when plants survive.",
+        "checkpoint": "Each crop has a locally appropriate planting window.",
+        "timing": "Before sowing"
+      },
+      {
+        "id": "step-3",
+        "title": "Prepare and plant",
+        "instruction": "Prepare a sunny, well-drained bed, remove weeds, and sow or transplant at packet spacing. Label each crop and date.",
+        "detail": "Late planting may leave plants too small to withstand cold; covers cannot fully make up for missed timing.",
+        "checkpoint": "Plants are established before expected limiting weather.",
+        "timing": "As scheduled"
+      },
+      {
+        "id": "step-4",
+        "title": "Install protection",
+        "instruction": "Secure row cover or a cold frame before damaging weather. Plan how to ventilate on sunny days and inspect after wind or snow.",
+        "detail": "Protection can overheat plants or collapse under snow; follow product limits.",
+        "checkpoint": "Cover is secure and can be opened or removed safely.",
+        "timing": "Before cold snaps"
+      },
+      {
+        "id": "step-5",
+        "title": "Monitor moisture and condition",
+        "instruction": "Check soil beneath cover, inspect for pests and damage, and follow forecasts. Water when needed without saturating cold soil.",
+        "detail": "Covered beds may receive little rain, while cold slows drying.",
+        "checkpoint": "Plants remain hydrated without standing water and damage is noticed early.",
+        "timing": "Weekly and after weather"
+      },
+      {
+        "id": "step-6",
+        "title": "Harvest and learn",
+        "instruction": "Harvest according to crop and local advice. Record survival, yield, cover performance, and dates for next season.",
+        "detail": "Frozen or contaminated produce may deteriorate quickly; follow food-safety advice when uncertain.",
+        "checkpoint": "You have harvest notes and a more accurate next-season plan.",
+        "timing": "As conditions allow"
+      }
+    ],
+    "troubleshoot": [
+      {
+        "problem": "Seedlings fail before winter",
+        "cause": "Sowing may have been too late or germination slow.",
+        "response": "Compare timing and temperatures with local extension guidance."
+      },
+      {
+        "problem": "Cover overheats plants",
+        "cause": "Sun can raise temperatures rapidly under cover.",
+        "response": "Ventilate or remove cover as appropriate and check forecasts."
+      },
+      {
+        "problem": "Growth stalls",
+        "cause": "Short days and low temperatures naturally slow growth.",
+        "response": "Adjust expectations and crop choice; survival does not mean fast growth."
+      },
+      {
+        "problem": "Cover tears or blows away",
+        "cause": "Anchoring or material strength may be inadequate.",
+        "response": "Secure with appropriate clips and weights before the next weather event."
+      }
+    ],
+    "verification": [
+      "I used local frost and hard-freeze guidance.",
+      "Crop varieties fit the intended winter strategy.",
+      "I planned sowing dates before planting.",
+      "Protection is secured and can be ventilated.",
+      "I recorded survival and harvest results."
+    ],
+    "maintenance": [
+      "Check covers after wind, rain, and snow.",
+      "Monitor moisture under cover.",
+      "Ventilate during warm sunny periods as appropriate.",
+      "Inspect for pests and damage.",
+      "Use records to refine sowing dates."
+    ],
+    "sources": [
+      {
+        "title": "Extending the growing season",
+        "publisher": "University of Minnesota Extension",
+        "url": "https://extension.umn.edu/planting-and-growing-guides/extending-growing-season",
+        "checked": "2026-10-09"
+      },
+      {
+        "title": "Growing spinach",
+        "publisher": "University of Minnesota Extension",
+        "url": "https://extension.umn.edu/vegetables/growing-spinach",
+        "checked": "2026-10-09"
+      },
+      {
+        "title": "Growing kale",
+        "publisher": "University of Minnesota Extension",
+        "url": "https://extension.umn.edu/vegetables/growing-kale",
+        "checked": "2026-10-09"
+      }
+    ]
+  },
+  {
+    "slug": "keep-chickens",
+    "pillar": "keep",
+    "title": "Keep backyard chickens responsibly",
+    "eyebrow": "Field guide 010 / Keep",
+    "summary": "Prepare legal, predator-resistant housing and daily care before acquiring birds, then manage feed, water, hygiene, eggs, and health checks.",
+    "level": "Beginner",
+    "duration": "Timing depends on local conditions, variety, equipment, and the method selected.",
+    "reviewedAt": "2026-10-09",
+    "reviewStatus": "reviewed",
+    "overview": "Chickens are living animals with daily welfare needs, not low-maintenance equipment. Breed, age, climate, flock size, and local rules affect housing and care. Arrange a poultry-experienced veterinary contact before illness occurs.",
+    "budgetEstimate": "Costs vary widely; price housing, fencing, feed, bedding, veterinary care, and winterization for a full year before buying birds.",
+    "prerequisites": [
+      "Confirm local zoning, permits, setbacks, and rooster restrictions.",
+      "Secure, dry, ventilated housing sized for the flock.",
+      "A feed, water, biosecurity, and veterinary plan."
+    ],
+    "supplies": [
+      {
+        "item": "Predator-resistant coop and run",
+        "amount": "Sized to local welfare guidance"
+      },
+      {
+        "item": "Complete poultry feed",
+        "amount": "Matched to age and laying status"
+      },
+      {
+        "item": "Clean feeders and drinkers",
+        "amount": "Enough access for all birds"
+      },
+      {
+        "item": "Dry bedding and cleaning tools",
+        "amount": "Maintain clean conditions"
+      },
+      {
+        "item": "Dedicated footwear and handwashing supplies",
+        "amount": "For biosecurity"
+      },
+      {
+        "item": "Veterinary and emergency contact list",
+        "amount": "Before birds arrive"
+      }
+    ],
+    "safety": [
+      "Wash hands after handling birds, eggs, feed, bedding, or equipment; keep poultry out of kitchens.",
+      "Protect birds from wild birds and rodents and follow current avian-influenza guidance.",
+      "Do not improvise medication; contact a poultry-experienced veterinarian for sick birds.",
+      "Manage manure and bedding to reduce runoff, flies, and contamination."
+    ],
+    "steps": [
+      {
+        "id": "step-1",
+        "title": "Check laws and commitment",
+        "instruction": "Confirm flock limits, setbacks, permits, noise, waste, and egg-sale rules. Budget daily care, travel coverage, feed, bedding, and veterinary expenses.",
+        "detail": "Rules vary by municipality; eggs do not make a flock self-sustaining.",
+        "checkpoint": "You verified local rules and have a realistic care budget.",
+        "timing": "Before birds"
+      },
+      {
+        "id": "step-2",
+        "title": "Prepare secure housing",
+        "instruction": "Provide dry, ventilated, cleanable shelter with protection from predators, weather, and injury. Follow local extension guidance for space, roosts, nest boxes, and runs.",
+        "detail": "Overcrowding and poor ventilation increase stress and disease risk.",
+        "checkpoint": "Housing is secure, ventilated, and sized to current guidance.",
+        "timing": "Before birds"
+      },
+      {
+        "id": "step-3",
+        "title": "Set up feed and water",
+        "instruction": "Use complete feed appropriate to age and purpose; provide clean water continuously. Ask an expert about grit and calcium needs for the flock's stage.",
+        "detail": "Treats must not replace balanced feed; discard moldy feed.",
+        "checkpoint": "Feed matches the flock and water is clean and accessible.",
+        "timing": "Daily"
+      },
+      {
+        "id": "step-4",
+        "title": "Establish biosecurity",
+        "instruction": "Use dedicated footwear and tools, wash hands, limit visitors, and quarantine new birds as recommended by a veterinarian. Keep wild birds and rodents away from feed.",
+        "detail": "Disease can spread through people, equipment, and wild birds.",
+        "checkpoint": "You have a cleaning, visitor, and quarantine routine.",
+        "timing": "Ongoing"
+      },
+      {
+        "id": "step-5",
+        "title": "Inspect birds and eggs",
+        "instruction": "Observe appetite, water intake, breathing, posture, droppings, movement, and behavior. Collect eggs regularly and handle them according to current food-safety guidance.",
+        "detail": "Birds may hide illness. Sudden deaths, breathing problems, neurologic signs, or flock-wide changes need urgent expert advice.",
+        "checkpoint": "You know normal behavior and have a plan for health changes.",
+        "timing": "Daily"
+      },
+      {
+        "id": "step-6",
+        "title": "Manage manure and seasonal conditions",
+        "instruction": "Remove wet bedding, store manure away from runoff, and plan for shade, ventilation, winter water, and storm protection.",
+        "detail": "Heat stress can become urgent; never seal a coop so tightly that ventilation is lost.",
+        "checkpoint": "Manure has a safe destination and seasonal care is planned.",
+        "timing": "Weekly and seasonally"
+      },
+      {
+        "id": "step-7",
+        "title": "Prepare for veterinary emergencies",
+        "instruction": "Keep a poultry-experienced veterinary contact and know local reporting guidance. Plan for isolation, humane treatment, and safe carcass disposal.",
+        "detail": "Do not diagnose serious disease from social media or use unapproved medication.",
+        "checkpoint": "You know whom to call and what to do for a sick or injured bird.",
+        "timing": "Before birds"
+      }
+    ],
+    "troubleshoot": [
+      {
+        "problem": "Birds stop eating or drinking",
+        "cause": "Illness, heat, bullying, or water failure may be involved.",
+        "response": "Check feed and water immediately and contact a veterinarian promptly for severe or persistent symptoms."
+      },
+      {
+        "problem": "Ammonia smell or damp bedding",
+        "cause": "Leaks, poor ventilation, or crowding may be responsible.",
+        "response": "Fix leaks, improve ventilation, remove wet bedding, and reassess space."
+      },
+      {
+        "problem": "Egg production suddenly drops",
+        "cause": "Stress, molt, nutrition, parasites, or disease may contribute.",
+        "response": "Review feed, water, light, and recent changes; seek advice for abrupt flock-wide changes."
+      },
+      {
+        "problem": "Several birds become ill or die",
+        "cause": "A contagious disease or environmental exposure is possible.",
+        "response": "Limit movement and contact a veterinarian and local animal-health authority."
+      }
+    ],
+    "verification": [
+      "Local rules and costs were checked before acquisition.",
+      "Housing is dry, ventilated, secure, and properly sized.",
+      "Complete feed and clean water are continuously available.",
+      "A daily health and biosecurity routine is established.",
+      "I have veterinary and emergency contacts."
+    ],
+    "maintenance": [
+      "Observe birds and check feed and water daily.",
+      "Collect eggs and remove wet bedding routinely.",
+      "Inspect latches, fencing, and ventilation weekly.",
+      "Clean equipment according to appropriate instructions.",
+      "Review local disease alerts and seasonal preparations."
+    ],
+    "sources": [
+      {
+        "title": "Raising poultry in your backyard",
+        "publisher": "Penn State Extension",
+        "url": "https://extension.psu.edu/raising-poultry-in-your-backyard",
+        "checked": "2026-10-09"
+      },
+      {
+        "title": "Small scale poultry housing",
+        "publisher": "Penn State Extension",
+        "url": "https://extension.psu.edu/small-scale-poultry-housing",
+        "checked": "2026-10-09"
+      },
+      {
+        "title": "Avian influenza",
+        "publisher": "USDA APHIS",
+        "url": "https://www.aphis.usda.gov/livestock-poultry-disease/avian/avian-influenza",
+        "checked": "2026-10-09"
+      }
+    ]
+  },
+  {
+    "slug": "keep-rabbits",
+    "pillar": "keep",
+    "title": "Care for domestic rabbits",
+    "eyebrow": "Field guide 011 / Keep",
+    "summary": "Prepare a rabbit-safe home, high-fiber diet, daily exercise and enrichment, grooming, and access to veterinary care.",
+    "level": "Beginner",
+    "duration": "Timing depends on local conditions, variety, equipment, and the method selected.",
+    "reviewedAt": "2026-10-09",
+    "reviewStatus": "reviewed",
+    "overview": "Domestic rabbits have specific welfare needs. They need space to move, hide, forage, chew, and exercise, plus a high-fiber diet and prompt veterinary care. This guide is for companion rabbits; production systems require separate specialist welfare guidance.",
+    "budgetEstimate": "Budget for a large exercise area, hay, litter, rabbit-proofing, routine exams, and emergency care; initial costs can exceed adoption fees.",
+    "prerequisites": [
+      "A rabbit-savvy veterinarian and emergency contact.",
+      "A safe enclosure with exercise space and household hazard protection.",
+      "Reliable grass hay, fresh water, and daily care."
+    ],
+    "supplies": [
+      {
+        "item": "Large exercise pen or rabbit-proofed room",
+        "amount": "Room for hops, stretches, and normal movement"
+      },
+      {
+        "item": "Grass hay",
+        "amount": "Available continuously for most healthy adults"
+      },
+      {
+        "item": "Heavy water bowl or suitable bottle",
+        "amount": "Fresh water at all times"
+      },
+      {
+        "item": "Rabbit-safe litter tray",
+        "amount": "Avoid unsafe scented or clumping litter"
+      },
+      {
+        "item": "Hiding places and safe chew enrichment",
+        "amount": "Several options"
+      },
+      {
+        "item": "Carrier and grooming tools",
+        "amount": "Sized for rabbit"
+      },
+      {
+        "item": "Suitable greens and measured pellets",
+        "amount": "Matched to age and health"
+      }
+    ],
+    "safety": [
+      "If a rabbit stops eating or droppings sharply decrease, contact a rabbit-experienced veterinarian immediately.",
+      "Never lift by the ears or scruff; support chest and hindquarters.",
+      "Do not feed unknown wild plants or greens unless positively identified as safe.",
+      "Protect cords, toxic plants, chemicals, and heat sources from chewing."
+    ],
+    "steps": [
+      {
+        "id": "step-1",
+        "title": "Arrange veterinary care",
+        "instruction": "Identify a rabbit-savvy veterinarian before adoption and plan for routine exams, urgent care, and long-term costs.",
+        "detail": "Rabbits hide illness and require clinicians familiar with rabbit-specific medicine.",
+        "checkpoint": "You have a veterinary contact and realistic budget.",
+        "timing": "Before adoption"
+      },
+      {
+        "id": "step-2",
+        "title": "Set up space and rabbit-proofing",
+        "instruction": "Provide a spacious pen or safe room with room to run, stretch, stand, hide, and exercise. Block cords, toxic plants, narrow gaps, and hazards.",
+        "detail": "A small cage alone is not an adequate living environment.",
+        "checkpoint": "The rabbit can move normally and cannot reach common hazards.",
+        "timing": "Before arrival"
+      },
+      {
+        "id": "step-3",
+        "title": "Build a suitable diet",
+        "instruction": "Provide grass hay continuously for most healthy adults, fresh water, and appropriate pellets and leafy greens based on reputable rabbit-welfare and veterinary guidance. Introduce greens gradually.",
+        "detail": "Diet differs for growing rabbits and rabbits with health conditions; avoid sudden changes and sugary treats.",
+        "checkpoint": "Hay is always available and diet is documented for age and health.",
+        "timing": "Daily"
+      },
+      {
+        "id": "step-4",
+        "title": "Provide litter and enrichment",
+        "instruction": "Set up a litter tray with rabbit-safe litter, hideouts, tunnels, safe chew materials, and foraging opportunities.",
+        "detail": "Avoid clumping cat litter and strong fragrances; keep food and water accessible.",
+        "checkpoint": "The rabbit can hide, forage, chew safely, and use a clean litter area.",
+        "timing": "Daily"
+      },
+      {
+        "id": "step-5",
+        "title": "Handle gently and observe",
+        "instruction": "Let the rabbit approach. Support chest and hindquarters when lifting is necessary; observe appetite, droppings, posture, movement, breathing, and behavior.",
+        "detail": "Many rabbits dislike being picked up; unsupported kicking can cause spinal injury.",
+        "checkpoint": "You know normal behavior and can handle the rabbit safely.",
+        "timing": "Daily"
+      },
+      {
+        "id": "step-6",
+        "title": "Groom and manage temperature",
+        "instruction": "Brush according to coat type, check nails and skin, and keep the rabbit in a ventilated temperature-safe area. Ask a veterinarian about nail trimming, spay/neuter, and parasite care.",
+        "detail": "Heat stress is dangerous; outdoor housing needs careful weather and predator protection.",
+        "checkpoint": "Grooming is calm and seasonal risks are managed.",
+        "timing": "Weekly and seasonally"
+      },
+      {
+        "id": "step-7",
+        "title": "Respond to warning signs",
+        "instruction": "If eating or droppings stop or sharply decrease, seek urgent veterinary advice. Keep records of weight, appetite, diet, and appointments.",
+        "detail": "Do not wait overnight or give human medications or force-feed without veterinary direction.",
+        "checkpoint": "You have a written emergency plan and routine health records.",
+        "timing": "Ongoing"
+      }
+    ],
+    "troubleshoot": [
+      {
+        "problem": "Rabbit stops eating or droppings decrease",
+        "cause": "Pain, dental problems, gastrointestinal stasis, or other illness may be involved.",
+        "response": "Contact a rabbit-experienced veterinarian immediately; do not wait or medicate at home."
+      },
+      {
+        "problem": "Chews cords or furniture",
+        "cause": "Normal chewing is reaching unsafe objects because barriers or enrichment are insufficient.",
+        "response": "Block access and provide safe chew and foraging options."
+      },
+      {
+        "problem": "Dirty rear end or urine scald",
+        "cause": "Diet, mobility, weight, or urinary disease may contribute.",
+        "response": "Arrange veterinary assessment rather than attempting aggressive cleaning or trimming."
+      },
+      {
+        "problem": "Rapid breathing or overheating",
+        "cause": "Heat stress may be life-threatening.",
+        "response": "Move to a cooler safe area and contact an emergency rabbit-savvy veterinarian."
+      }
+    ],
+    "verification": [
+      "A rabbit-savvy veterinarian is identified.",
+      "The enclosure allows normal movement and is rabbit-proofed.",
+      "Hay and fresh water are continuously available.",
+      "The rabbit has safe hiding, chewing, foraging, and exercise options.",
+      "I know appetite and droppings changes can be urgent."
+    ],
+    "maintenance": [
+      "Check appetite, droppings, water, and behavior daily.",
+      "Refresh hay, water, and litter regularly.",
+      "Inspect for chewing hazards and temperature risks.",
+      "Groom and check body condition according to vet advice.",
+      "Maintain weight, diet, and veterinary records."
+    ],
+    "sources": [
+      {
+        "title": "Rabbit care",
+        "publisher": "RSPCA",
+        "url": "https://www.rspca.org.uk/adviceandwelfare/pets/rabbits",
+        "checked": "2026-10-09"
+      },
+      {
+        "title": "Rabbit care",
+        "publisher": "House Rabbit Society",
+        "url": "https://rabbit.org/care/",
+        "checked": "2026-10-09"
+      },
+      {
+        "title": "Rabbits",
+        "publisher": "Merck Veterinary Manual",
+        "url": "https://www.merckvetmanual.com/all-other-pets/rabbits",
+        "checked": "2026-10-09"
+      }
+    ]
   }
 ];
 
