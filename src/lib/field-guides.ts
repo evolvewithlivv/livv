@@ -1662,9 +1662,9 @@ export const FIELD_GUIDES: FieldGuide[] = [
         "checked": "2026-10-09"
       },
       {
-        "title": "Growing beets",
+        "title": "Seasonal planting guide for beets and root crops",
         "publisher": "University of Minnesota Extension",
-        "url": "https://extension.umn.edu/vegetables/growing-beets",
+        "url": "https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/planting-vegetables-in-midsummer-for-fall-harvest",
         "checked": "2026-10-09"
       },
       {
@@ -2074,7 +2074,7 @@ export const FIELD_GUIDES: FieldGuide[] = [
       {
         "id": "step-4",
         "title": "Provide litter and enrichment",
-        "instruction": "Set up a litter tray with rabbit-safe litter, hideouts, tunnels, safe chew materials, and foraging opportunities.",
+        "instruction": "Set up a litter tray with rabbit-safe litter, hideouts, tunnels, safe chew materials, and foraging opportunities. Plan daily social contact; many rabbits benefit from a compatible, neutered rabbit companion, but introductions should be gradual and supervised with rabbit-welfare guidance.",
         "detail": "Avoid clumping cat litter and strong fragrances; keep food and water accessible.",
         "checkpoint": "The rabbit can hide, forage, chew safely, and use a clean litter area.",
         "timing": "Daily"
