@@ -30,7 +30,19 @@ self.addEventListener("message",event=>{
     try{
       const response=await fetch(target.href,{credentials:"same-origin",cache:"reload"});
       if(!response.ok)throw new Error("Guide response was not successful");
+      const html=await response.clone().text();
       await(await caches.open(FIELD_CACHE)).put(target.pathname,response);
+      const assets=[...html.matchAll(/(?:src|href)=["']([^"']*\\/_next\\/static\\/[^"']+)["']/g)]
+        .map(match=>new URL(match[1],self.location.origin))
+        .filter(asset=>asset.origin===self.location.origin&&asset.pathname.startsWith("/_next/static/"));
+      const assetCache=await caches.open(ASSET_CACHE);
+      await Promise.all(assets.map(async asset=>{
+        const cached=await assetCache.match(asset.href);
+        if(cached)return;
+        const assetResponse=await fetch(asset.href,{credentials:"same-origin"});
+        if(!assetResponse.ok)throw new Error("A required offline asset could not be saved");
+        await assetCache.put(asset.href,assetResponse);
+      }));
       event.source?.postMessage({type:"FIELD_GUIDE_CACHED",url:target.pathname});
     }catch{
       event.source?.postMessage({type:"FIELD_GUIDE_CACHE_FAILED",url:target.pathname});
