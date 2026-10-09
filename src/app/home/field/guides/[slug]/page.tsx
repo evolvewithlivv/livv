@@ -11,6 +11,7 @@ import {
   ChevronUp,
   Clock3,
   ExternalLink,
+  Download,
   Leaf,
   ShieldCheck,
 } from "lucide-react";
@@ -62,6 +63,7 @@ export default function FieldGuidePage() {
   const guide = getFieldGuide(slug);
   const [progress, setProgress] = useState<GuideProgress>(EMPTY_PROGRESS);
   const [expandedSteps, setExpandedSteps] = useState<string[]>(["choose"]);
+  const [offlineStatus, setOfflineStatus] = useState<"idle" | "saving" | "saved" | "unavailable">("idle");
 
   useEffect(() => {
     if (!guide) return;
@@ -75,6 +77,41 @@ export default function FieldGuidePage() {
       window.removeEventListener("livv-record", hydrate);
       window.removeEventListener("storage", hydrate);
     };
+  }, [guide]);
+
+  useEffect(() => {
+    if (!guide) return;
+    const url = `/field-offline/${guide.slug}`;
+    const onMessage = (event: MessageEvent<{ type?: string; url?: string }>) => {
+      if (event.data?.url !== url) return;
+      if (event.data.type === "FIELD_GUIDE_CACHED") setOfflineStatus("saved");
+      if (event.data.type === "FIELD_GUIDE_CACHE_FAILED") setOfflineStatus("unavailable");
+    };
+    navigator.serviceWorker?.addEventListener("message", onMessage);
+    if ("caches" in window) {
+      void caches.open("livv-field-guides-v1")
+        .then((cache) => cache.match(url))
+        .then((response) => { if (response) setOfflineStatus("saved"); })
+        .catch(() => undefined);
+    }
+    return () => navigator.serviceWorker?.removeEventListener("message", onMessage);
+  }, [guide]);
+
+  const saveForOffline = useCallback(() => {
+    if (!guide) return;
+    if (!("serviceWorker" in navigator)) {
+      setOfflineStatus("unavailable");
+      return;
+    }
+    setOfflineStatus("saving");
+    navigator.serviceWorker.ready.then((registration) => {
+      const worker = registration.active ?? navigator.serviceWorker.controller;
+      if (!worker) {
+        setOfflineStatus("unavailable");
+        return;
+      }
+      worker.postMessage({ type: "CACHE_FIELD_GUIDE", url: `/field-offline/${guide.slug}` });
+    }).catch(() => setOfflineStatus("unavailable"));
   }, [guide]);
 
   const completedCount = progress.completedSteps.length;
@@ -150,8 +187,16 @@ export default function FieldGuidePage() {
             <span>{guide.level}</span>
             <span><ShieldCheck size={13} /> Sources included</span>
           </div>
-          <p className="field-guide-save-note">
-            Offline guide access is not available yet. This guide currently requires a connection; offline access will be added only after it is implemented and tested.
+          <button type="button" className={`field-guide-save ${offlineStatus === "saved" ? "is-saved" : ""}`} onClick={saveForOffline} disabled={offlineStatus === "saving"}>
+            <Download size={15} />
+            {offlineStatus === "saving" ? "Saving offline copy…" : offlineStatus === "saved" ? "Saved for offline access" : "Save for offline access"}
+          </button>
+          <p className="field-guide-save-note" role="status">
+            {offlineStatus === "saved"
+              ? "The read-only instructions are saved on this device. Open /field-offline/grow-leafy-greens while offline. Your progress and notes stay in the regular guide."
+              : offlineStatus === "unavailable"
+                ? "Could not save the offline copy. Check your connection and try again."
+                : "Save a read-only copy of the instructions for when you have no connection. Offline copies do not include live source links or account features."}
           </p>
         </header>
 
