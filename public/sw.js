@@ -1,5 +1,6 @@
 const CACHE="livv-shell-v2";
 const FIELD_CACHE="livv-field-guides-v1";
+const ASSET_CACHE="livv-static-assets-v1";
 const SHELL=["/","/auth","/manifest.webmanifest"];
 
 self.addEventListener("install",event=>{
@@ -13,7 +14,7 @@ self.addEventListener("install",event=>{
 self.addEventListener("activate",event=>{
   event.waitUntil(
     caches.keys()
-      .then(keys=>Promise.all(keys.filter(key=>![CACHE,FIELD_CACHE].includes(key)).map(key=>caches.delete(key))))
+      .then(keys=>Promise.all(keys.filter(key=>![CACHE,FIELD_CACHE,ASSET_CACHE].includes(key)).map(key=>caches.delete(key))))
       .then(()=>self.clients.claim())
   );
 });
@@ -42,7 +43,7 @@ self.addEventListener("fetch",event=>{
   if(request.method!=="GET"||new URL(request.url).origin!==self.location.origin)return;
   const url=new URL(request.url);
 
-  // Only public, read-only Field guide documents are eligible for offline caching.
+  // Only public, read-only Field guide documents are eligible for page caching.
   // Authenticated pages and API responses are deliberately never cached.
   if(url.pathname.startsWith("/field-offline/")&&request.mode==="navigate"){
     event.respondWith((async()=>{
@@ -58,8 +59,26 @@ self.addEventListener("fetch",event=>{
     return;
   }
 
+  // Cache immutable, public Next.js assets so the saved guide can render without
+  // a network connection. No HTML route or API response is cached by this rule.
+  if(url.pathname.startsWith("/_next/static/")&&["script","style","font","image"].includes(request.destination)){
+    event.respondWith((async()=>{
+      const cache=await caches.open(ASSET_CACHE);
+      const cached=await cache.match(request);
+      if(cached)return cached;
+      try{
+        const response=await fetch(request);
+        if(response.ok)await cache.put(request,response.clone());
+        return response;
+      }catch{
+        return cached||Response.error();
+      }
+    })());
+    return;
+  }
+
   if(url.pathname.startsWith("/api/")||url.pathname.startsWith("/home")||url.pathname.startsWith("/auth"))return;
   event.respondWith(fetch(request).catch(()=>caches.match(request).then(cached=>cached||caches.match("/"))));
 });
 
-// Private /home and /api responses never enter either cache.
+// Private /home and /api responses never enter any cache.
