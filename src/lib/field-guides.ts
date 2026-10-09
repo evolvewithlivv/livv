@@ -175,7 +175,7 @@ export const FIELD_GUIDES: FieldGuide[] = [
       {
         title: "Growing lettuce, endive and radicchio in home gardens",
         publisher: "University of Minnesota Extension",
-        url: "https://extension.umn.edu/vegetables/growing-lettuce-endive-and-radicchio",
+        url: "https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/growing-lettuce-endive-and-radicchio",
         checked: "2026-10-09"
       },
       {
