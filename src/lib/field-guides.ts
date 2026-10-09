@@ -433,7 +433,7 @@ export const FIELD_GUIDES: FieldGuide[] = [
       {
         id: "freeze",
         title: "Freeze promptly",
-        instruction: "Place packages in the freezer promptly, leaving room for cold air to circulate around the batch until frozen. Once solid, organize them together so older packages are easy to use first.",
+        instruction: "Place packages in the freezer promptly at 0°F or below, leaving room for cold air to circulate around the batch until frozen. Once solid, organize them together so older packages are easy to use first.",
         detail: "Do not leave prepared beans sitting at room temperature while you finish other chores. If your freezer has a specific loading or quick-freeze setting, follow its manual.",
         checkpoint: "Packages are in the freezer and the date is recorded.",
         timing: "Immediately after packing"
@@ -493,6 +493,12 @@ export const FIELD_GUIDES: FieldGuide[] = [
         title: "Blanching Vegetables",
         publisher: "National Center for Home Food Preservation, University of Georgia",
         url: "https://nchfp.uga.edu/how/freeze/freeze-general-information/blanching-vegetables/",
+        checked: "2026-10-09"
+      },
+      {
+        title: "Freezing Pointers",
+        publisher: "National Center for Home Food Preservation, University of Georgia",
+        url: "https://nchfp.uga.edu/how/freeze/freeze-general-information/freezing-pointers/",
         checked: "2026-10-09"
       },
       {
