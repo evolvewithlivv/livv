@@ -193,7 +193,7 @@ export default function FieldGuidePage() {
           </button>
           <p className="field-guide-save-note" role="status">
             {offlineStatus === "saved"
-              ? "The read-only instructions are saved on this device. Open /field-offline/grow-leafy-greens while offline. Your progress and notes stay in the regular guide."
+              ? "The read-only instructions are saved on this device. Open the saved offline copy on this device while offline. Your progress and notes stay in the regular guide."
               : offlineStatus === "unavailable"
                 ? "Could not save the offline copy. Check your connection and try again."
                 : "Save a read-only copy of the instructions for when you have no connection. Offline copies do not include live source links or account features."}
