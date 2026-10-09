@@ -20,6 +20,8 @@ export type FieldGuide = {
   reviewedAt: string;
   reviewStatus: "reviewed" | "draft";
   overview: string;
+  budgetEstimate: string;
+  prerequisites: string[];
   supplies: { item: string; amount: string; optional?: boolean }[];
   safety: string[];
   steps: FieldGuideStep[];
@@ -42,6 +44,12 @@ export const FIELD_GUIDES: FieldGuide[] = [
     reviewStatus: "reviewed",
     overview:
       "Loose-leaf lettuce is a useful first crop because it grows in modest spaces and can often be harvested leaf by leaf. It prefers cool weather, consistent moisture, and soil that drains well. This guide is a general starting point; use the seed packet and local extension advice for the variety and climate you actually have.",
+    budgetEstimate: "Rough U.S. estimate: about $10–25 if you reuse a suitable container and household tools, or $20–40 if you need to buy a container and potting mix. Seed varieties, bag sizes, and local prices vary.",
+    prerequisites: [
+      "A bright location that suits the chosen variety and current season.",
+      "Reliable access to clean water and a way to check soil moisture.",
+      "A container with drainage or a small garden bed, plus a few minutes most days to inspect the crop."
+    ],
     supplies: [
       { item: "Loose-leaf lettuce seeds", amount: "1 packet" },
       { item: "Container with drainage holes or a prepared garden bed", amount: "A container about 6–8 in / 15–20 cm deep is a practical starting point" },
