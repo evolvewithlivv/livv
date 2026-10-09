@@ -1335,6 +1335,194 @@ export const FIELD_GUIDES: FieldGuide[] = [
         "checked": "2026-10-09"
       }
     ]
+  },
+  {
+    "slug": "grow-tomatoes",
+    "pillar": "grow",
+    "title": "Grow tomatoes",
+    "eyebrow": "Field guide 009 / Grow",
+    "summary": "Choose a tomato type, plant after frost danger, support the plant, water consistently, and troubleshoot common problems.",
+    "level": "Beginner",
+    "duration": "Usually about 60–85 days after transplanting, depending on variety and conditions.",
+    "reviewedAt": "2026-10-09",
+    "reviewStatus": "reviewed",
+    "overview": "Tomatoes need warmth, strong light, steady root-zone moisture, and enough space. Determinate varieties tend to stay more compact and ripen much of their crop in a concentrated period; indeterminate varieties keep growing and producing when conditions allow. The right variety and local planting window matter more than a rigid calendar.",
+    "budgetEstimate": "Rough U.S. estimate: $10–35 for one plant, soil or potting mix, and basic support if you reuse a container or garden bed. A large container, cage, or premium starter plant can increase the cost.",
+    "prerequisites": [
+      "A full-sun location receiving about 6–8 hours of direct sun.",
+      "A warm-season window after frost danger has passed and soil has warmed.",
+      "A bed or large container with drainage and a plan for sturdy support if the variety needs it."
+    ],
+    "supplies": [
+      {
+        "item": "Healthy tomato starter plant or seeds",
+        "amount": "Choose a locally suitable variety"
+      },
+      {
+        "item": "Garden bed or large container with drainage",
+        "amount": "Choose container size to suit variety and root growth"
+      },
+      {
+        "item": "Sturdy cage, stake, or trellis",
+        "amount": "Install at planting for vining types"
+      },
+      {
+        "item": "Quality potting mix or prepared garden soil",
+        "amount": "Enough for the root zone"
+      },
+      {
+        "item": "Watering can or hose",
+        "amount": "1"
+      },
+      {
+        "item": "Mulch",
+        "amount": "Optional, to reduce soil splash and moisture swings"
+      },
+      {
+        "item": "Clean pruning snips",
+        "amount": "Optional; pruning depends on variety"
+      }
+    ],
+    "safety": [
+      "Do not transplant outdoors before local frost danger has passed. Cold exposure can damage or kill plants.",
+      "Use only products labeled for tomatoes and follow all label directions, including any harvest interval.",
+      "Do not use fresh manure around edible crops. Use composted material and appropriate soil amendments.",
+      "Wash harvested tomatoes under clean running water. Do not use soap or household disinfectant on produce."
+    ],
+    "steps": [
+      {
+        "id": "variety",
+        "title": "Choose a type that fits your space",
+        "instruction": "Choose a variety suited to your local season and intended use. Determinate or bush types are often easier in limited spaces; indeterminate or vining types need sturdy support and room to grow. Check days to maturity and disease-resistance notes.",
+        "detail": "If you have had disease problems, look for resistance codes matching the diagnosed issue. Resistance reduces risk but is not a guarantee.",
+        "checkpoint": "You know the variety's growth habit, mature size, maturity window, and support needs.",
+        "timing": "Before buying"
+      },
+      {
+        "id": "site",
+        "title": "Prepare a sunny, draining site",
+        "instruction": "Choose a full-sun location with well-drained soil. In a container, use a large pot with drainage and fresh potting mix. Avoid planting tomatoes where tomatoes, potatoes, peppers, or eggplants recently grew when rotation is possible.",
+        "detail": "A cramped pot can dry rapidly and restrict growth; garden soil should not be used as container mix.",
+        "checkpoint": "The location is sunny, the root zone has room, and excess water can drain.",
+        "timing": "Before transplanting"
+      },
+      {
+        "id": "harden",
+        "title": "Prepare the plant for outdoor conditions",
+        "instruction": "If you started seeds indoors or bought plants kept in protected conditions, gradually expose them to outdoor sun and wind over about a week, bringing them inside when nights approach damaging cold. Water the root ball before planting.",
+        "detail": "A sudden move from sheltered indoor conditions into full sun and wind can scorch or stress foliage.",
+        "checkpoint": "The plant is acclimated and local conditions are suitable for planting.",
+        "timing": "About 7 days before planting"
+      },
+      {
+        "id": "plant",
+        "title": "Transplant and install support",
+        "instruction": "Plant after frost danger has passed and soil has warmed. Set the root ball firmly, water it in, and install the cage, stake, or trellis at planting so later work does not damage established roots.",
+        "detail": "Tomatoes can form roots along buried stems, but follow trusted local guidance for the plant's condition and soil. Do not bury leaves or leave a peat-pot rim exposed to wick moisture away.",
+        "checkpoint": "The plant is stable, watered, and supported without constricting the stem.",
+        "timing": "20–40 minutes"
+      },
+      {
+        "id": "water",
+        "title": "Water deeply and consistently",
+        "instruction": "Check moisture in the root zone and water thoroughly when needed, adjusting for rain, heat, soil, and container size. Water near the base rather than repeatedly wetting foliage, and avoid alternating between severe drying and saturation.",
+        "detail": "Irregular moisture can contribute to fruit cracking and blossom-end rot. Adding calcium without diagnosing the cause may not help.",
+        "checkpoint": "Root-zone moisture is consistent and water drains instead of pooling.",
+        "timing": "Check daily during hot or dry weather"
+      },
+      {
+        "id": "maintain",
+        "title": "Maintain foliage, spacing, and nutrition",
+        "instruction": "Keep weeds down and use suitable mulch to reduce soil splash. Inspect leaves and stems regularly. Prune only if appropriate for the variety and support system; determinate types generally need less pruning than indeterminate vines. Avoid excessive nitrogen fertilizer.",
+        "detail": "Crowded, persistently wet foliage increases disease risk. Follow soil-test or product-label recommendations rather than feeding on a fixed schedule.",
+        "checkpoint": "The plant has airflow, stable support, and no unexplained treatment routine.",
+        "timing": "Weekly"
+      },
+      {
+        "id": "inspect",
+        "title": "Troubleshoot before treating",
+        "instruction": "Check leaf undersides, stems, and fruit for spots, chewing, wilting, cracks, or discolored fruit ends. Compare symptoms with a trusted extension diagnostic resource and identify the cause before applying treatment.",
+        "detail": "Different problems can look similar. Seek local extension advice for fast-spreading or severe symptoms.",
+        "checkpoint": "You have a plausible identification or a plan to get one before treatment.",
+        "timing": "Every few days"
+      },
+      {
+        "id": "harvest",
+        "title": "Harvest at usable maturity",
+        "instruction": "Harvest when fruit has reached the variety's expected size and color and comes away easily, or use clean snips if the variety holds fruit tightly. Keep picked fruit shaded and handle it gently. As frost approaches, follow local extension advice on mature-green fruit that may finish ripening indoors.",
+        "detail": "Do not assume every fully green fruit will ripen well indoors. Separate damaged or spoiled fruit from sound fruit.",
+        "checkpoint": "Fruit is mature enough for its intended use and handled cleanly.",
+        "timing": "Often 60–85 days after transplanting"
+      },
+      {
+        "id": "record",
+        "title": "Record results and close the season",
+        "instruction": "Record the variety, planting date, first ripe fruit, watering pattern, yield, and any disease or fruit-quality issues. Clean up crop debris appropriately and plan rotation and variety changes for next season.",
+        "detail": "These notes help you choose a better variety or site instead of repeating the same problems.",
+        "checkpoint": "Your notes identify what worked, what failed, and one specific change for next season.",
+        "timing": "Throughout the season and at cleanup"
+      }
+    ],
+    "troubleshoot": [
+      {
+        "problem": "Leaves yellow and growth stalls",
+        "cause": "Water stress, poor drainage, nutrient imbalance, root restriction, or disease may be involved.",
+        "response": "Check moisture and drainage first, then root space and recent feeding. Compare symptoms with a reliable local extension guide before treating."
+      },
+      {
+        "problem": "Fruit develops dark, sunken patches at the blossom end",
+        "cause": "Blossom-end rot is commonly associated with inconsistent water supply and impaired calcium movement in developing fruit.",
+        "response": "Stabilize watering, mulch to reduce moisture swings, and review soil and nutrient guidance. Do not add calcium automatically without assessing conditions."
+      },
+      {
+        "problem": "Fruit cracks after rain or heavy watering",
+        "cause": "A rapid change in water uptake as fruit develops can cause cracking.",
+        "response": "Aim for more consistent root-zone moisture, harvest ripe fruit promptly, and choose crack-resistant varieties if the issue repeats."
+      },
+      {
+        "problem": "Flowers appear but fruit does not set",
+        "cause": "Heat, cold, humidity, or other stress can interfere with pollination and fruit set.",
+        "response": "Check local weather and variety guidance, maintain steady moisture, and avoid overfertilizing with nitrogen."
+      },
+      {
+        "problem": "Leaves show spots, yellowing, or rapid decline",
+        "cause": "Fungal, bacterial, viral, insect, or environmental issues can look similar.",
+        "response": "Identify the problem with a local extension diagnostic resource. Use treatments only as labeled."
+      },
+      {
+        "problem": "Plant leans or falls over",
+        "cause": "Support was insufficient, poorly anchored, or installed too late.",
+        "response": "Stabilize the support without damaging roots or stems, tie loosely with soft plant ties, and inspect after wind or heavy rain."
+      }
+    ],
+    "verification": [
+      "I selected a variety suited to my space and local season.",
+      "I waited until frost danger passed and planted into a sunny, draining site.",
+      "I installed support at planting and can keep root-zone moisture consistent.",
+      "I know common fruit disorders and when symptoms need expert identification.",
+      "I recorded dates, yield, and changes to try next season."
+    ],
+    "maintenance": [
+      "Check moisture regularly and adjust for rain, heat, and container size.",
+      "Inspect leaves, stems, and fruit weekly and identify problems before treatment.",
+      "Keep supports stable, remove weeds, and use mulch where suitable.",
+      "Harvest ripe fruit promptly and handle it cleanly.",
+      "Record outcomes and rotate related crops where practical."
+    ],
+    "sources": [
+      {
+        "title": "Growing tomatoes in home gardens",
+        "publisher": "University of Minnesota Extension",
+        "url": "https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/growing-tomatoes",
+        "checked": "2026-10-09"
+      },
+      {
+        "title": "Planting the vegetable garden",
+        "publisher": "University of Minnesota Extension",
+        "url": "https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/planting-the-vegetable-garden",
+        "checked": "2026-10-09"
+      }
+    ]
   }
 ];
 
