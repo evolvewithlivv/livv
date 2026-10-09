@@ -82,9 +82,9 @@ export default function FieldGuidePage() {
   const currentStage = useMemo(() => {
     if (progress.completedSteps.length === 0) return "Learn";
     if (progress.completedSteps.length < (guide?.steps.length ?? 0)) return "Follow";
+    if (progress.completedChecks.length >= (guide?.verification.length ?? 0) && (guide?.verification.length ?? 0) > 0) return "Maintain";
     if (!progress.observation.trim()) return "Practice";
-    if (progress.completedChecks.length < (guide?.verification.length ?? 0)) return "Verify";
-    return "Maintain";
+    return "Verify";
   }, [guide, progress.completedChecks.length, progress.completedSteps.length]);
 
   const updateProgress = useCallback((next: GuideProgress) => {
