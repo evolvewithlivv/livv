@@ -31,6 +31,7 @@ self.addEventListener("message",event=>{
       const response=await fetch(target.href,{credentials:"same-origin",cache:"reload"});
       if(!response.ok)throw new Error("Guide response was not successful");
       const html=await response.clone().text();
+      if(!html.includes("LIVV / FIELD / OFFLINE COPY")||!html.includes("field-guide"))throw new Error("The response was not a Field guide");
       const fieldCache=await caches.open(FIELD_CACHE);
       await fieldCache.put(target.pathname,response);
       const assets=[...html.matchAll(/(?:src|href)=["']([^"']*\/_next\/static\/[^"']+)["']/g)]
@@ -80,7 +81,10 @@ self.addEventListener("fetch",event=>{
       const cache=await caches.open(FIELD_CACHE);
       try{
         const response=await fetch(request);
-        if(response.ok)await cache.put(url.pathname,response.clone());
+        if(response.ok){
+          const html=await response.clone().text();
+          if(html.includes("LIVV / FIELD / OFFLINE COPY")&&html.includes("field-guide"))await cache.put(url.pathname,response.clone());
+        }
         return response;
       }catch{
         return(await cache.match(url.pathname))||new Response("This Field guide has not been saved for offline use yet. Open it while connected and choose Save for offline access.",{status:503,headers:{"Content-Type":"text/plain; charset=utf-8","Cache-Control":"no-store"}});
