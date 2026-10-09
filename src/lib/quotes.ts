@@ -4,7 +4,6 @@ export type Quote = { text: string; author: string; source: string };
 
 export const QUOTES: Quote[] = [
   { text: "If it is not right, do not do it; if it is not true, do not say it.", author: "Marcus Aurelius", source: "Meditations" },
-  { text: "Waste no more time arguing what a good man should be. Be one.", author: "Marcus Aurelius", source: "Meditations" },
   { text: "The happiness of your life depends upon the quality of your thoughts.", author: "Marcus Aurelius", source: "Meditations" },
   { text: "The best revenge is not to be like your enemy.", author: "Marcus Aurelius", source: "Meditations" },
   { text: "The impediment to action advances action. What stands in the way becomes the way.", author: "Marcus Aurelius", source: "Meditations" },
@@ -13,7 +12,7 @@ export const QUOTES: Quote[] = [
   { text: "Think of yourself as dead. You have lived your life. Now take what is left and live it properly.", author: "Marcus Aurelius", source: "Meditations" },
   { text: "First, do nothing inconsiderately, nor without a purpose.", author: "Marcus Aurelius", source: "Meditations" },
   { text: "First say to yourself what you would be; and then do what you have to do.", author: "Epictetus", source: "Discourses" },
-  { text: "It is not things themselves that disturb men, but their judgments about these things.", author: "Epictetus", source: "Enchiridion" },
+  { text: "It is not things themselves that disturb us, but our judgments about them.", author: "Epictetus", source: "Enchiridion (adapted translation)" },
   { text: "No great thing is created suddenly.", author: "Epictetus", source: "Discourses" },
   { text: "If you want to improve, be content to be thought foolish and stupid.", author: "Epictetus", source: "Enchiridion" },
   { text: "Difficulties strengthen the mind, as labor does the body.", author: "Seneca", source: "Seneca's Morals" },
@@ -27,16 +26,17 @@ export const QUOTES: Quote[] = [
   { text: "Go confidently in the direction of your dreams. Live the life you have imagined.", author: "Henry David Thoreau", source: "Walden" },
   { text: "Simplify, simplify.", author: "Henry David Thoreau", source: "Walden" },
   { text: "How vain it is to sit down to write when you have not stood up to live.", author: "Henry David Thoreau", source: "Journal" },
-  { text: "The mass of men lead lives of quiet desperation.", author: "Henry David Thoreau", source: "Walden" },
   { text: "If there is no struggle, there is no progress.", author: "Frederick Douglass", source: "West India Emancipation speech, 1857" },
   { text: "Power concedes nothing without a demand.", author: "Frederick Douglass", source: "West India Emancipation speech, 1857" },
   { text: "Once you learn to read, you will be forever free.", author: "Frederick Douglass", source: "Speech attribution" },
-  { text: "A man is rich in proportion to the number of things which he can afford to let alone.", author: "Henry David Thoreau", source: "Walden" },
   { text: "The price of anything is the amount of life you exchange for it.", author: "Henry David Thoreau", source: "Walden" },
   { text: "The universe is change: life is opinion.", author: "Marcus Aurelius", source: "Meditations" },
   { text: "Nothing happens to any man which he is not formed by nature to bear.", author: "Marcus Aurelius", source: "Meditations" },
   { text: "If a thing is in your own power, why do you do it?", author: "Marcus Aurelius", source: "Meditations" },
   { text: "Make your acts refer to nothing else than a social end.", author: "Marcus Aurelius", source: "Meditations" },
+  { text: "Tell me, what is it you plan to do with your one wild and precious life?", author: "Mary Oliver", source: "The Summer Day" },
+  { text: "You do not have to be good.", author: "Mary Oliver", source: "Wild Geese" },
+  { text: "I am rooted, but I flow.", author: "Virginia Woolf", source: "The Waves" },
 ];
 
 let lastIndex = -1;
