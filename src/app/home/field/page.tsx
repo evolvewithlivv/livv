@@ -1,76 +1,95 @@
 "use client";
 
-import { useMemo, useState } from "react";
 import Link from "next/link";
-import { ChevronLeft, Leaf, PawPrint, Droplets, Sun, Sprout, Wheat } from "lucide-react";
+import { ChevronLeft, Leaf, PawPrint, Droplets, Sun, Sprout, Wheat, ArrowUpRight, BookOpen, ShieldCheck } from "lucide-react";
 import "./field.css";
 
 const GROW = [
-  { name: "Leafy greens", window: "Cool season", note: "Fast crops for repeated harvests." },
-  { name: "Root crops", window: "Cool to mild", note: "Carrots, beets, radishes, and similar storage-friendly crops." },
-  { name: "Beans", window: "Warm season", note: "Simple, productive, and useful for building a food reserve." },
-  { name: "Tomatoes", window: "Warm season", note: "High-value garden crop; support and steady watering matter." },
-  { name: "Herbs", window: "Most seasons", note: "Small footprint, high daily usefulness." },
-  { name: "Winter crops", window: "Cold season", note: "Plan the next season before the current one ends." },
+  { name: "Leafy greens", window: "Cool season", note: "Learn to sow, thin, water, troubleshoot, and harvest a first crop.", slug: "grow-leafy-greens", ready: true },
+  { name: "Root crops", window: "Cool to mild", note: "Carrots, beets, radishes, and other storage-friendly crops.", ready: false },
+  { name: "Beans", window: "Warm season", note: "Choose a variety, build support, water, harvest, and dry safely.", ready: false },
+  { name: "Tomatoes", window: "Warm season", note: "Seedlings, support, pruning choices, watering, and harvest.", ready: false },
+  { name: "Herbs", window: "Most seasons", note: "Grow useful herbs in small spaces and keep them productive.", ready: false },
+  { name: "Winter crops", window: "Cold season", note: "Plan sowing, protection, and harvest around local conditions.", ready: false },
 ];
 
 const KEEP = [
-  ["Chickens", "Eggs · manure · pest control", "Daily water, secure housing, clean bedding, predator protection."],
-  ["Rabbits", "Meat · manure", "Clean housing, shade, fresh water, and responsible care."],
-  ["Bees", "Pollination · honey", "Requires specialized training, equipment, and seasonal management."],
-  ["Compost", "Soil fertility", "Return useful organic matter to the system instead of treating it as waste."],
+  { name: "Chickens", use: "Eggs · manure · pest control", note: "Housing, daily care, nutrition, biosecurity, and local rules." },
+  { name: "Rabbits", use: "Species-specific care", note: "Housing, diet, temperature, enrichment, and veterinary care." },
+  { name: "Bees", use: "Pollination · honey", note: "Specialized training, protective equipment, seasonal management." },
+  { name: "Compost", use: "Soil fertility", note: "Balance materials, moisture, airflow, and safe finished compost.", slug: "keep-compost", ready: true },
 ];
 
-const STORAGE = [
-  "Drying and dehydrating",
-  "Freezing",
-  "Root-cellar style storage",
-  "Fermentation",
-  "Seed saving",
-  "Basic water storage and filtration",
+const PRESERVE = [
+  { name: "Green beans", note: "Freeze a harvest using tested blanching, cooling, packaging, and labeling steps.", slug: "preserve-green-beans", ready: true },
+  { name: "Drying and dehydrating", note: "Choose suitable foods, prepare evenly, dry fully, and store correctly." },
+  { name: "Fermentation", note: "Use a tested recipe, correct salt levels, clean equipment, and safe conditions." },
+  { name: "Canning", note: "Follow tested recipes and correct processing methods for each food." },
 ];
+
+const STORE = [
+  { name: "Food reserve", note: "Estimate household needs, rotate supplies, and plan within a budget." },
+  { name: "Drinking water", note: "Calculate a household reserve, choose safe containers, label dates, and rotate stored water.", slug: "store-emergency-water", ready: true },
+  { name: "Tools and essentials", note: "Keep an inventory, protect supplies, and make important items easy to find." },
+];
+
+function TopicList({ items }: { items: { name: string; note: string; window?: string; slug?: string; ready?: boolean; use?: string }[] }) {
+  return <div className="field-list">{items.map((item) => {
+    const content = <><div><strong>{item.name}</strong><span>{item.window || item.use || (item.ready ? "Guide available" : "Guide in development")}</span></div><p>{item.note}</p>{item.ready && <span className="field-card-action">Open complete guide <ArrowUpRight size={13} /></span>}</>;
+    return item.ready && item.slug
+      ? <Link key={item.name} href={`/home/field/guides/${item.slug}`} className="field-card field-card-link">{content}</Link>
+      : <article key={item.name} className="field-card">{content}</article>;
+  })}</div>;
+}
 
 export default function FieldPage() {
-  const [checked, setChecked] = useState<string[]>([]);
-  const progress = useMemo(() => Math.round((checked.length / STORAGE.length) * 100), [checked]);
-  const toggle = (item: string) => setChecked((p) => p.includes(item) ? p.filter(x => x !== item) : [...p, item]);
-
   return <main className="field" aria-label="LIVV Field">
     <div className="field-inner">
       <Link href="/home" className="field-back"><ChevronLeft size={14}/> Home</Link>
       <header className="field-hero">
         <p className="field-k">LIVV / FIELD</p>
         <h1>Become harder to depend on.</h1>
-        <p>Grow food. Keep useful animals responsibly. Preserve what you produce. Build practical capability instead of outsourcing every basic need.</p>
+        <p>Learn to grow food, care for living things, preserve what you produce, and store what your household needs. Build practical capability instead of outsourcing every basic need.</p>
       </header>
 
-      <section className="field-orbit">
-        <div><Leaf size={17}/><span>Grow</span></div>
-        <div><PawPrint size={17}/><span>Keep</span></div>
-        <div><Wheat size={17}/><span>Preserve</span></div>
-        <div><Droplets size={17}/><span>Store</span></div>
+      <section className="field-orbit" aria-label="Field pillars">
+        <a href="#grow"><Leaf size={17}/><span>Grow</span></a>
+        <a href="#keep"><PawPrint size={17}/><span>Keep</span></a>
+        <a href="#preserve"><Wheat size={17}/><span>Preserve</span></a>
+        <a href="#store"><Droplets size={17}/><span>Store</span></a>
       </section>
 
-      <section className="field-section">
+      <section className="field-section" id="grow">
         <div className="field-section-head"><div><span>01</span><h2>Grow</h2></div><Sprout size={18}/></div>
-        <p className="field-copy">Start with crops that fit your space, season, water, and actual ability to maintain them.</p>
-        <div className="field-list">{GROW.map(item => <article key={item.name} className="field-card"><div><strong>{item.name}</strong><span>{item.window}</span></div><p>{item.note}</p></article>)}</div>
+        <p className="field-copy">Learn the whole process: choosing a crop, setting it up, caring for it, solving problems, and harvesting what you grow.</p>
+        <TopicList items={GROW} />
       </section>
 
-      <section className="field-section">
+      <section className="field-section" id="keep">
         <div className="field-section-head"><div><span>02</span><h2>Keep</h2></div><PawPrint size={18}/></div>
-        <p className="field-copy">Animals are a responsibility before they are a resource. Learn care, housing, feed, health, and local rules first.</p>
-        <div className="field-list">{KEEP.map(([name,use,note]) => <article key={name} className="field-card"><div><strong>{name}</strong><span>{use}</span></div><p>{note}</p></article>)}</div>
+        <p className="field-copy">Animals are a responsibility before they are a resource. Learn housing, nutrition, daily care, welfare, and when expert help is needed.</p>
+        <TopicList items={KEEP} />
       </section>
 
-      <section className="field-section">
+      <section className="field-section" id="preserve">
         <div className="field-section-head"><div><span>03</span><h2>Preserve</h2></div><Sun size={18}/></div>
-        <p className="field-copy">Self-sufficiency compounds when what you grow can outlast the day it was harvested.</p>
-        <div className="field-progress"><span>{progress}% of your preservation fundamentals</span><i><b style={{width: progress + "%"}}/></i></div>
-        <div className="field-checks">{STORAGE.map(item => <button key={item} type="button" className={checked.includes(item) ? "on" : ""} onClick={() => toggle(item)}><span>{checked.includes(item) ? "✓" : ""}</span>{item}</button>)}</div>
+        <p className="field-copy">Turn a harvest into food you can use later. Food safety is part of the method, not an optional footnote.</p>
+        <div className="field-guide-principle"><ShieldCheck size={16}/><p>Canning and fermentation instructions must come from tested, food-safe procedures. We will not publish guessed processing times or storage guarantees.</p></div>
+        <TopicList items={PRESERVE} />
       </section>
 
-      <p className="field-note">LIVV Field is practical education and tracking, not agricultural, veterinary, or legal advice. Local climate, regulations, and animal-welfare requirements matter.</p>
+      <section className="field-section" id="store">
+        <div className="field-section-head"><div><span>04</span><h2>Store</h2></div><Droplets size={18}/></div>
+        <p className="field-copy">Know what you have, how long it remains usable, and what your household needs if normal supply is interrupted.</p>
+        <TopicList items={STORE} />
+      </section>
+
+      <section className="field-next">
+        <BookOpen size={17}/>
+        <div><strong>One skill at a time.</strong><p>Field guides are built as complete instructions, not quick tips. Four guides are available now, one under each pillar. Other topics will appear as their guidance and sources are ready.</p></div>
+      </section>
+
+      <p className="field-note">Field is practical education, not a substitute for local agricultural guidance, veterinary care, food-safety requirements, or emergency services. Follow local conditions and applicable rules.</p>
     </div>
   </main>;
 }
