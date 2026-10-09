@@ -6,31 +6,31 @@ import "./field.css";
 
 const GROW = [
   { name: "Leafy greens", window: "Cool season", note: "Learn to sow, thin, water, troubleshoot, and harvest a first crop.", slug: "grow-leafy-greens", ready: true },
-  { name: "Root crops", window: "Cool to mild", note: "Carrots, beets, radishes, and other storage-friendly crops.", ready: false },
+  { name: "Root crops", window: "Cool to mild", note: "Sow, thin, water, diagnose root problems, and harvest carrots, beets, and radishes.", slug: "grow-root-crops", ready: true },
   { name: "Beans", window: "Warm season", note: "Choose a variety, build support, water, harvest, and learn when pods are ready.", slug: "grow-beans", ready: true },
   { name: "Tomatoes", window: "Warm season", note: "Start or transplant, support, water consistently, diagnose problems, and harvest.", slug: "grow-tomatoes", ready: true },
   { name: "Herbs", window: "Most seasons", note: "Match light and water to each herb, harvest well, and keep useful plants productive.", slug: "grow-herbs", ready: true },
-  { name: "Winter crops", window: "Cold season", note: "Plan sowing, protection, and harvest around local conditions.", ready: false },
+  { name: "Winter crops", window: "Cold season", note: "Choose cold-tolerant crops, time sowing, manage covers, and harvest around local conditions.", slug: "grow-winter-crops", ready: true },
 ];
 
 const KEEP = [
-  { name: "Chickens", use: "Eggs · manure · pest control", note: "Housing, daily care, nutrition, biosecurity, and local rules." },
-  { name: "Rabbits", use: "Species-specific care", note: "Housing, diet, temperature, enrichment, and veterinary care." },
+  { name: "Chickens", use: "Eggs · manure · pest control", note: "Plan legal housing, daily welfare, nutrition, biosecurity, eggs, and veterinary care.", slug: "keep-chickens", ready: true },
+  { name: "Rabbits", use: "Species-specific care", note: "Build a rabbit-safe home, provide hay and enrichment, and recognize urgent health signs.", slug: "keep-rabbits", ready: true },
   { name: "Bees", use: "Pollination · honey", note: "Assess the site, learn with a mentor, and plan colony health and seasonal care.", slug: "keep-bees", ready: true },
   { name: "Compost", use: "Soil fertility", note: "Balance materials, moisture, airflow, and safe finished compost.", slug: "keep-compost", ready: true },
 ];
 
 const PRESERVE = [
   { name: "Green beans", note: "Freeze a harvest using tested blanching, cooling, packaging, and labeling steps.", slug: "preserve-green-beans", ready: true },
-  { name: "Drying and dehydrating", note: "Choose suitable foods, prepare evenly, dry fully, and store correctly." },
+  { name: "Drying and dehydrating", note: "Use tested food-specific methods, verify dryness, package, label, and store safely.", slug: "preserve-drying", ready: true },
   { name: "Fermentation", note: "Follow one tested recipe, control salt and temperature, and store the batch safely.", slug: "preserve-fermented-vegetables", ready: true },
-  { name: "Canning", note: "Follow tested recipes and correct processing methods for each food." },
+  { name: "Canning", note: "Choose a tested recipe, use the correct canner, process precisely, and check seals.", slug: "preserve-canning", ready: true },
 ];
 
 const STORE = [
-  { name: "Food reserve", note: "Estimate household needs, rotate supplies, and plan within a budget." },
+  { name: "Food reserve", note: "Build a practical reserve around household needs, cooking options, budget, and rotation.", slug: "store-food-reserve", ready: true },
   { name: "Drinking water", note: "Calculate a household reserve, choose safe containers, label dates, and rotate stored water.", slug: "store-emergency-water", ready: true },
-  { name: "Tools and essentials", note: "Keep an inventory, protect supplies, and make important items easy to find." },
+  { name: "Tools and essentials", note: "Inventory, organize, maintain, and safely use the essentials your household actually needs.", slug: "store-tools-essentials", ready: true },
 ];
 
 function TopicList({ items }: { items: { name: string; note: string; window?: string; slug?: string; ready?: boolean; use?: string }[] }) {
