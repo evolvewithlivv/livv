@@ -5,7 +5,6 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useParams } from "next/navigation";
 import {
   ArrowLeft,
-  Bookmark,
   Check,
   CheckCircle2,
   ChevronDown,
@@ -62,8 +61,7 @@ export default function FieldGuidePage() {
   const slug = typeof params?.slug === "string" ? params.slug : "";
   const guide = getFieldGuide(slug);
   const [progress, setProgress] = useState<GuideProgress>(EMPTY_PROGRESS);
-  const [expandedSteps, setExpandedSteps] = useState<string[]>([]);
-  const [savedOffline, setSavedOffline] = useState(false);
+  const [expandedSteps, setExpandedSteps] = useState<string[]>(["choose"]);
 
   useEffect(() => {
     if (!guide) return;
@@ -75,15 +73,6 @@ export default function FieldGuidePage() {
       window.removeEventListener("livv-field-progress", hydrate);
       window.removeEventListener("storage", hydrate);
     };
-  }, [guide]);
-
-  useEffect(() => {
-    if (!guide) return;
-    try {
-      setSavedOffline(window.localStorage.getItem(`livv-field-saved:${guide.slug}`) === "1");
-    } catch {
-      setSavedOffline(false);
-    }
   }, [guide]);
 
   const completedCount = progress.completedSteps.length;
@@ -127,22 +116,6 @@ export default function FieldGuidePage() {
     updateProgress({ ...progress, completedChecks });
   };
 
-  const saveGuideForOffline = () => {
-    if (!guide) return;
-    try {
-      if (savedOffline) {
-        window.localStorage.removeItem(`livv-field-saved:${guide.slug}`);
-        setSavedOffline(false);
-      } else {
-        window.localStorage.setItem(`livv-field-saved:${guide.slug}`, "1");
-        window.localStorage.setItem(`livv-field-offline-copy:${guide.slug}`, JSON.stringify(guide));
-        setSavedOffline(true);
-      }
-    } catch {
-      setSavedOffline(false);
-    }
-  };
-
   if (!guide) {
     return (
       <main className="field-guide">
@@ -174,12 +147,8 @@ export default function FieldGuidePage() {
             <span>{guide.level}</span>
             <span><ShieldCheck size={13} /> Sources included</span>
           </div>
-          <button type="button" className={`field-guide-save ${savedOffline ? "is-saved" : ""}`} onClick={saveGuideForOffline}>
-            {savedOffline ? <Check size={15} /> : <Bookmark size={15} />}
-            {savedOffline ? "Saved on this device" : "Save guide on this device"}
-          </button>
           <p className="field-guide-save-note">
-            Saving stores a copy of this guide in this browser. Full offline navigation has not been enabled or verified yet.
+            Offline guide access is not available yet. This guide currently requires a connection; offline access will be added only after it is implemented and tested.
           </p>
         </header>
 
@@ -219,7 +188,7 @@ export default function FieldGuidePage() {
           <div className="field-guide-steps">
             {guide.steps.map((step, index) => {
               const done = progress.completedSteps.includes(step.id);
-              const expanded = expandedSteps.includes(step.id) || index === 0;
+              const expanded = expandedSteps.includes(step.id);
               return (
                 <article key={step.id} className={`field-guide-step ${done ? "is-done" : ""}`}>
                   <button type="button" className="field-guide-step-toggle" aria-expanded={expanded} onClick={() => setExpandedSteps((current) => current.includes(step.id) ? current.filter((id) => id !== step.id) : [...current, step.id])}>
