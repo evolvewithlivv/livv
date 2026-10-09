@@ -68,9 +68,11 @@ export default function FieldGuidePage() {
     const hydrate = () => setProgress(normalizeProgress(readProgress()[guide.slug]));
     hydrate();
     window.addEventListener("livv-field-progress", hydrate);
+    window.addEventListener("livv-record", hydrate);
     window.addEventListener("storage", hydrate);
     return () => {
       window.removeEventListener("livv-field-progress", hydrate);
+      window.removeEventListener("livv-record", hydrate);
       window.removeEventListener("storage", hydrate);
     };
   }, [guide]);
@@ -80,6 +82,7 @@ export default function FieldGuidePage() {
   const currentStage = useMemo(() => {
     if (progress.completedSteps.length === 0) return "Learn";
     if (progress.completedSteps.length < (guide?.steps.length ?? 0)) return "Follow";
+    if (!progress.observation.trim()) return "Practice";
     if (progress.completedChecks.length < (guide?.verification.length ?? 0)) return "Verify";
     return "Maintain";
   }, [guide, progress.completedChecks.length, progress.completedSteps.length]);
