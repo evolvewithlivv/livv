@@ -33,7 +33,6 @@ self.addEventListener("message",event=>{
       const html=await response.clone().text();
       if(!html.includes("LIVV / FIELD / OFFLINE COPY")||!html.includes("field-guide"))throw new Error("The response was not a Field guide");
       const fieldCache=await caches.open(FIELD_CACHE);
-      await fieldCache.put(target.pathname,response);
       const assets=[...html.matchAll(/(?:src|href)=["']([^"']*\/_next\/static\/[^"']+)["']/g)]
         .map(match=>new URL(match[1],self.location.origin))
         .filter(asset=>asset.origin===self.location.origin&&asset.pathname.startsWith("/_next/static/"));
@@ -45,6 +44,7 @@ self.addEventListener("message",event=>{
         if(!assetResponse.ok)throw new Error("A required offline asset could not be saved");
         await assetCache.put(asset.href,assetResponse);
       }));
+      await fieldCache.put(target.pathname,response);
       await fieldCache.put("/__livv_last_saved_field_guide__",new Response(target.pathname,{headers:{"Content-Type":"text/plain; charset=utf-8"}}));
       event.source?.postMessage({type:"FIELD_GUIDE_CACHED",url:target.pathname});
     }catch{
