@@ -193,11 +193,12 @@ export default function FieldGuidePage() {
           </button>
           <p className="field-guide-save-note" role="status">
             {offlineStatus === "saved"
-              ? "The read-only instructions are saved on this device. Open the saved offline copy on this device while offline. Your progress and notes stay in the regular guide."
+              ? "The guide and its checklist are saved on this device. You can reopen LIVV offline to return to the last saved Field guide. Source links need a connection."
               : offlineStatus === "unavailable"
                 ? "Could not save the offline copy. Check your connection and try again."
-                : "Save a read-only copy of the instructions for when you have no connection. Offline copies do not include live source links or account features."}
+                : "Save the complete instructions, checklist, and field notes for when you have no connection."}
           </p>
+          {offlineStatus === "saved" && <Link href={`/field-offline/${guide.slug}`} className="field-guide-open-offline">Open saved offline copy <ExternalLink size={13} /></Link>}
         </header>
 
         <section className="field-guide-progress" aria-label="Guide progress">
