@@ -196,7 +196,7 @@ export default function HomePage() {
           </footer>
         ) : null}
         <div className="ho-pillars" aria-hidden>
-          <img src="/livv-logo.png" alt="" />
+          <img src="https://raw.githubusercontent.com/evolvewithlivv/livv/main/LIVV%20Pillars%20Logo%20-%20BLACK.PNG" alt="" />
         </div>
       </div>
     </main>
