@@ -657,7 +657,6 @@ export const FIELD_GUIDES: FieldGuide[] = [
       }
     ]
   },
-,
   {
     "slug": "grow-beans",
     "pillar": "grow",
