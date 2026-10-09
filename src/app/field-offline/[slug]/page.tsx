@@ -9,6 +9,8 @@ export function generateStaticParams() {
 
 export const dynamicParams = false;
 
+export const metadata = { title: "Offline Field Guide · LIVV", robots: { index: false, follow: false } };
+
 export default async function OfflineFieldGuidePage({ params }: { params: Promise<{ slug: string }> }) {
   const { slug } = await params;
   const guide = getFieldGuide(slug);
