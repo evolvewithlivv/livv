@@ -187,9 +187,9 @@ export const FIELD_GUIDES: FieldGuide[] = [
         checked: "2026-10-09"
       },
       {
-        title: "Philadelphia Planting Guide",
+        title: "Starting Your Summer Vegetable Garden—Seeds or Transplants?",
         publisher: "Penn State Extension",
-        url: "https://extension.psu.edu/programs/master-gardener/counties/philadelphia/resources/philadelphia-planting-guide",
+        url: "https://extension.psu.edu/starting-your-summer-vegetable-garden-seeds-or-transplants",
         checked: "2026-10-09"
       },
       {
