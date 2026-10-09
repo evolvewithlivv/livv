@@ -2592,6 +2592,999 @@ export const FIELD_GUIDES: FieldGuide[] = [
         "checked": "2026-10-09"
       }
     ]
+  },
+  {
+    "slug": "keep-bees",
+    "pillar": "keep",
+    "title": "Prepare for responsible beekeeping",
+    "eyebrow": "Field guide 012 / Keep",
+    "summary": "Assess site and legal requirements, learn with a local mentor, prepare protective equipment, and establish a colony-health plan before ordering bees.",
+    "level": "Beginner",
+    "duration": "Timing depends on local conditions, equipment, and the specific method.",
+    "reviewedAt": "2026-10-09",
+    "reviewStatus": "reviewed",
+    "overview": "Honey bees require training, suitable equipment, a legal site, seasonal management, and a plan for pests and disease. This is a preparation guide, not a substitute for hands-on instruction. Do not buy a colony until you have local mentorship and know how to inspect a hive safely.",
+    "budgetEstimate": "Startup costs include protective clothing, hive equipment, bees, tools, monitoring, and possible treatment. Price the full setup before ordering.",
+    "prerequisites": [
+      "Check municipal rules, registration, setbacks, and apiary requirements.",
+      "Identify a local association, experienced mentor, or extension course.",
+      "Choose a safe site with forage, water, and appropriate flight paths."
+    ],
+    "supplies": [
+      {
+        "item": "Protective veil or suit and gloves",
+        "amount": "Properly fitted and in good repair"
+      },
+      {
+        "item": "Hive and components",
+        "amount": "Compatible and assembled safely"
+      },
+      {
+        "item": "Smoker and hive tool",
+        "amount": "Learn safe use with mentor"
+      },
+      {
+        "item": "Stable water source",
+        "amount": "Maintained and safe"
+      },
+      {
+        "item": "Inspection and colony-health log",
+        "amount": "Notebook or digital"
+      },
+      {
+        "item": "Local mentor or course contact",
+        "amount": "Before first live-colony inspection"
+      }
+    ],
+    "safety": [
+      "Do not keep bees where prohibited; consider neighbors, public paths, children, and allergy risks.",
+      "Never inspect a hive without appropriate protective gear and a sting-response plan.",
+      "Use mite treatments or chemicals only with exact label-compliant timing and local expert guidance.",
+      "Use a smoker safely away from dry vegetation and combustible materials."
+    ],
+    "steps": [
+      {
+        "id": "step-1",
+        "title": "Confirm rules and site suitability",
+        "instruction": "Check local ordinances, registration, setbacks, water access, and restrictions. Discuss the plan with household members and consider neighbors.",
+        "detail": "Requirements vary; some areas require permits or restrict hive locations.",
+        "checkpoint": "Legal requirements and site constraints are documented.",
+        "timing": "Before equipment"
+      },
+      {
+        "id": "step-2",
+        "title": "Find a mentor and learn seasonal basics",
+        "instruction": "Join a local association or extension course and arrange hands-on training. Learn smoker safety, opening a hive, basic brood identification, and inspection records.",
+        "detail": "Reading alone is not enough to diagnose colony problems or apply treatments safely.",
+        "checkpoint": "You have a practical training plan and an experienced contact.",
+        "timing": "Weeks to months before bees"
+      },
+      {
+        "id": "step-3",
+        "title": "Prepare the apiary",
+        "instruction": "Choose a stable site with suitable sun and wind protection, safe water, forage, and a flight path away from busy areas. Make inspection access safe.",
+        "detail": "Avoid placing entrances toward paths or neighbors' activity areas.",
+        "checkpoint": "Site meets local rules and reduces conflict and hazards.",
+        "timing": "Before delivery"
+      },
+      {
+        "id": "step-4",
+        "title": "Assemble equipment and acquire bees",
+        "instruction": "Use compatible hive components and a reputable supplier. Prepare records for colony origin, installation, inspections, and treatments.",
+        "detail": "Do not order bees before the site and care plan are ready.",
+        "checkpoint": "Equipment is safe and ready before the colony arrives.",
+        "timing": "Before delivery"
+      },
+      {
+        "id": "step-5",
+        "title": "Install with trained support",
+        "instruction": "Follow the supplier and mentor instructions for the specific package, nuc, or colony. Wear protective gear and work in suitable weather with a clear exit path.",
+        "detail": "Installation differs by source and method; do not follow a generic sequence that conflicts with supplier guidance.",
+        "checkpoint": "Colony is installed and the setup is checked by experienced support.",
+        "timing": "Installation day"
+      },
+      {
+        "id": "step-6",
+        "title": "Inspect, monitor, and record",
+        "instruction": "At locally recommended intervals, inspect food stores, brood, queen status where appropriate, pests, and disease signs. Record observations and actions.",
+        "detail": "Frequent unnecessary inspections can stress colonies; timing varies by season.",
+        "checkpoint": "Each inspection has dated observations and a follow-up plan.",
+        "timing": "Seasonally"
+      },
+      {
+        "id": "step-7",
+        "title": "Plan pest control and winter care",
+        "instruction": "Learn local Varroa monitoring and approved control options. Follow local recommendations for stores, ventilation, and winter preparation.",
+        "detail": "Never guess treatment timing or combine products. Winter management is climate-specific.",
+        "checkpoint": "A local monitoring, treatment, and winter plan exists.",
+        "timing": "As indicated"
+      },
+      {
+        "id": "step-8",
+        "title": "Review the season",
+        "instruction": "Record survival, swarming, pests, honey harvest, and equipment issues. Review the records with a mentor and plan changes for next season.",
+        "detail": "Honey harvest must not leave the colony without adequate stores.",
+        "checkpoint": "You have a complete season record and mentor-reviewed next steps.",
+        "timing": "Season end"
+      }
+    ],
+    "troubleshoot": [
+      {
+        "problem": "High mite counts or disease signs",
+        "cause": "Parasites and disease threaten colony survival.",
+        "response": "Document findings and use locally recommended monitoring and approved treatments with mentor support."
+      },
+      {
+        "problem": "Defensive behavior or repeated stings",
+        "cause": "Colony temperament, weather, handling, or site disturbance may contribute.",
+        "response": "Stop safely, secure the area, and consult a mentor about colony and site risk."
+      },
+      {
+        "problem": "Insufficient water or forage",
+        "cause": "Seasonal gaps or poor site selection may be involved.",
+        "response": "Provide safe water and review local forage and feeding guidance."
+      },
+      {
+        "problem": "Hive damage after weather",
+        "cause": "Placement or anchoring may be inadequate.",
+        "response": "Prioritize personal safety and assess the colony with experienced help."
+      }
+    ],
+    "verification": [
+      "Local rules and site suitability were checked.",
+      "A hands-on mentor or course is in place before colony installation.",
+      "Protective gear and compatible hive equipment are ready.",
+      "I have a local pest-monitoring and treatment plan.",
+      "Inspection records and a winter plan are established."
+    ],
+    "maintenance": [
+      "Inspect at appropriate intervals and record findings.",
+      "Monitor pests and follow approved local guidance.",
+      "Keep water available and the site accessible.",
+      "Check hive stability after severe weather.",
+      "Review seasonal tasks with a mentor."
+    ],
+    "sources": [
+      {
+        "title": "Beekeeping",
+        "publisher": "Penn State Extension",
+        "url": "https://extension.psu.edu/beekeeping",
+        "checked": "2026-10-09"
+      },
+      {
+        "title": "Varroa mite management",
+        "publisher": "Penn State Extension",
+        "url": "https://extension.psu.edu/varroa-mite-management",
+        "checked": "2026-10-09"
+      },
+      {
+        "title": "Beekeeping",
+        "publisher": "University of Minnesota Extension",
+        "url": "https://extension.umn.edu/keeping-bees",
+        "checked": "2026-10-09"
+      }
+    ]
+  },
+  {
+    "slug": "preserve-drying",
+    "pillar": "preserve",
+    "title": "Dry and dehydrate foods safely",
+    "eyebrow": "Field guide 013 / Preserve",
+    "summary": "Choose suitable foods, prepare pieces evenly, use a tested method, confirm dryness, and store in moisture-proof packaging.",
+    "level": "Beginner",
+    "duration": "Timing depends on local conditions, equipment, and the specific method.",
+    "reviewedAt": "2026-10-09",
+    "reviewStatus": "reviewed",
+    "overview": "Drying removes enough moisture to slow spoilage, but safe results depend on the food and method. Use tested guidance for each food, especially vegetables and meat. This guide explains the workflow without inventing universal temperatures or times.",
+    "budgetEstimate": "Rough U.S. estimate: $10–40 for tools and packaging if you already own a suitable dehydrator; buying one adds cost.",
+    "prerequisites": [
+      "A tested food-specific drying method from a trusted source.",
+      "Clean equipment and a reliable dehydrator or approved method.",
+      "Moisture-proof packaging and a cool, dry storage location."
+    ],
+    "supplies": [
+      {
+        "item": "Fresh, sound food",
+        "amount": "Suitable for the selected drying method"
+      },
+      {
+        "item": "Dehydrator or tested setup",
+        "amount": "Follow recipe and manufacturer guidance"
+      },
+      {
+        "item": "Clean knife and cutting board",
+        "amount": "Separate raw animal products"
+      },
+      {
+        "item": "Pretreatment equipment",
+        "amount": "Only if recipe requires it"
+      },
+      {
+        "item": "Food-safe trays and sealed containers",
+        "amount": "Clean and moisture-resistant"
+      },
+      {
+        "item": "Labels and date marker",
+        "amount": "1 set"
+      }
+    ],
+    "safety": [
+      "Do not dry spoiled or temperature-abused food to rescue it.",
+      "Meat and fish require tested safety procedures, including required heating steps.",
+      "Use food-specific temperatures and pretreatments; appearance alone cannot guarantee safety.",
+      "Discard moldy or suspect food without tasting it."
+    ],
+    "steps": [
+      {
+        "id": "step-1",
+        "title": "Choose food and tested method",
+        "instruction": "Select sound produce and find tested instructions for that exact food. Confirm washing, peeling, slicing, blanching, pretreatment, equipment, and storage steps.",
+        "detail": "Different foods dry at different rates and may need different pretreatment.",
+        "checkpoint": "Full instructions and equipment requirements are understood before prep.",
+        "timing": "Before prep"
+      },
+      {
+        "id": "step-2",
+        "title": "Clean and prepare",
+        "instruction": "Wash hands and equipment, wash produce under running water, remove damaged portions, and cut uniformly as directed. Keep raw meat separate from ready-to-eat foods.",
+        "detail": "Uniform size helps even drying; cross-contamination can occur before drying begins.",
+        "checkpoint": "Food is sound, clean, and cut as directed.",
+        "timing": "15–45 minutes"
+      },
+      {
+        "id": "step-3",
+        "title": "Apply required pretreatment",
+        "instruction": "Blanch or pretreat only when the tested method requires it, using its specified time and technique. Drain thoroughly.",
+        "detail": "Pretreatment may be part of the tested process; skipping it can change results.",
+        "checkpoint": "All required pretreatment is complete.",
+        "timing": "As specified"
+      },
+      {
+        "id": "step-4",
+        "title": "Load and dry",
+        "instruction": "Arrange food in a single layer with airflow. Use tested settings and rotate trays only as directed.",
+        "detail": "Overloading blocks airflow and causes uneven drying. Do not use a universal drying time.",
+        "checkpoint": "Equipment is operating within the recipe and manufacturer instructions.",
+        "timing": "Time varies"
+      },
+      {
+        "id": "step-5",
+        "title": "Check the correct dryness endpoint",
+        "instruction": "Use the recipe's test for that food and let a sample cool before evaluating texture.",
+        "detail": "Warm food can seem softer; different foods finish at different textures.",
+        "checkpoint": "Food meets the tested endpoint rather than a guessed duration.",
+        "timing": "At end of cycle"
+      },
+      {
+        "id": "step-6",
+        "title": "Condition if required, then package",
+        "instruction": "For produce where the tested guidance calls for conditioning, cool and condition as directed while checking for condensation. Package fully cooled food in moisture-proof containers and label it.",
+        "detail": "Conditioning does not rescue under-dried food. Warm food can create condensation.",
+        "checkpoint": "Required conditioning is complete; containers are sealed and dated.",
+        "timing": "Per method"
+      },
+      {
+        "id": "step-7",
+        "title": "Store and inspect",
+        "instruction": "Keep packages cool, dark, and dry. Follow storage guidance and inspect before use; discard suspect food without tasting.",
+        "detail": "Heat, light, oxygen, and moisture reduce quality and can permit spoilage.",
+        "checkpoint": "Storage location and inspection routine are recorded.",
+        "timing": "Monthly"
+      }
+    ],
+    "troubleshoot": [
+      {
+        "problem": "Food remains moist",
+        "cause": "Pieces may be too thick, trays overloaded, or drying incomplete.",
+        "response": "Return to the tested method to assess whether drying can safely continue; discard if safety is uncertain."
+      },
+      {
+        "problem": "Condensation in storage",
+        "cause": "Food may have been packaged warm or under-dried.",
+        "response": "Do not assume it is safe; follow trusted guidance and discard if moisture or spoilage makes safety uncertain."
+      },
+      {
+        "problem": "Uneven pieces",
+        "cause": "Cut size or airflow may vary.",
+        "response": "Cut uniformly and rotate trays if the method directs."
+      },
+      {
+        "problem": "Mold or off odor",
+        "cause": "Moisture or contamination allowed spoilage.",
+        "response": "Discard the batch; do not scrape mold away or taste it."
+      }
+    ],
+    "verification": [
+      "I used a tested method for this specific food.",
+      "Preparation and pretreatment matched instructions.",
+      "Food met the correct dryness endpoint.",
+      "Food cooled before packaging and was labeled.",
+      "I understand safe storage and discard signs."
+    ],
+    "maintenance": [
+      "Clean trays and tools after every batch.",
+      "Inspect packages for moisture, pests, and damaged seals.",
+      "Record food, method, and outcome.",
+      "Use smaller packages to limit repeated air exposure.",
+      "Never reuse a questionable batch."
+    ],
+    "sources": [
+      {
+        "title": "Drying",
+        "publisher": "National Center for Home Food Preservation",
+        "url": "https://nchfp.uga.edu/how/dry/",
+        "checked": "2026-10-09"
+      },
+      {
+        "title": "Drying vegetables",
+        "publisher": "National Center for Home Food Preservation",
+        "url": "https://nchfp.uga.edu/how/dry/drying-vegetables/",
+        "checked": "2026-10-09"
+      },
+      {
+        "title": "Jerky food safety",
+        "publisher": "USDA FSIS",
+        "url": "https://www.fsis.usda.gov/food-safety/safe-food-handling-and-preparation/meat/jerky",
+        "checked": "2026-10-09"
+      }
+    ]
+  },
+  {
+    "slug": "preserve-fermented-vegetables",
+    "pillar": "preserve",
+    "title": "Ferment vegetables safely",
+    "eyebrow": "Field guide 014 / Preserve",
+    "summary": "Choose a tested recipe, measure ingredients accurately, keep vegetables submerged, monitor prescribed conditions, and store as directed.",
+    "level": "Beginner",
+    "duration": "Timing depends on local conditions, equipment, and the specific method.",
+    "reviewedAt": "2026-10-09",
+    "reviewStatus": "reviewed",
+    "overview": "Fermentation is controlled preservation, not simply leaving vegetables in a jar. Salt, temperature, cleanliness, and time affect safety and quality. Follow one tested recipe exactly; bubbling alone does not prove safety. This is a workflow guide, not a substitute for the recipe.",
+    "budgetEstimate": "Rough U.S. estimate: $10–35 for jars, food-safe weights, and basic tools.",
+    "prerequisites": [
+      "A tested recipe from NCHFP or reputable extension.",
+      "A clean vessel, food-safe weight, and accurate measuring tools.",
+      "A plan for recipe-directed refrigeration or finishing."
+    ],
+    "supplies": [
+      {
+        "item": "Fresh, sound vegetables",
+        "amount": "Exact type and preparation in recipe"
+      },
+      {
+        "item": "Salt",
+        "amount": "Type and amount exactly as specified"
+      },
+      {
+        "item": "Clean food-grade vessel",
+        "amount": "Capacity required by recipe"
+      },
+      {
+        "item": "Food-safe fermentation weight",
+        "amount": "Keeps food submerged"
+      },
+      {
+        "item": "Clean utensils and labels",
+        "amount": "1 set"
+      },
+      {
+        "item": "Thermometer",
+        "amount": "If recipe requires temperature monitoring"
+      }
+    ],
+    "safety": [
+      "Use exact tested ingredient weights, salt, temperature, and time; do not reduce salt or improvise proportions.",
+      "Keep vegetables submerged as directed and prevent contamination.",
+      "Discard batches with fuzzy mold, putrid odor, or other spoilage signs; do not taste to test safety.",
+      "Fermented food is not automatically shelf-stable; store as the tested recipe directs."
+    ],
+    "steps": [
+      {
+        "id": "step-1",
+        "title": "Choose one tested recipe",
+        "instruction": "Select instructions for the exact vegetable and style from NCHFP or reputable extension. Read measurements, temperature, completion criteria, and storage directions.",
+        "detail": "Different fermentation styles have different salt ratios and conditions.",
+        "checkpoint": "All recipe steps and measurements are understood.",
+        "timing": "Before prep"
+      },
+      {
+        "id": "step-2",
+        "title": "Inspect produce and clean",
+        "instruction": "Use fresh, sound vegetables. Wash hands and clean work surfaces, utensils, and the vessel as directed.",
+        "detail": "Fermentation cannot reliably make spoiled produce or dirty equipment safe.",
+        "checkpoint": "Produce and equipment are ready.",
+        "timing": "15–30 minutes"
+      },
+      {
+        "id": "step-3",
+        "title": "Measure exactly",
+        "instruction": "Weigh or measure vegetables, salt, water, and seasonings exactly as written. Do not substitute salt types unless the recipe permits it.",
+        "detail": "Salt helps control the fermentation environment; guessing can compromise safety and quality.",
+        "checkpoint": "All ingredients match the recipe.",
+        "timing": "As specified"
+      },
+      {
+        "id": "step-4",
+        "title": "Pack and submerge",
+        "instruction": "Pack the vessel as directed and use a food-safe weight or specified method to keep vegetables below brine.",
+        "detail": "Exposed pieces are more likely to develop surface growth; never use unclean objects as weights.",
+        "checkpoint": "Vegetables remain submerged and vessel setup matches instructions.",
+        "timing": "10–20 minutes"
+      },
+      {
+        "id": "step-5",
+        "title": "Ferment under prescribed conditions",
+        "instruction": "Keep the vessel within the recipe's temperature range for its stated period. Use the specified airlock or lid and monitor without unnecessary handling.",
+        "detail": "Time alone is not proof of completion; temperature affects rate and outcome.",
+        "checkpoint": "Temperature and elapsed time are recorded.",
+        "timing": "Per recipe"
+      },
+      {
+        "id": "step-6",
+        "title": "Evaluate and store",
+        "instruction": "Use recipe completion criteria. If there is suspicious mold, putrid odor, or unexplained failure, discard without tasting. Refrigerate or process only as directed.",
+        "detail": "Bubbling or sour smell alone does not prove safety; a refrigerator ferment is not shelf-stable canning.",
+        "checkpoint": "Batch meets the recipe criteria and storage is labeled.",
+        "timing": "At completion"
+      },
+      {
+        "id": "step-7",
+        "title": "Record the batch",
+        "instruction": "Record vegetable, ingredient weights, temperature, start and finish dates, and result. Repeat critical proportions unchanged.",
+        "detail": "A successful batch is not permission to change safety-critical ratios next time.",
+        "checkpoint": "A batch record is complete.",
+        "timing": "After each batch"
+      }
+    ],
+    "troubleshoot": [
+      {
+        "problem": "Vegetables rise above brine",
+        "cause": "Weight may be insufficient or gas may shift contents.",
+        "response": "Follow recipe guidance to restore submersion with clean equipment; discard if contamination is suspected."
+      },
+      {
+        "problem": "No expected bubbling",
+        "cause": "Temperature, ingredients, or fermentation activity may differ.",
+        "response": "Check recipe-specific troubleshooting; do not add random salt, sugar, or starter."
+      },
+      {
+        "problem": "Fuzzy mold or putrid odor",
+        "cause": "Contamination or failed fermentation may have occurred.",
+        "response": "Discard without tasting and review hygiene and recipe compliance."
+      },
+      {
+        "problem": "Unsure if safe",
+        "cause": "Appearance and smell cannot guarantee safety.",
+        "response": "Do not taste; contact the recipe source or discard."
+      }
+    ],
+    "verification": [
+      "I chose a tested recipe for this exact food.",
+      "Critical ingredients and salt were measured accurately.",
+      "Food remained submerged under prescribed conditions.",
+      "Completion and storage followed the recipe.",
+      "The batch is labeled and recorded."
+    ],
+    "maintenance": [
+      "Use clean hands and utensils.",
+      "Record temperature and dates as specified.",
+      "Check submersion without unnecessary opening.",
+      "Store only as directed.",
+      "Discard questionable batches without tasting."
+    ],
+    "sources": [
+      {
+        "title": "Fermented and pickled foods",
+        "publisher": "National Center for Home Food Preservation",
+        "url": "https://nchfp.uga.edu/how/ferment/",
+        "checked": "2026-10-09"
+      },
+      {
+        "title": "Sauerkraut",
+        "publisher": "National Center for Home Food Preservation",
+        "url": "https://nchfp.uga.edu/how/ferment/recipes/sauerkraut/",
+        "checked": "2026-10-09"
+      },
+      {
+        "title": "Fermented dill pickles",
+        "publisher": "National Center for Home Food Preservation",
+        "url": "https://nchfp.uga.edu/how/ferment/recipes/fermented-dill-pickles/",
+        "checked": "2026-10-09"
+      }
+    ]
+  },
+  {
+    "slug": "preserve-canning",
+    "pillar": "preserve",
+    "title": "Can food using tested methods",
+    "eyebrow": "Field guide 015 / Preserve",
+    "summary": "Choose a tested recipe, identify the correct canner, prepare jars, process accurately, and inspect seals without guessing.",
+    "level": "Beginner",
+    "duration": "Timing depends on local conditions, equipment, and the specific method.",
+    "reviewedAt": "2026-10-09",
+    "reviewStatus": "reviewed",
+    "overview": "Home canning is a precision food-safety process. Properly acidified foods may use boiling-water processing; low-acid vegetables, meat, poultry, and many mixed foods require a tested pressure-canning process. A pressure cooker, oven, or improvised recipe is not a safe substitute. This guide teaches the workflow, not a universal recipe.",
+    "budgetEstimate": "A proper pressure canner can be a substantial upfront cost; do not substitute unsafe equipment to save money.",
+    "prerequisites": [
+      "A current tested recipe for the exact food and jar size.",
+      "The correct canner, jars, lids, and utensils.",
+      "Knowledge of altitude and the recipe's time, pressure, headspace, and venting requirements."
+    ],
+    "supplies": [
+      {
+        "item": "Tested recipe and processing table",
+        "amount": "Exact food, jar size, and method"
+      },
+      {
+        "item": "Correct boiling-water or pressure canner",
+        "amount": "As recipe specifies"
+      },
+      {
+        "item": "Suitable jars and lids",
+        "amount": "Inspect and prepare as directed"
+      },
+      {
+        "item": "Jar lifter, funnel, headspace tool",
+        "amount": "Food-safe"
+      },
+      {
+        "item": "Timer and gauge information",
+        "amount": "Follow equipment guidance"
+      },
+      {
+        "item": "Labels and date marker",
+        "amount": "1 set"
+      }
+    ],
+    "safety": [
+      "Never can low-acid foods in a boiling-water canner; use a tested pressure-canning process.",
+      "Never invent times, change jar sizes, thicken recipes, or change ingredients beyond tested allowances.",
+      "Do not use an electric pressure cooker, oven, dishwasher, or open-kettle method as a canner substitute.",
+      "Never taste jars that leak, spurt, bulge, or appear spoiled; follow official disposal guidance."
+    ],
+    "steps": [
+      {
+        "id": "step-1",
+        "title": "Choose exact tested recipe",
+        "instruction": "Use current NCHFP, USDA, or reputable extension instructions for the exact food and jar size. Confirm acidity and canner type.",
+        "detail": "Tomatoes and mixed foods may require acidification or pressure processing depending on the tested recipe.",
+        "checkpoint": "Recipe, ingredients, jar size, and canner are specified.",
+        "timing": "Before starting"
+      },
+      {
+        "id": "step-2",
+        "title": "Check equipment and altitude",
+        "instruction": "Inspect jars and lids, read canner instructions, identify altitude, and follow gauge testing advice where applicable.",
+        "detail": "Altitude affects processing requirements; do not guess pressure or time.",
+        "checkpoint": "Equipment is suitable and altitude adjustments are noted.",
+        "timing": "Before prep"
+      },
+      {
+        "id": "step-3",
+        "title": "Prepare food and jars exactly",
+        "instruction": "Follow ingredient preparation, pack style, jar preparation, and headspace from the tested recipe.",
+        "detail": "Piece size, density, and headspace affect heat transfer and safety.",
+        "checkpoint": "Food, jars, and headspace match the recipe.",
+        "timing": "As specified"
+      },
+      {
+        "id": "step-4",
+        "title": "Load and start correctly",
+        "instruction": "Use the required canner. For pressure canning, vent steam and build pressure according to equipment directions; for boiling-water canning, maintain required water coverage and boil.",
+        "detail": "Start timing only when the recipe's required condition is reached.",
+        "checkpoint": "The process starts according to recipe and equipment instructions.",
+        "timing": "As specified"
+      },
+      {
+        "id": "step-5",
+        "title": "Process fully",
+        "instruction": "Follow exact time, pressure, and altitude adjustment. If pressure drops below the required level, follow official instructions for restarting the process.",
+        "detail": "The correct time-temperature combination is critical; appearance cannot replace processing.",
+        "checkpoint": "The full prescribed process was completed and recorded.",
+        "timing": "As specified"
+      },
+      {
+        "id": "step-6",
+        "title": "Cool and inspect seals",
+        "instruction": "Cool jars undisturbed for the recommended period. Check seals according to tested guidance and handle failed seals as directed.",
+        "detail": "Do not tighten bands while cooling or invert jars to force a seal.",
+        "checkpoint": "Jars are cooled, inspected, and failures handled safely.",
+        "timing": "After processing"
+      },
+      {
+        "id": "step-7",
+        "title": "Label, store, and respond to failures",
+        "instruction": "Label contents and date and store cool, dark, and dry. For failed seals, use official advice for prompt refrigeration, freezing, or reprocessing only when permitted.",
+        "detail": "A sealed lid does not make an untested recipe safe. Never taste suspect jars.",
+        "checkpoint": "Jars are labeled and suspect containers are not tasted.",
+        "timing": "After cooling"
+      }
+    ],
+    "troubleshoot": [
+      {
+        "problem": "Lid fails to seal",
+        "cause": "Rim debris, damage, headspace, or lid issues may contribute.",
+        "response": "Follow official recipe guidance and time limits; refrigerate or freeze if appropriate."
+      },
+      {
+        "problem": "Pressure drops during processing",
+        "cause": "Heat setting or equipment operation may be involved.",
+        "response": "Follow canner instructions; pressure-canning timing generally must restart if required pressure is not maintained."
+      },
+      {
+        "problem": "Jar leaks, bulges, or spurts",
+        "cause": "Spoilage or dangerous contamination may be present.",
+        "response": "Do not taste or open casually; follow official disposal guidance."
+      },
+      {
+        "problem": "Recipe comes from an untested post",
+        "cause": "Heat penetration or acidity may not be validated.",
+        "response": "Use a current tested recipe instead."
+      }
+    ],
+    "verification": [
+      "I used a current tested recipe for the exact food.",
+      "The correct canner, jar size, headspace, and altitude adjustment were used.",
+      "Processing time and pressure were followed exactly.",
+      "Seals were inspected after proper cooling.",
+      "Jars are labeled and suspect food is never tasted."
+    ],
+    "maintenance": [
+      "Keep recipe and batch records.",
+      "Inspect jars and equipment before use.",
+      "Check pressure gauge as recommended.",
+      "Store jars cool, dark, and dry.",
+      "Review updated extension guidance."
+    ],
+    "sources": [
+      {
+        "title": "Ensuring safe canned foods",
+        "publisher": "National Center for Home Food Preservation",
+        "url": "https://nchfp.uga.edu/how/can/general-information/ensuring-safe-canned-foods/",
+        "checked": "2026-10-09"
+      },
+      {
+        "title": "Recommended canners",
+        "publisher": "National Center for Home Food Preservation",
+        "url": "https://nchfp.uga.edu/how/can/general-information/recommended-canners/",
+        "checked": "2026-10-09"
+      },
+      {
+        "title": "Home canning safety",
+        "publisher": "USDA NIFA",
+        "url": "https://www.nifa.usda.gov/about-nifa/blogs/keep-your-canned-food-safe",
+        "checked": "2026-10-09"
+      }
+    ]
+  },
+  {
+    "slug": "store-food-reserve",
+    "pillar": "store",
+    "title": "Build a household food reserve",
+    "eyebrow": "Field guide 016 / Store",
+    "summary": "Estimate a realistic reserve, prioritize familiar shelf-stable foods, store them safely, rotate stock, and plan for dietary and cooking needs.",
+    "level": "Beginner",
+    "duration": "Timing depends on local conditions, equipment, and the specific method.",
+    "reviewedAt": "2026-10-09",
+    "reviewStatus": "reviewed",
+    "overview": "A useful food reserve is a practical buffer, not a pile of emergency rations. Start with foods the household already eats, including dietary needs, and plan for water, cooking, storage space, and outages. Build gradually within budget.",
+    "budgetEstimate": "Highly variable. Set aside a small amount each grocery trip and use familiar shelf-stable foods rather than buying a full kit at once.",
+    "prerequisites": [
+      "List household members, dietary needs, pets, and likely disruptions.",
+      "A cool, dry storage area protected from pests and chemicals.",
+      "A budget and inventory system that supports rotation."
+    ],
+    "supplies": [
+      {
+        "item": "Familiar shelf-stable foods",
+        "amount": "Matched to household needs"
+      },
+      {
+        "item": "Manual can opener",
+        "amount": "If storing cans"
+      },
+      {
+        "item": "Clean bins or shelves",
+        "amount": "Dry and pest-resistant"
+      },
+      {
+        "item": "Inventory and date labels",
+        "amount": "Paper or digital"
+      },
+      {
+        "item": "Outage cooking plan",
+        "amount": "Include no-cook foods"
+      },
+      {
+        "item": "Water and pet-food plan",
+        "amount": "Calculate separately"
+      }
+    ],
+    "safety": [
+      "Keep food away from chemicals, pests, flooding, and excessive heat.",
+      "Never use charcoal grills, camp stoves, or generators indoors because of carbon monoxide risk.",
+      "Respect package storage directions and special requirements for infant formula or medically necessary foods.",
+      "Follow official guidance after power outages; discard temperature-abused foods."
+    ],
+    "steps": [
+      {
+        "id": "step-1",
+        "title": "List who the reserve serves",
+        "instruction": "Count household members, dietary restrictions, allergies, infants, medical nutrition needs, and pets. Note cooking ability during outages.",
+        "detail": "Generic kits may not fit allergies, disability, or pet requirements.",
+        "checkpoint": "Inventory reflects everyone who depends on the reserve.",
+        "timing": "30 minutes"
+      },
+      {
+        "id": "step-2",
+        "title": "Set a starter target",
+        "instruction": "Use official emergency guidance for a short reserve, then choose a realistic longer target based on budget and storage.",
+        "detail": "A large reserve is useful only if safe, familiar, and rotated.",
+        "checkpoint": "Duration and monthly budget are written down.",
+        "timing": "30 minutes"
+      },
+      {
+        "id": "step-3",
+        "title": "Build a familiar menu",
+        "instruction": "Choose shelf-stable foods your household already eats and include balanced meals, snacks, and no-cook options.",
+        "detail": "Avoid buying food that needs unavailable fuel or that nobody will eat.",
+        "checkpoint": "A simple menu covers the planned days.",
+        "timing": "1 hour"
+      },
+      {
+        "id": "step-4",
+        "title": "Plan water, tools, and cooking",
+        "instruction": "Include water for drinking and preparation, a manual can opener, utensils, and a safe cooking plan if needed.",
+        "detail": "Food planning fails if water or safe heat is unavailable.",
+        "checkpoint": "Each food can be prepared with the planned resources.",
+        "timing": "30–60 minutes"
+      },
+      {
+        "id": "step-5",
+        "title": "Buy gradually and rotate",
+        "instruction": "Add a few items during normal shopping. Put newer items behind older stock and record dates where useful.",
+        "detail": "Do not confuse quality dates with every food's safety status; follow package instructions.",
+        "checkpoint": "Inventory is current and older stock is easiest to use first.",
+        "timing": "Each shopping trip"
+      },
+      {
+        "id": "step-6",
+        "title": "Store safely and review needs",
+        "instruction": "Keep food cool, dry, clean, and pest-resistant. Include evacuation access, pet food, and special needs; replenish after use.",
+        "detail": "Heat, moisture, and pests damage stock. Some items require temperature control or professional advice.",
+        "checkpoint": "Storage is accessible and special needs are considered.",
+        "timing": "Monthly and quarterly"
+      }
+    ],
+    "troubleshoot": [
+      {
+        "problem": "Food reserve too expensive",
+        "cause": "Buying everything at once or choosing specialized kits may exceed budget.",
+        "response": "Build gradually with familiar foods and prioritize water, dietary needs, and a few meals first."
+      },
+      {
+        "problem": "Food expires unused",
+        "cause": "Stock does not match normal eating habits or dates are not visible.",
+        "response": "Rotate older items forward and buy foods the household already eats."
+      },
+      {
+        "problem": "Foods need unavailable cooking fuel",
+        "cause": "Menu planning ignored outage conditions.",
+        "response": "Add no-cook options and calculate water and safe cooking needs."
+      },
+      {
+        "problem": "Pests or moisture appear",
+        "cause": "Storage or packaging is unsuitable.",
+        "response": "Remove contaminated items safely, clean the area, and improve sealed storage."
+      }
+    ],
+    "verification": [
+      "Household dietary and accessibility needs are included.",
+      "There is a realistic target and budget.",
+      "Foods are familiar and can be prepared with available water and tools.",
+      "Stock is dated, rotated, and stored safely.",
+      "Pet, evacuation, and special needs are considered."
+    ],
+    "maintenance": [
+      "Inspect dates, packages, pests, and moisture monthly.",
+      "Rotate food through normal meals and replace what is used.",
+      "Review water and cooking plans alongside food.",
+      "Update after household changes.",
+      "Follow official food safety advice after outages."
+    ],
+    "sources": [
+      {
+        "title": "Build a kit",
+        "publisher": "Ready.gov",
+        "url": "https://www.ready.gov/kit",
+        "checked": "2026-10-09"
+      },
+      {
+        "title": "Food safety during power outages",
+        "publisher": "FoodSafety.gov",
+        "url": "https://www.foodsafety.gov/food-safety-charts/food-safety-during-power-outage",
+        "checked": "2026-10-09"
+      },
+      {
+        "title": "Emergency supplies",
+        "publisher": "FEMA",
+        "url": "https://www.fema.gov/press-release/20210318/how-build-kit-emergencies",
+        "checked": "2026-10-09"
+      }
+    ]
+  },
+  {
+    "slug": "store-tools-essentials",
+    "pillar": "store",
+    "title": "Organize tools and household essentials",
+    "eyebrow": "Field guide 017 / Store",
+    "summary": "Inventory the tools and supplies you use, store them safely, maintain them, and make essentials easy to find when needed.",
+    "level": "Beginner",
+    "duration": "Timing depends on local conditions, equipment, and the specific method.",
+    "reviewedAt": "2026-10-09",
+    "reviewStatus": "reviewed",
+    "overview": "Self-sufficiency is not owning every tool. It is knowing what you have, where it is, how to use it safely, and when a job exceeds your skills. Start with routine household repairs, gardening, lighting, first aid, and emergency supplies; rent or borrow rarely used tools when sensible.",
+    "budgetEstimate": "Start with what you own. Replace missing essentials gradually and do not buy powered tools without learning their safe use.",
+    "prerequisites": [
+      "A dry, organized storage area.",
+      "A list of common tasks and household risks.",
+      "A way to track inventory, batteries, and expiration dates."
+    ],
+    "supplies": [
+      {
+        "item": "Inventory sheet or notes app",
+        "amount": "One list by location and use"
+      },
+      {
+        "item": "Labeled bins or suitable mounts",
+        "amount": "Sized for tool weight"
+      },
+      {
+        "item": "Basic hand tools",
+        "amount": "Only those you can use safely"
+      },
+      {
+        "item": "Flashlight and backup lighting",
+        "amount": "For outages"
+      },
+      {
+        "item": "First aid and protective equipment",
+        "amount": "Matched to tasks"
+      },
+      {
+        "item": "Maintenance supplies",
+        "amount": "As manufacturer directs"
+      },
+      {
+        "item": "Lockable storage",
+        "amount": "For hazardous items"
+      }
+    ],
+    "safety": [
+      "Read manuals and use required eye, hearing, hand, and respiratory protection.",
+      "Disconnect power or remove batteries before cleaning or changing blades; never service energized equipment.",
+      "Store chemicals, fuel, sharp tools, and medicines securely away from food and water.",
+      "Do not attempt electrical, gas, structural, or other high-risk repairs beyond your training."
+    ],
+    "steps": [
+      {
+        "id": "step-1",
+        "title": "List real household tasks",
+        "instruction": "Write routine needs such as tightening hardware, watering plants, opening cans, changing batteries, and responding to a short outage. Separate occasional specialist work.",
+        "detail": "A large collection creates cost and clutter without building competence.",
+        "checkpoint": "Essential, useful, and rare tasks are distinguished.",
+        "timing": "30 minutes"
+      },
+      {
+        "id": "step-2",
+        "title": "Inventory what you own",
+        "instruction": "Record each tool, accessory, consumable, condition, and location. Note missing manuals, batteries, or parts.",
+        "detail": "A tool may be present but unsafe due to damaged cords, cracked handles, corrosion, or missing guards.",
+        "checkpoint": "Every essential item has a known location and condition.",
+        "timing": "1–2 hours"
+      },
+      {
+        "id": "step-3",
+        "title": "Prioritize gaps safely",
+        "instruction": "Prioritize basic hand tools, lighting, batteries, first aid, and task-specific protective equipment. Buy or borrow only what fits a real need.",
+        "detail": "Do not buy powered tools before learning manuals, guards, and safe operating practices.",
+        "checkpoint": "Each planned purchase has a specific use and safe-use plan.",
+        "timing": "As budget allows"
+      },
+      {
+        "id": "step-4",
+        "title": "Create zones and labels",
+        "instruction": "Group tools by household repair, garden, food storage, lighting, and first aid. Label bins and keep sharp or hazardous items secured.",
+        "detail": "Store heavy items low and avoid overloading wall mounts. Keep emergency supplies accessible but safe from children.",
+        "checkpoint": "A household member can locate essentials without opening every box.",
+        "timing": "1–2 hours"
+      },
+      {
+        "id": "step-5",
+        "title": "Inspect and maintain",
+        "instruction": "Follow manufacturer instructions for cleaning, lubrication, sharpening, batteries, and storage. Remove damaged tools from service.",
+        "detail": "Do not improvise repairs to guards, electrical insulation, ladders, or safety-critical parts.",
+        "checkpoint": "Tools are clean, functional, and stored safely.",
+        "timing": "Monthly or after use"
+      },
+      {
+        "id": "step-6",
+        "title": "Practice and know your limits",
+        "instruction": "Read manuals and practice low-risk tasks before an emergency. Keep instructions with unfamiliar equipment and know when to call a qualified professional.",
+        "detail": "Do not practice hazardous work on live electrical systems, gas lines, unstable ladders, or powered equipment without training.",
+        "checkpoint": "You have practiced safe use and know when to stop.",
+        "timing": "Quarterly"
+      },
+      {
+        "id": "step-7",
+        "title": "Review inventory and consumables",
+        "instruction": "Track batteries, filters, first-aid supplies, and other items with service lives. Replenish after use and review after moving or changing equipment.",
+        "detail": "An inventory only works when it matches reality.",
+        "checkpoint": "Inventory is current and critical items are ready.",
+        "timing": "Monthly"
+      }
+    ],
+    "troubleshoot": [
+      {
+        "problem": "Items are hard to find",
+        "cause": "Storage is not grouped or labels are unclear.",
+        "response": "Group by task, label locations, and maintain one inventory."
+      },
+      {
+        "problem": "Tools rust or batteries fail",
+        "cause": "Storage may be damp or too hot.",
+        "response": "Improve storage and follow manufacturer care instructions."
+      },
+      {
+        "problem": "Too much unused equipment",
+        "cause": "Purchases were not tied to tasks.",
+        "response": "Rent, borrow, sell, or donate rarely used tools when appropriate."
+      },
+      {
+        "problem": "Repair exceeds your skill",
+        "cause": "Electrical, gas, structural, or other serious hazards may be involved.",
+        "response": "Stop and call a qualified professional."
+      },
+      {
+        "problem": "Emergency supplies are expired",
+        "cause": "No rotation routine exists.",
+        "response": "Create monthly checks and replace items according to official guidance."
+      }
+    ],
+    "verification": [
+      "I know the essential tools for real household needs.",
+      "Each essential item has a known location and condition.",
+      "Hazardous items are secured away from food and water.",
+      "I have a maintenance and rotation routine.",
+      "I know which repairs need a qualified professional."
+    ],
+    "maintenance": [
+      "Return tools to labeled storage after use.",
+      "Inspect cords, guards, handles, and batteries before use.",
+      "Check emergency lights and consumables monthly.",
+      "Keep manuals and protective equipment accessible.",
+      "Review inventory after moves and major repairs."
+    ],
+    "sources": [
+      {
+        "title": "Hand and power tool safety",
+        "publisher": "Occupational Safety and Health Administration",
+        "url": "https://www.osha.gov/hand-power-tools",
+        "checked": "2026-10-09"
+      },
+      {
+        "title": "Build a kit",
+        "publisher": "Ready.gov",
+        "url": "https://www.ready.gov/kit",
+        "checked": "2026-10-09"
+      },
+      {
+        "title": "Home safety",
+        "publisher": "U.S. Consumer Product Safety Commission",
+        "url": "https://www.cpsc.gov/Safety-Education/Safety-Guides/Home",
+        "checked": "2026-10-09"
+      }
+    ]
   }
 ];
 
