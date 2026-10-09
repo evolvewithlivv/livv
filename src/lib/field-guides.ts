@@ -205,7 +205,7 @@ export const FIELD_GUIDES: FieldGuide[] = [
     slug: "keep-compost",
     pillar: "keep",
     title: "Build a home compost pile",
-    eyebrow: "Field guide 002 / Keep",
+    eyebrow: "Field guide 010 / Keep",
     summary: "Turn suitable kitchen scraps and yard material into finished compost with a simple, manageable routine.",
     level: "Beginner",
     duration: "A monitored pile commonly takes about 3 to 4 months; weather and materials change the timeline.",
@@ -354,7 +354,7 @@ export const FIELD_GUIDES: FieldGuide[] = [
     slug: "preserve-green-beans",
     pillar: "preserve",
     title: "Freeze green beans safely",
-    eyebrow: "Field guide 003 / Preserve",
+    eyebrow: "Field guide 011 / Preserve",
     summary: "Prepare, blanch, cool, package, label, and freeze green beans using tested home-freezing guidance.",
     level: "Beginner",
     duration: "About 45 to 90 minutes for a small batch, plus freezing time.",
@@ -513,7 +513,7 @@ export const FIELD_GUIDES: FieldGuide[] = [
     slug: "store-emergency-water",
     pillar: "store",
     title: "Build an emergency water reserve",
-    eyebrow: "Field guide 004 / Store",
+    eyebrow: "Field guide 016 / Store",
     summary: "Calculate a household baseline, choose safe containers, label stored water, and keep it ready for an interruption.",
     level: "Beginner",
     duration: "About 30 to 60 minutes to calculate, organize, and label an initial reserve.",
@@ -661,7 +661,7 @@ export const FIELD_GUIDES: FieldGuide[] = [
     "slug": "grow-beans",
     "pillar": "grow",
     "title": "Grow snap beans",
-    "eyebrow": "Field guide 005 / Grow",
+    "eyebrow": "Field guide 003 / Grow",
     "summary": "Choose bush or pole beans, sow at the right time, manage water and support, and harvest a useful crop.",
     "level": "Beginner",
     "duration": "Often 50–70 days from sowing, depending on variety and conditions.",
@@ -816,7 +816,7 @@ export const FIELD_GUIDES: FieldGuide[] = [
       {
         "title": "Growing beans in home gardens",
         "publisher": "University of Minnesota Extension",
-        "url": "https://extension.umn.edu/vegetables/growing-beans",
+        "url": "https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/growing-beans",
         "checked": "2026-10-09"
       },
       {
@@ -831,7 +831,7 @@ export const FIELD_GUIDES: FieldGuide[] = [
     "slug": "grow-herbs",
     "pillar": "grow",
     "title": "Grow useful culinary herbs",
-    "eyebrow": "Field guide 007 / Grow",
+    "eyebrow": "Field guide 005 / Grow",
     "summary": "Start with a few useful herbs, match each plant to its light and water needs, and harvest without exhausting it.",
     "level": "Beginner",
     "duration": "First light harvest may be possible in 3–8 weeks; plants and growing methods vary.",
@@ -1001,7 +1001,7 @@ export const FIELD_GUIDES: FieldGuide[] = [
     "slug": "keep-bees",
     "pillar": "keep",
     "title": "Prepare for responsible beekeeping",
-    "eyebrow": "Field guide 008 / Keep",
+    "eyebrow": "Field guide 009 / Keep",
     "summary": "Assess whether bees fit your site, learn from an experienced local beekeeper, and build a seasonal care and health plan before acquiring a colony.",
     "level": "Intermediate",
     "duration": "Preparation takes weeks to months; beekeeping is a seasonal, ongoing responsibility.",
@@ -1168,7 +1168,7 @@ export const FIELD_GUIDES: FieldGuide[] = [
     "slug": "preserve-fermented-vegetables",
     "pillar": "preserve",
     "title": "Ferment vegetables safely",
-    "eyebrow": "Field guide 009 / Preserve",
+    "eyebrow": "Field guide 013 / Preserve",
     "summary": "Set up a small vegetable fermentation using a tested recipe, clean equipment, controlled salt, and a reliable way to judge the result.",
     "level": "Intermediate",
     "duration": "Often several days to weeks, depending on the tested recipe, temperature, and vegetable.",
@@ -1325,7 +1325,7 @@ export const FIELD_GUIDES: FieldGuide[] = [
       {
         "title": "Fermenting",
         "publisher": "National Center for Home Food Preservation",
-        "url": "https://nchfp.uga.edu/how/ferment/",
+        "url": "https://nchfp.uga.edu/how/ferment/general-information-on-fermenting/general-information-on-fermenting/",
         "checked": "2026-10-09"
       },
       {
@@ -1340,7 +1340,7 @@ export const FIELD_GUIDES: FieldGuide[] = [
     "slug": "grow-tomatoes",
     "pillar": "grow",
     "title": "Grow tomatoes",
-    "eyebrow": "Field guide 006 / Grow",
+    "eyebrow": "Field guide 004 / Grow",
     "summary": "Choose a tomato type, plant after frost danger, support the plant, water consistently, and troubleshoot common problems.",
     "level": "Beginner",
     "duration": "Usually about 60–85 days after transplanting, depending on variety and conditions.",
@@ -1528,7 +1528,7 @@ export const FIELD_GUIDES: FieldGuide[] = [
     "slug": "grow-root-crops",
     "pillar": "grow",
     "title": "Grow root crops",
-    "eyebrow": "Field guide 005 / Grow",
+    "eyebrow": "Field guide 002 / Grow",
     "summary": "Grow carrots, radishes, and beets from direct sowing through thinning, root development, and harvest.",
     "level": "Beginner",
     "duration": "Timing depends on local conditions, variety, equipment, and the method selected.",
@@ -1658,7 +1658,7 @@ export const FIELD_GUIDES: FieldGuide[] = [
       {
         "title": "Growing carrots",
         "publisher": "University of Minnesota Extension",
-        "url": "https://extension.umn.edu/vegetables/growing-carrots",
+        "url": "https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/growing-carrots-and-parsnips",
         "checked": "2026-10-09"
       },
       {
@@ -1670,7 +1670,7 @@ export const FIELD_GUIDES: FieldGuide[] = [
       {
         "title": "Growing radishes",
         "publisher": "University of Minnesota Extension",
-        "url": "https://extension.umn.edu/vegetables/growing-radishes",
+        "url": "https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/growing-radishes",
         "checked": "2026-10-09"
       }
     ]
@@ -1682,7 +1682,7 @@ export const FIELD_GUIDES: FieldGuide[] = [
     "slug": "grow-winter-crops",
     "pillar": "grow",
     "title": "Plan a winter crop garden",
-    "eyebrow": "Field guide 009 / Grow",
+    "eyebrow": "Field guide 006 / Grow",
     "summary": "Choose cold-tolerant crops, count backward from local weather, protect plants appropriately, and harvest through cold periods.",
     "level": "Beginner",
     "duration": "Timing depends on local conditions, variety, equipment, and the method selected.",
@@ -1812,7 +1812,7 @@ export const FIELD_GUIDES: FieldGuide[] = [
       {
         "title": "Extending the growing season",
         "publisher": "University of Minnesota Extension",
-        "url": "https://extension.umn.edu/planting-and-growing-guides/extending-growing-season",
+        "url": "https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/extending-growing-season",
         "checked": "2026-10-09"
       },
       {
@@ -1833,7 +1833,7 @@ export const FIELD_GUIDES: FieldGuide[] = [
     "slug": "keep-chickens",
     "pillar": "keep",
     "title": "Keep backyard chickens responsibly",
-    "eyebrow": "Field guide 010 / Keep",
+    "eyebrow": "Field guide 007 / Keep",
     "summary": "Prepare legal, predator-resistant housing and daily care before acquiring birds, then manage feed, water, hygiene, eggs, and health checks.",
     "level": "Beginner",
     "duration": "Timing depends on local conditions, variety, equipment, and the method selected.",
@@ -1997,7 +1997,7 @@ export const FIELD_GUIDES: FieldGuide[] = [
     "slug": "keep-rabbits",
     "pillar": "keep",
     "title": "Care for domestic rabbits",
-    "eyebrow": "Field guide 011 / Keep",
+    "eyebrow": "Field guide 008 / Keep",
     "summary": "Prepare a rabbit-safe home, high-fiber diet, daily exercise and enrichment, grooming, and access to veterinary care.",
     "level": "Beginner",
     "duration": "Timing depends on local conditions, variety, equipment, and the method selected.",
@@ -2166,7 +2166,7 @@ export const FIELD_GUIDES: FieldGuide[] = [
     "slug": "preserve-drying",
     "pillar": "preserve",
     "title": "Dry and dehydrate foods safely",
-    "eyebrow": "Field guide 013 / Preserve",
+    "eyebrow": "Field guide 012 / Preserve",
     "summary": "Choose suitable foods, prepare pieces evenly, use a tested method, confirm dryness, and store in moisture-proof packaging.",
     "level": "Beginner",
     "duration": "Timing depends on local conditions, equipment, and the specific method.",
@@ -2309,13 +2309,13 @@ export const FIELD_GUIDES: FieldGuide[] = [
       {
         "title": "Drying",
         "publisher": "National Center for Home Food Preservation",
-        "url": "https://nchfp.uga.edu/how/dry/",
+        "url": "https://nchfp.uga.edu/how/dry",
         "checked": "2026-10-09"
       },
       {
         "title": "Drying vegetables",
         "publisher": "National Center for Home Food Preservation",
-        "url": "https://nchfp.uga.edu/how/dry/drying-vegetables/",
+        "url": "https://nchfp.uga.edu/how/drydrying-vegetables/",
         "checked": "2026-10-09"
       },
       {
@@ -2331,7 +2331,7 @@ export const FIELD_GUIDES: FieldGuide[] = [
     "slug": "preserve-canning",
     "pillar": "preserve",
     "title": "Can food using tested methods",
-    "eyebrow": "Field guide 015 / Preserve",
+    "eyebrow": "Field guide 014 / Preserve",
     "summary": "Choose a tested recipe, identify the correct canner, prepare jars, process accurately, and inspect seals without guessing.",
     "level": "Beginner",
     "duration": "Timing depends on local conditions, equipment, and the specific method.",
@@ -2495,7 +2495,7 @@ export const FIELD_GUIDES: FieldGuide[] = [
     "slug": "store-food-reserve",
     "pillar": "store",
     "title": "Build a household food reserve",
-    "eyebrow": "Field guide 016 / Store",
+    "eyebrow": "Field guide 015 / Store",
     "summary": "Estimate a realistic reserve, prioritize familiar shelf-stable foods, store them safely, rotate stock, and plan for dietary and cooking needs.",
     "level": "Beginner",
     "duration": "Timing depends on local conditions, equipment, and the specific method.",
