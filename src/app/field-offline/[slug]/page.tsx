@@ -27,8 +27,8 @@ export default async function OfflineFieldGuidePage({ params }: { params: Promis
           <p className="field-guide-k">LIVV / FIELD / OFFLINE COPY</p>
           <div className="field-guide-title-row"><h1 className="field-guide-title">{guide.title}.</h1><span className="field-guide-mark" aria-hidden="true"><Leaf size={23} /></span></div>
           <p className="field-guide-intro">{guide.summary}</p>
-          <div className="field-guide-meta"><span>{guide.level}</span><span>{guide.duration}</span><span><ShieldCheck size={13} /> Read-only offline copy</span></div>
-          <p className="field-guide-save-note">This saved copy keeps the instructions available without a connection. You can record steps and field notes here; source links require a connection.</p>
+          <div className="field-guide-meta"><span>{guide.level}</span><span>{guide.duration}</span><span><ShieldCheck size={13} /> Offline guide + field record</span></div>
+          <p className="field-guide-save-note">This saved copy includes the full instructions and a local checklist. Step completion and field notes save on this device without a connection. Source links need a connection.</p>
         </header>
 
         <section className="field-guide-section">
