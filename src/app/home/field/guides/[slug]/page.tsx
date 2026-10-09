@@ -174,6 +174,9 @@ export default function FieldGuidePage() {
           <p className="field-guide-overline">01 / Understand</p>
           <h2>Before you begin</h2>
           <p className="field-guide-body">{guide.overview}</p>
+          <div className="field-guide-budget"><span>Starter budget</span><p>{guide.budgetEstimate}</p></div>
+          <h3>Before you start</h3>
+          <ul className="field-guide-prerequisites">{guide.prerequisites.map((item) => <li key={item}>{item}</li>)}</ul>
           <h3>What you need</h3>
           <ul className="field-guide-supplies">
             {guide.supplies.map((supply) => <li key={supply.item}><span>{supply.item}{supply.optional ? " · optional" : ""}</span><small>{supply.amount}</small></li>)}
