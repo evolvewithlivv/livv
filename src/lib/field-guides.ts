@@ -657,7 +657,873 @@ export const FIELD_GUIDES: FieldGuide[] = [
       }
     ]
   },
-
+  {
+    "slug": "grow-beans",
+    "pillar": "grow",
+    "title": "Grow snap beans",
+    "eyebrow": "Field guide 005 / Grow",
+    "summary": "Choose bush or pole beans, sow at the right time, manage water and support, and harvest a useful crop.",
+    "level": "Beginner",
+    "duration": "Often 50–70 days from sowing, depending on variety and conditions.",
+    "reviewedAt": "2026-10-09",
+    "reviewStatus": "reviewed",
+    "overview": "Snap beans are a productive warm-season crop. Bush varieties stay more compact and usually crop over a shorter period; pole varieties climb and often produce over a longer window. This guide focuses on harvesting tender green pods for eating fresh or freezing. Growing dry beans for storage requires a different harvest and drying plan.",
+    "budgetEstimate": "Rough U.S. estimate: $5–20 if you already have soil or a container; more if you need a large planter, trellis, or new growing mix.",
+    "prerequisites": [
+      "A location with roughly 6–8 hours of direct sun during the growing season.",
+      "Soil or potting mix that drains well and access to clean water.",
+      "A warm-season window after local frost danger has passed."
+    ],
+    "supplies": [
+      {
+        "item": "Snap bean seeds",
+        "amount": "1 packet"
+      },
+      {
+        "item": "Prepared bed or large container with drainage",
+        "amount": "Enough room for the spacing on the packet"
+      },
+      {
+        "item": "Trellis or sturdy support",
+        "amount": "For pole beans; optional for bush types"
+      },
+      {
+        "item": "Watering can or hose with gentle flow",
+        "amount": "1"
+      },
+      {
+        "item": "Clean harvest basket or container",
+        "amount": "1"
+      },
+      {
+        "item": "Mulch",
+        "amount": "Optional, to reduce moisture swings"
+      }
+    ],
+    "safety": [
+      "Do not sow beans into cold, waterlogged soil; seeds may rot. Follow the packet and local planting guidance.",
+      "Use only products labeled for edible beans and follow every label direction, including pre-harvest intervals.",
+      "Wash hands and harvested pods; refrigerate fresh beans promptly if not using them soon.",
+      "Do not eat raw dried beans. If growing dry beans, use a trusted food-safety source for proper preparation."
+    ],
+    "steps": [
+      {
+        "id": "variety",
+        "title": "Choose bush or pole beans",
+        "instruction": "Choose a snap-bean variety suited to your climate and the space available. Bush beans need less structure and tend to mature in a concentrated window. Pole beans need a stable trellis and can keep producing as you pick.",
+        "detail": "Check days to maturity, disease-resistance notes, pod type, and the packet's spacing. If you have limited space, a container-friendly bush variety may be simplest.",
+        "checkpoint": "You know the variety, its mature size, and whether it needs support.",
+        "timing": "Before purchasing"
+      },
+      {
+        "id": "site",
+        "title": "Wait for warm soil and prepare the bed",
+        "instruction": "Sow after frost danger has passed and the soil has warmed. Choose full sun and loosen the soil so water drains instead of pooling. For containers, use a sufficiently large pot with drainage and fresh potting mix.",
+        "detail": "Beans generally perform poorly in cold, wet soil. Do not add fertilizer automatically; too much nitrogen can encourage leafy growth at the expense of pods.",
+        "checkpoint": "The site is sunny, warm, and drains well.",
+        "timing": "Before sowing"
+      },
+      {
+        "id": "sow",
+        "title": "Sow directly at packet spacing",
+        "instruction": "Plant seeds directly where they will grow, at the depth and spacing printed on the packet. Water gently after sowing and label the row or container with the variety and date.",
+        "detail": "Beans usually do not need to be started indoors. Avoid soaking the seedbed; maintain even moisture while seedlings emerge.",
+        "checkpoint": "Seeds are at the recommended depth and the soil is moist, not saturated.",
+        "timing": "About 15–30 minutes"
+      },
+      {
+        "id": "support",
+        "title": "Set support before vines tangle",
+        "instruction": "For pole beans, install a sturdy trellis before vines become large. Anchor it securely and keep it clear of paths. Bush beans normally do not need a trellis.",
+        "detail": "Adding support early avoids damaging roots and stems later. Do not rely on a light stake that can fall in wind or under the weight of wet vines.",
+        "checkpoint": "Pole beans have a stable climbing structure; bush beans have room to spread.",
+        "timing": "At sowing or shortly after emergence"
+      },
+      {
+        "id": "water",
+        "title": "Water the root zone consistently",
+        "instruction": "Check soil moisture regularly, especially during flowering and pod formation. Water the soil rather than repeatedly wetting foliage, and adjust for rainfall, heat, wind, and container size.",
+        "detail": "Large moisture swings can reduce pod quality. Avoid frequent shallow watering if it leaves the deeper root zone dry, but never leave roots standing in water.",
+        "checkpoint": "The root zone stays evenly moist without prolonged waterlogging.",
+        "timing": "Check daily in hot or dry weather"
+      },
+      {
+        "id": "inspect",
+        "title": "Inspect plants and avoid unnecessary treatments",
+        "instruction": "Look at the undersides of leaves and young pods for holes, spots, webbing, or clusters of insects. Identify the issue with a local extension resource before deciding whether any treatment is needed.",
+        "detail": "Rotate bean crops to a different bed in following seasons when practical. Remove diseased plant material appropriately and keep weeds from competing with young plants.",
+        "checkpoint": "You can describe any damage and have a reliable identification before treating.",
+        "timing": "Every few days"
+      },
+      {
+        "id": "harvest",
+        "title": "Pick pods while they are tender",
+        "instruction": "Harvest when pods reach the variety's expected size and seeds inside are still small. Use two hands to avoid pulling vines from their supports, and pick regularly to encourage continued production.",
+        "detail": "Harvest timing varies by variety. Remove overmature pods if you want the plant to continue producing snap beans. Keep harvested pods cool and use or preserve them promptly.",
+        "checkpoint": "Pods are firm and tender, and harvesting has not damaged the plant.",
+        "timing": "Often 50–70 days from sowing"
+      },
+      {
+        "id": "record",
+        "title": "Review the crop and plan the next round",
+        "instruction": "Record variety, sowing date, first harvest, yield, pest issues, and watering changes. If the local season is long enough, use the packet and extension recommendations to decide whether another sowing is worthwhile.",
+        "detail": "Do not assume a second sowing will mature before frost. Compare the variety's days to maturity with the remaining local growing window.",
+        "checkpoint": "Your notes tell you what worked and whether there is time for another crop.",
+        "timing": "After the first harvest"
+      }
+    ],
+    "troubleshoot": [
+      {
+        "problem": "Seeds rot or fail to emerge",
+        "cause": "Soil was cold or saturated, seeds were planted too deeply, or seed viability was poor.",
+        "response": "Check soil temperature guidance, drainage, and packet depth. Wait for warmer, workable soil before re-sowing."
+      },
+      {
+        "problem": "Many leaves but few pods",
+        "cause": "Excess nitrogen, too much shade, or heat and other weather stress may be contributing.",
+        "response": "Confirm the site receives enough sun, avoid unneeded high-nitrogen fertilizer, and compare conditions with local extension guidance."
+      },
+      {
+        "problem": "Flowers fall without pods",
+        "cause": "Heat, drought, irregular moisture, or other stress during flowering can interfere with pod set.",
+        "response": "Keep moisture more consistent, reduce avoidable stress, and check local recommendations for the variety and weather."
+      },
+      {
+        "problem": "Leaves have holes or mottled patches",
+        "cause": "Insects, disease, or physical damage may be present.",
+        "response": "Inspect both sides of leaves and identify the cause before using any pesticide. Follow the label exactly if treatment is warranted."
+      },
+      {
+        "problem": "Pods are tough or oversized",
+        "cause": "Pods were left on the plant too long for snap-bean harvest.",
+        "response": "Pick smaller and more frequently next time; use the variety's harvest guidance as your reference."
+      }
+    ],
+    "verification": [
+      "I chose a variety and planting date suited to my local conditions.",
+      "I planted directly at the packet's depth and spacing.",
+      "I can keep the root zone evenly moist without waterlogging it.",
+      "I know how to inspect plants and harvest tender pods without damaging vines.",
+      "I recorded dates, results, and a realistic plan for the next crop."
+    ],
+    "maintenance": [
+      "Check moisture and rainfall regularly, especially during flowering and pod fill.",
+      "Inspect leaves and pods every few days for emerging problems.",
+      "Harvest promptly when pods are tender and refrigerate or preserve safely.",
+      "Clean up the crop and rotate planting location where practical."
+    ],
+    "sources": [
+      {
+        "title": "Growing beans in home gardens",
+        "publisher": "University of Minnesota Extension",
+        "url": "https://extension.umn.edu/vegetables/growing-beans",
+        "checked": "2026-10-09"
+      },
+      {
+        "title": "Vegetable gardening",
+        "publisher": "Penn State Extension",
+        "url": "https://extension.psu.edu/vegetable-gardening",
+        "checked": "2026-10-09"
+      }
+    ]
+  },
+  {
+    "slug": "grow-herbs",
+    "pillar": "grow",
+    "title": "Grow useful culinary herbs",
+    "eyebrow": "Field guide 007 / Grow",
+    "summary": "Start with a few useful herbs, match each plant to its light and water needs, and harvest without exhausting it.",
+    "level": "Beginner",
+    "duration": "First light harvest may be possible in 3–8 weeks; plants and growing methods vary.",
+    "reviewedAt": "2026-10-09",
+    "reviewStatus": "reviewed",
+    "overview": "Herbs are not one uniform crop. Basil likes warmth, while parsley and chives tolerate cooler conditions; rosemary prefers excellent drainage and can be difficult to overwinter outdoors in cold climates. This guide shows how to start a small mixed herb setup without treating every plant the same.",
+    "budgetEstimate": "Rough U.S. estimate: $10–30 for a few seed packets or starter plants and basic potting mix if you reuse containers.",
+    "prerequisites": [
+      "A bright outdoor space or a suitable indoor growing light.",
+      "Containers with drainage or a prepared garden area.",
+      "A plan to label each herb and check its individual growing requirements."
+    ],
+    "supplies": [
+      {
+        "item": "Two or three culinary herbs",
+        "amount": "Seeds or healthy starter plants"
+      },
+      {
+        "item": "Containers with drainage",
+        "amount": "One per plant or compatible group; check mature size"
+      },
+      {
+        "item": "Quality potting mix",
+        "amount": "Enough to fill containers"
+      },
+      {
+        "item": "Watering can",
+        "amount": "1"
+      },
+      {
+        "item": "Clean scissors",
+        "amount": "1 pair"
+      },
+      {
+        "item": "Plant labels",
+        "amount": "Recommended"
+      }
+    ],
+    "safety": [
+      "Use food-gardening soil and clean containers. Do not use containers that held chemicals.",
+      "Identify each plant correctly before eating it; common names can refer to different species.",
+      "Wash harvested herbs under clean running water and use clean tools.",
+      "Keep pets and children away from plants that may be toxic to them; verify species-specific risks."
+    ],
+    "steps": [
+      {
+        "id": "choose",
+        "title": "Choose herbs you will actually use",
+        "instruction": "Start with two or three herbs used in meals you already cook. Basil is a warm-season annual in many climates; parsley is slower to establish; chives are often a hardy perennial. Check local guidance before choosing rosemary or other cold-sensitive herbs.",
+        "detail": "Buying every herb at once creates more watering and space demands. A small set you harvest regularly is a better first system.",
+        "checkpoint": "You can name each herb and describe its preferred season and mature size.",
+        "timing": "Before buying"
+      },
+      {
+        "id": "match",
+        "title": "Match light and containers to each plant",
+        "instruction": "Place sun-loving herbs where they receive the light recommended for that species. Use containers with drainage and fresh potting mix; choose a pot large enough for the plant's expected roots.",
+        "detail": "Different herbs can have different water needs. Group plants only when their light, moisture, and growth requirements are compatible.",
+        "checkpoint": "Each herb has suitable light, root space, and drainage.",
+        "timing": "15–30 minutes"
+      },
+      {
+        "id": "start",
+        "title": "Sow seeds or transplant carefully",
+        "instruction": "Follow the seed packet for sowing depth and spacing. For starter plants, water the root ball, loosen only tightly circling roots, set the plant at its previous soil level, and fill around it gently.",
+        "detail": "Some herb seeds need light to germinate or take longer than expected. The packet's instructions for the exact species take priority over general rules.",
+        "checkpoint": "Seeds are at the correct depth or transplants are stable and watered in.",
+        "timing": "20–40 minutes"
+      },
+      {
+        "id": "water",
+        "title": "Water by plant and pot, not by calendar",
+        "instruction": "Check the mix with a finger and water when the plant's needs and the pot's moisture level indicate it is time. Water thoroughly enough to moisten the root zone, then let excess drain. Empty standing water from saucers.",
+        "detail": "Basil often needs more consistent moisture than woody Mediterranean herbs such as rosemary. Do not apply one fixed watering schedule to every herb.",
+        "checkpoint": "You can explain how you decide whether each pot needs water.",
+        "timing": "Check daily while establishing"
+      },
+      {
+        "id": "observe",
+        "title": "Watch for stress before adding fertilizer",
+        "instruction": "Inspect new growth, leaf color, and the undersides of leaves every few days. If a plant struggles, check light, moisture, drainage, crowding, and pests before adding fertilizer or spraying anything.",
+        "detail": "Use fertilizer only when appropriate for the growing medium and species, and follow the label. More fertilizer does not automatically mean better flavor or growth.",
+        "checkpoint": "You have checked basic growing conditions before attempting a treatment.",
+        "timing": "Every few days"
+      },
+      {
+        "id": "harvest",
+        "title": "Harvest in a way that encourages regrowth",
+        "instruction": "Use clean scissors and take small amounts from established plants. For leafy herbs, avoid stripping the plant bare. For basil, pinch or cut just above a pair of leaves to encourage branching; use species-specific guidance for other herbs.",
+        "detail": "Avoid harvesting more than a healthy plant can replace. Remove flowers only when that suits the herb and your goal; flowers are useful for pollinators and may be desirable on some herbs.",
+        "checkpoint": "The plant retains healthy growth points and enough foliage to keep growing.",
+        "timing": "When plants are established"
+      },
+      {
+        "id": "store",
+        "title": "Use, refrigerate, or dry the harvest appropriately",
+        "instruction": "Rinse herbs under clean running water and dry them with clean equipment. Use fresh herbs promptly, refrigerate those that require it, or follow a reliable species-appropriate drying method if you want a shelf-stable supply.",
+        "detail": "Do not assume every herb dries or stores equally well. Label preserved herbs with the plant name and date, and discard material showing mold or spoilage.",
+        "checkpoint": "You have a safe plan for using or storing the harvested herb.",
+        "timing": "Immediately after harvest"
+      },
+      {
+        "id": "record",
+        "title": "Keep a simple growing record",
+        "instruction": "Label plants and record purchase or sowing date, light, watering observations, harvests, and any problems. Use those notes to decide which herbs earned their space.",
+        "detail": "The aim is a useful kitchen supply, not a large collection that becomes difficult to maintain.",
+        "checkpoint": "You can identify which plants are thriving and what to adjust next.",
+        "timing": "Weekly"
+      }
+    ],
+    "troubleshoot": [
+      {
+        "problem": "Leaves yellow and the mix stays wet",
+        "cause": "Poor drainage or overwatering may be stressing the roots.",
+        "response": "Check drainage holes, empty standing water, and let the mix reach the appropriate moisture level before watering again."
+      },
+      {
+        "problem": "Plants are thin and stretched",
+        "cause": "Insufficient light or crowding is likely.",
+        "response": "Move plants toward suitable stronger light gradually and space them according to species guidance."
+      },
+      {
+        "problem": "Basil wilts in heat",
+        "cause": "The container may be drying rapidly or the plant may be stressed by intense conditions.",
+        "response": "Check moisture at root depth, provide appropriate protection from extreme heat, and avoid keeping the pot saturated."
+      },
+      {
+        "problem": "Leaves have spots, webbing, or sticky residue",
+        "cause": "Pests, disease, or environmental stress may be involved.",
+        "response": "Isolate affected pots if practical, identify the issue with a reliable extension source, and avoid unlabelled treatments on edible plants."
+      },
+      {
+        "problem": "Herb tastes weak or grows slowly",
+        "cause": "The species may lack enough light, have unsuitable growing conditions, or be harvested too heavily.",
+        "response": "Confirm species needs, review light and root space, and allow the plant to recover before taking more foliage."
+      }
+    ],
+    "verification": [
+      "I chose herbs I use and identified each plant correctly.",
+      "Each herb has suitable light, root space, drainage, and a species-appropriate watering plan.",
+      "I can inspect for common stress without immediately reaching for fertilizer or pesticides.",
+      "I know how to harvest while leaving healthy growth points.",
+      "I recorded which herbs are useful enough to keep growing."
+    ],
+    "maintenance": [
+      "Check each container's moisture and drainage regularly.",
+      "Inspect new growth and leaf undersides every few days.",
+      "Harvest modestly with clean scissors and use the crop promptly.",
+      "Review seasonal needs and protect or replace plants according to local conditions."
+    ],
+    "sources": [
+      {
+        "title": "Growing herbs in home gardens",
+        "publisher": "Penn State Extension",
+        "url": "https://extension.psu.edu/herbs",
+        "checked": "2026-10-09"
+      },
+      {
+        "title": "Growing herbs",
+        "publisher": "University of Minnesota Extension",
+        "url": "https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/growing-herbs",
+        "checked": "2026-10-09"
+      }
+    ]
+  },
+  {
+    "slug": "keep-bees",
+    "pillar": "keep",
+    "title": "Prepare for responsible beekeeping",
+    "eyebrow": "Field guide 008 / Keep",
+    "summary": "Assess whether bees fit your site, learn from an experienced local beekeeper, and build a seasonal care and health plan before acquiring a colony.",
+    "level": "Intermediate",
+    "duration": "Preparation takes weeks to months; beekeeping is a seasonal, ongoing responsibility.",
+    "reviewedAt": "2026-10-09",
+    "reviewStatus": "reviewed",
+    "overview": "Honey bees are livestock that require knowledge, equipment, time, and money. This guide is a responsible entry pathway, not a substitute for hands-on instruction. Do not purchase a colony until local rules, neighbors, forage, water, protective equipment, and access to experienced help have been addressed.",
+    "budgetEstimate": "Costs vary widely by region and equipment. Expect startup costs to include a hive, protective gear, tools, a colony, training, and recurring health-management supplies; obtain local quotes before committing.",
+    "prerequisites": [
+      "Confirm local and state rules, property restrictions, registration requirements, and any setback rules.",
+      "Identify a local beekeeping association, extension educator, or experienced mentor willing to provide hands-on guidance.",
+      "Ensure everyone who may be exposed understands sting risk and has an emergency plan appropriate to known allergies."
+    ],
+    "supplies": [
+      {
+        "item": "Introductory beekeeping course or mentor",
+        "amount": "Before ordering bees"
+      },
+      {
+        "item": "Suitable hive and stand",
+        "amount": "Select with local mentor and climate in mind"
+      },
+      {
+        "item": "Properly fitted veil and protective clothing",
+        "amount": "Required for hive work"
+      },
+      {
+        "item": "Hive tool and appropriate smoker",
+        "amount": "Learn safe use with a mentor"
+      },
+      {
+        "item": "Clean water source",
+        "amount": "Reliable during warm weather"
+      },
+      {
+        "item": "Local inspection and health-management plan",
+        "amount": "Written before acquiring a colony"
+      }
+    ],
+    "safety": [
+      "People with known or suspected severe sting allergy should discuss exposure and emergency planning with a qualified clinician before participating.",
+      "Never open a hive alone as a first-time keeper. Learn protective equipment, smoker handling, and colony inspection in person.",
+      "Do not place hives where flight paths endanger neighbors, pets, sidewalks, or public spaces. Follow local rules and communicate with affected neighbors.",
+      "Use only approved treatments according to current label directions and local extension or veterinary guidance. Record treatment dates and honey supers restrictions.",
+      "Avoid improvised chemical treatments and do not assume honey production is guaranteed."
+    ],
+    "steps": [
+      {
+        "id": "rules",
+        "title": "Confirm legality and site suitability",
+        "instruction": "Check municipal rules, lease or HOA terms, state registration, required setbacks, and any local nuisance or water requirements. Assess sunlight, wind protection, safe access, flight paths, and a reliable water source.",
+        "detail": "A site that looks convenient to you may create problems for neighbors or people walking nearby. A local mentor can help assess the actual property before you spend money.",
+        "checkpoint": "You have confirmed rules and have a safe, permitted site.",
+        "timing": "Before buying equipment"
+      },
+      {
+        "id": "learn",
+        "title": "Find hands-on instruction first",
+        "instruction": "Join a local beekeeping association or course and arrange to observe an experienced keeper through a full inspection. Learn how to recognize normal brood, food stores, queen status, disease signs, and when to ask for help.",
+        "detail": "Books and videos cannot replace practice handling live colonies. The first season should prioritize learning colony health and safe technique over harvesting honey.",
+        "checkpoint": "A mentor has agreed to help you learn inspections and local seasonal timing.",
+        "timing": "Several weeks or months"
+      },
+      {
+        "id": "budget",
+        "title": "Build a realistic equipment and time plan",
+        "instruction": "Price a compatible hive system, protective clothing, tools, colony, feed if needed, health monitoring, transport, and recurring supplies. Plan for regular inspections during the active season and urgent attention during adverse weather or suspected disease.",
+        "detail": "Do not buy mismatched used equipment without inspecting it with an experienced keeper. Equipment can carry pests or pathogens, and local recommendations differ.",
+        "checkpoint": "Your budget includes ongoing care, not just the initial hive and bees.",
+        "timing": "Before ordering a colony"
+      },
+      {
+        "id": "prepare",
+        "title": "Set up water, stand, and flight management",
+        "instruction": "Install the stand securely and set the hive in its planned location. Provide a dependable clean water source before bees need it, and use mentor-approved barriers or orientation methods if needed to direct flight paths away from people.",
+        "detail": "Bees may forage over a wide area, but the hive entrance and nearby water can influence where activity concentrates. Keep access clear and the hive stable.",
+        "checkpoint": "The site is secure, accessible for safe work, and designed to reduce conflicts.",
+        "timing": "Before bees arrive"
+      },
+      {
+        "id": "colony",
+        "title": "Acquire bees with local guidance",
+        "instruction": "Choose a reputable local supplier and a colony type suited to your climate and experience. Coordinate arrival and installation with your mentor; do not improvise installation or combine colonies based only on online advice.",
+        "detail": "Transport, timing, and installation differ by colony format and region. Ask your mentor to supervise the first installation and explain what normal settling-in looks like.",
+        "checkpoint": "The colony was acquired legally and installed with qualified hands-on guidance.",
+        "timing": "At the locally appropriate season"
+      },
+      {
+        "id": "inspect",
+        "title": "Learn a calm, consistent inspection routine",
+        "instruction": "With your mentor, inspect at locally recommended intervals and record brood pattern, eggs or young larvae, food stores, temperament, space, and any signs of pests or disease. Work in suitable weather and stop if conditions become unsafe.",
+        "detail": "Do not open colonies during storms or extreme conditions. Keep smoke use and hive handling within what you have been taught; close the hive properly and record what you observed.",
+        "checkpoint": "You can describe colony condition from written observations and know when to seek help.",
+        "timing": "Seasonal, mentor-guided"
+      },
+      {
+        "id": "health",
+        "title": "Monitor pests and diseases responsibly",
+        "instruction": "Follow your local extension or apiary-inspector plan for monitoring Varroa mites and other locally relevant threats. Use validated monitoring methods and approved controls only when indicated, following label directions and honey-super restrictions.",
+        "detail": "Pest pressure changes by season and region. Visual inspection alone may miss important problems; ask your mentor how and when to sample and record results.",
+        "checkpoint": "You have a written monitoring calendar and know whom to contact when results are concerning.",
+        "timing": "At the recommended local intervals"
+      },
+      {
+        "id": "winter",
+        "title": "Prepare for seasonal changes and review",
+        "instruction": "Use local guidance to assess food stores, ventilation, moisture, pests, and winter preparation. Review records with your mentor and plan equipment repairs or colony support before the next season.",
+        "detail": "Winter survival depends on climate, colony strength, stores, pests, and management. Avoid universal feed amounts or guarantees; use local advice for your hive and conditions.",
+        "checkpoint": "Your records and local plan cover the next seasonal transition.",
+        "timing": "Before seasonal conditions change"
+      }
+    ],
+    "troubleshoot": [
+      {
+        "problem": "Bees behave unusually defensive",
+        "cause": "Weather, colony condition, disturbance, genetics, or other factors may contribute.",
+        "response": "Stop the inspection safely, move away from the flight path, and contact your mentor. Reassess timing, technique, and site safety before another visit."
+      },
+      {
+        "problem": "You see many mites, damaged brood, or a collapsing colony",
+        "cause": "A serious pest or disease issue may be present.",
+        "response": "Avoid guessing at treatment. Contact your mentor and local apiary inspector or extension service promptly, follow approved monitoring and treatment guidance, and document observations."
+      },
+      {
+        "problem": "Bees gather at a neighbor's pool or outdoor tap",
+        "cause": "The colony may be using an easy nearby water source.",
+        "response": "Provide a consistent safer water source on your property and ask a local mentor about site adjustments. Communicate respectfully and follow local nuisance rules."
+      },
+      {
+        "problem": "You cannot safely complete an inspection",
+        "cause": "Weather, equipment fit, temperament, or inexperience may make the work unsafe.",
+        "response": "Close the hive if safe to do so, leave the area, and arrange an experienced keeper to help. Do not force the inspection."
+      }
+    ],
+    "verification": [
+      "I checked local laws, property restrictions, and registration requirements.",
+      "I found a local course or mentor for hands-on learning.",
+      "I have a realistic budget and ongoing time plan.",
+      "The site, water, equipment, and sting emergency plan are ready.",
+      "I know how to record observations and who to contact about pests, disease, or unsafe behavior."
+    ],
+    "maintenance": [
+      "Follow local seasonal inspection recommendations and record findings.",
+      "Monitor pests using validated methods and act on current local guidance.",
+      "Maintain protective equipment, hive stands, water, and secure access.",
+      "Review colony health and seasonal plans with an experienced local beekeeper.",
+      "Do not harvest honey until colony health, stores, and local guidance support it."
+    ],
+    "sources": [
+      {
+        "title": "Beekeeping",
+        "publisher": "Penn State Extension",
+        "url": "https://extension.psu.edu/insects-pests-and-diseases/pollinators/beekeeping",
+        "checked": "2026-10-09"
+      },
+      {
+        "title": "Honey Bee Health",
+        "publisher": "USDA Agricultural Research Service",
+        "url": "https://www.ars.usda.gov/oc/br/honey-bee-health/",
+        "checked": "2026-10-09"
+      }
+    ]
+  },
+  {
+    "slug": "preserve-fermented-vegetables",
+    "pillar": "preserve",
+    "title": "Ferment vegetables safely",
+    "eyebrow": "Field guide 009 / Preserve",
+    "summary": "Set up a small vegetable fermentation using a tested recipe, clean equipment, controlled salt, and a reliable way to judge the result.",
+    "level": "Intermediate",
+    "duration": "Often several days to weeks, depending on the tested recipe, temperature, and vegetable.",
+    "reviewedAt": "2026-10-09",
+    "reviewStatus": "reviewed",
+    "overview": "Fermentation is a food-preservation process that depends on the correct ingredients, salt concentration, temperature, time, and handling. This guide teaches the workflow, but it intentionally does not invent a universal salt ratio or fermentation time. Choose one tested recipe from a recognized food-preservation authority and follow its ingredient amounts and process exactly.",
+    "budgetEstimate": "Rough U.S. estimate: $10–30 for a small batch if you already have a food-safe vessel and basic kitchen tools; specialized fermentation weights or airlocks add cost.",
+    "prerequisites": [
+      "A tested recipe for the exact vegetable and method from a recognized food-preservation authority.",
+      "A food-safe vessel, clean utensils, accurate measuring tools, and a way to follow the recipe's temperature guidance.",
+      "Enough refrigerator space or another storage method explicitly specified by the tested recipe."
+    ],
+    "supplies": [
+      {
+        "item": "Fresh, sound vegetables",
+        "amount": "Exact amount in the selected tested recipe"
+      },
+      {
+        "item": "Salt and any other ingredients",
+        "amount": "Exact type and amount required by the recipe"
+      },
+      {
+        "item": "Food-safe fermentation vessel",
+        "amount": "Sized for the recipe"
+      },
+      {
+        "item": "Approved weight or method to keep vegetables submerged",
+        "amount": "As specified by the recipe"
+      },
+      {
+        "item": "Clean knife, cutting board, and measuring tools",
+        "amount": "1 set"
+      },
+      {
+        "item": "Label and date marker",
+        "amount": "1"
+      }
+    ],
+    "safety": [
+      "Do not substitute a social-media recipe for a tested food-preservation recipe. Do not guess salt amounts, temperature, time, or storage life.",
+      "Use the recipe's specified salt type and concentration. Reduced-sodium substitutions can make fermentation unsafe unless a tested recipe explicitly supports them.",
+      "Keep vegetables submerged using the tested method and use clean equipment. Do not seal an actively fermenting vessel unless it is designed to safely vent pressure.",
+      "Discard the batch if you see unexpected fuzzy mold, unusual discoloration, or signs of spoilage, or if the tested recipe says the batch has failed. Do not taste questionable food to check safety.",
+      "Fermented vegetables are not automatically shelf-stable. Refrigerate or process for storage only as directed by the tested recipe."
+    ],
+    "steps": [
+      {
+        "id": "recipe",
+        "title": "Choose the exact tested recipe first",
+        "instruction": "Select a recipe for the exact vegetable and fermentation method from the National Center for Home Food Preservation or a university extension food-preservation program. Read it from start to finish before buying ingredients.",
+        "detail": "Different vegetables, cuts, vessel sizes, and fermentation methods can require different salt levels and conditions. Do not combine instructions from several recipes.",
+        "checkpoint": "You have one complete, tested recipe and understand its ingredient amounts, temperature, time, and storage instructions.",
+        "timing": "Before preparation"
+      },
+      {
+        "id": "inspect",
+        "title": "Sort and prepare fresh produce",
+        "instruction": "Use fresh, sound vegetables and discard damaged or spoiled pieces. Wash and prepare produce, remove stems or trim as the recipe directs, and cut to the specified size.",
+        "detail": "The recipe's preparation details are part of the process. Do not change the cut size or batch scale casually because it can change how the food ferments.",
+        "checkpoint": "Produce is sound, clean, and prepared exactly as instructed.",
+        "timing": "Follow recipe"
+      },
+      {
+        "id": "clean",
+        "title": "Prepare equipment and measure precisely",
+        "instruction": "Clean the vessel, utensils, and work surface according to the recipe. Measure vegetables, salt, and liquid accurately using the specified units and tools.",
+        "detail": "Clean equipment reduces avoidable contamination but does not replace the recipe's salt and fermentation controls. Do not estimate salt by eye.",
+        "checkpoint": "All ingredients and equipment are ready, and the quantities match the recipe.",
+        "timing": "Follow recipe"
+      },
+      {
+        "id": "pack",
+        "title": "Pack and submerge the vegetables",
+        "instruction": "Pack the vegetables and add brine or other ingredients exactly as the recipe directs. Use the specified weight or method to keep solids below the liquid surface, and leave the required headspace.",
+        "detail": "Exposed pieces can mold or spoil. Use only a food-safe weight and a vessel appropriate for fermentation. Leave space for bubbling and expansion as the recipe specifies.",
+        "checkpoint": "Vegetables are submerged and the vessel is prepared as the recipe requires.",
+        "timing": "Follow recipe"
+      },
+      {
+        "id": "ferment",
+        "title": "Control temperature and observe the batch",
+        "instruction": "Keep the vessel within the recipe's temperature range and follow its venting instructions. Record the start date and inspect as directed without repeatedly disturbing the batch.",
+        "detail": "Fermentation rate changes with temperature. Bubbles or cloudiness can occur in normal fermentation, but appearance alone does not prove safety. Use the tested recipe's full criteria.",
+        "checkpoint": "The batch has stayed within the specified conditions and observations are recorded.",
+        "timing": "For the full recipe duration"
+      },
+      {
+        "id": "judge",
+        "title": "Evaluate only against the recipe's criteria",
+        "instruction": "At the recipe's stated time, check the required acidity or other completion indicators using the specified method. Do not rely only on smell, taste, bubbling, or elapsed days.",
+        "detail": "If the batch deviated from the process, shows unexpected mold or spoilage, or fails the recipe's criteria, do not try to rescue it by adding salt or extending the time without authoritative guidance.",
+        "checkpoint": "The batch meets the tested recipe's completion criteria, or it is safely discarded if it does not.",
+        "timing": "At the recipe's stated endpoint"
+      },
+      {
+        "id": "store",
+        "title": "Store it exactly as directed",
+        "instruction": "Transfer, refrigerate, or further process the fermented food only as the tested recipe directs. Label the container with the food name, batch date, and any use-by guidance provided by the source.",
+        "detail": "Do not assume a fermented product can be stored at room temperature. Shelf stability requires a validated process for that specific product.",
+        "checkpoint": "The finished batch is stored under the method and conditions specified by the tested recipe.",
+        "timing": "Immediately after completion"
+      },
+      {
+        "id": "record",
+        "title": "Keep a batch record",
+        "instruction": "Record the recipe source and version, ingredients and measurements, start date, temperature observations, completion checks, and storage method. Use this record to reproduce the same tested process next time.",
+        "detail": "Change only what the tested recipe permits. If you want to scale or alter a recipe, find an authoritative version that covers that change.",
+        "checkpoint": "You can trace the batch to the exact tested recipe and process.",
+        "timing": "At each stage"
+      }
+    ],
+    "troubleshoot": [
+      {
+        "problem": "Vegetables rise above the brine",
+        "cause": "The weight is too small, the vessel is overfilled, or gases have moved pieces upward.",
+        "response": "Follow the recipe's approved method to restore submersion using clean equipment. If contamination or spoilage is evident, discard the batch."
+      },
+      {
+        "problem": "No visible bubbles appear",
+        "cause": "Temperature, vegetable type, or fermentation stage may affect visible activity; lack of bubbles alone is not a safety test.",
+        "response": "Check the recipe's temperature range and completion criteria. Do not add ingredients or extend time based on guesswork."
+      },
+      {
+        "problem": "Fuzzy mold or unexpected discoloration appears",
+        "cause": "The batch may have been exposed to air or contaminated.",
+        "response": "Follow the tested source's discard guidance. Do not taste questionable food or attempt to scrape away mold and keep the remainder."
+      },
+      {
+        "problem": "The batch smells strongly unpleasant or seems spoiled",
+        "cause": "The process may have failed or the food may be spoiled.",
+        "response": "Do not taste it to confirm. Discard it safely and review whether the tested recipe, measurements, temperature, and submersion requirements were followed."
+      },
+      {
+        "problem": "You want to reduce salt or change the recipe",
+        "cause": "A change may alter fermentation conditions and food safety.",
+        "response": "Do not improvise substitutions. Find a tested recipe specifically designed for that change or keep the original recipe unchanged."
+      }
+    ],
+    "verification": [
+      "I chose one tested recipe from a recognized food-preservation authority.",
+      "I measured ingredients and followed the recipe's salt, temperature, timing, and vessel instructions exactly.",
+      "I kept vegetables submerged and followed the correct venting method.",
+      "I evaluated completion using the recipe's criteria rather than appearance alone.",
+      "I labeled and stored the batch exactly as directed, and I can trace it to the source."
+    ],
+    "maintenance": [
+      "Follow the recipe's specified temperature, venting, and inspection schedule throughout fermentation.",
+      "Keep a record of ingredients, dates, observations, and completion checks.",
+      "Store only under conditions explicitly allowed by the tested recipe.",
+      "Discard questionable or failed batches rather than trying to rescue them.",
+      "Use a tested recipe again for every new vegetable, method, or allowed variation."
+    ],
+    "sources": [
+      {
+        "title": "Fermenting",
+        "publisher": "National Center for Home Food Preservation",
+        "url": "https://nchfp.uga.edu/how/ferment/",
+        "checked": "2026-10-09"
+      },
+      {
+        "title": "Food Preservation",
+        "publisher": "Penn State Extension",
+        "url": "https://extension.psu.edu/food-preservation",
+        "checked": "2026-10-09"
+      }
+    ]
+  },
+  {
+    "slug": "grow-tomatoes",
+    "pillar": "grow",
+    "title": "Grow tomatoes",
+    "eyebrow": "Field guide 006 / Grow",
+    "summary": "Choose a tomato type, plant after frost danger, support the plant, water consistently, and troubleshoot common problems.",
+    "level": "Beginner",
+    "duration": "Usually about 60–85 days after transplanting, depending on variety and conditions.",
+    "reviewedAt": "2026-10-09",
+    "reviewStatus": "reviewed",
+    "overview": "Tomatoes need warmth, strong light, steady root-zone moisture, and enough space. Determinate varieties tend to stay more compact and ripen much of their crop in a concentrated period; indeterminate varieties keep growing and producing when conditions allow. The right variety and local planting window matter more than a rigid calendar.",
+    "budgetEstimate": "Rough U.S. estimate: $10–35 for one plant, soil or potting mix, and basic support if you reuse a container or garden bed. A large container, cage, or premium starter plant can increase the cost.",
+    "prerequisites": [
+      "A full-sun location receiving about 6–8 hours of direct sun.",
+      "A warm-season window after frost danger has passed and soil has warmed.",
+      "A bed or large container with drainage and a plan for sturdy support if the variety needs it."
+    ],
+    "supplies": [
+      {
+        "item": "Healthy tomato starter plant or seeds",
+        "amount": "Choose a locally suitable variety"
+      },
+      {
+        "item": "Garden bed or large container with drainage",
+        "amount": "Choose container size to suit variety and root growth"
+      },
+      {
+        "item": "Sturdy cage, stake, or trellis",
+        "amount": "Install at planting for vining types"
+      },
+      {
+        "item": "Quality potting mix or prepared garden soil",
+        "amount": "Enough for the root zone"
+      },
+      {
+        "item": "Watering can or hose",
+        "amount": "1"
+      },
+      {
+        "item": "Mulch",
+        "amount": "Optional, to reduce soil splash and moisture swings"
+      },
+      {
+        "item": "Clean pruning snips",
+        "amount": "Optional; pruning depends on variety"
+      }
+    ],
+    "safety": [
+      "Do not transplant outdoors before local frost danger has passed. Cold exposure can damage or kill plants.",
+      "Use only products labeled for tomatoes and follow all label directions, including any harvest interval.",
+      "Do not use fresh manure around edible crops. Use composted material and appropriate soil amendments.",
+      "Wash harvested tomatoes under clean running water. Do not use soap or household disinfectant on produce."
+    ],
+    "steps": [
+      {
+        "id": "variety",
+        "title": "Choose a type that fits your space",
+        "instruction": "Choose a variety suited to your local season and intended use. Determinate or bush types are often easier in limited spaces; indeterminate or vining types need sturdy support and room to grow. Check days to maturity and disease-resistance notes.",
+        "detail": "If you have had disease problems, look for resistance codes matching the diagnosed issue. Resistance reduces risk but is not a guarantee.",
+        "checkpoint": "You know the variety's growth habit, mature size, maturity window, and support needs.",
+        "timing": "Before buying"
+      },
+      {
+        "id": "site",
+        "title": "Prepare a sunny, draining site",
+        "instruction": "Choose a full-sun location with well-drained soil. In a container, use a large pot with drainage and fresh potting mix. Avoid planting tomatoes where tomatoes, potatoes, peppers, or eggplants recently grew when rotation is possible.",
+        "detail": "A cramped pot can dry rapidly and restrict growth; garden soil should not be used as container mix.",
+        "checkpoint": "The location is sunny, the root zone has room, and excess water can drain.",
+        "timing": "Before transplanting"
+      },
+      {
+        "id": "harden",
+        "title": "Prepare the plant for outdoor conditions",
+        "instruction": "If you started seeds indoors or bought plants kept in protected conditions, gradually expose them to outdoor sun and wind over about a week, bringing them inside when nights approach damaging cold. Water the root ball before planting.",
+        "detail": "A sudden move from sheltered indoor conditions into full sun and wind can scorch or stress foliage.",
+        "checkpoint": "The plant is acclimated and local conditions are suitable for planting.",
+        "timing": "About 7 days before planting"
+      },
+      {
+        "id": "plant",
+        "title": "Transplant and install support",
+        "instruction": "Plant after frost danger has passed and soil has warmed. Set the root ball firmly, water it in, and install the cage, stake, or trellis at planting so later work does not damage established roots.",
+        "detail": "Tomatoes can form roots along buried stems, but follow trusted local guidance for the plant's condition and soil. Do not bury leaves or leave a peat-pot rim exposed to wick moisture away.",
+        "checkpoint": "The plant is stable, watered, and supported without constricting the stem.",
+        "timing": "20–40 minutes"
+      },
+      {
+        "id": "water",
+        "title": "Water deeply and consistently",
+        "instruction": "Check moisture in the root zone and water thoroughly when needed, adjusting for rain, heat, soil, and container size. Water near the base rather than repeatedly wetting foliage, and avoid alternating between severe drying and saturation.",
+        "detail": "Irregular moisture can contribute to fruit cracking and blossom-end rot. Adding calcium without diagnosing the cause may not help.",
+        "checkpoint": "Root-zone moisture is consistent and water drains instead of pooling.",
+        "timing": "Check daily during hot or dry weather"
+      },
+      {
+        "id": "maintain",
+        "title": "Maintain foliage, spacing, and nutrition",
+        "instruction": "Keep weeds down and use suitable mulch to reduce soil splash. Inspect leaves and stems regularly. Prune only if appropriate for the variety and support system; determinate types generally need less pruning than indeterminate vines. Avoid excessive nitrogen fertilizer.",
+        "detail": "Crowded, persistently wet foliage increases disease risk. Follow soil-test or product-label recommendations rather than feeding on a fixed schedule.",
+        "checkpoint": "The plant has airflow, stable support, and no unexplained treatment routine.",
+        "timing": "Weekly"
+      },
+      {
+        "id": "inspect",
+        "title": "Troubleshoot before treating",
+        "instruction": "Check leaf undersides, stems, and fruit for spots, chewing, wilting, cracks, or discolored fruit ends. Compare symptoms with a trusted extension diagnostic resource and identify the cause before applying treatment.",
+        "detail": "Different problems can look similar. Seek local extension advice for fast-spreading or severe symptoms.",
+        "checkpoint": "You have a plausible identification or a plan to get one before treatment.",
+        "timing": "Every few days"
+      },
+      {
+        "id": "harvest",
+        "title": "Harvest at usable maturity",
+        "instruction": "Harvest when fruit has reached the variety's expected size and color and comes away easily, or use clean snips if the variety holds fruit tightly. Keep picked fruit shaded and handle it gently. As frost approaches, follow local extension advice on mature-green fruit that may finish ripening indoors.",
+        "detail": "Do not assume every fully green fruit will ripen well indoors. Separate damaged or spoiled fruit from sound fruit.",
+        "checkpoint": "Fruit is mature enough for its intended use and handled cleanly.",
+        "timing": "Often 60–85 days after transplanting"
+      },
+      {
+        "id": "record",
+        "title": "Record results and close the season",
+        "instruction": "Record the variety, planting date, first ripe fruit, watering pattern, yield, and any disease or fruit-quality issues. Clean up crop debris appropriately and plan rotation and variety changes for next season.",
+        "detail": "These notes help you choose a better variety or site instead of repeating the same problems.",
+        "checkpoint": "Your notes identify what worked, what failed, and one specific change for next season.",
+        "timing": "Throughout the season and at cleanup"
+      }
+    ],
+    "troubleshoot": [
+      {
+        "problem": "Leaves yellow and growth stalls",
+        "cause": "Water stress, poor drainage, nutrient imbalance, root restriction, or disease may be involved.",
+        "response": "Check moisture and drainage first, then root space and recent feeding. Compare symptoms with a reliable local extension guide before treating."
+      },
+      {
+        "problem": "Fruit develops dark, sunken patches at the blossom end",
+        "cause": "Blossom-end rot is commonly associated with inconsistent water supply and impaired calcium movement in developing fruit.",
+        "response": "Stabilize watering, mulch to reduce moisture swings, and review soil and nutrient guidance. Do not add calcium automatically without assessing conditions."
+      },
+      {
+        "problem": "Fruit cracks after rain or heavy watering",
+        "cause": "A rapid change in water uptake as fruit develops can cause cracking.",
+        "response": "Aim for more consistent root-zone moisture, harvest ripe fruit promptly, and choose crack-resistant varieties if the issue repeats."
+      },
+      {
+        "problem": "Flowers appear but fruit does not set",
+        "cause": "Heat, cold, humidity, or other stress can interfere with pollination and fruit set.",
+        "response": "Check local weather and variety guidance, maintain steady moisture, and avoid overfertilizing with nitrogen."
+      },
+      {
+        "problem": "Leaves show spots, yellowing, or rapid decline",
+        "cause": "Fungal, bacterial, viral, insect, or environmental issues can look similar.",
+        "response": "Identify the problem with a local extension diagnostic resource. Use treatments only as labeled."
+      },
+      {
+        "problem": "Plant leans or falls over",
+        "cause": "Support was insufficient, poorly anchored, or installed too late.",
+        "response": "Stabilize the support without damaging roots or stems, tie loosely with soft plant ties, and inspect after wind or heavy rain."
+      }
+    ],
+    "verification": [
+      "I selected a variety suited to my space and local season.",
+      "I waited until frost danger passed and planted into a sunny, draining site.",
+      "I installed support at planting and can keep root-zone moisture consistent.",
+      "I know common fruit disorders and when symptoms need expert identification.",
+      "I recorded dates, yield, and changes to try next season."
+    ],
+    "maintenance": [
+      "Check moisture regularly and adjust for rain, heat, and container size.",
+      "Inspect leaves, stems, and fruit weekly and identify problems before treatment.",
+      "Keep supports stable, remove weeds, and use mulch where suitable.",
+      "Harvest ripe fruit promptly and handle it cleanly.",
+      "Record outcomes and rotate related crops where practical."
+    ],
+    "sources": [
+      {
+        "title": "Growing tomatoes in home gardens",
+        "publisher": "University of Minnesota Extension",
+        "url": "https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/growing-tomatoes",
+        "checked": "2026-10-09"
+      },
+      {
+        "title": "Planting the vegetable garden",
+        "publisher": "University of Minnesota Extension",
+        "url": "https://extension.umn.edu/garden-and-home/yard-and-garden/gardening-in-minnesota/planting-the-vegetable-garden",
+        "checked": "2026-10-09"
+      }
+    ]
+  }
 ];
 
 export function getFieldGuide(slug: string) {
