@@ -24,7 +24,7 @@ const checks=[
 {name:"sign-out clears device member state without deleting cloud data",file:"src/lib/auth.ts",patterns:["clearLocalCloudSyncedState","client.auth.signOut"]},
 {name:"public health endpoint is no-store and non-indexable",file:"src/app/api/health/route.ts",patterns:["force-dynamic","Cache-Control","no-store","X-Robots-Tag","noindex"]},
 {name:"PWA manifest is standalone and scoped",file:"src/app/manifest.ts",patterns:["display:\"standalone\"","scope:\"/\"","prefer_related_applications:false","192x192","512x512"]},
-{name:"PWA service worker avoids authenticated and API caching",file:"public/sw.js",patterns:["serviceWorker","CACHE","/auth","/manifest.webmanifest","/api/","/home"]},
+{name:"PWA service worker avoids authenticated and API caching",file:"public/sw.js",patterns:["FIELD_CACHE","CACHE_FIELD_GUIDE","/auth","/manifest.webmanifest","/api/","/home"]},
 {name:"root registers the service worker",file:"src/app/layout.tsx",patterns:["serviceWorker","navigator.serviceWorker.register","/sw.js"]},
 {name:"private routes are excluded from robots",file:"src/app/robots.ts",patterns:["/home","/auth","/onboarding","/api","sitemap.xml"]},
 {name:"sitemap contains public legal routes",file:"src/app/sitemap.ts",patterns:["/legal/terms","/legal/privacy","/legal/dmca"]},
