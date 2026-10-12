@@ -251,3 +251,22 @@
 .ho-pillars img{width:min(380px,100%);height:auto;max-height:none;object-fit:contain;display:block}
 html[data-theme="dark"] .ho-pillars img{filter:invert(1)}
 @media(max-width:360px){.ho-system-grid{grid-template-columns:1fr}.ho-system{min-height:92px}}
+
+
+/* Daily Mission — one focused action, integrated with the existing Home system. */
+.ho-mission{
+  margin-top:1.45rem;
+  padding:1.05rem 1rem 1rem;
+  border:1px solid color-mix(in srgb,var(--line) 85%,transparent);
+  border-radius:20px;
+  background:color-mix(in srgb,var(--ink) 3.5%,transparent);
+}
+.ho-mission-head{display:flex;align-items:center;justify-content:space-between;gap:.75rem}
+.ho-mission-head .ho-k{margin:0}
+.ho-mission-status{font-size:10px;font-weight:650;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+.ho-mission-status.is-done{color:var(--accent)}
+.ho-mission-title{margin:.8rem 0 0;font-size:1.35rem;font-weight:650;letter-spacing:-.035em;line-height:1.2;color:var(--ink)}
+.ho-mission-copy{margin:.45rem 0 0;font-size:.92rem;line-height:1.5;color:var(--muted)}
+.ho-mission-why{margin:.75rem 0 0;font-size:.78rem;line-height:1.45;color:var(--muted)}
+.ho-mission-cta{display:flex;align-items:center;justify-content:space-between;gap:.75rem;margin-top:1rem;padding:.75rem .85rem;min-height:44px;border-radius:12px;background:color-mix(in srgb,var(--ink) 6%,transparent);color:var(--ink);font-size:.88rem;font-weight:650;text-decoration:none;-webkit-tap-highlight-color:transparent}
+.ho-mission-cta:active{opacity:.75;transform:scale(.99)}
