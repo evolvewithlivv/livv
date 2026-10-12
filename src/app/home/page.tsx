@@ -14,6 +14,40 @@ import { nextMove, type Move } from "@/lib/command";
 import { consumeFirstSessionPending } from "@/lib/onboarding";
 import "./home-signal.css";
 
+const DAILY_MISSION_KEY = "livv-daily-mission-v1";
+
+function missionForDate(date: Date): DailyTask | null {
+  const key = dayKey(date);
+  try {
+    const saved = window.localStorage.getItem(DAILY_MISSION_KEY);
+    if (saved) {
+      const parsed = JSON.parse(saved) as { key?: string; mission?: DailyTask };
+      if (
+        parsed.key === key &&
+        parsed.mission &&
+        typeof parsed.mission.id === "string" &&
+        typeof parsed.mission.title === "string" &&
+        typeof parsed.mission.description === "string"
+      ) {
+        return parsed.mission;
+      }
+    }
+  } catch {
+    // Recover by selecting today's mission from the existing Daily tasks.
+  }
+
+  const tasks = dailyTasks(date);
+  if (!tasks.length) return null;
+  const dateSeed = key.replace(/-/g, "").split("").reduce((sum, digit) => sum + Number(digit), 0);
+  const mission = tasks[dateSeed % tasks.length];
+  try {
+    window.localStorage.setItem(DAILY_MISSION_KEY, JSON.stringify({ key, mission }));
+  } catch {
+    // The mission remains usable for this render even if storage is unavailable.
+  }
+  return mission;
+}
+
 function greetingForHour(hour: number): string {
   if (hour < 5) return "Still up";
   if (hour < 12) return "Good morning";
@@ -58,9 +92,7 @@ export default function HomePage() {
     setMove(nextMove(r));
     setQuestion(dailyQuestion(new Date()));
     const today = new Date();
-    const tasks = dailyTasks(today);
-    const dateSeed = dayKey(today).replace(/-/g, "").split("").reduce((sum, digit) => sum + Number(digit), 0);
-    const selectedMission = tasks.length ? tasks[dateSeed % tasks.length] : null;
+    const selectedMission = missionForDate(today);
     setMission(selectedMission);
     setMissionDone(Boolean(selectedMission && loadDailyState(today).completed.includes(selectedMission.id)));
     dailySummary(today);
