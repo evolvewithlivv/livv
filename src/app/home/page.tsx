@@ -6,7 +6,8 @@ import Link from "next/link";
 import { loadIdentity, addEmbers, type Identity } from "@/lib/identity";
 import { checkInRecord, isCheckedInToday, loadRecord, type LivvRecord } from "@/lib/record";
 import { feedback } from "@/lib/sensory";
-import { dailySummary, dailyQuestion } from "@/lib/daily";
+import { dailySummary, dailyQuestion, dailyTasks, loadDailyState, type DailyTask } from "@/lib/daily";
+import { dayKey } from "@/lib/dates";
 import { quoteForSession, type Quote } from "@/lib/quotes";
 import { embersFromAction } from "@/lib/embers";
 import { nextMove, type Move } from "@/lib/command";
@@ -47,6 +48,8 @@ export default function HomePage() {
   const [question, setQuestion] = useState("");
   const [now, setNow] = useState(() => new Date());
   const [firstSession, setFirstSession] = useState(false);
+  const [mission, setMission] = useState<DailyTask | null>(null);
+  const [missionDone, setMissionDone] = useState(false);
 
   const pull = () => {
     const r = loadRecord();
@@ -54,7 +57,13 @@ export default function HomePage() {
     setMe(loadIdentity());
     setMove(nextMove(r));
     setQuestion(dailyQuestion(new Date()));
-    dailySummary();
+    const today = new Date();
+    const tasks = dailyTasks(today);
+    const dateSeed = dayKey(today).replace(/-/g, "").split("").reduce((sum, digit) => sum + Number(digit), 0);
+    const selectedMission = tasks.length ? tasks[dateSeed % tasks.length] : null;
+    setMission(selectedMission);
+    setMissionDone(Boolean(selectedMission && loadDailyState(today).completed.includes(selectedMission.id)));
+    dailySummary(today);
   };
 
   useEffect(() => {
@@ -143,6 +152,28 @@ export default function HomePage() {
             <p className="ho-context">{actionableMove.reason}</p>
           ) : null}
         </section>
+
+        {mission ? (
+          <section className="ho-mission" aria-label="Daily mission">
+            <div className="ho-mission-head">
+              <p className="ho-k">Today&apos;s directive</p>
+              <span className={"ho-mission-status" + (missionDone ? " is-done" : "")}>
+                {missionDone ? "Complete" : "Daily mission"}
+              </span>
+            </div>
+            <h2 className="ho-mission-title">{mission.title}</h2>
+            <p className="ho-mission-copy">{mission.description}</p>
+            <p className="ho-mission-why">
+              {missionDone
+                ? "You followed through. The work counts because you did it."
+                : "One useful action. Put it into practice, then get back to your day."}
+            </p>
+            <Link href="/home/daily" className="ho-mission-cta">
+              {missionDone ? "Review Daily" : "Begin mission"}
+              <ArrowUpRight size={16} aria-hidden />
+            </Link>
+          </section>
+        ) : null}
 
         {move && showCheckIn ? (
           <section className="ho-block">
