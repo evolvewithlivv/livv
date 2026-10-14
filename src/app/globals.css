@@ -73,3 +73,42 @@ html[data-theme="light"] .livv-page .bg-white{background:rgb(var(--livv-ink)) !i
 html[data-theme="light"] .livv-page [class*="border-white"]{border-color:rgb(var(--livv-border)) !important}
 html[data-theme="light"] .livv-page [class*="text-white/"]{color:rgb(var(--livv-muted)) !important}
 html[data-theme="light"] .livv-page [class*="bg-white/"]{background:color-mix(in srgb,rgb(var(--livv-ink)) 4%,transparent) !important}
+
+
+/* Auth screens: clean, theme-aware first impression */
+.auth-page {
+  background: var(--livv-bg, #f5f6f8);
+  color: rgb(var(--livv-ink));
+  isolation: isolate;
+}
+.auth-glow {
+  left: 50%;
+  width: min(100vw, 44rem);
+  height: min(58vh, 34rem);
+  transform: translateX(-50%);
+  border-radius: 0 0 50% 50%;
+  background: radial-gradient(ellipse at 50% 22%, rgba(15,127,255,.11) 0%, rgba(15,127,255,.055) 38%, rgba(15,127,255,0) 76%);
+  pointer-events: none;
+}
+.auth-logo { position: relative; z-index: 1; }
+.auth-mode-active {
+  background: #111114 !important;
+  color: #fff !important;
+  box-shadow: 0 1px 2px rgba(0,0,0,.12);
+}
+.auth-mode-inactive {
+  background: transparent !important;
+  color: rgb(var(--livv-muted)) !important;
+}
+.auth-muted { color: rgb(var(--livv-muted)) !important; }
+.auth-link { color: rgb(var(--livv-ink)) !important; }
+html[data-theme="light"] .auth-logo { filter: brightness(0); }
+html[data-theme="light"] .auth-glow {
+  background: radial-gradient(ellipse at 50% 22%, rgba(15,127,255,.09) 0%, rgba(15,127,255,.04) 38%, rgba(15,127,255,0) 76%);
+}
+html[data-theme="dark"] .auth-glow {
+  background: radial-gradient(ellipse at 50% 22%, rgba(15,127,255,.13) 0%, rgba(15,127,255,.055) 38%, rgba(15,127,255,0) 76%);
+}
+@media (prefers-reduced-motion: reduce) {
+  .auth-mode { transition: none !important; }
+}
