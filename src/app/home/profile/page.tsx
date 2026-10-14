@@ -1,8 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ChevronRight, Settings2 } from "lucide-react";
-import { CrewWorkspace } from "@/components/crew-workspace";
+import { ChevronRight, Settings2, Users } from "lucide-react";
 import { useEffect, useState } from "react";
 import { loadIdentity, type Identity } from "@/lib/identity";
 import { loadRecord } from "@/lib/record";
@@ -110,7 +109,7 @@ export default function ProfilePage() {
           </div>
         </section>
 
-        <CrewWorkspace embedded />
+        <section className="you-section" aria-label="Crew"><p className="you-section-k">Your circle</p><Link href="/home/crew" className="you-social"><span className="you-social-mark"><Users size={18}/></span><span><strong>Crew</strong><small>Shared challenges. Keep each other accountable.</small></span><ChevronRight size={17} className="you-chev" /></Link></section>
 
         <section className="you-section" aria-label="Stay connected">
           <p className="you-section-k">Stay connected</p>
