@@ -24,7 +24,7 @@ async function api(path: string, init?: RequestInit) {
 const field = "w-full rounded-xl border border-[var(--livv-border,#333)] bg-transparent px-4 py-3 text-base outline-none";
 const button = "inline-flex items-center justify-center gap-2 rounded-full bg-[var(--livv-fg,#111)] px-5 py-3 text-sm font-semibold text-[var(--livv-bg,#fff)] disabled:opacity-50";
 
-export default function CrewPage() {
+export function CrewWorkspace({ embedded = false }: { embedded?: boolean }) {
   const [crews, setCrews] = useState<Crew[]>([]);
   const [selected, setSelected] = useState<Crew | null>(null);
   const [challenges, setChallenges] = useState<Challenge[]>([]);
@@ -62,9 +62,9 @@ export default function CrewPage() {
     finally { setBusy(false); }
   }
 
-  return <main className="min-h-full px-5 pb-28 pt-[max(1.25rem,env(safe-area-inset-top))]">
+  return <section className={embedded ? "mt-8 border-t border-current/15 pt-8" : "min-h-full px-5 pb-28 pt-[max(1.25rem,env(safe-area-inset-top))]"}>
     <div className="mx-auto w-full max-w-2xl">
-      <Link href="/home" className="mb-7 inline-flex items-center gap-2 text-sm opacity-70"><ArrowLeft size={17}/> Home</Link>
+      {!embedded && <Link href="/home" className="mb-7 inline-flex items-center gap-2 text-sm opacity-70"><ArrowLeft size={17}/> Home</Link>}
       <div className="mb-8 flex items-start justify-between gap-4">
         <div><p className="mb-2 text-xs font-semibold uppercase tracking-[0.22em] opacity-55">Evolve With LIVV</p><h1 className="text-4xl font-semibold tracking-tight">Crew</h1><p className="mt-2 max-w-md text-sm leading-6 opacity-65">Get better together. Build a small circle that shows up, shares progress, and keeps its word.</p></div>
         <div className="mt-1 rounded-2xl border border-current/10 p-3 opacity-80"><Users size={25}/></div>
@@ -95,5 +95,8 @@ export default function CrewPage() {
         <div className="flex gap-3 rounded-2xl bg-current/[0.035] p-4 text-sm"><ShieldCheck size={20} className="shrink-0 opacity-60"/><p className="opacity-65">Progress is self-reported unless LIVV explicitly marks it otherwise. Your Crew activity is private to authorized members.</p></div>
       </section>}
     </div>
-  </main>;
+  </section>;
 }
+
+export default function CrewPage() { return <CrewWorkspace />; }
+
