@@ -106,10 +106,10 @@ for select to authenticated using (
 );
 
 drop policy if exists "Members can view their crew roster" on public.crew_members;
-create policy "Members can view their crew roster" on public.crew_members
-for select to authenticated using (
-  exists (select 1 from public.crew_members mine where mine.crew_id = crew_members.crew_id and mine.user_id = auth.uid() and mine.status = 'active')
-);
+-- Direct reads are limited to the caller's own membership. Roster reads go
+-- through a server endpoint after membership is checked, avoiding recursive RLS.
+create policy "Members can view own membership" on public.crew_members
+for select to authenticated using (user_id = auth.uid());
 
 drop policy if exists "Members can view crew challenges" on public.crew_challenges;
 create policy "Members can view crew challenges" on public.crew_challenges
@@ -144,3 +144,59 @@ grant select on public.crews, public.crew_members, public.crew_challenges,
 
 comment on table public.crew_completions is 'Accepted activity events. Scores must be derived from eligible rows, never client-submitted totals.';
 comment on table public.crew_invitations is 'Invitation tokens are stored only as cryptographic hashes and managed by trusted server routes.';
+
+
+-- Atomically redeem invitation tokens. Callable only by the trusted service role;
+-- the API must pass the authenticated user id returned by Supabase Auth.
+create or replace function public.crew_accept_invitation(
+  p_token_hash text,
+  p_user_id uuid,
+  p_display_name text
+) returns jsonb
+language plpgsql
+security definer
+set search_path = public, pg_temp
+as $$
+declare
+  inv public.crew_invitations%rowtype;
+  crew_row public.crews%rowtype;
+  active_count integer;
+begin
+  if p_user_id is null or p_token_hash !~ '^[a-f0-9]{64}$' then
+    raise exception 'invalid invitation';
+  end if;
+
+  select * into inv from public.crew_invitations
+    where token_hash = p_token_hash
+    for update;
+  if not found or inv.revoked_at is not null or inv.expires_at <= now() or inv.uses >= inv.max_uses then
+    raise exception 'invitation unavailable';
+  end if;
+
+  select * into crew_row from public.crews where id = inv.crew_id and status = 'active';
+  if not found then raise exception 'crew unavailable'; end if;
+
+  select count(*) into active_count from public.crew_members
+    where user_id = p_user_id and status = 'active';
+  if active_count >= 20 then raise exception 'crew membership limit'; end if;
+
+  if exists (select 1 from public.crew_members where crew_id = inv.crew_id and user_id = p_user_id and status = 'active') then
+    return jsonb_build_object('crew_id', inv.crew_id, 'already_member', true);
+  end if;
+
+  insert into public.crew_members(crew_id,user_id,role,status,display_name)
+    values (inv.crew_id,p_user_id,'member','active',left(coalesce(nullif(trim(p_display_name),''),'Member'),60))
+    on conflict (crew_id,user_id) do update
+      set role='member', status='active', display_name=excluded.display_name,
+          joined_at=now(), left_at=null;
+
+  update public.crew_invitations set uses=uses+1 where id=inv.id;
+  insert into public.crew_audit_events(crew_id,actor_user_id,event_type)
+    values (inv.crew_id,p_user_id,'crew.member_joined');
+
+  return jsonb_build_object('crew_id',inv.crew_id,'already_member',false);
+end;
+$$;
+
+revoke all on function public.crew_accept_invitation(text,uuid,text) from public, anon, authenticated;
+grant execute on function public.crew_accept_invitation(text,uuid,text) to service_role;
