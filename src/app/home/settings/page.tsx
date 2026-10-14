@@ -31,14 +31,16 @@ type LookOption = {
 };
 
 const LOOK_OPTIONS: LookOption[] = [
-  { id: "device", label: "Device", hint: "Apple appearance", appearance: "system", theme: "daylight" },
-  { id: "daylight", label: "Daylight", hint: "LIVV light", appearance: "light", theme: "daylight" },
-  { id: "midnight", label: "Midnight", hint: "LIVV dark", appearance: "dark", theme: "midnight" },
+  { id: "light", label: "Light", hint: "Clean and bright", appearance: "light", theme: "daylight" },
+  { id: "dark", label: "Dark", hint: "Dark appearance", appearance: "dark", theme: "daylight" },
+  { id: "midnight", label: "Midnight", hint: "Deep black appearance", appearance: "dark", theme: "midnight" },
+  { id: "device", label: "Match device", hint: "Follow your device setting", appearance: "system", theme: "daylight" },
 ];
 
 function isLookActive(me: Identity, opt: LookOption): boolean {
   if (opt.id === "device") return me.appearance === "system";
-  if (opt.id === "daylight") return me.appearance === "light" && me.theme === "daylight";
+  if (opt.id === "light") return me.appearance === "light";
+  if (opt.id === "dark") return me.appearance === "dark" && me.theme === "daylight";
   if (opt.id === "midnight") return me.appearance === "dark" && me.theme === "midnight";
   return false;
 }
