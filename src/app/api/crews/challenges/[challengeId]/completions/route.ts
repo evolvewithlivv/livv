@@ -6,7 +6,7 @@ export const runtime = "nodejs";
 const json = (data: unknown, status = 200) => NextResponse.json(data, {
   status, headers: { "Cache-Control": "private, no-store, max-age=0" },
 });
-const UUID = /^[0-9a-f]{8}-[0-9a-f]{3}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 const ALLOWED_KEYS: Record<string, string[]> = {
   daily_action_days: ["mind", "body", "life", "daily_action"],
   workout_sessions: ["workout"],
