@@ -75,16 +75,22 @@ function relativeTime(iso: string) {
   return new Date(iso).toLocaleDateString(undefined, { month: "short", day: "numeric" });
 }
 
+function likesLabel(count: number, likedByMe: boolean) {
+  if (count <= 0) return likedByMe ? "Liked" : "Like";
+  if (count === 1) return "1 like";
+  return `${count} likes`;
+}
+
 const KIND_LABEL: Record<CrewUpdateKind, string> = {
   growth: "Growth",
   goal: "Goal",
-  support: "Needs support",
+  support: "Support",
 };
 
 const PROMPTS: Record<CrewUpdateKind, string> = {
   growth: "What are you learning or working on?",
-  goal: "What are you committing to? (self-reported)",
-  support: "Where could you use encouragement?",
+  goal: "What are you committing to?",
+  support: "Where could you use support?",
 };
 
 export function CrewWorkspace() {
@@ -260,7 +266,7 @@ export function CrewWorkspace() {
 
             {loadingDetail ? (
               <p className="crew-loading" role="status">
-                Loading Crew…
+                Loading…
               </p>
             ) : (
               <>
@@ -297,7 +303,7 @@ export function CrewWorkspace() {
                           Private link for people you trust
                         </span>
                       </span>
-                      <Plus size={18} />
+                      <Plus size={18} strokeWidth={1.7} />
                     </button>
                     {showInvite ? (
                       <div className="crew-invite-panel">
@@ -348,7 +354,7 @@ export function CrewWorkspace() {
                                 })
                               }
                             >
-                              <Copy size={15} />
+                              <Copy size={15} strokeWidth={1.7} />
                               Copy
                             </button>
                           </div>
@@ -359,10 +365,7 @@ export function CrewWorkspace() {
                 ) : null}
 
                 <section className="crew-section" aria-label="Share">
-                  <p className="crew-section-k">Share with your Crew</p>
-                  <p className="crew-hint-block">
-                    Goals and progress are self-reported. Share honestly.
-                  </p>
+                  <p className="crew-section-k">Share</p>
                   <div className="crew-kind-row" role="group" aria-label="Update type">
                     {(["growth", "goal", "support"] as CrewUpdateKind[]).map((k) => (
                       <button
@@ -386,7 +389,10 @@ export function CrewWorkspace() {
                     aria-label="Share an update"
                   />
                   <div className="crew-compose-row">
-                    <span className="crew-hint">{compose.trim().length}/800</span>
+                    <span className="crew-hint">
+                      {kind === "goal" ? "Self-reported · " : ""}
+                      {compose.trim().length}/800
+                    </span>
                     <button
                       type="button"
                       className="crew-btn"
@@ -402,7 +408,7 @@ export function CrewWorkspace() {
                           });
                           if (r.update) setUpdates((prev) => [r.update, ...prev]);
                           setCompose("");
-                          setMessage("Shared with your Crew.");
+                          setMessage("Shared.");
                         })
                       }
                     >
@@ -412,13 +418,12 @@ export function CrewWorkspace() {
                 </section>
 
                 <section className="crew-section" aria-label="Activity">
-                  <p className="crew-section-k">What’s happening</p>
+                  <p className="crew-section-k">Activity</p>
                   {updates.length === 0 ? (
                     <div className="crew-empty-feed">
-                      <p className="crew-empty-feed-t">No updates yet</p>
+                      <p className="crew-empty-feed-t">Nothing shared yet</p>
                       <p className="crew-empty-feed-s">
-                        Be the first to share what you’re working on or ask for
-                        support.
+                        Share what you’re working on, or ask for support.
                       </p>
                     </div>
                   ) : (
@@ -432,8 +437,9 @@ export function CrewWorkspace() {
                             <div className="crew-post-meta">
                               <strong>{u.author_display_name}</strong>
                               <span>
-                                {KIND_LABEL[u.kind as CrewUpdateKind] || "Growth"}{" "}
-                                · {relativeTime(u.created_at)}
+                                {KIND_LABEL[u.kind as CrewUpdateKind] || "Growth"}
+                                {" · "}
+                                {relativeTime(u.created_at)}
                                 {u.kind === "goal" ? " · self-reported" : ""}
                               </span>
                             </div>
@@ -443,11 +449,13 @@ export function CrewWorkspace() {
                             <button
                               type="button"
                               className={
-                                "crew-encourage" +
-                                (u.encouraged_by_me ? " is-on" : "")
+                                "crew-like" + (u.encouraged_by_me ? " is-on" : "")
                               }
                               disabled={busy}
                               aria-pressed={u.encouraged_by_me}
+                              aria-label={
+                                u.encouraged_by_me ? "Unlike" : "Like"
+                              }
                               onClick={() =>
                                 run(async () => {
                                   const r = await api(
@@ -477,11 +485,10 @@ export function CrewWorkspace() {
                                 strokeWidth={1.8}
                                 fill={u.encouraged_by_me ? "currentColor" : "none"}
                               />
-                              {u.encouragement_count > 0
-                                ? `${u.encouragement_count} encourage${
-                                    u.encouragement_count === 1 ? "" : "s"
-                                  }`
-                                : "Encourage"}
+                              {likesLabel(
+                                u.encouragement_count,
+                                u.encouraged_by_me,
+                              )}
                             </button>
                             {canDelete(u) ? (
                               <button
@@ -545,25 +552,25 @@ export function CrewWorkspace() {
           <div className="crew-home">
             {loadingList ? (
               <p className="crew-loading" role="status">
-                Loading your Crews…
+                Loading…
               </p>
             ) : crews.length === 0 ? (
               <div className="crew-empty">
                 <span className="crew-empty-mark" aria-hidden>
-                  <Users size={22} strokeWidth={1.6} />
+                  <Users size={20} strokeWidth={1.6} />
                 </span>
                 <p className="crew-empty-k">Start small</p>
                 <h2 className="crew-empty-t">Progress is better shared</h2>
                 <p className="crew-empty-s">
-                  Create a private Crew with people you trust. Share what you’re
-                  learning, set goals, and encourage each other.
+                  Create a private Crew with people you trust. Share growth,
+                  goals, and support.
                 </p>
               </div>
             ) : (
               <section className="crew-section" aria-label="Your Crews">
                 <p className="crew-section-k">Your Crews</p>
                 <div className="crew-list">
-                  {crews.map((c, i) => (
+                  {crews.map((c) => (
                     <button
                       key={c.id}
                       type="button"
@@ -574,15 +581,12 @@ export function CrewWorkspace() {
                         setMessage("");
                       }}
                     >
-                      <span className="crew-index">
-                        {String(i + 1).padStart(2, "0")}
-                      </span>
                       <span className="crew-list-main">
                         <strong>{c.name}</strong>
                         <small>{c.description || "Shared growth"}</small>
                       </span>
                       <span className="crew-list-role">{c.role}</span>
-                      <ChevronRight size={17} className="crew-chev" />
+                      <ChevronRight size={17} className="crew-chev" strokeWidth={1.7} />
                     </button>
                   ))}
                 </div>
@@ -597,9 +601,9 @@ export function CrewWorkspace() {
               >
                 <span>
                   <span className="crew-action-t">Start a Crew</span>
-                  <span className="crew-action-s">Private. Free. Yours to lead.</span>
+                  <span className="crew-action-s">Private. Free.</span>
                 </span>
-                <Plus size={18} />
+                <Plus size={18} strokeWidth={1.7} />
               </button>
               {showCreate ? (
                 <form
@@ -643,7 +647,7 @@ export function CrewWorkspace() {
                     className="crew-field"
                     value={description}
                     onChange={(e) => setDescription(e.target.value)}
-                    placeholder="Optional — what you’re growing toward"
+                    placeholder="Optional description"
                     maxLength={240}
                     aria-label="Description"
                   />
@@ -660,9 +664,6 @@ export function CrewWorkspace() {
 
             <section className="crew-section" aria-label="Join with invite">
               <p className="crew-section-k">Have an invite?</p>
-              <p className="crew-hint-block">
-                Paste the link or token from someone you trust.
-              </p>
               <form
                 className="crew-join-form"
                 onSubmit={(e) => {
@@ -697,7 +698,6 @@ export function CrewWorkspace() {
                   disabled={busy || !inviteToken.trim()}
                 >
                   Join
-                  <ChevronRight size={16} />
                 </button>
               </form>
             </section>

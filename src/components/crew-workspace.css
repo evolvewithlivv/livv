@@ -1,4 +1,4 @@
-/* Crew — shared growth, not a social feed */
+/* Crew — aligned with Daily / You */
 .crew {
   --ink: rgb(var(--livv-ink));
   --bg: var(--livv-bg);
@@ -9,15 +9,15 @@
   color: var(--ink);
 }
 .crew-inner {
-  max-width: 26rem;
+  width: min(100%, 26rem);
   margin: 0 auto;
-  padding: 0.85rem 1.35rem 2.75rem;
+  padding: 0.9rem 1.25rem max(2.75rem, calc(4rem + env(safe-area-inset-bottom, 0px)));
 }
 .crew-back {
   display: inline-flex;
   align-items: center;
   gap: 0.4rem;
-  margin-bottom: 1.1rem;
+  margin-bottom: 1rem;
   font-size: 0.88rem;
   color: var(--muted);
   text-decoration: none;
@@ -25,7 +25,7 @@
 .crew-back:active { opacity: 0.7; }
 .crew-back-inline {
   display: inline-flex;
-  margin-bottom: 1rem;
+  margin-bottom: 0.85rem;
   padding: 0;
   border: 0;
   background: transparent;
@@ -33,114 +33,108 @@
   color: var(--muted);
   cursor: pointer;
 }
-.crew-mast { margin-bottom: 1.5rem; }
+.crew-mast { margin-bottom: 1.35rem; }
 .crew-k,
 .crew-section-k,
 .crew-empty-k,
 .crew-role-tag {
   margin: 0;
-  font-size: 11px;
-  font-weight: 650;
-  letter-spacing: 0.14em;
+  font-size: 9px;
+  font-weight: 850;
+  letter-spacing: 0.15em;
   text-transform: uppercase;
   color: var(--muted);
 }
 .crew-title {
-  margin: 0.45rem 0 0;
+  margin: 0.4rem 0 0;
   font-family: var(--font-display), var(--font-body), system-ui, sans-serif;
-  font-size: clamp(2rem, 8vw, 2.4rem);
-  font-weight: 600;
-  letter-spacing: -0.05em;
+  font-size: clamp(2rem, 8vw, 2.35rem);
+  font-weight: 650;
+  letter-spacing: -0.055em;
   line-height: 1.02;
 }
 .crew-dot { color: var(--accent); }
 .crew-sub {
-  margin: 0.55rem 0 0;
-  font-size: 0.92rem;
+  margin: 0.5rem 0 0;
+  font-size: 0.9rem;
   line-height: 1.45;
   color: var(--muted);
-  max-width: 34ch;
+  max-width: 32ch;
 }
 .crew-banner {
   margin: 0 0 1rem;
-  padding: 0.85rem 1rem;
+  padding: 0.75rem 0.95rem;
   border-radius: 14px;
-  border: 1px solid color-mix(in srgb, var(--line) 80%, transparent);
-  font-size: 0.88rem;
+  border: 1px solid color-mix(in srgb, var(--line) 75%, transparent);
+  background: color-mix(in srgb, var(--ink) 2.5%, transparent);
+  font-size: 0.86rem;
   line-height: 1.4;
 }
 .crew-banner-error {
-  border-color: color-mix(in srgb, #c44 45%, transparent);
+  border-color: color-mix(in srgb, #c44 40%, transparent);
   color: #c44;
+  background: color-mix(in srgb, #c44 6%, transparent);
 }
 .crew-loading {
   margin: 1.5rem 0;
-  font-size: 0.9rem;
+  font-size: 0.88rem;
   color: var(--muted);
 }
 .crew-section { margin-top: 1.65rem; }
-.crew-section-k { margin-bottom: 0.7rem; }
+.crew-section-k { margin-bottom: 0.65rem; }
 
 .crew-empty {
-  padding: 1.75rem 0 0.5rem;
-  border-bottom: 1px solid color-mix(in srgb, var(--line) 70%, transparent);
+  padding: 1.5rem 0 1.1rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--line) 65%, transparent);
 }
 .crew-empty-mark {
   display: grid;
   place-items: center;
-  width: 2.85rem;
-  height: 2.85rem;
+  width: 2.6rem;
+  height: 2.6rem;
   border-radius: 999px;
-  border: 1px solid color-mix(in srgb, var(--accent) 50%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent) 45%, transparent);
   color: var(--accent);
 }
-.crew-empty-k { margin-top: 1.1rem; }
+.crew-empty-k { margin-top: 1rem; }
 .crew-empty-t {
-  margin: 0.4rem 0 0;
-  font-size: 1.25rem;
-  font-weight: 600;
+  margin: 0.35rem 0 0;
+  font-size: 1.2rem;
+  font-weight: 650;
   letter-spacing: -0.03em;
 }
 .crew-empty-s {
-  margin: 0.45rem 0 1.25rem;
-  font-size: 0.9rem;
+  margin: 0.4rem 0 0;
+  font-size: 0.88rem;
   line-height: 1.5;
   color: var(--muted);
-  max-width: 32ch;
+  max-width: 30ch;
 }
 
 .crew-list {
-  border-top: 1px solid color-mix(in srgb, var(--line) 70%, transparent);
+  border-top: 1px solid color-mix(in srgb, var(--line) 65%, transparent);
 }
 .crew-list-item {
   display: flex;
   align-items: center;
-  gap: 0.75rem;
+  gap: 0.7rem;
   width: 100%;
-  padding: 1.05rem 0;
+  padding: 1rem 0;
   text-align: left;
   border: 0;
-  border-bottom: 1px solid color-mix(in srgb, var(--line) 70%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--line) 65%, transparent);
   background: transparent;
   color: inherit;
   cursor: pointer;
 }
 .crew-list-item:active {
-  background: color-mix(in srgb, var(--accent) 7%, transparent);
-}
-.crew-index {
-  width: 1.6rem;
-  flex-shrink: 0;
-  font-size: 10px;
-  font-variant-numeric: tabular-nums;
-  letter-spacing: 0.06em;
-  opacity: 0.42;
+  background: color-mix(in srgb, var(--ink) 3%, transparent);
 }
 .crew-list-main { min-width: 0; flex: 1; }
 .crew-list-main strong {
   display: block;
-  font-size: 0.98rem;
-  font-weight: 600;
+  font-size: 1rem;
+  font-weight: 650;
   letter-spacing: -0.02em;
 }
 .crew-list-main small {
@@ -154,21 +148,22 @@
 }
 .crew-list-role {
   font-size: 9px;
+  font-weight: 750;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  opacity: 0.5;
+  color: var(--muted);
 }
-.crew-chev { color: var(--muted); flex-shrink: 0; }
+.crew-chev { color: var(--muted); flex-shrink: 0; opacity: 0.7; }
 
 .crew-action-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
   width: 100%;
-  padding: 0.9rem 0;
+  padding: 0.85rem 0;
   text-align: left;
   border: 0;
-  border-top: 1px solid color-mix(in srgb, var(--line) 70%, transparent);
+  border-top: 1px solid color-mix(in srgb, var(--line) 65%, transparent);
   background: transparent;
   color: inherit;
   cursor: pointer;
@@ -176,37 +171,37 @@
 .crew-action-t {
   display: block;
   font-size: 0.98rem;
-  font-weight: 600;
+  font-weight: 650;
   letter-spacing: -0.02em;
 }
 .crew-action-s {
   display: block;
-  margin-top: 0.2rem;
-  font-size: 0.82rem;
+  margin-top: 0.18rem;
+  font-size: 0.8rem;
   color: var(--muted);
 }
 
 .crew-field {
   width: 100%;
-  min-height: 2.85rem;
-  padding: 0.75rem 1rem;
+  min-height: 2.7rem;
+  padding: 0.7rem 0.95rem;
   border-radius: 14px;
-  border: 1px solid color-mix(in srgb, var(--line) 85%, transparent);
+  border: 1px solid color-mix(in srgb, var(--line) 80%, transparent);
   background: transparent;
   color: inherit;
   font-size: 1rem;
   outline: none;
 }
 .crew-field:focus {
-  border-color: color-mix(in srgb, var(--accent) 55%, transparent);
+  border-color: color-mix(in srgb, var(--accent) 50%, transparent);
 }
 .crew-create-form,
 .crew-join-form,
 .crew-invite-panel {
   display: flex;
   flex-direction: column;
-  gap: 0.65rem;
-  margin-top: 0.75rem;
+  gap: 0.6rem;
+  margin-top: 0.7rem;
 }
 @media (min-width: 400px) {
   .crew-join-form {
@@ -219,133 +214,129 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  gap: 0.4rem;
-  min-height: 2.85rem;
-  padding: 0 1.2rem;
+  gap: 0.35rem;
+  min-height: 2.55rem;
+  padding: 0 1.15rem;
   border: 0;
-  border-radius: 999px;
+  border-radius: 12px;
   background: var(--ink);
   color: var(--bg);
-  font-size: 0.9rem;
-  font-weight: 650;
+  font-size: 0.82rem;
+  font-weight: 750;
   cursor: pointer;
 }
-.crew-btn:disabled { opacity: 0.45; cursor: not-allowed; }
-.crew-btn:active:not(:disabled) { opacity: 0.85; }
+.crew-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+.crew-btn:active:not(:disabled) { opacity: 0.88; }
 .crew-btn-secondary {
   background: transparent;
   color: var(--ink);
-  border: 1px solid color-mix(in srgb, var(--line) 85%, transparent);
-}
-.crew-hint-block {
-  margin: 0 0 0.65rem;
-  font-size: 0.86rem;
-  color: var(--muted);
-  line-height: 1.4;
+  border: 1px solid color-mix(in srgb, var(--line) 80%, transparent);
 }
 
 .crew-identity {
-  padding-bottom: 1rem;
-  border-bottom: 1px solid color-mix(in srgb, var(--line) 70%, transparent);
+  padding-bottom: 0.95rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--line) 65%, transparent);
 }
 .crew-name {
-  margin: 0.25rem 0 0;
-  font-size: 1.35rem;
-  font-weight: 600;
+  margin: 0.2rem 0 0;
+  font-size: 1.3rem;
+  font-weight: 650;
   letter-spacing: -0.03em;
 }
 .crew-desc {
-  margin: 0.35rem 0 0;
-  font-size: 0.88rem;
+  margin: 0.3rem 0 0;
+  font-size: 0.86rem;
   color: var(--muted);
   line-height: 1.4;
 }
 .crew-members {
   display: flex;
   flex-direction: column;
-  gap: 0.55rem;
+  gap: 0.5rem;
 }
 .crew-member {
   display: flex;
   align-items: center;
-  gap: 0.65rem;
+  gap: 0.6rem;
 }
 .crew-avatar {
   display: grid;
   place-items: center;
-  width: 2rem;
-  height: 2rem;
+  width: 1.9rem;
+  height: 1.9rem;
   border-radius: 999px;
-  background: color-mix(in srgb, var(--ink) 8%, transparent);
-  font-size: 0.78rem;
-  font-weight: 650;
+  background: color-mix(in srgb, var(--ink) 7%, transparent);
+  font-size: 0.72rem;
+  font-weight: 750;
   color: var(--muted);
   flex-shrink: 0;
 }
 .crew-avatar-sm {
-  width: 1.75rem;
-  height: 1.75rem;
-  font-size: 0.7rem;
+  width: 1.65rem;
+  height: 1.65rem;
+  font-size: 0.68rem;
 }
 .crew-member-name {
   font-size: 0.92rem;
-  font-weight: 550;
+  font-weight: 600;
+  letter-spacing: -0.01em;
 }
 .crew-member-role {
   margin-left: auto;
   font-size: 9px;
+  font-weight: 750;
   letter-spacing: 0.1em;
   text-transform: uppercase;
-  opacity: 0.5;
+  color: var(--muted);
 }
 
 .crew-kind-row {
   display: flex;
-  gap: 0.4rem;
-  margin-bottom: 0.65rem;
+  gap: 0.35rem;
+  margin-bottom: 0.6rem;
   flex-wrap: wrap;
 }
 .crew-kind {
-  padding: 0.4rem 0.75rem;
+  padding: 0.32rem 0.7rem;
   border-radius: 999px;
-  border: 1px solid color-mix(in srgb, var(--line) 80%, transparent);
+  border: 1px solid color-mix(in srgb, var(--line) 75%, transparent);
   background: transparent;
   color: var(--muted);
-  font-size: 0.78rem;
-  font-weight: 600;
+  font-size: 0.75rem;
+  font-weight: 650;
   cursor: pointer;
 }
 .crew-kind.is-active {
-  border-color: color-mix(in srgb, var(--accent) 55%, transparent);
+  border-color: color-mix(in srgb, var(--accent) 50%, transparent);
   color: var(--ink);
-  background: color-mix(in srgb, var(--accent) 10%, transparent);
+  background: color-mix(in srgb, var(--accent) 9%, transparent);
 }
 .crew-compose {
   width: 100%;
-  min-height: 5.5rem;
-  padding: 0.85rem 1rem;
+  min-height: 5.25rem;
+  padding: 0.8rem 0.95rem;
   border-radius: 14px;
-  border: 1px solid color-mix(in srgb, var(--line) 85%, transparent);
+  border: 1px solid color-mix(in srgb, var(--line) 80%, transparent);
   background: transparent;
   color: inherit;
-  font-size: 0.95rem;
-  line-height: 1.45;
+  font-size: 0.94rem;
+  line-height: 1.5;
   resize: vertical;
   outline: none;
   font-family: inherit;
 }
 .crew-compose:focus {
-  border-color: color-mix(in srgb, var(--accent) 55%, transparent);
+  border-color: color-mix(in srgb, var(--accent) 50%, transparent);
 }
 .crew-compose-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-top: 0.55rem;
+  margin-top: 0.5rem;
   gap: 0.75rem;
 }
 .crew-hint {
-  font-size: 0.78rem;
+  font-size: 0.75rem;
   color: var(--muted);
 }
 
@@ -355,14 +346,17 @@
   padding: 0;
 }
 .crew-post {
-  padding: 1.1rem 0;
-  border-top: 1px solid color-mix(in srgb, var(--line) 65%, transparent);
+  padding: 1.15rem 0;
+  border-top: 1px solid color-mix(in srgb, var(--line) 55%, transparent);
 }
-.crew-post:first-child { border-top: 0; padding-top: 0.25rem; }
+.crew-post:first-child {
+  border-top: 0;
+  padding-top: 0.15rem;
+}
 .crew-post-head {
   display: flex;
   align-items: center;
-  gap: 0.55rem;
+  gap: 0.5rem;
 }
 .crew-post-meta {
   display: flex;
@@ -371,17 +365,18 @@
 }
 .crew-post-meta strong {
   font-size: 0.9rem;
-  font-weight: 600;
-  letter-spacing: -0.01em;
+  font-weight: 650;
+  letter-spacing: -0.015em;
 }
 .crew-post-meta span {
-  font-size: 0.75rem;
+  font-size: 0.72rem;
   color: var(--muted);
+  margin-top: 0.08rem;
 }
 .crew-post-body {
-  margin: 0.55rem 0 0.7rem;
+  margin: 0.55rem 0 0.65rem;
   font-size: 0.95rem;
-  line-height: 1.5;
+  line-height: 1.55;
   white-space: pre-wrap;
   word-break: break-word;
 }
@@ -389,65 +384,82 @@
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  gap: 0.5rem;
+  gap: 0.35rem 0.75rem;
 }
-.crew-encourage,
+.crew-like,
 .crew-remove {
   display: inline-flex;
   align-items: center;
-  gap: 0.35rem;
-  padding: 0.35rem 0.65rem;
-  border-radius: 999px;
-  border: 1px solid color-mix(in srgb, var(--line) 80%, transparent);
+  gap: 0.3rem;
+  padding: 0.2rem 0;
+  border: 0;
   background: transparent;
   color: var(--muted);
   font-size: 0.78rem;
-  font-weight: 600;
+  font-weight: 650;
   cursor: pointer;
 }
-.crew-encourage.is-on {
-  border-color: color-mix(in srgb, var(--accent) 50%, transparent);
+.crew-like.is-on {
   color: var(--accent);
 }
-.crew-encourage:disabled,
-.crew-remove:disabled { opacity: 0.5; cursor: not-allowed; }
-.crew-remove:hover { color: #c44; border-color: color-mix(in srgb, #c44 40%, transparent); }
-.crew-empty-feed { padding: 0.5rem 0 0.25rem; }
+.crew-like:disabled,
+.crew-remove:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.crew-remove:active {
+  color: #c44;
+}
+.crew-empty-feed {
+  padding: 0.35rem 0 0.15rem;
+}
 .crew-empty-feed-t {
   margin: 0;
   font-size: 0.95rem;
-  font-weight: 600;
+  font-weight: 650;
+  letter-spacing: -0.02em;
 }
 .crew-empty-feed-s {
-  margin: 0.3rem 0 0;
-  font-size: 0.86rem;
+  margin: 0.28rem 0 0;
+  font-size: 0.84rem;
   color: var(--muted);
   line-height: 1.4;
 }
 .crew-invite-result {
   display: flex;
   flex-direction: column;
-  gap: 0.55rem;
+  gap: 0.5rem;
 }
 .crew-leave-section {
-  border-top: 1px solid color-mix(in srgb, var(--line) 70%, transparent);
-  padding-top: 1.25rem;
+  border-top: 1px solid color-mix(in srgb, var(--line) 65%, transparent);
+  padding-top: 1.15rem;
+  margin-bottom: 0.5rem;
 }
 .crew-leave {
   padding: 0;
   border: 0;
   background: transparent;
   color: var(--muted);
-  font-size: 0.88rem;
+  font-size: 0.86rem;
   font-weight: 550;
   cursor: pointer;
   text-decoration: underline;
   text-underline-offset: 3px;
 }
-.crew-leave:disabled { opacity: 0.5; cursor: not-allowed; }
+.crew-leave:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+@media (max-width: 390px) {
+  .crew-inner {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+}
 
 @media (prefers-reduced-motion: reduce) {
   .crew-list-item,
   .crew-btn,
-  .crew-encourage { transition: none; }
+  .crew-like { transition: none; }
 }
