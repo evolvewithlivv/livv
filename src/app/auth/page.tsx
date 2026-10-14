@@ -127,20 +127,20 @@ export default function AuthPage() {
   });
 
   return (
-    <main className="relative min-h-dvh overflow-hidden bg-[rgb(var(--livv-bg))] text-[rgb(var(--livv-ink))]">
-      <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_top,rgb(var(--livv-accent)/0.12),transparent_55%)]" />
+    <main className="auth-page relative min-h-dvh overflow-hidden text-[rgb(var(--livv-ink))]">
+      <div aria-hidden className="auth-glow pointer-events-none absolute inset-x-0 top-0" />
       <div className="relative z-10 mx-auto flex min-h-dvh w-full max-w-md flex-col justify-center px-6 py-12">
         <div className="mb-9 flex flex-col items-center">
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={LOGO} alt="LIVV" className="h-14 w-14 object-contain" />
+          <img src={LOGO} alt="LIVV" className="auth-logo h-14 w-14 object-contain" />
           <h1 className="mt-5 font-display text-3xl font-semibold tracking-tight">LIVV</h1>
           <p className="mt-2 text-center text-[13px] text-[rgb(var(--livv-muted))]">{mode === "signin" ? "Sign in to continue your journey." : "Create your account and start evolving."}</p>
         </div>
 
         <div className="rounded-3xl border border-[rgb(var(--livv-border))] bg-[rgb(var(--livv-surface))] p-5 backdrop-blur-sm">
           <div className="mb-5 grid grid-cols-2 gap-1 rounded-2xl bg-[rgb(var(--livv-border))]/20 p-1">
-              <button type="button" onClick={() => { setMode("signin"); setError(""); setNotice(""); }} className={`rounded-xl px-3 py-2.5 text-[12px] font-medium transition ${mode === "signin" ? "bg-[rgb(var(--livv-ink))] text-[rgb(var(--livv-bg))]" : "text-[rgb(var(--livv-muted))] hover:text-[rgb(var(--livv-ink))]"}`}>Sign in</button>
-              <button type="button" onClick={() => { setMode("signup"); setError(""); setNotice(""); }} className={`rounded-xl px-3 py-2.5 text-[12px] font-medium transition ${mode === "signup" ? "bg-white text-black" : "text-white/45 hover:text-white/70"}`}>Create account</button>
+              <button type="button" onClick={() => { setMode("signin"); setError(""); setNotice(""); }} className={`auth-mode rounded-xl px-3 py-2.5 text-[12px] font-medium transition ${mode === "signin" ? "auth-mode-active" : "auth-mode-inactive"}`}>Sign in</button>
+              <button type="button" onClick={() => { setMode("signup"); setError(""); setNotice(""); }} className={`auth-mode rounded-xl px-3 py-2.5 text-[12px] font-medium transition ${mode === "signup" ? "auth-mode-active" : "auth-mode-inactive"}`}>Create account</button>
           </div>
 
           {!pending ? (
@@ -149,7 +149,7 @@ export default function AuthPage() {
                 <section className="space-y-3" aria-labelledby="age-title">
                   <div>
                     <p id="age-title" className="text-[11px] font-medium uppercase tracking-[0.14em] text-[rgb(var(--livv-muted))]">Age</p>
-                    <p className="mt-1.5 text-[12px] leading-5 text-white/35">LIVV accounts are for people 13 and older.</p>
+                    <p className="auth-muted mt-1.5 text-[12px] leading-5">LIVV accounts are for people 13 and older.</p>
                   </div>
                   <div className="grid grid-cols-3 gap-2" role="radiogroup" aria-label="Age range">
                     {([
@@ -165,9 +165,9 @@ export default function AuthPage() {
                   </div>
                   {ageBand === "under13" ? <p className="text-[12px] text-red-500">You must be at least 13 to create an account.</p> : null}
                   {ageBand && ageBand !== "under13" ? (
-                    <label className="flex items-start gap-3 text-[11px] leading-5 text-white/45">
+                    <label className="auth-muted flex items-start gap-3 text-[11px] leading-5">
                       <input type="checkbox" checked={ageConfirmed} onChange={(e) => { setAgeConfirmed(e.target.checked); if (e.target.checked) confirmAge(); }} className="mt-1 accent-[rgb(var(--livv-accent))]" />
-                      <span>I confirm that I am 13 or older and agree to the <a className="text-[rgb(var(--livv-ink))] underline" href="/legal/terms">Terms</a> and <a className="text-white/70 underline" href="/legal/privacy">Privacy Policy</a>.</span>
+                      <span>I confirm that I am 13 or older and agree to the <a className="text-[rgb(var(--livv-ink))] underline" href="/legal/terms">Terms</a> and <a className="auth-link underline" href="/legal/privacy">Privacy Policy</a>.</span>
                     </label>
                   ) : null}
                 </section>
@@ -180,13 +180,13 @@ export default function AuthPage() {
           ) : (
             <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); verifyEmail(); }}>
               <Field label="8-digit code" value={otp} onChange={(v) => setOtp(v.replace(/\D/g, "").slice(0, 8))} inputMode="numeric" autoComplete="one-time-code" placeholder="00000000" />
-              <p className="text-[12px] leading-5 text-white/35">Enter the code sent to <span className="text-[rgb(var(--livv-ink))]">{email.trim().toLowerCase()}</span>.</p>
+              <p className="auth-muted text-[12px] leading-5">Enter the code sent to <span className="text-[rgb(var(--livv-ink))]">{email.trim().toLowerCase()}</span>.</p>
               <Button className="w-full" disabled={busy || otp.length !== 8} type="submit">
                 {busy ? "Verifying…" : "Continue"}
               </Button>
               <div className="flex items-center justify-between gap-3 pt-1">
-                <button type="button" disabled={busy} onClick={() => { setPending(false); setOtp(""); setError(""); setNotice(""); setResendIn(0); }} className="text-[12px] text-white/35 disabled:opacity-30">Change email</button>
-                <button type="button" disabled={busy || resendIn > 0} onClick={() => sendEmail(true)} className="text-[12px] text-white/35 disabled:opacity-30">
+                <button type="button" disabled={busy} onClick={() => { setPending(false); setOtp(""); setError(""); setNotice(""); setResendIn(0); }} className="auth-muted text-[12px] disabled:opacity-30">Change email</button>
+                <button type="button" disabled={busy || resendIn > 0} onClick={() => sendEmail(true)} className="auth-muted text-[12px] disabled:opacity-30">
                   {resendIn > 0 ? `Resend in ${resendIn}s` : "Resend code"}
                 </button>
               </div>
@@ -194,7 +194,7 @@ export default function AuthPage() {
           )}
 
           {error ? <p className="mt-4 text-center text-[13px] text-red-400" role="alert">{error}</p> : null}
-          {notice && !error ? <p className="mt-4 text-center text-[13px] text-white/50" role="status">{notice}</p> : null}
+          {notice && !error ? <p className="auth-muted mt-4 text-center text-[13px]" role="status">{notice}</p> : null}
         </div>
 
         <p className="mt-8 text-center text-[11px] text-[rgb(var(--livv-muted))]">
@@ -212,7 +212,7 @@ export default function AuthPage() {
 function Field({ label, value, onChange, type = "text", autoComplete, inputMode, placeholder }: { label: string; value: string; onChange: (value: string) => void; type?: string; autoComplete?: string; inputMode?: "numeric" | "tel" | "email" | "text"; placeholder?: string; }) {
   return (
     <label className="block">
-      <span className="mb-1.5 block text-[11px] font-medium uppercase tracking-[0.14em] text-white/35">{label}</span>
+      <span className="auth-muted mb-1.5 block text-[11px] font-medium uppercase tracking-[0.14em]">{label}</span>
       <input
         type={type}
         value={value}
