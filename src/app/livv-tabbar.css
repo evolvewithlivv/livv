@@ -108,9 +108,17 @@
 }
 
 html[data-theme="light"] .livv-glass-dock-inner {
-  background: color-mix(in srgb, #ffffff 96%, transparent) !important;
+  background: #ffffff !important;
   border-top-color: color-mix(in srgb, #111214 11%, transparent) !important;
   box-shadow: 0 -5px 18px color-mix(in srgb, #111214 5%, transparent) !important;
+}
+
+/* Keep the dock wrapper and iPhone safe-area behind it on the same light canvas. */
+html[data-theme="light"] .livv-app-shell,
+html[data-theme="light"] .livv-tabbar,
+html[data-theme="light"] .livv-tabbar-dock,
+html[data-theme="light"] .livv-glass-dock {
+  background-color: var(--livv-bg, #f5f6f8) !important;
 }
 
 html[data-theme="light"] .livv-tabbar .livv-tab.is-active {
