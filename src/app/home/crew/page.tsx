@@ -11,6 +11,7 @@ type Progress = { challenge_id: string; enrolled: boolean; accepted_count: numbe
 
 async function api(path: string, init?: RequestInit) {
   const client = getSupabaseBrowserClient();
+  if (!client) throw new Error("LIVV secure sign-in is not configured on this device.");
   const { data } = await client.auth.getSession();
   const token = data.session?.access_token;
   if (!token) throw new Error("Your secure session is unavailable. Sign out and back in, then try again.");
