@@ -71,9 +71,9 @@ export function CrewWorkspace() {
   return <section className="min-h-full px-5 pb-28 pt-[max(1.25rem,env(safe-area-inset-top))]">
     <div className="crew-shell mx-auto w-full max-w-2xl">
       <Link href="/home/profile" className="mb-6 inline-flex items-center gap-2 text-sm opacity-65"><ArrowLeft size={17}/> You</Link>
-      <div className="mb-7 flex items-center justify-between gap-4">
-        <div><p className="mb-2 text-[10px] font-semibold uppercase tracking-[0.2em] opacity-50">EVOLVE WITH LIVV / CIRCLE</p><h1 className="text-3xl font-semibold tracking-tight">Crew</h1><p className="mt-1 text-sm opacity-60">Better, together.</p></div>
-        <div className="flex h-12 w-12 items-center justify-center rounded-full border border-current/15"><Users size={21}/></div>
+      <div className="crew-masthead mb-8">
+        <div className="crew-overline"><span className="crew-live-dot"/> YOUR PEOPLE <span className="opacity-35">/</span> YOUR PROGRESS</div>
+        <div className="mt-3 flex items-end justify-between gap-4"><div><h1 className="text-[2.35rem] font-semibold leading-none tracking-[-0.055em]">Crew<span className="crew-period">.</span></h1><p className="mt-2 text-sm opacity-60">Good things are built together.</p></div><div className="crew-emblem"><Users size={22} strokeWidth={1.6}/></div></div>
       </div>
 
       {error && <p role="alert" className="mb-4 rounded-xl border border-red-500/40 px-4 py-3 text-sm text-red-600">{error}</p>}
