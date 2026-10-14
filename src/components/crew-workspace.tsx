@@ -52,9 +52,10 @@ export function CrewWorkspace({ embedded = false }: { embedded?: boolean }) {
   }, []);
 
   const loadChallenges = useCallback(async (crew: Crew) => {
-    const result = await api(`/api/crews/${crew.id}/challenges`);
+    const [result, roster] = await Promise.all([api(`/api/crews/${crew.id}/challenges`), api(`/api/crews/${crew.id}/members`)]);
     setChallenges(result.challenges || []);
     setProgress(result.progress || []);
+    setMembers(roster.members || []);
   }, []);
 
   useEffect(() => { loadCrews().catch(e => setError(e.message)); }, [loadCrews]);
@@ -69,9 +70,9 @@ export function CrewWorkspace({ embedded = false }: { embedded?: boolean }) {
   return <section className={embedded ? "mt-9 border-t border-current/15 pt-7" : "min-h-full px-5 pb-28 pt-[max(1.25rem,env(safe-area-inset-top))]"}>
     <div className="mx-auto w-full max-w-2xl">
       {!embedded && <Link href="/home" className="mb-7 inline-flex items-center gap-2 text-sm opacity-70"><ArrowLeft size={17}/> Home</Link>}
-      <div className="mb-8 flex items-start justify-between gap-4">
-        <div><p className="mb-2 text-xs font-semibold uppercase tracking-[0.22em] opacity-55">Evolve With LIVV</p><h1 className="text-4xl font-semibold tracking-tight">Crew</h1><p className="mt-2 max-w-md text-sm leading-6 opacity-65">Get better together. Build a small circle that shows up, shares progress, and keeps its word.</p></div>
-        <div className="mt-1 rounded-2xl border border-current/10 p-3 opacity-80"><Users size={25}/></div>
+      <div className={`mb-6 flex items-start justify-between gap-4 ${embedded ? "items-center" : ""}`}>
+        <div>{!embedded && <p className="mb-2 text-xs font-semibold uppercase tracking-[0.22em] opacity-55">Evolve With LIVV</p>}<h1 className={embedded ? "text-2xl font-semibold tracking-tight" : "text-4xl font-semibold tracking-tight"}>{embedded ? "Crew" : "Your circle, built with intention."}</h1><p className="mt-2 max-w-md text-sm leading-6 opacity-65">{embedded ? "People who show up. Progress you can share." : "Build a small circle that keeps its word."}</p></div>
+        <div className="mt-1 rounded-full border border-current/15 p-3 opacity-80"><Users size={22}/></div>
       </div>
 
       {error && <p role="alert" className="mb-4 rounded-xl border border-red-500/40 px-4 py-3 text-sm text-red-600">{error}</p>}
@@ -93,10 +94,19 @@ export function CrewWorkspace({ embedded = false }: { embedded?: boolean }) {
       </section> : <section className="space-y-6">
         <div className="flex items-end justify-between"><div><h2 className="text-xl font-semibold">Your Crews</h2><p className="mt-1 text-sm opacity-60">Small circles. Real commitments.</p></div><button aria-label="Refresh Crews" className="rounded-full border border-current/15 p-3" onClick={() => run(loadCrews)}><RefreshCw size={17}/></button></div>
         {crews.length ? <div className="space-y-3">{crews.map(c=><button key={c.id} onClick={()=>{setSelected(c);setError("");}} className="block w-full rounded-2xl border border-current/15 p-4 text-left transition hover:bg-current/[0.03]"><div className="flex items-center justify-between gap-3"><span className="text-lg font-semibold">{c.name}</span><span className="text-xs uppercase tracking-wider opacity-50">{c.role}</span></div>{c.description && <p className="mt-1 text-sm opacity-60">{c.description}</p>}<p className="mt-3 text-xs opacity-50">Open Crew →</p></button>)}</div> : <div className="rounded-2xl border border-dashed border-current/20 px-5 py-8 text-center"><Users size={26} className="mx-auto mb-3 opacity-50"/><h3 className="font-semibold">Your circle starts here</h3><p className="mx-auto mt-2 max-w-sm text-sm leading-6 opacity-60">Create a Crew for friends, family, or training partners. Invite people and build challenges together.</p></div>}
-        <form className="space-y-3 rounded-2xl border border-current/15 p-4" onSubmit={e=>{e.preventDefault();void run(async()=>{const result=await api("/api/crews",{method:"POST",body:JSON.stringify({name,description})});setName("");setDescription("");await loadCrews();setMessage("Crew created.");setSelected(result.crew ? {...result.crew,role:"owner",joined_at:new Date().toISOString()} : null);});}}>
-          <h3 className="text-lg font-semibold">Create a Crew</h3><input className={field} value={name} onChange={e=>setName(e.target.value)} placeholder="Give your Crew a name" maxLength={40} required minLength={2}/><textarea className={field} value={description} onChange={e=>setDescription(e.target.value)} placeholder="What are you working toward together? (optional)" rows={3} maxLength={240}/><button className={button} type="submit" disabled={busy || name.trim().length<2}><Plus size={16}/> Create Crew</button>
-        </form>
-        <div className="flex gap-3 rounded-2xl bg-current/[0.035] p-4 text-sm"><ShieldCheck size={20} className="shrink-0 opacity-60"/><p className="opacity-65">Progress is self-reported unless LIVV explicitly marks it otherwise. Your Crew activity is private to authorized members.</p></div>
+        <section className="border-t border-current/15 pt-5">
+          <button className="flex w-full items-center justify-between text-left" onClick={() => setShowCreate(v=>!v)}><span><span className="block font-semibold">Start a Crew</span><span className="mt-1 block text-sm opacity-60">Create a private space for your people</span></span><Plus size={20} className={showCreate ? "rotate-45 transition-transform" : "transition-transform"}/></button>
+          {showCreate && <form className="mt-4 space-y-3" onSubmit={e=>{e.preventDefault();void run(async()=>{const result=await api("/api/crews",{method:"POST",body:JSON.stringify({name,description})});setName("");setDescription("");setShowCreate(false);await loadCrews();setMessage("Crew created.");setSelected(result.crew ? {...result.crew,role:"owner",joined_at:new Date().toISOString()} : null);});}}>
+            <input className={field} value={name} onChange={e=>setName(e.target.value)} placeholder="Crew name" maxLength={40} required minLength={2}/><textarea className={field} value={description} onChange={e=>setDescription(e.target.value)} placeholder="What are you working toward together? (optional)" rows={3} maxLength={240}/><button className={button} type="submit" disabled={busy || name.trim().length<2}><Plus size={16}/> Create Crew</button>
+          </form>}
+        </section>
+        <section className="border-t border-current/15 pt-5">
+          <div className="flex items-start gap-3"><Link2 size={18} className="mt-0.5 shrink-0 opacity-60"/><div className="flex-1"><h3 className="font-semibold">Have an invite?</h3><p className="mt-1 text-sm opacity-60">Paste the invitation link or token you received.</p></div></div>
+          <form className="mt-3 flex flex-col gap-2 sm:flex-row" onSubmit={e=>{e.preventDefault();void run(async()=>{const raw=inviteToken.trim();let token=raw;try { if(raw.startsWith("http")) token=new URL(raw).searchParams.get("token") || ""; } catch {} if(!token) throw new Error("That invite link does not contain a valid token.");await api("/api/crews/join",{method:"POST",body:JSON.stringify({token})});setInviteToken("");await loadCrews();setMessage("You joined the Crew.");});}}>
+            <input className={field+" min-w-0 flex-1"} value={inviteToken} onChange={e=>setInviteToken(e.target.value)} placeholder="Paste invite link" autoCapitalize="none" autoCorrect="off"/><button className={button} disabled={busy || !inviteToken.trim()} type="submit">Join Crew <ChevronRight size={16}/></button>
+          </form>
+        </section>
+        <div className="flex gap-3 pt-2 text-sm"><ShieldCheck size={18} className="shrink-0 opacity-50"/><p className="opacity-60">Crew progress is self-reported unless explicitly verified. Only authorized members can access private Crew activity.</p></div>
       </section>}
     </div>
   </section>;
