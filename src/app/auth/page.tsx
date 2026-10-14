@@ -134,7 +134,7 @@ export default function AuthPage() {
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={LOGO} alt="LIVV" className="auth-logo h-14 w-14 object-contain" />
           <h1 className="mt-5 font-display text-3xl font-semibold tracking-tight">LIVV</h1>
-          <p className="mt-2 text-center text-[13px] text-[rgb(var(--livv-muted))]">{mode === "signin" ? "Sign in to continue your journey." : "Create your account and start evolving."}</p>
+          <p className="mt-2 text-center text-[13px] text-[rgb(var(--livv-muted))]">{mode === "signin" ? "Welcome back. Keep building." : "Build the skills to become more capable."}</p>
         </div>
 
         <div className="rounded-3xl border border-[rgb(var(--livv-border))] bg-[rgb(var(--livv-surface))] p-5 backdrop-blur-sm">
