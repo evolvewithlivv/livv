@@ -519,16 +519,22 @@ export function CrewWorkspace() {
                   )}
                 </section>
 
-                <section className="crew-leave-section">
+                <section className="crew-section crew-leave-section" aria-label="Leave">
                   <button
                     type="button"
                     className="crew-leave"
                     disabled={busy}
                     onClick={() =>
                       run(async () => {
-                        await api(`/api/crews/${selected.id}/members`, {
+                        const confirmed = window.confirm(
+                          selected.role === "owner"
+                            ? "Leave this Crew? If you are the only member, it will be archived."
+                            : "Leave this Crew? You can rejoin later with a new invite.",
+                        );
+                        if (!confirmed) return;
+                        await api("/api/crews", {
                           method: "DELETE",
-                          body: JSON.stringify({ userId }),
+                          body: JSON.stringify({ crewId: selected.id }),
                         });
                         setSelected(null);
                         await loadCrews();
