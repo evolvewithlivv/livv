@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { ChevronRight, Settings2 } from "lucide-react";
-import { CrewWorkspace } from "@/app/home/crew/page";
+import { CrewWorkspace } from "@/components/crew-workspace";
 import { useEffect, useState } from "react";
 import { loadIdentity, type Identity } from "@/lib/identity";
 import { loadRecord } from "@/lib/record";
