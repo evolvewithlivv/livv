@@ -9,6 +9,7 @@ import {
   Copy,
   Heart,
   Plus,
+  Trash2,
   Users,
 } from "lucide-react";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
@@ -82,7 +83,7 @@ const KIND_LABEL: Record<CrewUpdateKind, string> = {
 
 const PROMPTS: Record<CrewUpdateKind, string> = {
   growth: "What are you learning or working on?",
-  goal: "What are you committing to?",
+  goal: "What are you committing to? (self-reported)",
   support: "Where could you use encouragement?",
 };
 
@@ -91,6 +92,7 @@ export function CrewWorkspace() {
   const searchParams = useSearchParams();
   const tokenFromUrl = searchParams.get("token") || "";
 
+  const [userId, setUserId] = useState<string | null>(null);
   const [crews, setCrews] = useState<Crew[]>([]);
   const [selected, setSelected] = useState<Crew | null>(null);
   const [members, setMembers] = useState<Member[]>([]);
@@ -106,7 +108,17 @@ export function CrewWorkspace() {
   const [message, setMessage] = useState("");
   const [error, setError] = useState("");
   const [busy, setBusy] = useState(false);
+  const [loadingList, setLoadingList] = useState(true);
+  const [loadingDetail, setLoadingDetail] = useState(false);
   const [joinHandled, setJoinHandled] = useState(false);
+
+  useEffect(() => {
+    const client = getSupabaseBrowserClient();
+    if (!client) return;
+    client.auth.getSession().then(({ data }) => {
+      setUserId(data.session?.user?.id ?? null);
+    });
+  }, []);
 
   const loadCrews = useCallback(async () => {
     const r = await api("/api/crews");
@@ -114,16 +126,24 @@ export function CrewWorkspace() {
   }, []);
 
   const loadCrewDetail = useCallback(async (crew: Crew) => {
-    const [mem, act] = await Promise.all([
-      api(`/api/crews/${crew.id}/members`),
-      api(`/api/crews/${crew.id}/updates`),
-    ]);
-    setMembers(mem.members || []);
-    setUpdates(act.updates || []);
+    setLoadingDetail(true);
+    try {
+      const [mem, act] = await Promise.all([
+        api(`/api/crews/${crew.id}/members`),
+        api(`/api/crews/${crew.id}/updates`),
+      ]);
+      setMembers(mem.members || []);
+      setUpdates(act.updates || []);
+    } finally {
+      setLoadingDetail(false);
+    }
   }, []);
 
   useEffect(() => {
-    loadCrews().catch((e) => setError(e.message));
+    setLoadingList(true);
+    loadCrews()
+      .catch((e) => setError(e.message))
+      .finally(() => setLoadingList(false));
   }, [loadCrews]);
 
   useEffect(() => {
@@ -184,6 +204,8 @@ export function CrewWorkspace() {
   }
 
   const canManage = selected && ["owner", "admin"].includes(selected.role);
+  const canDelete = (u: CrewUpdate) =>
+    Boolean(userId && (u.author_user_id === userId || canManage));
 
   return (
     <section className="crew" aria-label="Crew">
@@ -236,208 +258,296 @@ export function CrewWorkspace() {
               ) : null}
             </div>
 
-            <section className="crew-section" aria-label="Members">
-              <p className="crew-section-k">
-                {members.length} {members.length === 1 ? "member" : "members"}
+            {loadingDetail ? (
+              <p className="crew-loading" role="status">
+                Loading Crew…
               </p>
-              <div className="crew-members">
-                {members.map((m) => (
-                  <div key={m.user_id} className="crew-member">
-                    <span className="crew-avatar" aria-hidden>
-                      {(m.display_name || "M")[0]?.toUpperCase()}
-                    </span>
-                    <span className="crew-member-name">{m.display_name}</span>
-                    {m.role !== "member" ? (
-                      <span className="crew-member-role">{m.role}</span>
-                    ) : null}
+            ) : (
+              <>
+                <section className="crew-section" aria-label="Members">
+                  <p className="crew-section-k">
+                    {members.length}{" "}
+                    {members.length === 1 ? "member" : "members"}
+                  </p>
+                  <div className="crew-members">
+                    {members.map((m) => (
+                      <div key={m.user_id} className="crew-member">
+                        <span className="crew-avatar" aria-hidden>
+                          {(m.display_name || "M")[0]?.toUpperCase()}
+                        </span>
+                        <span className="crew-member-name">{m.display_name}</span>
+                        {m.role !== "member" ? (
+                          <span className="crew-member-role">{m.role}</span>
+                        ) : null}
+                      </div>
+                    ))}
                   </div>
-                ))}
-              </div>
-            </section>
+                </section>
 
-            {canManage ? (
-              <section className="crew-section" aria-label="Invite">
-                <button
-                  type="button"
-                  className="crew-action-row"
-                  onClick={() => setShowInvite((v) => !v)}
-                >
-                  <span>
-                    <span className="crew-action-t">Invite someone</span>
-                    <span className="crew-action-s">Private link for people you trust</span>
-                  </span>
-                  <Plus size={18} />
-                </button>
-                {showInvite ? (
-                  <div className="crew-invite-panel">
+                {canManage ? (
+                  <section className="crew-section" aria-label="Invite">
                     <button
                       type="button"
-                      className="crew-btn"
-                      disabled={busy}
-                      onClick={() =>
-                        run(async () => {
-                          const r = await api(`/api/crews/${selected.id}/invitations`, {
-                            method: "POST",
-                            body: JSON.stringify({ maxUses: 10, expiresInHours: 168 }),
-                          });
-                          if (!r.inviteUrl) throw new Error("Invite was created but no link was returned.");
-                          setInviteUrl(r.inviteUrl);
-                          setMessage("Invite link ready.");
-                        })
-                      }
+                      className="crew-action-row"
+                      onClick={() => setShowInvite((v) => !v)}
                     >
-                      Create invite link
+                      <span>
+                        <span className="crew-action-t">Invite someone</span>
+                        <span className="crew-action-s">
+                          Private link for people you trust
+                        </span>
+                      </span>
+                      <Plus size={18} />
                     </button>
-                    {inviteUrl ? (
-                      <div className="crew-invite-result">
-                        <input
-                          readOnly
-                          value={inviteUrl}
-                          className="crew-field"
-                          aria-label="Invite link"
-                        />
+                    {showInvite ? (
+                      <div className="crew-invite-panel">
                         <button
                           type="button"
-                          className="crew-btn crew-btn-secondary"
+                          className="crew-btn"
                           disabled={busy}
                           onClick={() =>
                             run(async () => {
-                              await navigator.clipboard.writeText(inviteUrl);
-                              setMessage("Invite link copied.");
+                              const r = await api(
+                                `/api/crews/${selected.id}/invitations`,
+                                {
+                                  method: "POST",
+                                  body: JSON.stringify({
+                                    maxUses: 10,
+                                    expiresInHours: 168,
+                                  }),
+                                },
+                              );
+                              if (!r.inviteUrl) {
+                                throw new Error(
+                                  "Invite was created but no link was returned.",
+                                );
+                              }
+                              setInviteUrl(r.inviteUrl);
+                              setMessage("Invite link ready.");
                             })
                           }
                         >
-                          <Copy size={15} />
-                          Copy
+                          Create invite link
                         </button>
+                        {inviteUrl ? (
+                          <div className="crew-invite-result">
+                            <input
+                              readOnly
+                              value={inviteUrl}
+                              className="crew-field"
+                              aria-label="Invite link"
+                            />
+                            <button
+                              type="button"
+                              className="crew-btn crew-btn-secondary"
+                              disabled={busy}
+                              onClick={() =>
+                                run(async () => {
+                                  await navigator.clipboard.writeText(inviteUrl);
+                                  setMessage("Invite link copied.");
+                                })
+                              }
+                            >
+                              <Copy size={15} />
+                              Copy
+                            </button>
+                          </div>
+                        ) : null}
                       </div>
                     ) : null}
-                  </div>
+                  </section>
                 ) : null}
-              </section>
-            ) : null}
 
-            <section className="crew-section" aria-label="Share">
-              <p className="crew-section-k">Share with your Crew</p>
-              <div className="crew-kind-row" role="group" aria-label="Update type">
-                {(["growth", "goal", "support"] as CrewUpdateKind[]).map((k) => (
-                  <button
-                    key={k}
-                    type="button"
-                    className={"crew-kind" + (kind === k ? " is-active" : "")}
-                    onClick={() => setKind(k)}
-                    aria-pressed={kind === k}
-                  >
-                    {KIND_LABEL[k]}
-                  </button>
-                ))}
-              </div>
-              <textarea
-                className="crew-compose"
-                value={compose}
-                onChange={(e) => setCompose(e.target.value)}
-                placeholder={PROMPTS[kind]}
-                maxLength={800}
-                rows={3}
-                aria-label="Share an update"
-              />
-              <div className="crew-compose-row">
-                <span className="crew-hint">{compose.trim().length}/800</span>
-                <button
-                  type="button"
-                  className="crew-btn"
-                  disabled={busy || compose.trim().length < 1}
-                  onClick={() =>
-                    run(async () => {
-                      const r = await api(`/api/crews/${selected.id}/updates`, {
-                        method: "POST",
-                        body: JSON.stringify({ body: compose.trim(), kind }),
-                      });
-                      if (r.update) setUpdates((prev) => [r.update, ...prev]);
-                      setCompose("");
-                      setMessage("Shared with your Crew.");
-                    })
-                  }
-                >
-                  Share
-                </button>
-              </div>
-            </section>
-
-            <section className="crew-section" aria-label="Activity">
-              <p className="crew-section-k">What’s happening</p>
-              {updates.length === 0 ? (
-                <div className="crew-empty-feed">
-                  <p className="crew-empty-feed-t">No updates yet</p>
-                  <p className="crew-empty-feed-s">
-                    Be the first to share what you’re working on or ask for support.
+                <section className="crew-section" aria-label="Share">
+                  <p className="crew-section-k">Share with your Crew</p>
+                  <p className="crew-hint-block">
+                    Goals and progress are self-reported. Share honestly.
                   </p>
-                </div>
-              ) : (
-                <ul className="crew-feed">
-                  {updates.map((u) => (
-                    <li key={u.id} className="crew-post">
-                      <div className="crew-post-head">
-                        <span className="crew-avatar crew-avatar-sm" aria-hidden>
-                          {(u.author_display_name || "M")[0]?.toUpperCase()}
-                        </span>
-                        <div className="crew-post-meta">
-                          <strong>{u.author_display_name}</strong>
-                          <span>
-                            {KIND_LABEL[u.kind as CrewUpdateKind] || "Growth"} ·{" "}
-                            {relativeTime(u.created_at)}
-                          </span>
-                        </div>
-                      </div>
-                      <p className="crew-post-body">{u.body}</p>
+                  <div className="crew-kind-row" role="group" aria-label="Update type">
+                    {(["growth", "goal", "support"] as CrewUpdateKind[]).map((k) => (
                       <button
+                        key={k}
                         type="button"
-                        className={
-                          "crew-encourage" + (u.encouraged_by_me ? " is-on" : "")
-                        }
-                        disabled={busy}
-                        aria-pressed={u.encouraged_by_me}
-                        onClick={() =>
-                          run(async () => {
-                            const r = await api(
-                              `/api/crews/updates/${u.id}/encourage`,
-                              { method: "POST", body: "{}" },
-                            );
-                            setUpdates((prev) =>
-                              prev.map((item) =>
-                                item.id === u.id
-                                  ? {
-                                      ...item,
-                                      encouraged_by_me: Boolean(r.encouraged),
-                                      encouragement_count:
-                                        typeof r.encouragement_count === "number"
-                                          ? r.encouragement_count
-                                          : item.encouragement_count,
-                                    }
-                                  : item,
-                              ),
-                            );
-                          })
-                        }
+                        className={"crew-kind" + (kind === k ? " is-active" : "")}
+                        onClick={() => setKind(k)}
+                        aria-pressed={kind === k}
                       >
-                        <Heart
-                          size={15}
-                          strokeWidth={1.8}
-                          fill={u.encouraged_by_me ? "currentColor" : "none"}
-                        />
-                        {u.encouragement_count > 0
-                          ? `${u.encouragement_count} encourage${u.encouragement_count === 1 ? "" : "s"}`
-                          : "Encourage"}
+                        {KIND_LABEL[k]}
                       </button>
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </section>
+                    ))}
+                  </div>
+                  <textarea
+                    className="crew-compose"
+                    value={compose}
+                    onChange={(e) => setCompose(e.target.value)}
+                    placeholder={PROMPTS[kind]}
+                    maxLength={800}
+                    rows={3}
+                    aria-label="Share an update"
+                  />
+                  <div className="crew-compose-row">
+                    <span className="crew-hint">{compose.trim().length}/800</span>
+                    <button
+                      type="button"
+                      className="crew-btn"
+                      disabled={busy || compose.trim().length < 1}
+                      onClick={() =>
+                        run(async () => {
+                          const r = await api(`/api/crews/${selected.id}/updates`, {
+                            method: "POST",
+                            body: JSON.stringify({
+                              body: compose.trim(),
+                              kind,
+                            }),
+                          });
+                          if (r.update) setUpdates((prev) => [r.update, ...prev]);
+                          setCompose("");
+                          setMessage("Shared with your Crew.");
+                        })
+                      }
+                    >
+                      Share
+                    </button>
+                  </div>
+                </section>
+
+                <section className="crew-section" aria-label="Activity">
+                  <p className="crew-section-k">What’s happening</p>
+                  {updates.length === 0 ? (
+                    <div className="crew-empty-feed">
+                      <p className="crew-empty-feed-t">No updates yet</p>
+                      <p className="crew-empty-feed-s">
+                        Be the first to share what you’re working on or ask for
+                        support.
+                      </p>
+                    </div>
+                  ) : (
+                    <ul className="crew-feed">
+                      {updates.map((u) => (
+                        <li key={u.id} className="crew-post">
+                          <div className="crew-post-head">
+                            <span className="crew-avatar crew-avatar-sm" aria-hidden>
+                              {(u.author_display_name || "M")[0]?.toUpperCase()}
+                            </span>
+                            <div className="crew-post-meta">
+                              <strong>{u.author_display_name}</strong>
+                              <span>
+                                {KIND_LABEL[u.kind as CrewUpdateKind] || "Growth"}{" "}
+                                · {relativeTime(u.created_at)}
+                                {u.kind === "goal" ? " · self-reported" : ""}
+                              </span>
+                            </div>
+                          </div>
+                          <p className="crew-post-body">{u.body}</p>
+                          <div className="crew-post-actions">
+                            <button
+                              type="button"
+                              className={
+                                "crew-encourage" +
+                                (u.encouraged_by_me ? " is-on" : "")
+                              }
+                              disabled={busy}
+                              aria-pressed={u.encouraged_by_me}
+                              onClick={() =>
+                                run(async () => {
+                                  const r = await api(
+                                    `/api/crews/updates/${u.id}/encourage`,
+                                    { method: "POST", body: "{}" },
+                                  );
+                                  setUpdates((prev) =>
+                                    prev.map((item) =>
+                                      item.id === u.id
+                                        ? {
+                                            ...item,
+                                            encouraged_by_me: Boolean(r.encouraged),
+                                            encouragement_count:
+                                              typeof r.encouragement_count ===
+                                              "number"
+                                                ? r.encouragement_count
+                                                : item.encouragement_count,
+                                          }
+                                        : item,
+                                    ),
+                                  );
+                                })
+                              }
+                            >
+                              <Heart
+                                size={15}
+                                strokeWidth={1.8}
+                                fill={u.encouraged_by_me ? "currentColor" : "none"}
+                              />
+                              {u.encouragement_count > 0
+                                ? `${u.encouragement_count} encourage${
+                                    u.encouragement_count === 1 ? "" : "s"
+                                  }`
+                                : "Encourage"}
+                            </button>
+                            {canDelete(u) ? (
+                              <button
+                                type="button"
+                                className="crew-remove"
+                                disabled={busy}
+                                aria-label="Remove update"
+                                onClick={() =>
+                                  run(async () => {
+                                    await api(`/api/crews/updates/${u.id}`, {
+                                      method: "DELETE",
+                                    });
+                                    setUpdates((prev) =>
+                                      prev.filter((item) => item.id !== u.id),
+                                    );
+                                    setMessage("Update removed.");
+                                  })
+                                }
+                              >
+                                <Trash2 size={14} strokeWidth={1.8} />
+                                Remove
+                              </button>
+                            ) : null}
+                          </div>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </section>
+
+                <section className="crew-section crew-leave-section" aria-label="Leave">
+                  <button
+                    type="button"
+                    className="crew-leave"
+                    disabled={busy}
+                    onClick={() =>
+                      run(async () => {
+                        const confirmed = window.confirm(
+                          selected.role === "owner"
+                            ? "Leave this Crew? If you are the only member, it will be archived."
+                            : "Leave this Crew? You can rejoin later with a new invite.",
+                        );
+                        if (!confirmed) return;
+                        await api("/api/crews", {
+                          method: "DELETE",
+                          body: JSON.stringify({ crewId: selected.id }),
+                        });
+                        setSelected(null);
+                        await loadCrews();
+                        setMessage("You left the Crew.");
+                      })
+                    }
+                  >
+                    Leave Crew
+                  </button>
+                </section>
+              </>
+            )}
           </div>
         ) : (
           <div className="crew-home">
-            {crews.length === 0 ? (
+            {loadingList ? (
+              <p className="crew-loading" role="status">
+                Loading your Crews…
+              </p>
+            ) : crews.length === 0 ? (
               <div className="crew-empty">
                 <span className="crew-empty-mark" aria-hidden>
                   <Users size={22} strokeWidth={1.6} />
@@ -550,14 +660,18 @@ export function CrewWorkspace() {
 
             <section className="crew-section" aria-label="Join with invite">
               <p className="crew-section-k">Have an invite?</p>
-              <p className="crew-hint-block">Paste the link or token from someone you trust.</p>
+              <p className="crew-hint-block">
+                Paste the link or token from someone you trust.
+              </p>
               <form
                 className="crew-join-form"
                 onSubmit={(e) => {
                   e.preventDefault();
                   void run(async () => {
                     const token = extractToken(inviteToken);
-                    if (!token) throw new Error("That invite does not contain a valid token.");
+                    if (!token) {
+                      throw new Error("That invite does not contain a valid token.");
+                    }
                     await api("/api/crews/join", {
                       method: "POST",
                       body: JSON.stringify({ token }),
