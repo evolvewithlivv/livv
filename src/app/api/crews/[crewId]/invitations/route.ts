@@ -46,7 +46,7 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ cre
       details: { invitation_id: invitation.id, expires_at: expiresAt, max_uses: maxUses },
     });
     const origin = new URL(req.url).origin;
-    return json({ invitation, token, inviteUrl: origin + "/home/crew/join?token=" + encodeURIComponent(token) }, 201);
+    return json({ invitation, token, inviteUrl: origin + "/home/crew?token=" + encodeURIComponent(token) }, 201);
   } catch (error) {
     console.error("[crews] invitation creation failed", error);
     return json({ error: "Could not create invitation." }, 500);

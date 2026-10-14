@@ -25,6 +25,7 @@ const NAV = [
     Icon: UserRound,
     match: (p: string) =>
       p.startsWith("/home/profile") ||
+      p.startsWith("/home/crew") ||
       p.startsWith("/home/settings") ||
       p.startsWith("/home/settings"),
   },
