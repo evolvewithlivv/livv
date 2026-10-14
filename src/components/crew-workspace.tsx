@@ -2,7 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import Link from "next/link";
-import { ArrowLeft, Users, Plus, Copy, RefreshCw, ShieldCheck, ChevronRight, Link2, CheckCircle2 } from "lucide-react";
+import { ArrowLeft, Users, Plus, Copy, RefreshCw, ShieldCheck, ChevronRight, Link2 } from "lucide-react";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 
 type Crew = { id: string; name: string; description: string | null; role: string; joined_at: string };
@@ -80,7 +80,7 @@ export function CrewWorkspace({ embedded = false }: { embedded?: boolean }) {
 
       {selected ? <section className="space-y-6">
         <button className="text-sm opacity-65" onClick={() => { setSelected(null); setInviteUrl(""); }}>← All Crews</button>
-        <div className="border-b border-current/15 pb-5"><p className="text-xs uppercase tracking-widest opacity-50">{selected.role} · {members.length || 1} {members.length === 1 ? "member" : "members"}</p><h3 className="mt-1 text-2xl font-semibold tracking-tight">{selected.name}</h3>{selected.description && <p className="mt-2 text-sm opacity-65">{selected.description}</p>}<div className="mt-4 flex flex-wrap gap-2">{members.slice(0,6).map((m,i)=><span key={m.user_id} title={m.display_name} className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-current/15 text-xs font-semibold">{(m.display_name || "M").trim().charAt(0).toUpperCase()}</span>)}{members.length > 6 && <span className="inline-flex h-9 items-center rounded-full border border-current/15 px-3 text-xs opacity-65">+{members.length-6}</span>}</div></div>
+        <div className="border-b border-current/15 pb-5"><p className="text-xs uppercase tracking-widest opacity-50">{selected.role} · {members.length || 1} {members.length === 1 ? "member" : "members"}</p><h3 className="mt-1 text-2xl font-semibold tracking-tight">{selected.name}</h3>{selected.description && <p className="mt-2 text-sm opacity-65">{selected.description}</p>}<div className="mt-4 flex flex-wrap gap-2">{members.slice(0,6).map((m)=><span key={m.user_id} title={m.display_name} className="inline-flex h-9 w-9 items-center justify-center rounded-full border border-current/15 text-xs font-semibold">{(m.display_name || "M").trim().charAt(0).toUpperCase()}</span>)}{members.length > 6 && <span className="inline-flex h-9 items-center rounded-full border border-current/15 px-3 text-xs opacity-65">+{members.length-6}</span>}</div></div>
         {["owner","admin"].includes(selected.role) && <div className="space-y-3 rounded-2xl border border-current/15 p-4">
           <h3 className="font-semibold">Invite your people</h3><p className="text-sm opacity-65">Create a private invite link for people you trust.</p>
           <button className={button} disabled={busy} onClick={() => run(async () => { const r = await api(`/api/crews/${selected.id}/invitations`, { method:"POST", body:JSON.stringify({maxUses:10,expiresInHours:168}) }); const url = r.inviteUrl || r.invitation?.inviteUrl; if (!url) throw new Error("Invite was created but no link was returned."); setInviteUrl(url); setMessage("Invite link created."); })}>Create invite link</button>
