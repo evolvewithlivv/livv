@@ -90,3 +90,45 @@ export async function POST(req: NextRequest, { params }: { params: Promise<{ cre
     return json({ error: "Could not create challenge." }, 500);
   }
 }
+
+
+export async function PATCH(req: NextRequest, { params }: { params: Promise<{ crewId: string }> }) {
+  try {
+    const user = await getVerifiedSupabaseUser(req);
+    if (!user || user.isAnonymous) return json({ error: "Sign in to manage challenges." }, 401);
+    const { crewId } = await params;
+    if (!UUID.test(crewId)) return json({ error: "Invalid Crew." }, 400);
+    const body = await req.json().catch(() => null);
+    const challengeId = typeof body?.challengeId === "string" ? body.challengeId : "";
+    const action = body?.action;
+    if (!UUID.test(challengeId) || !["activate", "cancel"].includes(action)) return json({ error: "Invalid challenge action." }, 400);
+    const db = getSupabaseAdmin();
+    if (!db) return json({ error: "Crew service unavailable." }, 503);
+    const { data: member, error: memberError } = await db.from("crew_members").select("role")
+      .eq("crew_id", crewId).eq("user_id", user.id).eq("status", "active").maybeSingle();
+    if (memberError) throw memberError;
+    if (!member || !["owner", "admin"].includes(member.role)) return json({ error: "Only Crew owners and admins can manage challenges." }, 403);
+    const { data: challenge, error: challengeError } = await db.from("crew_challenges")
+      .select("id,status,starts_at,ends_at").eq("id", challengeId).eq("crew_id", crewId).maybeSingle();
+    if (challengeError) throw challengeError;
+    if (!challenge) return json({ error: "Challenge not found." }, 404);
+    const now = Date.now();
+    if (action === "activate" && (challenge.status !== "draft" || Date.parse(challenge.ends_at) <= now)) {
+      return json({ error: "Only an upcoming or current draft challenge can be activated." }, 409);
+    }
+    if (action === "cancel" && !["draft", "active"].includes(challenge.status)) {
+      return json({ error: "This challenge can no longer be cancelled." }, 409);
+    }
+    const status = action === "activate" ? "active" : "cancelled";
+    const { data, error } = await db.from("crew_challenges").update({ status })
+      .eq("id", challengeId).eq("crew_id", crewId).select("id,status").single();
+    if (error) throw error;
+    await db.from("crew_audit_events").insert({ crew_id: crewId, actor_user_id: user.id,
+      event_type: action === "activate" ? "crew.challenge_activated" : "crew.challenge_cancelled",
+      details: { challenge_id: challengeId } });
+    return json({ challenge: data });
+  } catch (error) {
+    console.error("[crews] challenge update failed", error);
+    return json({ error: "Could not update challenge." }, 500);
+  }
+}
