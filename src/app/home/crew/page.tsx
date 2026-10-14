@@ -22,7 +22,7 @@ async function api(path: string, init?: RequestInit) {
 }
 
 const field = "w-full rounded-xl border border-[var(--livv-border,#333)] bg-transparent px-4 py-3 text-base outline-none";
-const button = "inline-flex items-center justify-center gap-2 rounded-full bg-[var(--livv-fg,#111)] px-5 py-3 text-sm font-semibold text-[var(--livv-bg,#fff)] disabled:opacity-50";
+const button = "inline-flex min-h-11 items-center justify-center gap-2 rounded-full bg-white px-5 py-3 text-sm font-semibold text-black disabled:cursor-not-allowed disabled:opacity-50";
 
 export function CrewWorkspace({ embedded = false }: { embedded?: boolean }) {
   const [crews, setCrews] = useState<Crew[]>([]);
