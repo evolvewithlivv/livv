@@ -109,13 +109,33 @@ export default function ProfilePage() {
           </div>
         </section>
 
-        <section className="you-section" aria-label="Crew"><p className="you-section-k">Your circle</p><Link href="/home/crew" className="you-social"><span className="you-social-mark"><Users size={18}/></span><span><strong>Crew</strong><small>Shared challenges. Keep each other accountable.</small></span><ChevronRight size={17} className="you-chev" /></Link></section>
+        <section className="you-section" aria-label="Crew">
+          <p className="you-section-k">Your circle</p>
+          <Link href="/home/crew" className="you-social">
+            <span className="you-social-mark">
+              <Users size={18} />
+            </span>
+            <span>
+              <strong>Crew</strong>
+              <small>Grow together. Share. Support each other.</small>
+            </span>
+            <ChevronRight size={17} className="you-chev" />
+          </Link>
+        </section>
 
         <section className="you-section" aria-label="Stay connected">
           <p className="you-section-k">Stay connected</p>
-          <a className="you-social" href="https://x.com/ewl_official" target="_blank" rel="noreferrer">
+          <a
+            className="you-social"
+            href="https://x.com/ewl_official"
+            target="_blank"
+            rel="noreferrer"
+          >
             <span className="you-social-mark">𝕏</span>
-            <span><strong>@ewl_official</strong><small>Official LIVV on X</small></span>
+            <span>
+              <strong>@ewl_official</strong>
+              <small>Official LIVV on X</small>
+            </span>
             <ChevronRight size={17} className="you-chev" />
           </a>
         </section>
