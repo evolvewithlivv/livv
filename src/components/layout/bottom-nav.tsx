@@ -9,6 +9,7 @@ import {
   Dumbbell,
   HeartPulse,
   ShoppingBag,
+  Users,
   UserRound,
 } from "lucide-react";
 import { haptic } from "@/lib/sensory";
@@ -19,6 +20,7 @@ const NAV = [
   { href: "/home/train", label: "Train", Icon: Dumbbell, match: (p: string) => p.startsWith("/home/train") },
   { href: "/home/health", label: "Health", Icon: HeartPulse, match: (p: string) => p.startsWith("/home/health") },
   { href: "/home/shop", label: "Shop", Icon: ShoppingBag, match: (p: string) => p.startsWith("/home/shop") },
+  { href: "/home/crew", label: "Crew", Icon: Users, match: (p: string) => p.startsWith("/home/crew") },
   {
     href: "/home/profile",
     label: "You",
