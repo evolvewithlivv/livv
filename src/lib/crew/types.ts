@@ -2,6 +2,7 @@ export type CrewRole = "owner" | "admin" | "member";
 export type CrewStatus = "active" | "archived";
 export type CrewChallengeType = "daily_action_days" | "workout_sessions" | "learning_sessions" | "custom_checkin";
 export type CrewChallengeStatus = "draft" | "active" | "completed" | "cancelled";
+export type CrewUpdateKind = "growth" | "goal" | "support";
 
 export interface CrewSummary {
   id: string;
@@ -23,6 +24,18 @@ export interface CrewMember {
   status: "active" | "left" | "removed";
   display_name: string;
   joined_at: string;
+}
+
+export interface CrewUpdate {
+  id: string;
+  crew_id: string;
+  author_user_id: string;
+  author_display_name: string;
+  kind: CrewUpdateKind;
+  body: string;
+  created_at: string;
+  encouragement_count: number;
+  encouraged_by_me: boolean;
 }
 
 export interface CrewChallenge {
