@@ -117,30 +117,17 @@ for select to authenticated using (
   crew_id is not null and exists (select 1 from public.crew_members m where m.crew_id = crew_challenges.crew_id and m.user_id = auth.uid() and m.status = 'active')
 );
 
+-- Enrollment and completion rows can contain behavioral data. Read them only
+-- through membership-checked server APIs; do not expose other members' rows.
 drop policy if exists "Members can view challenge enrollment" on public.crew_challenge_members;
-create policy "Members can view challenge enrollment" on public.crew_challenge_members
-for select to authenticated using (
-  user_id = auth.uid() or exists (
-    select 1 from public.crew_challenges c join public.crew_members m on m.crew_id = c.crew_id
-    where c.id = crew_challenge_members.challenge_id and m.user_id = auth.uid() and m.status = 'active'
-  )
-);
-
 drop policy if exists "Members can view shared crew completions" on public.crew_completions;
-create policy "Members can view shared crew completions" on public.crew_completions
-for select to authenticated using (
-  user_id = auth.uid() or exists (
-    select 1 from public.crew_challenges c join public.crew_members m on m.crew_id = c.crew_id
-    where c.id = crew_completions.challenge_id and m.user_id = auth.uid() and m.status = 'active'
-  )
-);
 
 -- Invitations and audit history are server-only; no direct authenticated policies.
 revoke all on public.crew_invitations, public.crew_audit_events from anon, authenticated;
 revoke insert, update, delete on public.crews, public.crew_members, public.crew_challenges,
   public.crew_challenge_members, public.crew_completions from anon, authenticated;
-grant select on public.crews, public.crew_members, public.crew_challenges,
-  public.crew_challenge_members, public.crew_completions to authenticated;
+grant select on public.crews, public.crew_members, public.crew_challenges to authenticated;
+revoke select on public.crew_challenge_members, public.crew_completions from anon, authenticated;
 
 comment on table public.crew_completions is 'Accepted activity events. Scores must be derived from eligible rows, never client-submitted totals.';
 comment on table public.crew_invitations is 'Invitation tokens are stored only as cryptographic hashes and managed by trusted server routes.';
