@@ -7,6 +7,8 @@
 .shop-kicker{margin:0;color:rgb(var(--livv-muted));font-size:8px;font-weight:800;letter-spacing:.22em;line-height:1.2;text-transform:uppercase}
 .shop-title-block h1{margin:10px 0 0;font-family:var(--font-display),var(--font-body),system-ui,sans-serif;font-size:clamp(2.35rem,10vw,4.5rem);font-weight:650;letter-spacing:-.07em;line-height:.9}
 .shop-subtitle{margin:10px 0 0;color:rgb(var(--livv-muted));font-size:11px;line-height:1.5}
+.shop-unavailable{margin:8px 0 0;color:rgb(var(--livv-muted));font-size:11px;line-height:1.5}
+button.shop-product{display:block;width:100%;padding:0;border:0;background:transparent;text-align:left;font:inherit;color:inherit;cursor:default}
 .shop-collection{padding-top:8px}
 .shop-section-head{display:flex;align-items:center;margin-bottom:10px;padding-bottom:8px}
 .shop-section-head h2{margin:0;color:rgb(var(--livv-muted));font-size:8px;font-weight:800;letter-spacing:.2em}
