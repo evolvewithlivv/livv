@@ -214,7 +214,7 @@ export function CrewWorkspace() {
     Boolean(userId && (u.author_user_id === userId || canManage));
 
   return (
-    <section className="crew" aria-label="Crew">
+    <main className="crew" aria-label="Crew">
       <div className="crew-inner">
         <Link href="/home/profile" className="crew-back">
           <ArrowLeft size={17} strokeWidth={1.7} />
@@ -621,8 +621,29 @@ export function CrewWorkspace() {
                       setName("");
                       setDescription("");
                       setShowCreate(false);
-                      await loadCrews();
-                      if (result.crew) setSelected(result.crew);
+                      const created = result.crew as Crew | undefined;
+                      if (created?.id && created.name) {
+                        const row: Crew = {
+                          id: created.id,
+                          name: created.name,
+                          description: created.description ?? null,
+                          role: created.role || "owner",
+                          joined_at: created.joined_at || new Date().toISOString(),
+                        };
+                        setCrews((prev) => [row, ...prev.filter((item) => item.id !== row.id)]);
+                        setSelected(row);
+                      }
+                      try {
+                        const listed = await api("/api/crews");
+                        const next = (listed.crews || []) as Crew[];
+                        setCrews((prev) => {
+                          const ids = new Set(next.map((item) => item.id));
+                          const pending = prev.filter((item) => !ids.has(item.id));
+                          return [...pending, ...next];
+                        });
+                      } catch {
+                        /* The new Crew is already in the list. */
+                      }
                       setMessage("Crew created.");
                     });
                   }}
@@ -697,6 +718,6 @@ export function CrewWorkspace() {
           </div>
         )}
       </div>
-    </section>
+    </main>
   );
 }

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { LEGAL, LEGAL_DOCS, legalBySlug } from "@/lib/legal";
+import "../legal.css";
 
 export default function LegalPage() {
   const params = useParams<{ slug: string }>();
@@ -42,7 +43,7 @@ export default function LegalPage() {
           ))}
         </nav>
 
-        <div className="mt-10 space-y-10">
+        <div className="livv-legal mt-10 space-y-10">
           {doc.sections.map((s) => (
             <section key={s.h}>
               <h2 className="text-[16px] font-semibold">{s.h}</h2>

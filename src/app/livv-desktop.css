@@ -336,31 +336,6 @@
     padding: 0 !important;
   }
 
-  .auth-modes {
-    gap: 1.35rem !important;
-    margin-bottom: 1.35rem;
-    padding: 0 0 0.15rem !important;
-    border-radius: 0 !important;
-    background: transparent !important;
-    border-bottom: 1px solid color-mix(in srgb, rgb(var(--livv-border)) 75%, transparent);
-  }
-
-  .auth-modes .auth-mode {
-    border-radius: 0 !important;
-    background: transparent !important;
-    box-shadow: none !important;
-    color: rgb(var(--livv-muted)) !important;
-    padding-left: 0 !important;
-    padding-right: 0 !important;
-    justify-content: flex-start;
-  }
-
-  .auth-modes .auth-mode-active {
-    color: rgb(var(--livv-ink)) !important;
-    background: transparent !important;
-    box-shadow: inset 0 -2px 0 rgb(var(--livv-ink)) !important;
-  }
-
   /* Onboarding */
   .onb.livv-page {
     display: flex;

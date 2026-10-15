@@ -201,7 +201,7 @@ export default function HomePage() {
             <Link href="/home/daily" className="ho-system ho-system-daily"><span><Brain size={16}/></span><strong>Daily</strong><small>Mind · life · action</small><ArrowUpRight size={15}/></Link>
             <Link href="/home/train" className="ho-system ho-system-train"><span><Dumbbell size={16}/></span><strong>Train</strong><small>Build · execute · record</small><ArrowUpRight size={15}/></Link>
             <Link href="/home/health" className="ho-system ho-system-health"><span><HeartPulse size={16}/></span><strong>Health</strong><small>Sleep · food · movement</small><ArrowUpRight size={15}/></Link>
-            <Link href="/home/field" className="ho-system ho-system-field"><span><Sprout size={16}/></span><strong>Field</strong><small>Grow · keep · preserve</small><ArrowUpRight size={15}/></Link>
+            <Link href="/home/field" prefetch={false} className="ho-system ho-system-field"><span><Sprout size={16}/></span><strong>Field</strong><small>Grow · keep · preserve</small><ArrowUpRight size={15}/></Link>
           </div>
         </section>
 

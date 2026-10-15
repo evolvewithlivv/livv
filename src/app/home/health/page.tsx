@@ -187,7 +187,7 @@ export default function HealthPage() {
           </div>
           <div className="health-system-list">
             {SYSTEMS.map(({ href, label, kicker, detail, Icon }, index) => (
-              <Link key={href} href={href} className="health-system">
+              <Link key={href} href={href} prefetch={href === "/home/field" ? false : undefined} className="health-system">
                 <span className="health-system-index">{String(index + 1).padStart(2, "0")}</span>
                 <span className="health-system-icon"><Icon size={17} strokeWidth={1.6} /></span>
                 <span className="health-system-copy">

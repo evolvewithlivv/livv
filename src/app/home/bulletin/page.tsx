@@ -109,7 +109,7 @@ function Note({
   );
   if (href && !disabled) {
     return (
-      <Link href={href} aria-label={ariaLabel} className={`${base} ${className}`} style={style}>
+      <Link href={href} prefetch={href.startsWith("/home/shop") || href.startsWith("/home/field") ? false : undefined} aria-label={ariaLabel} className={`${base} ${className}`} style={style}>
         {inner}
       </Link>
     );

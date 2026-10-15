@@ -1,7 +1,8 @@
 import { dayKey } from "./dates";
 import { ACHIEVEMENT_DEFS, OBJECTIVE_DEFS, PILLAR_DEFS } from "./evolve-data";
 import { activityFromAchievement, activityFromLevelUp } from "./activity";
-import { addEmbers } from "./identity";
+import { addEmbers, loadIdentity, patchIdentity } from "./identity";
+import { isSupabaseConfigured } from "./supabase/client";
 import { noteBrokenStreak } from "./streak-repair";
 import { enqueueMilestone, evaluateMilestones } from "./milestones";
 import { bumpPairDay } from "./pair-chain";
@@ -275,6 +276,31 @@ export function completeWorkout(input: {
   return rec;
 }
 
+function dayHasActivity(day: DayLog | undefined) {
+  if (!day) return false;
+  return Boolean(day.checkIn || day.workout || day.objectives.length || (day.custom && day.custom.length));
+}
+
+/** Drop today's streak tick only when the undone action was the last thing logged today. */
+function releaseEmptyToday(rec: LivvRecord, today: string, day: DayLog) {
+  if (dayHasActivity(day) || rec.lastActiveDay !== today) return;
+  const priorKey = yesterdayKey();
+  const priorActive = dayHasActivity(rec.days[priorKey]) || Boolean(rec.frozenDays?.includes(priorKey));
+  if (priorActive && rec.streak > 1) {
+    rec.streak -= 1;
+    rec.lastActiveDay = priorKey;
+    return;
+  }
+  rec.streak = 0;
+  rec.lastActiveDay = null;
+}
+
+function offlineEmbersForXp(xp: number) {
+  if (xp >= 55) return 12;
+  if (xp <= 15) return 4;
+  return 6;
+}
+
 export function undoCustomByTitle(title: string) {
   const rec = loadRecord();
   const today = dayKey();
@@ -296,8 +322,14 @@ export function undoCustomByTitle(title: string) {
   rec.goalsCompleted = Math.max(0, rec.goalsCompleted - 1);
   if (pid === "mind") rec.mindObjectives = Math.max(0, rec.mindObjectives - 1);
   rec.currentXp = Math.max(0, rec.currentXp - item.xp);
+  releaseEmptyToday(rec, today, day);
   rec.days[today] = day;
   saveRecord(rec);
+  // Signed-in Ember awards stay on the server. Reversing them here would invent a balance.
+  if (!isSupabaseConfigured()) {
+    const current = loadIdentity();
+    patchIdentity({ embers: Math.max(0, (current.embers || 0) - offlineEmbersForXp(item.xp)) });
+  }
   return rec;
 }
 

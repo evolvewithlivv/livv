@@ -79,7 +79,33 @@ html[data-theme="light"] .livv-page [class*="bg-white/"]{background:color-mix(in
 .auth-page {
   background: var(--livv-bg, #f5f6f8);
   color: rgb(var(--livv-ink));
+  font-family: var(--font-body), system-ui, sans-serif;
   isolation: isolate;
+}
+.auth-modes {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1.5rem;
+  margin-bottom: 1.25rem;
+  padding: 0;
+  background: transparent;
+  border-bottom: 1px solid color-mix(in srgb, rgb(var(--livv-border)) 75%, transparent);
+}
+.auth-mode {
+  min-height: 2.75rem;
+  padding: 0.55rem 0 0.7rem;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: rgb(var(--livv-muted));
+  font: inherit;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: left;
+  cursor: pointer;
+}
+.auth-panel {
+  min-height: 24rem;
 }
 .auth-glow {
   left: 50%;
@@ -92,13 +118,13 @@ html[data-theme="light"] .livv-page [class*="bg-white/"]{background:color-mix(in
 }
 .auth-logo { position: relative; z-index: 1; }
 .auth-mode-active {
-  background: #111114 !important;
-  color: #fff !important;
-  box-shadow: 0 1px 2px rgba(0,0,0,.12);
+  color: rgb(var(--livv-ink));
+  background: transparent;
+  box-shadow: inset 0 -2px 0 rgb(var(--livv-ink));
 }
 .auth-mode-inactive {
-  background: transparent !important;
-  color: rgb(var(--livv-muted)) !important;
+  background: transparent;
+  color: rgb(var(--livv-muted));
 }
 .auth-muted { color: rgb(var(--livv-muted)) !important; }
 .auth-link { color: rgb(var(--livv-ink)) !important; }

@@ -4,7 +4,9 @@ import { useEffect, useRef, useState } from "react";
 import {
   LOCATION_OPTIONS,
   DURATION_OPTIONS,
+  formatMinutes,
   generateWorkout,
+  sessionTitle,
   type Focus,
   type Location,
   type Duration,
@@ -69,7 +71,7 @@ function nextTrainingDay<T extends { id: string; day: string; rest?: boolean; la
 }
 
 function durationLabel(value: string) {
-  return /min/i.test(value) ? value : `${value} min`;
+  return formatMinutes(value);
 }
 
 function exerciseCue(ex: Exercise) {
@@ -205,7 +207,7 @@ export default function TrainPage() {
   const build = () => {
     if (!selectedDay || !focus || !location || !duration) return;
     const w = generateWorkout(focus, location, duration);
-    w.name = selectedDay.label.toLowerCase() === String(focus).toLowerCase() ? w.name : `${selectedDay.label} · ${w.name}`;
+    w.name = sessionTitle(selectedDay.label, w.name);
     setWorkout(w);
     saveFullWorkout(w);
     setPhase("preview");
@@ -425,23 +427,27 @@ export default function TrainPage() {
           <div className="tr-section-head">
             <div><p className="tr-section-k">Weekly split</p><p className="tr-section-note">Choose a system or build your own.</p></div>
           </div>
-          <div className="tr-chips">
+          <div className="tr-day-list" role="listbox" aria-label="Weekly split">
             {SPLITS.map((s) => (
               <button
                 key={s.id}
                 type="button"
-                className={"tr-chip" + (splitId === s.id ? " on" : "")}
+                role="option"
+                aria-selected={splitId === s.id}
+                className={"tr-day-row" + (splitId === s.id ? " on" : "")}
                 onClick={() => chooseSplit(s.id)}
               >
-                {s.chip || s.name}
+                <span className="tr-day-name">{s.name}</span>
               </button>
             ))}
             <button
               type="button"
-              className={"tr-chip tr-chip-custom" + (splitId === "custom" ? " on" : "")}
+              role="option"
+              aria-selected={splitId === "custom"}
+              className={"tr-day-row" + (splitId === "custom" ? " on" : "")}
               onClick={() => chooseSplit("custom")}
             >
-              {customSplit ? "My split" : "Build your split"}
+              <span className="tr-day-name">{customSplit ? "My split" : "Build your split"}</span>
             </button>
           </div>
         </section>

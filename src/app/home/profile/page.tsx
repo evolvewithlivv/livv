@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { loadIdentity, type Identity } from "@/lib/identity";
 import { goalLabels, loadOnboardingDraft, type OnboardingDraft } from "@/lib/onboarding";
 import { loadRecord } from "@/lib/record";
-import { loadDailyState } from "@/lib/daily";
+import { countCompletedObjectives } from "@/lib/daily";
 import { MIN_REDEEM_EMBERS, embersToDollars } from "@/lib/ember-economy";
 import "./profile-signal.css";
 
@@ -20,7 +20,7 @@ export default function ProfilePage() {
     const sync = () => {
       setMe(loadIdentity());
       setRec(loadRecord());
-      setTodayDone(loadDailyState().completed.length);
+      setTodayDone(countCompletedObjectives());
       setIntent(loadOnboardingDraft());
     };
     sync();
