@@ -1,6 +1,6 @@
 import { type AuthError, type User } from "@supabase/supabase-js";
-import { DEFAULT_ACCENT, applyAppearance, type Identity } from "../identity";
-import { loadAccounts, normalizeUsername, suggestUsername, type Account, type AuthProvider } from "../auth";
+import { DEFAULT_ACCENT, applyAppearance, normalizeLook, readStoredLook, writeStoredLook, type Identity } from "../identity";
+import { loadAccounts, normalizeUsername, suggestUsername, syncIdentityToCloud, type Account, type AuthProvider } from "../auth";
 import { getSupabaseBrowserClient, isSupabaseConfigured } from "./client";
 import { sanitizeTrafficSource } from "../attribution";
 import { ensureAnonymousSession } from "./anon-session";
@@ -35,14 +35,16 @@ async function hydrateCloudProfile(user: User, account: Account): Promise<Accoun
     return account;
   }
   const placeholder = typeof profile.username === "string" && profile.username.startsWith("anon_");
-  const appearance =
+  const pending = readStoredLook();
+  const cloudLook = normalizeLook(
     profile.appearance === "light" || profile.appearance === "system" || profile.appearance === "dark"
       ? profile.appearance
-      : account.appearance;
-  const theme =
-    profile.theme === "daylight" || profile.theme === "midnight"
-      ? profile.theme
-      : account.theme;
+      : account.appearance,
+    typeof profile.theme === "string" ? profile.theme : account.theme,
+  );
+  const look = pending && pending.updatedAt > pending.syncedAt ? pending : cloudLook;
+  const appearance = look.appearance;
+  const theme = look.theme;
   const hydrated: Account = {
     ...account,
     username: placeholder ? account.username : profile.username || account.username,
@@ -62,6 +64,28 @@ async function hydrateCloudProfile(user: User, account: Account): Promise<Accoun
       if (!isOnboardingComplete()) markOnboardingComplete();
     } catch { /* non-fatal */ }
   }
+  const identity: Identity = {
+    displayName: hydrated.displayName,
+    username: hydrated.username,
+    bio: hydrated.bio,
+    goal: hydrated.goal || "",
+    photo: hydrated.photo,
+    accent: hydrated.accent,
+    appearance: hydrated.appearance,
+    tier: hydrated.tier,
+    theme: hydrated.theme,
+    embers: hydrated.embers,
+  };
+  const lookChanged =
+    hydrated.appearance !== profile.appearance || hydrated.theme !== profile.theme;
+  const pendingUnsynced = Boolean(pending && pending.updatedAt > pending.syncedAt);
+  if (!placeholder && (lookChanged || pendingUnsynced)) {
+    void syncIdentityToCloud(identity).then((result) => {
+      if (result !== "cloud") return;
+      const current = readStoredLook();
+      if (current) writeStoredLook({ ...current, syncedAt: current.updatedAt });
+    });
+  }
   if (placeholder) {
     const { error: updateError } = await client
       .from("profiles")
@@ -76,6 +100,7 @@ async function hydrateCloudProfile(user: User, account: Account): Promise<Accoun
       })
       .eq("id", user.id);
     if (updateError) console.warn("[LIVV profile] cloud identity write deferred", updateError);
+    else if (pending) writeStoredLook({ ...pending, syncedAt: pending.updatedAt });
   }
   return hydrated;
 }

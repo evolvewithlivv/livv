@@ -47,6 +47,7 @@ export default function HomePage() {
   const [question, setQuestion] = useState("");
   const [now, setNow] = useState(() => new Date());
   const [firstSession, setFirstSession] = useState(false);
+  const [emberNote, setEmberNote] = useState("");
 
   const pull = () => {
     const r = loadRecord();
@@ -63,9 +64,16 @@ export default function HomePage() {
     if (consumeFirstSessionPending()) setFirstSession(true);
     const events = ["livv-identity", "livv-record", "livv-daily"];
     events.forEach((e) => window.addEventListener(e, pull));
+    const onAward = (event: Event) => {
+      const detail = (event as CustomEvent<{ ok?: boolean; error?: string }>).detail;
+      if (detail && detail.ok === false) setEmberNote(detail.error || "Embers could not be awarded.");
+      else setEmberNote("");
+    };
+    window.addEventListener("livv-ember-award", onAward);
     const clock = window.setInterval(() => setNow(new Date()), 30_000);
     return () => {
       events.forEach((e) => window.removeEventListener(e, pull));
+      window.removeEventListener("livv-ember-award", onAward);
       window.clearInterval(clock);
     };
   }, []);
@@ -139,6 +147,11 @@ export default function HomePage() {
           ) : (
             <p className="ho-done">Today is logged.</p>
           )}
+          {emberNote ? (
+            <p className="ho-context" role="status">
+              {emberNote}
+            </p>
+          ) : null}
           {!showCheckIn && actionableMove ? (
             <p className="ho-context">{actionableMove.reason}</p>
           ) : null}
@@ -172,7 +185,7 @@ export default function HomePage() {
         </div>
 
         <section className="ho-systems" aria-label="LIVV systems">
-          <div className="ho-systems-head"><div><p className="ho-k">LIVV SYSTEM</p><h2>Your world, in motion.</h2></div><span>04</span></div>
+          <div className="ho-systems-head"><div><p className="ho-k">LIVV SYSTEM</p><h2>Your world, in motion.</h2></div></div>
           <div className="ho-system-grid">
             <Link href="/home/daily" className="ho-system ho-system-daily"><span><Brain size={16}/></span><strong>Daily</strong><small>Mind · life · action</small><ArrowUpRight size={15}/></Link>
             <Link href="/home/train" className="ho-system ho-system-train"><span><Dumbbell size={16}/></span><strong>Train</strong><small>Build · execute · record</small><ArrowUpRight size={15}/></Link>
@@ -197,9 +210,6 @@ export default function HomePage() {
             <p className="ho-qa">{quote.author}</p>
           </footer>
         ) : null}
-        <div className="ho-pillars" aria-hidden>
-          <img src="https://raw.githubusercontent.com/evolvewithlivv/livv/main/LIVV%20Pillars%20Logo%20-%20BLACK.PNG" alt="" />
-        </div>
       </div>
     </main>
   );

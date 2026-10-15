@@ -12,6 +12,7 @@ export type SplitDay = {
 export type SplitDef = {
   id: SplitId;
   name: string;
+  chip?: string;
   line: string;
   detail: string;
   days: SplitDay[];
@@ -35,6 +36,7 @@ export const SPLITS: SplitDef[] = [
   {
     id: "ppl",
     name: "6-Day Push / Pull / Legs",
+    chip: "PPL",
     line: "The week is the system. Push, pull, legs. Repeat. Sunday off.",
     detail: "Split = what gets trained. Workout = how you train it.",
     color: ACCENT,

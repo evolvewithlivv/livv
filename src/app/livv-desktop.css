@@ -224,13 +224,6 @@
     padding-top: 0;
   }
 
-  .ho .ho-pillars {
-    grid-column: 1 / -1;
-    flex: none;
-    min-height: 0;
-    padding: 2.25rem 0 0.5rem;
-  }
-
   /* Auth */
   .auth-page {
     display: grid;
