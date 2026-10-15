@@ -30,6 +30,31 @@ function utcDayKey() {
   return new Date().toISOString().slice(0, 10);
 }
 
+function readCount(value: unknown): number | null {
+  if (typeof value === "number" && Number.isFinite(value)) return value;
+  if (typeof value === "string" && value.trim() !== "" && Number.isFinite(Number(value))) return Number(value);
+  return null;
+}
+
+/** Table RPCs sometimes come back as a row, a one-element array, or a nested composite. Missing totals stay null so the client can apply `awarded` instead of painting 0. */
+function readGrant(data: unknown): { awarded: number; total: number | null } {
+  if (typeof data === "number" || typeof data === "string") {
+    return { awarded: readCount(data) ?? 0, total: null };
+  }
+  const row = Array.isArray(data) ? data[0] : data;
+  if (!row || typeof row !== "object") return { awarded: 0, total: null };
+  const record = row as Record<string, unknown>;
+  const nested = record.grant_embers;
+  const source =
+    nested && typeof nested === "object" && !Array.isArray(nested)
+      ? (nested as Record<string, unknown>)
+      : record;
+  return {
+    awarded: readCount(source.awarded) ?? readCount(source.awarded_amount) ?? 0,
+    total: readCount(source.total) ?? readCount(source.embers),
+  };
+}
+
 function sanitizeDetail(raw: unknown): string {
   if (typeof raw !== "string") return "default";
   const cleaned = raw.trim().toLowerCase().replace(/[^a-z0-9:_-]/g, "").slice(0, 40);
@@ -92,10 +117,10 @@ export async function POST(req: NextRequest) {
       return json({ error: "Ember award could not be recorded." }, 503);
     }
 
-    const row = Array.isArray(data) ? data[0] : data;
+    const grant = readGrant(data);
     return json({
-      awarded: Number(row?.awarded || 0),
-      total: Number(row?.total || 0),
+      awarded: grant.awarded,
+      total: grant.total,
       multiplier: 1,
       action,
     });

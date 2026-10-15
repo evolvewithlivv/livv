@@ -9,7 +9,6 @@ import {
   shopifyProductUrl,
   type ShopProduct,
 } from "@/lib/shop-catalog";
-import { SHOP_STORE_AVAILABLE } from "@/lib/shop-links";
 
 export default function ProductDetailPage() {
   const params = useParams();
@@ -119,26 +118,18 @@ function ProductView({ product }: { product: ShopProduct }) {
         ))}
 
         <div className="mt-10 space-y-3">
-          {SHOP_STORE_AVAILABLE ? (
-            <>
-              <a
-                href={checkoutUrl}
-                target="_blank"
-                rel="noreferrer"
-                className="flex h-14 w-full items-center justify-center rounded-full bg-livv-ink text-[12px] font-extrabold uppercase tracking-[0.16em] text-livv-bg transition active:scale-[0.99]"
-              >
-                Buy now
-              </a>
-              <p className="text-center text-[12px] leading-relaxed text-livv-muted">
-                Secure checkout on the LIVV store. Confirm size and model before
-                paying.
-              </p>
-            </>
-          ) : (
-            <p className="text-center text-[12px] leading-relaxed text-livv-muted" role="status">
-              Store unavailable.
-            </p>
-          )}
+          <a
+            href={checkoutUrl}
+            target="_blank"
+            rel="noreferrer"
+            className="flex h-14 w-full items-center justify-center rounded-full bg-livv-ink text-[12px] font-extrabold uppercase tracking-[0.16em] text-livv-bg transition active:scale-[0.99]"
+          >
+            Buy now
+          </a>
+          <p className="text-center text-[12px] leading-relaxed text-livv-muted">
+            Secure checkout on the LIVV store. Confirm size and model before
+            paying.
+          </p>
         </div>
       </div>
     </main>

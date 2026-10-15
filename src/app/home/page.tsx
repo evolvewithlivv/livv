@@ -3,12 +3,11 @@
 import { useEffect, useState } from "react";
 import { ArrowUpRight, HeartPulse, Dumbbell, Sprout, Brain } from "lucide-react";
 import Link from "next/link";
-import { loadIdentity, addEmbers, type Identity } from "@/lib/identity";
+import { loadIdentity, addEmbers, emberBalanceIsFresh, type Identity } from "@/lib/identity";
 import { checkInRecord, isCheckedInToday, loadRecord, type LivvRecord } from "@/lib/record";
 import { feedback } from "@/lib/sensory";
 import { dailySummary, dailyQuestion } from "@/lib/daily";
 import { quoteForSession, type Quote } from "@/lib/quotes";
-import { embersFromAction } from "@/lib/embers";
 import { nextMove, type Move } from "@/lib/command";
 import { consumeFirstSessionPending } from "@/lib/onboarding";
 import "./home-signal.css";
@@ -52,7 +51,13 @@ export default function HomePage() {
   const pull = () => {
     const r = loadRecord();
     setRec(r);
-    setMe(loadIdentity());
+    setMe((prev) => {
+      const next = loadIdentity();
+      if (prev && emberBalanceIsFresh() && prev.embers > (next.embers || 0)) {
+        return { ...next, embers: prev.embers };
+      }
+      return next;
+    });
     setMove(nextMove(r));
     setQuestion(dailyQuestion(new Date()));
     dailySummary();
@@ -65,9 +70,15 @@ export default function HomePage() {
     const events = ["livv-identity", "livv-record", "livv-daily"];
     events.forEach((e) => window.addEventListener(e, pull));
     const onAward = (event: Event) => {
-      const detail = (event as CustomEvent<{ ok?: boolean; error?: string }>).detail;
-      if (detail && detail.ok === false) setEmberNote(detail.error || "Embers could not be awarded.");
-      else setEmberNote("");
+      const detail = (event as CustomEvent<{ ok?: boolean; error?: string; total?: number }>).detail;
+      if (detail && detail.ok === false) {
+        setEmberNote(detail.error || "Embers could not be awarded.");
+        return;
+      }
+      setEmberNote("");
+      if (typeof detail?.total === "number") {
+        setMe((prev) => (prev ? { ...prev, embers: detail.total as number } : prev));
+      }
     };
     window.addEventListener("livv-ember-award", onAward);
     const clock = window.setInterval(() => setNow(new Date()), 30_000);
@@ -102,7 +113,7 @@ export default function HomePage() {
     const result = checkInRecord();
     if (result.already) return;
     feedback("checkin");
-    addEmbers(embersFromAction("checkin"));
+    addEmbers("checkin");
     const bonus =
       result.emberBonus && [4, 6, 8, 10, 12, 15].includes(result.emberBonus)
         ? result.emberBonus
@@ -210,6 +221,10 @@ export default function HomePage() {
             <p className="ho-qa">{quote.author}</p>
           </footer>
         ) : null}
+        <div className="ho-pillars" aria-hidden="true">
+          <img className="ho-pillars-light" src="/brand/livv-pillars-black.png" alt="" />
+          <img className="ho-pillars-dark" src="/brand/livv-pillars-white.png" alt="" />
+        </div>
       </div>
     </main>
   );

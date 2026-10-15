@@ -8,7 +8,6 @@ import { checkInRecord, isCheckedInToday, loadRecord, type LivvRecord } from "@/
 import { feedback } from "@/lib/sensory";
 import { dailySummary } from "@/lib/daily";
 import { quoteForSession, type Quote } from "@/lib/quotes";
-import { embersFromAction } from "@/lib/embers";
 import { ANNOUNCEMENTS } from "@/lib/announcements";
 import { WIKI, type WikiArticle } from "@/lib/wiki";
 
@@ -184,7 +183,7 @@ export default function BulletinPage() {
     const result = checkInRecord();
     if (result.already) return;
     feedback("checkin");
-    addEmbers(embersFromAction("checkin"));
+    addEmbers("checkin");
     const bonus =
       result.emberBonus && [4, 6, 8, 10, 12, 15].includes(result.emberBonus) ? result.emberBonus : 0;
     if (bonus) addEmbers(bonus, `ember-checkin-bonus-${Date.now()}`);

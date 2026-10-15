@@ -229,6 +229,9 @@
   color: color-mix(in srgb, var(--muted) 70%, transparent);
   font-style: normal;
 }
+.ho-pillars {
+  display: none;
+}
 
 @media (min-width: 640px) {
   .ho-shell {

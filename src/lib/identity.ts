@@ -50,7 +50,15 @@ export function applyAppearance(appearance:Appearance,accent:string,theme:LivvTh
 export function applyAppColor(hex:string,theme:LivvTheme="daylight"){applyAppearance(loadIdentity().appearance,hex,theme);}
 export function loadIdentity():Identity{if(typeof window==="undefined")return DEFAULT_IDENTITY;try{const account=getCurrentAccount();let parsed:Identity;if(account)parsed={displayName:account.displayName,username:account.username,bio:account.bio,goal:account.goal||"",photo:account.photo,accent:account.accent,tier:account.tier,theme:account.theme,appearance:account.appearance,embers:account.embers};else{const raw=window.localStorage.getItem(KEY);if(!raw)return DEFAULT_IDENTITY;parsed={...DEFAULT_IDENTITY,...JSON.parse(raw)} as Identity;}if(!ACCENTS.includes(parsed.accent))parsed.accent=DEFAULT_ACCENT;const pending=readStoredLook();const look=pending&&pending.updatedAt>pending.syncedAt?pending:normalizeLook(parsed.appearance,parsed.theme);parsed.appearance=look.appearance;parsed.theme=look.theme;if(!parsed.goal)parsed.goal="";return parsed;}catch{return DEFAULT_IDENTITY;}}
 export function saveIdentity(next:Identity){if(typeof window==="undefined")return;const account=getCurrentAccount();if(account?.usernameLocked)next={...next,username:account.username};if(!ACCENTS.includes(next.accent))next={...next,accent:DEFAULT_ACCENT};window.localStorage.setItem(KEY,JSON.stringify(next));applyAppearance(next.appearance,next.accent,next.theme);syncAccountFromIdentity(next);window.dispatchEvent(new Event("livv-identity"));}
-export function patchIdentity(partial:Partial<Identity>){const current=loadIdentity();const next={...current,...partial};if(partial.appearance||partial.theme){const look=normalizeLook(next.appearance,next.theme);next.appearance=look.appearance;next.theme=look.theme;}saveIdentity(next);return next;}
+const EMBER_STAMP_KEY="livv-embers-stamp-v1";
+export function coerceEmberCount(value:unknown):number|null{if(typeof value==="number"&&Number.isFinite(value))return Math.max(0,Math.round(value));if(typeof value==="string"&&value.trim()!==""&&Number.isFinite(Number(value)))return Math.max(0,Math.round(Number(value)));return null;}
+/** Award responses are absolute totals. A missing or zero total with a positive award still has to move the counter. Out-of-order responses must not walk the balance backward. */
+export function balanceAfterAward(local:number,payload:{total?:unknown;awarded?:unknown}|null):number{const awarded=coerceEmberCount(payload?.awarded)??0;const reported=coerceEmberCount(payload?.total);const current=Math.max(0,Math.round(local)||0);if(reported!=null&&reported>0)return Math.max(current,reported);if(awarded>0)return current+awarded;if(reported!=null)return reported;return current;}
+function stampEmberWrite(){if(typeof window==="undefined")return;window.localStorage.setItem(EMBER_STAMP_KEY,String(Date.now()));}
+export function emberBalanceIsFresh(withinMs=20000):boolean{if(typeof window==="undefined")return false;const raw=window.localStorage.getItem(EMBER_STAMP_KEY);const stamp=raw?Number(raw):0;return Number.isFinite(stamp)&&stamp>0&&Date.now()-stamp<withinMs&&Date.now()-stamp>=0;}
+/** A profile hydrate that started before an award must not write the pre-award balance back over the response. */
+export function keepNewerEmberBalance<T extends {embers:number}>(account:T,startedAt:number):T{if(typeof window==="undefined")return account;const raw=window.localStorage.getItem(EMBER_STAMP_KEY);const stamp=raw?Number(raw):0;if(!Number.isFinite(stamp)||stamp<startedAt)return account;const fresh=getCurrentAccount();if(!fresh||typeof fresh.embers!=="number")return account;return {...account,embers:fresh.embers};}
+export function patchIdentity(partial:Partial<Identity>){const current=loadIdentity();const next={...current,...partial};if(partial.appearance||partial.theme){const look=normalizeLook(next.appearance,next.theme);next.appearance=look.appearance;next.theme=look.theme;}if(typeof partial.embers==="number")stampEmberWrite();saveIdentity(next);return next;}
 
 /** Write Daylight/Midnight locally and to profiles when a signed-in member exists. */
 export async function persistLook(appearance:Appearance,theme:LivvTheme):Promise<"cloud"|"local"|"error">{
@@ -124,25 +132,49 @@ export function addEmbers(
           },
           body: JSON.stringify(body),
         });
-        const payload = (await response.json().catch(() => null)) as { total?: number; error?: string; awarded?: number } | null;
+        const payload = (await response.json().catch(() => null)) as { total?: unknown; error?: string; awarded?: unknown } | null;
         if (!response.ok) {
           const error = payload?.error || "Embers could not be awarded.";
           window.dispatchEvent(new CustomEvent("livv-ember-award", { detail: { ok: false, error } }));
           return;
         }
-        if (typeof payload?.total === "number") {
-          patchIdentity({ embers: Math.max(0, payload.total) });
-        }
-        window.dispatchEvent(new CustomEvent("livv-ember-award", { detail: { ok: true, total: payload?.total, awarded: payload?.awarded } }));
+        const localNow = loadIdentity().embers || 0;
+        const total = balanceAfterAward(localNow, payload);
+        if (total !== localNow) patchIdentity({ embers: total });
+        window.dispatchEvent(new CustomEvent("livv-ember-award", { detail: { ok: true, total, awarded: coerceEmberCount(payload?.awarded) ?? 0 } }));
+        void confirmEmbersFromProfile();
       } catch {
         window.dispatchEvent(new CustomEvent("livv-ember-award", { detail: { ok: false, error: "Embers could not be awarded." } }));
       }
     })();
     return current;
   }
-  return patchIdentity({
+  const offline = patchIdentity({
     embers: Math.max(0, current.embers + offlineAmounts[action]),
   });
+  if (typeof window !== "undefined") {
+    window.dispatchEvent(new CustomEvent("livv-ember-award", { detail: { ok: true, total: offline.embers, awarded: offlineAmounts[action] } }));
+  }
+  return offline;
+}
+
+/** Same profiles.embers read the session hydrate uses. A lower stale row must not erase the award just applied. */
+async function confirmEmbersFromProfile() {
+  try {
+    const client = getSupabaseBrowserClient();
+    if (!client) return;
+    const { data: sessionData } = await client.auth.getSession();
+    const user = sessionData.session?.user;
+    if (!user || user.is_anonymous) return;
+    const { data, error } = await client.from("profiles").select("embers").eq("id", user.id).maybeSingle();
+    if (error || !data) return;
+    const cloud = coerceEmberCount(data.embers);
+    if (cloud == null) return;
+    const local = loadIdentity().embers || 0;
+    if (cloud > local) patchIdentity({ embers: cloud });
+  } catch {
+    /* The award response is already on screen. */
+  }
 }
 
 const MAX_PHOTO_BYTES = 8 * 1024 * 1024;
