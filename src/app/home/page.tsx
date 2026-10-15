@@ -144,30 +144,32 @@ export default function HomePage() {
           ) : null}
         </section>
 
-        {move && showCheckIn ? (
-          <section className="ho-block">
-            <p className="ho-k">Next</p>
-            <Link href={move.href} className="ho-row">
-              <div className="ho-row-main">
-                <p className="ho-row-t">{move.title}</p>
-                <p className="ho-row-s">{move.reason}</p>
-              </div>
-              <span className="ho-row-cta">{move.cta}</span>
-            </Link>
-          </section>
-        ) : null}
+        <div className="ho-aside">
+          {move && showCheckIn ? (
+            <section className="ho-block">
+              <p className="ho-k">Next</p>
+              <Link href={move.href} className="ho-row">
+                <div className="ho-row-main">
+                  <p className="ho-row-t">{move.title}</p>
+                  <p className="ho-row-s">{move.reason}</p>
+                </div>
+                <span className="ho-row-cta">{move.cta}</span>
+              </Link>
+            </section>
+          ) : null}
 
-        {question ? (
-          <section className="ho-block">
-            <p className="ho-k">Reflect</p>
-            <Link href="/home/daily" className="ho-row">
-              <div className="ho-row-main">
-                <p className="ho-row-t ho-row-t-soft">{question}</p>
-              </div>
-              <span className="ho-row-cta">Daily</span>
-            </Link>
-          </section>
-        ) : null}
+          {question ? (
+            <section className="ho-block">
+              <p className="ho-k">Reflect</p>
+              <Link href="/home/daily" className="ho-row">
+                <div className="ho-row-main">
+                  <p className="ho-row-t ho-row-t-soft">{question}</p>
+                </div>
+                <span className="ho-row-cta">Daily</span>
+              </Link>
+            </section>
+          ) : null}
+        </div>
 
         <section className="ho-systems" aria-label="LIVV systems">
           <div className="ho-systems-head"><div><p className="ho-k">LIVV SYSTEM</p><h2>Your world, in motion.</h2></div><span>04</span></div>
