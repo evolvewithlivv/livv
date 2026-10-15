@@ -16,7 +16,7 @@ export async function POST(
 ) {
   try {
     const user = await getVerifiedSupabaseUser(req);
-    if (!user || user.isAnonymous) return json({ error: "Sign in to encourage someone." }, 401);
+    if (!user || user.isAnonymous) return json({ error: "Sign in to like an update." }, 401);
     const { updateId } = await params;
     if (!/^[0-9a-f-]{36}$/i.test(updateId)) return json({ error: "Invalid update." }, 400);
 
@@ -77,6 +77,6 @@ export async function POST(
     return json({ encouraged: true, encouragement_count: count || 0 }, 201);
   } catch (error) {
     console.error("[crews] encourage failed", error);
-    return json({ error: "Could not record encouragement." }, 500);
+    return json({ error: "Could not update like." }, 500);
   }
 }
