@@ -1,3 +1,7 @@
+-- NOT A PENDING MIGRATION. Moved out of supabase/migrations so Preview will not apply it.
+-- Production schema_migrations has no version 20260919000100. Applying this now would
+-- recreate EVALA after 20260924154942_remove_evala already dropped it.
+-- Fresh replay is Unverified: 20260921194418 still alters private.evala_rate_limits.
 -- LIVV launch hardening: billing RLS + EVALA rate limiting + Stripe webhook claims.
 -- Idempotent and safe to rerun.
 --

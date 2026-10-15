@@ -1,3 +1,7 @@
+-- NOT A PENDING MIGRATION. Moved out of supabase/migrations so Preview will not apply it.
+-- Production schema_migrations has no version 20260925090000. Applying this now would
+-- replace grant_embers(uuid, text, text, text) with the older (uuid, text, integer) signature.
+-- The daily cap already lives in 20261003205357_ember_db_authority.sql.
 -- Bound server-authoritative Ember awards even if a client forges event keys.
 -- Legitimate V1 actions award a small number of times per day; this prevents
 -- an attacker from minting an unbounded Ember balance with synthetic events.
