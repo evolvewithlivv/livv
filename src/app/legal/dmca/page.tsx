@@ -1,4 +1,5 @@
 import Link from "next/link";
+import "../legal.css";
 
 export default function DmcaPage() {
   return (
@@ -10,7 +11,7 @@ export default function DmcaPage() {
           <h1 className="mt-2 text-4xl font-semibold tracking-[-.05em]">DMCA & Copyright Policy</h1>
           <p className="mt-3 text-sm text-livv-muted">Effective October 6, 2026</p>
         </header>
-        <article className="prose prose-sm mt-10 max-w-none prose-headings:font-semibold prose-headings:tracking-tight prose-p:leading-7">
+        <article className="livv-legal mt-10 max-w-none">
           <p><strong>In plain English:</strong> do not upload or share material you do not have the right to use. If you believe material on LIVV infringes your copyright, send a notice using the contact below.</p>
           <h2>1. User content</h2>
           <p>LIVV lets members add profile information, photos, writing, and other material. Members retain ownership of their content and are responsible for having the rights needed to submit it.</p>

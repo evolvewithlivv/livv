@@ -162,6 +162,25 @@ function getExerciseCount(duration: Duration): number {
   }
 }
 
+/** Avoid "Full Body · Full Body session" when the day label already names the focus. */
+export function sessionTitle(label: string, generated: string) {
+  const name = generated.trim();
+  const day = label.trim();
+  if (!day || !name) return name || day;
+  const nameKey = name.toLowerCase();
+  const dayKey = day.toLowerCase();
+  if (nameKey === dayKey || nameKey.startsWith(`${dayKey} `) || nameKey.startsWith(`${dayKey} ·`)) return name;
+  return `${day} · ${name}`;
+}
+
+/** Collapse "20 min min" and bare numbers to a single duration. */
+export function formatMinutes(value: string) {
+  const raw = value.trim();
+  const core = raw.replace(/\s*\bmin(?:ute)?s?\b/gi, " ").replace(/\s+/g, " ").trim();
+  if (!core) return raw;
+  return `${core} min`;
+}
+
 export function generateWorkout(
   focus: Focus,
   location: Location,
@@ -179,7 +198,7 @@ export function generateWorkout(
     name: mission || `${focus} session`,
     focus,
     location,
-    duration: duration === "60+" ? "60+ min" : `${duration} min`,
+    duration: formatMinutes(duration === "60+" ? "60+" : duration),
     difficulty: getDifficulty(duration),
     exercises,
     goal,

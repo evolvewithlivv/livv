@@ -164,11 +164,11 @@ export default function FieldGuidePage() {
     return (
       <main className="field-guide">
         <div className="field-guide-inner">
-          <Link href="/home/field" className="field-guide-back"><ArrowLeft size={14} /> Field</Link>
+          <Link href="/home/field" prefetch={false} className="field-guide-back"><ArrowLeft size={14} /> Field</Link>
           <p className="field-guide-k">LIVV / FIELD</p>
           <h1 className="field-guide-title">Guide not found.</h1>
           <p className="field-guide-intro">This guide is not available yet. We will add topics when their instructions and sources are ready.</p>
-          <Link href="/home/field" className="field-guide-primary">Return to Field</Link>
+          <Link href="/home/field" prefetch={false} className="field-guide-primary">Return to Field</Link>
         </div>
       </main>
     );
@@ -177,7 +177,7 @@ export default function FieldGuidePage() {
   return (
     <main className="field-guide" aria-label={guide.title}>
       <div className="field-guide-inner">
-        <Link href="/home/field" className="field-guide-back"><ArrowLeft size={14} /> Field</Link>
+        <Link href="/home/field" prefetch={false} className="field-guide-back"><ArrowLeft size={14} /> Field</Link>
 
         <header className="field-guide-hero">
           <p className="field-guide-k">{guide.eyebrow}</p>
@@ -300,7 +300,7 @@ export default function FieldGuidePage() {
         </section>
 
         <footer className="field-guide-footer">
-          <Link href="/home/field" className="field-guide-primary"><ArrowLeft size={15} /> Return to Field</Link>
+          <Link href="/home/field" prefetch={false} className="field-guide-primary"><ArrowLeft size={15} /> Return to Field</Link>
           <p>Capability is built by doing, observing, and repeating.</p>
         </footer>
       </div>

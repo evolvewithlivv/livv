@@ -1,4 +1,5 @@
 import Link from "next/link";
+import "../legal.css";
 
 export default function PrivacyPage() {
   return (
@@ -10,7 +11,7 @@ export default function PrivacyPage() {
           <h1 className="mt-2 text-4xl font-semibold tracking-[-.05em]">Privacy Policy</h1>
           <p className="mt-3 text-sm text-livv-muted">Effective October 6, 2026</p>
         </header>
-        <article className="prose prose-sm mt-10 max-w-none prose-headings:font-semibold prose-headings:tracking-tight prose-p:leading-7">
+        <article className="livv-legal mt-10 max-w-none">
           <p><strong>In plain English:</strong> LIVV collects the information needed to run your account, provide the features you use, process memberships, and keep the service secure. We do not sell your personal information.</p>
           <h2>1. Information you give us</h2>
           <p>This can include your email address, display name, profile photo, onboarding responses, goals, interests, journal entries, training and progress information, health and wellness tracking, and account preferences.</p>
@@ -25,7 +26,7 @@ export default function PrivacyPage() {
           <h2>6. Sharing</h2>
           <p>We may disclose information to service providers, when required by law, to protect LIVV or its users, or in connection with a merger, acquisition, financing, or sale of assets. We do not sell your personal information.</p>
           <h2>7. Your choices</h2>
-          <p>You control the optional information you add to your profile and journal. You may stop using LIVV at any time. Requests to access, correct, or delete account information should use the current contact method published on the LIVV website.</p>
+          <p>You control the optional information you add to your profile and journal. You may stop using LIVV at any time. To access, correct, or delete account information, email <a href="mailto:privacy@evolvewithlivv.com">privacy@evolvewithlivv.com</a>.</p>
           <h2>8. Security and retention</h2>
           <p>We use reasonable technical and organizational safeguards intended to protect information. No internet service can guarantee absolute security. We retain information for as long as reasonably necessary to operate LIVV, meet legal obligations, resolve disputes, prevent abuse, and enforce agreements.</p>
           <h2>9. Children</h2>
@@ -35,7 +36,7 @@ export default function PrivacyPage() {
           <h2>11. Changes</h2>
           <p>We may update this policy as LIVV changes. The effective date at the top identifies the current version.</p>
           <h2>12. Copyright</h2><p>Copyright complaints are handled under the <a href="/legal/dmca" className="underline">DMCA &amp; Copyright Policy</a>.</p><h2>13. Contact</h2>
-          <p>For privacy questions or requests, use the current contact information published by LIVV on the website.</p>
+          <p>For privacy questions or requests, email <a href="mailto:privacy@evolvewithlivv.com">privacy@evolvewithlivv.com</a>.</p>
         </article>
       </div>
     </main>

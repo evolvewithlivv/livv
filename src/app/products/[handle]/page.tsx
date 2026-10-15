@@ -24,6 +24,7 @@ export default function ProductDetailPage() {
         <h1 className="mt-3 text-2xl font-semibold">Product not found</h1>
         <Link
           href="/home/shop"
+          prefetch={false}
           className="mt-8 rounded-full bg-livv-ink px-6 py-3 text-[12px] font-extrabold uppercase tracking-[0.14em] text-livv-bg"
         >
           Back to shop
@@ -49,6 +50,7 @@ function ProductView({ product }: { product: ShopProduct }) {
         <div className="flex items-center justify-between gap-3">
           <Link
             href="/home/shop"
+            prefetch={false}
             className="inline-flex h-10 items-center gap-2 rounded-full border border-livv-border px-3 text-[12px] font-semibold uppercase tracking-[0.12em] text-livv-muted transition hover:text-livv-ink"
           >
             <ArrowLeft size={14} />

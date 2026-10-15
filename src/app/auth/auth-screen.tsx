@@ -156,10 +156,11 @@ export default function AuthScreen({ initialMode, initialSrc }: { initialMode: "
         </div>
 
         <div className="auth-card rounded-3xl border border-[rgb(var(--livv-border))] bg-[rgb(var(--livv-surface))] p-5 backdrop-blur-sm">
-          <div className="auth-modes mb-5 grid grid-cols-2 gap-1 rounded-2xl bg-[rgb(var(--livv-border))]/20 p-1">
-              <button type="button" onClick={() => { setMode("signin"); setError(""); setNotice(""); }} className={`auth-mode rounded-xl px-3 py-2.5 text-[12px] font-medium transition ${mode === "signin" ? "auth-mode-active" : "auth-mode-inactive"}`}>Sign in</button>
-              <button type="button" onClick={() => { setMode("signup"); setError(""); setNotice(""); }} className={`auth-mode rounded-xl px-3 py-2.5 text-[12px] font-medium transition ${mode === "signup" ? "auth-mode-active" : "auth-mode-inactive"}`}>Create account</button>
+          <div className="auth-modes" role="group" aria-label="Account">
+              <button type="button" onClick={() => { setMode("signin"); setError(""); setNotice(""); }} className={`auth-mode ${mode === "signin" ? "auth-mode-active" : "auth-mode-inactive"}`} aria-pressed={mode === "signin"}>Sign in</button>
+              <button type="button" onClick={() => { setMode("signup"); setError(""); setNotice(""); }} className={`auth-mode ${mode === "signup" ? "auth-mode-active" : "auth-mode-inactive"}`} aria-pressed={mode === "signup"}>Create account</button>
           </div>
+          <div className="auth-panel">
 
           {!pending ? (
             <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); sendEmail(false); }}>
@@ -172,7 +173,7 @@ export default function AuthScreen({ initialMode, initialSrc }: { initialMode: "
                   <div className="grid grid-cols-3 gap-2" role="radiogroup" aria-label="Age range">
                     {([
                       ["under13", "Under 13"],
-                      ["13to17", "13-17"],
+                      ["13to17", "13–17"],
                       ["18plus", "18+"],
                     ] as const).map(([value, label]) => (
                       <button key={value} type="button" role="radio" aria-checked={ageBand === value} onClick={() => chooseAge(value)}
@@ -213,6 +214,7 @@ export default function AuthScreen({ initialMode, initialSrc }: { initialMode: "
 
           {error ? <p className="mt-4 text-center text-[13px] text-red-400" role="alert">{error}</p> : null}
           {notice && !error ? <p className="auth-muted mt-4 text-center text-[13px]" role="status">{notice}</p> : null}
+          </div>
         </div>
 
         <p className="auth-legal mt-8 text-center text-[11px] text-[rgb(var(--livv-muted))]">

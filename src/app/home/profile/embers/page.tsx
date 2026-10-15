@@ -79,7 +79,7 @@ export default function EmbersPage() {
           </div>
         </section>
 
-        <Link href="/home/shop" className="em-cta">
+        <Link href="/home/shop" prefetch={false} className="em-cta">
           {canRedeem ? "Redeem in Shop" : "View Collection 001"}
         </Link>
       </div>

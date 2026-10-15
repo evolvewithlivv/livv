@@ -1,4 +1,5 @@
 import Link from "next/link";
+import "../legal.css";
 
 export default function TermsPage() {
   return (
@@ -10,7 +11,7 @@ export default function TermsPage() {
           <h1 className="mt-2 text-4xl font-semibold tracking-[-.05em]">Terms &amp; Conditions</h1>
           <p className="mt-3 text-sm text-livv-muted">Effective October 6, 2026</p>
         </header>
-        <article className="prose prose-sm mt-10 max-w-none prose-headings:font-semibold prose-headings:tracking-tight prose-p:leading-7">
+        <article className="livv-legal mt-10 max-w-none">
           <p><strong>In plain English:</strong> LIVV is a lifestyle, training, wellness, learning, and personal-development product. Use it lawfully, use your account responsibly, and understand that its educational content is not professional advice.</p>
           <h2>1. Using LIVV</h2>
           <p>You agree to provide accurate account information and keep access to your account secure. You may not use LIVV to break the law, abuse other people, interfere with the service, scrape or copy the product at scale, or attempt unauthorized access.</p>

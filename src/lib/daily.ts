@@ -255,19 +255,42 @@ export function dailyTasks(date = new Date()): DailyTask[] {
   return freshTasks(date);
 }
 
+function migrateLegacyCompletions(data: Record<string, unknown>, key: string, tasks: DailyTask[]) {
+  const completed = Array.isArray(data.completed)
+    ? data.completed.filter((item): item is string => typeof item === "string")
+    : [];
+  let changed = false;
+  tasks.forEach((task, index) => {
+    const slot = SLOT_IDS[index];
+    if (!slot) return;
+    const legacy = `${key}:${slot}`;
+    const token = `${key}:${task.id}`;
+    const legacyAt = completed.indexOf(legacy);
+    if (legacyAt < 0) return;
+    completed.splice(legacyAt, 1);
+    if (!completed.includes(token)) completed.push(token);
+    changed = true;
+  });
+  if (!changed || typeof window === "undefined") return;
+  data.completed = completed.slice(-120);
+  save(data);
+}
+
 /** Pin today's objectives for this member so they cannot regenerate mid-day. */
 export function ensureDailyBoard(date = new Date()): DailyTask[] {
   const key = dayKey(date);
   const data = storage();
   const boards = readBoards(data);
   const existing = boards[key];
-  if (Array.isArray(existing) && existing.length && existing.every(isTask)) return existing;
+  if (Array.isArray(existing) && existing.length && existing.every(isTask)) {
+    migrateLegacyCompletions(data, key, existing);
+    return existing;
+  }
   const tasks = freshTasks(date);
   if (typeof window === "undefined") return tasks;
   const completed = Array.isArray(data.completed)
     ? data.completed.filter((item): item is string => typeof item === "string")
     : [];
-  let changed = false;
   tasks.forEach((task, index) => {
     const slot = SLOT_IDS[index];
     const legacy = `${key}:${slot}`;
@@ -276,10 +299,9 @@ export function ensureDailyBoard(date = new Date()): DailyTask[] {
     if (legacyAt >= 0) {
       completed.splice(legacyAt, 1);
       if (!completed.includes(token)) completed.push(token);
-      changed = true;
     }
   });
-  if (changed) data.completed = completed.slice(-120);
+  data.completed = completed.slice(-120);
   const nextBoards: Record<string, DailyTask[]> = {};
   for (const [boardKey, board] of Object.entries(boards)) {
     if (boardKey >= key || boardKey === key) nextBoards[boardKey] = board;
@@ -346,18 +368,28 @@ export function completeDailyTask(id: string, date = new Date()) {
   return loadDailyState(date);
 }
 
+/** Same-day toggle off. Past days stay as logged. */
 export function uncompleteDailyTask(id: string, date = new Date()) {
-  const data = storage();
   const key = dayKey(date);
+  if (key !== dayKey(new Date())) return loadDailyState(date);
+  const data = storage();
   const token = `${key}:${id}`;
   const completed = Array.isArray(data.completed)
-    ? data.completed.filter((x): x is string => typeof x === "string" && x !== token)
+    ? data.completed.filter((x): x is string => typeof x === "string")
     : [];
-  data.completed = completed.slice(-120);
+  if (!completed.includes(token)) return loadDailyState(date);
+  data.completed = completed.filter((item) => item !== token).slice(-120);
   save(data);
   const task = dailyTasks(date).find((item) => item.id === id);
   if (task) undoCustomByTitle(`Daily · ${task.title}`);
   return loadDailyState(date);
+}
+
+/** Objectives finished on the current Daily board. Check-ins are not included. */
+export function countCompletedObjectives(date = new Date()) {
+  const tasks = ensureDailyBoard(date);
+  const done = new Set(loadDailyState(date).completed);
+  return tasks.filter((task) => done.has(task.id)).length;
 }
 
 export function saveDailyAnswer(answer: string, date = new Date()) {
