@@ -10,6 +10,7 @@ import "./livv-search-fix.css";
 import "./livv-tier-unlock.css";
 import "./livv-motion.css";
 import "./livv-craft.css";
+import "./livv-desktop.css";
 import { ThemeShell } from "@/components/layout/theme-shell";
 
 const body=Plus_Jakarta_Sans({subsets:["latin"],variable:"--font-body",display:"swap"});

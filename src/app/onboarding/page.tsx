@@ -116,16 +116,20 @@ export default function OnboardingPage() {
   if (error && !displayName && !busy) return <main className="livv-page flex min-h-dvh items-center justify-center px-5 text-white"><p className="text-sm text-red-400">{error}</p></main>;
 
   return (
-    <main className="livv-page relative min-h-dvh overflow-hidden pb-16 pt-10 text-white">
-      <div className="relative z-10 mx-auto max-w-md px-5">
-        <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-livv-accent-soft">Onboarding</p>
-        <h1 className="font-display mt-2 text-3xl font-semibold tracking-tight">
-          {step === "why" && "Why are you here?"}{step === "goals" && "What are you building?"}{step === "interests" && "What pulls you in?"}{step === "profile" && "What should we call you?"}
-        </h1>
+    <main className="livv-page onb relative min-h-dvh overflow-hidden pb-16 pt-10 text-white">
+      <div className="onb-stage relative z-10 mx-auto max-w-md px-5">
+        <div className="onb-copy">
+          <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-livv-accent-soft">Onboarding</p>
+          <h1 className="onb-q font-display mt-2 text-3xl font-semibold tracking-tight">
+            {step === "why" && "Why are you here?"}{step === "goals" && "What are you building?"}{step === "interests" && "What pulls you in?"}{step === "profile" && "What should we call you?"}
+          </h1>
+        </div>
+        <div className="onb-form">
         {step === "why" && <div className="mt-8"><textarea value={why} onChange={e => {setWhy(e.target.value);persist({why:e.target.value});}} rows={5} placeholder="One honest sentence." className="w-full rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-[15px] text-white outline-none placeholder:text-white/25 focus:border-white/25"/><Button className="mt-6 w-full" onClick={() => setStep("goals")}>Continue</Button></div>}
-        {step === "goals" && <div className="mt-8 space-y-2">{GOALS.map(g => <button key={g.id} type="button" onClick={() => {const next=selectedGoals.includes(g.id)?selectedGoals.filter(x=>x!==g.id):[...selectedGoals,g.id];setSelectedGoals(next);persist({goals:next});}} className={cn("flex w-full items-center rounded-2xl border px-4 py-3.5 text-left text-[14px] transition",selectedGoals.includes(g.id)?"border-livv-accent/50 bg-livv-accent/10 text-white":"border-white/10 bg-white/[0.03] text-white/70")}>{g.label}</button>)}<div className="flex gap-2 pt-4"><Button variant="ghost" className="flex-1" onClick={() => setStep("why")}>Back</Button><Button className="flex-1" onClick={() => setStep("interests")}>Continue</Button></div></div>}
-        {step === "interests" && <div className="mt-8"><div className="flex flex-wrap gap-2">{INTERESTS.map(item => <button key={item} type="button" onClick={() => {const next=selectedInterests.includes(item)?selectedInterests.filter(x=>x!==item):[...selectedInterests,item];setSelectedInterests(next);persist({interests:next});}} className={cn("rounded-full border px-3.5 py-2 text-[12px] transition",selectedInterests.includes(item)?"border-livv-accent/50 bg-livv-accent/10 text-white":"border-white/10 bg-white/[0.03] text-white/65")}>{item}</button>)}</div><div className="flex gap-2 pt-6"><Button variant="ghost" className="flex-1" onClick={() => setStep("goals")}>Back</Button><Button className="flex-1" onClick={() => setStep("profile")}>Continue</Button></div></div>}
+        {step === "goals" && <div className="onb-goals mt-8 space-y-2">{GOALS.map(g => <button key={g.id} type="button" onClick={() => {const next=selectedGoals.includes(g.id)?selectedGoals.filter(x=>x!==g.id):[...selectedGoals,g.id];setSelectedGoals(next);persist({goals:next});}} className={cn("flex w-full items-center rounded-2xl border px-4 py-3.5 text-left text-[14px] transition",selectedGoals.includes(g.id)?"border-livv-accent/50 bg-livv-accent/10 text-white":"border-white/10 bg-white/[0.03] text-white/70")}>{g.label}</button>)}<div className="flex gap-2 pt-4"><Button variant="ghost" className="flex-1" onClick={() => setStep("why")}>Back</Button><Button className="flex-1" onClick={() => setStep("interests")}>Continue</Button></div></div>}
+        {step === "interests" && <div className="mt-8"><div className="onb-interests flex flex-wrap gap-2">{INTERESTS.map(item => <button key={item} type="button" onClick={() => {const next=selectedInterests.includes(item)?selectedInterests.filter(x=>x!==item):[...selectedInterests,item];setSelectedInterests(next);persist({interests:next});}} className={cn("rounded-full border px-3.5 py-2 text-[12px] transition",selectedInterests.includes(item)?"border-livv-accent/50 bg-livv-accent/10 text-white":"border-white/10 bg-white/[0.03] text-white/65")}>{item}</button>)}</div><div className="flex gap-2 pt-6"><Button variant="ghost" className="flex-1" onClick={() => setStep("goals")}>Back</Button><Button className="flex-1" onClick={() => setStep("profile")}>Continue</Button></div></div>}
         {step === "profile" && <div className="mt-8"><input value={displayName} onChange={e => {setDisplayName(e.target.value);persist({displayName:e.target.value});}} placeholder="Display name" className="w-full rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3.5 text-[15px] text-white outline-none placeholder:text-white/25 focus:border-white/25"/>{error && <p className="mt-3 text-[13px] text-red-400">{error}</p>}<div className="flex gap-2 pt-6"><Button variant="ghost" className="flex-1" onClick={() => setStep("interests")} disabled={busy}>Back</Button><Button className="flex-1" onClick={() => void finish()} disabled={busy}>{busy ? "Saving…" : "Enter LIVV"}</Button></div></div>}
+        </div>
       </div>
     </main>
   );

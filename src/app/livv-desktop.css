@@ -1,0 +1,488 @@
+/* Desktop layout. New elements stay out of the mobile box model.
+   Every visual change lives in min-width: 1024px. */
+
+.auth-desk {
+  display: none;
+}
+
+.ho-aside,
+.onb-copy,
+.onb-form {
+  display: contents;
+}
+
+@media (min-width: 1024px) {
+  /* Shared home chrome: the six destinations become a side rail. */
+  .livv-app-shell {
+    flex-direction: row;
+    overflow: hidden;
+  }
+
+  .livv-app-shell > .min-h-0 {
+    min-width: 0;
+    overflow-x: hidden;
+  }
+
+  .livv-tabbar.livv-glass-dock {
+    order: -1;
+    flex: 0 0 200px;
+    width: 200px;
+    height: 100%;
+    max-height: none;
+    align-self: stretch;
+    padding: 0 !important;
+    opacity: 1;
+    overflow: visible;
+    pointer-events: auto;
+  }
+
+  .livv-tabbar.livv-glass-dock.is-hidden {
+    max-height: none;
+    opacity: 1;
+    overflow: visible;
+    pointer-events: auto;
+  }
+
+  .livv-glass-dock-inner {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    height: 100%;
+    border-radius: 0;
+    border-top: 0 !important;
+    border-right: 1px solid color-mix(in srgb, rgb(var(--livv-ink)) 12%, transparent) !important;
+    box-shadow: none !important;
+    background: transparent !important;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    padding: 1.65rem 0 1.25rem;
+  }
+
+  .livv-glass-dock-inner::before {
+    content: "LIVV" !important;
+    display: block !important;
+    margin: 0;
+    padding: 0.15rem 1.2rem 0;
+    font-family: var(--font-display), var(--font-body), system-ui, sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    color: rgb(var(--livv-ink));
+  }
+
+  .livv-glass-dock-grid {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.1rem;
+    margin-top: 2.4rem;
+    padding: 0 0.7rem;
+  }
+
+  .livv-tabbar .livv-tab {
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: 0.7rem;
+    min-height: 42px;
+    padding: 0.4rem 0.7rem;
+    border-radius: 0;
+  }
+
+  .livv-tabbar .livv-tab .livv-tab-icon {
+    width: 1.25rem;
+    height: 1.25rem;
+    border-radius: 0;
+    background: transparent !important;
+    box-shadow: none !important;
+  }
+
+  .livv-tabbar .livv-tab .livv-tab-label {
+    font-size: 14px;
+    font-weight: 560;
+    letter-spacing: -0.015em;
+  }
+
+  .livv-tabbar .livv-tab.is-active {
+    box-shadow: inset 2px 0 0 rgb(var(--livv-accent));
+  }
+
+  html[data-theme="light"] .livv-glass-dock-inner,
+  html[data-theme="dark"] .livv-glass-dock-inner {
+    background: transparent !important;
+    box-shadow: none !important;
+    border-top: 0 !important;
+  }
+
+  /* Home */
+  .ho {
+    min-height: 100%;
+  }
+
+  .ho .ho-shell {
+    box-sizing: border-box;
+    width: min(1120px, 100%);
+    max-width: 1120px;
+    min-height: 100%;
+    margin: 0 auto;
+    padding: 1.85rem 2.75rem 2.5rem;
+    display: grid;
+    grid-template-columns: minmax(0, 1.15fr) minmax(16rem, 0.85fr);
+    column-gap: 3.5rem;
+    align-content: start;
+  }
+
+  .ho-top {
+    grid-column: 1 / -1;
+  }
+
+  .ho .ho-today {
+    grid-column: 1;
+    align-self: start;
+    padding-top: 3.25rem;
+  }
+
+  .ho .ho-name {
+    font-size: clamp(3.4rem, 4.4vw, 4.6rem);
+    max-width: 11ch;
+  }
+
+  .ho .ho-primary {
+    width: min(100%, 16.5rem);
+  }
+
+  .ho-aside {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    grid-column: 2;
+    align-self: end;
+    min-width: 0;
+    margin-top: 3.25rem;
+    padding-top: 0.25rem;
+    padding-left: 2rem;
+    border-left: 1px solid color-mix(in srgb, var(--line) 72%, transparent);
+  }
+
+  .ho-aside:empty {
+    display: none;
+  }
+
+  .ho-aside .ho-block:first-child {
+    margin-top: 0;
+  }
+
+  .ho-aside .ho-block {
+    margin-top: 1.35rem;
+  }
+
+  .ho .ho-systems {
+    grid-column: 1 / -1;
+    margin-top: 2.75rem;
+  }
+
+  .ho .ho-system-grid {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 0;
+  }
+
+  .ho .ho-system {
+    min-height: 0;
+    margin: 0;
+    padding: 0 1.35rem 0 0;
+    border: 0;
+    border-radius: 0;
+    border-right: 1px solid color-mix(in srgb, var(--line) 70%, transparent);
+    background: transparent;
+  }
+
+  .ho .ho-system:last-child {
+    border-right: 0;
+    padding-right: 0;
+  }
+
+  .ho .ho-system > span {
+    width: auto;
+    height: auto;
+    border-radius: 0;
+    background: transparent;
+    justify-content: start;
+  }
+
+  .ho .ho-system strong {
+    margin-top: 0.85rem;
+  }
+
+  .ho .ho-signal {
+    grid-column: 1;
+    align-self: end;
+    margin-top: 2.2rem;
+  }
+
+  .ho .ho-quote {
+    grid-column: 2;
+    margin-top: 2.2rem;
+    padding-top: 0;
+  }
+
+  .ho .ho-pillars {
+    grid-column: 1 / -1;
+    flex: none;
+    min-height: 0;
+    padding: 2.25rem 0 0.5rem;
+  }
+
+  /* Auth */
+  .auth-page {
+    display: grid;
+    grid-template-columns: minmax(0, 1.12fr) minmax(22rem, 34rem);
+    align-items: stretch;
+    min-height: 100dvh;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+  }
+
+  .auth-desk {
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    gap: 1.1rem;
+    min-height: 100dvh;
+    padding: 3.5rem 4.25rem 4rem;
+    border-right: 1px solid color-mix(in srgb, rgb(var(--livv-border)) 70%, transparent);
+  }
+
+  .auth-desk-mark {
+    margin: 0;
+    font-family: var(--font-display), var(--font-body), system-ui, sans-serif;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+  }
+
+  .auth-desk-line {
+    margin: 0;
+    max-width: 14ch;
+    font-family: var(--font-display), var(--font-body), system-ui, sans-serif;
+    font-size: clamp(2.7rem, 3.5vw, 3.7rem);
+    font-weight: 600;
+    line-height: 1.02;
+    letter-spacing: -0.045em;
+  }
+
+  .auth-glow {
+    display: none;
+  }
+
+  .auth-stage {
+    max-width: none;
+    width: 100%;
+    margin: 0;
+    padding: 3.25rem 3.25rem 3rem;
+    justify-content: center;
+  }
+
+  .auth-brand {
+    align-items: flex-start;
+  }
+
+  .auth-brand p,
+  .auth-legal {
+    text-align: left !important;
+  }
+
+  .auth-card {
+    border: 0 !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    padding: 0 !important;
+  }
+
+  .auth-modes {
+    gap: 1.35rem !important;
+    margin-bottom: 1.35rem;
+    padding: 0 0 0.15rem !important;
+    border-radius: 0 !important;
+    background: transparent !important;
+    border-bottom: 1px solid color-mix(in srgb, rgb(var(--livv-border)) 75%, transparent);
+  }
+
+  .auth-modes .auth-mode {
+    border-radius: 0 !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    color: rgb(var(--livv-muted)) !important;
+    padding-left: 0 !important;
+    padding-right: 0 !important;
+    justify-content: flex-start;
+  }
+
+  .auth-modes .auth-mode-active {
+    color: rgb(var(--livv-ink)) !important;
+    background: transparent !important;
+    box-shadow: inset 0 -2px 0 rgb(var(--livv-ink)) !important;
+  }
+
+  /* Onboarding */
+  .onb.livv-page {
+    display: flex;
+    align-items: center;
+    min-height: 100dvh;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    overflow-x: hidden !important;
+    overflow-y: auto !important;
+  }
+
+  .onb.livv-page > .onb-stage {
+    display: grid;
+    grid-template-columns: minmax(0, 1.05fr) minmax(20rem, 0.95fr);
+    column-gap: 4.5rem;
+    align-items: center;
+    width: min(1040px, calc(100% - 7rem));
+    max-width: 1040px !important;
+    margin: 0 auto;
+    padding: 3rem 0;
+  }
+
+  .onb-copy,
+  .onb-form {
+    display: block;
+    min-width: 0;
+  }
+
+  .onb-q {
+    max-width: 11ch;
+    font-size: clamp(3.15rem, 4vw, 4.35rem) !important;
+    line-height: 0.98 !important;
+    letter-spacing: -0.045em !important;
+  }
+
+  .onb-form > div {
+    margin-top: 0 !important;
+  }
+
+  .onb-goals > button {
+    border-radius: 0 !important;
+    border-left: 0 !important;
+    border-right: 0 !important;
+    border-top: 0 !important;
+    background: transparent !important;
+    padding-left: 0 !important;
+    padding-right: 0.25rem !important;
+  }
+
+  .onb-goals > button[class*="border-livv-accent"] {
+    box-shadow: inset 2px 0 0 rgb(var(--livv-accent));
+  }
+
+  .onb-interests {
+    display: grid !important;
+    grid-template-columns: 1fr 1fr;
+    gap: 0 !important;
+  }
+
+  .onb-interests > button {
+    border-radius: 0 !important;
+    border: 0 !important;
+    border-bottom: 1px solid color-mix(in srgb, rgb(var(--livv-border)) 75%, transparent) !important;
+    background: transparent !important;
+    padding: 0.8rem 0.75rem 0.8rem 0 !important;
+    text-align: left;
+    font-size: 14px !important;
+  }
+
+  .onb-interests > button[class*="border-livv-accent"] {
+    box-shadow: inset 2px 0 0 rgb(var(--livv-accent));
+  }
+
+  /* Signal 001 — specificity beats the 700px column rules in field-note-001.css */
+  .fn.awake {
+    overflow-x: hidden;
+  }
+
+  .fn.awake .fn-top,
+  .fn.awake .fn-foot,
+  .fn.awake .fn-body {
+    width: min(100% - 7rem, 68rem);
+  }
+
+  .fn.awake .fn-body {
+    min-height: calc(100dvh - 8.25rem);
+  }
+
+  .fn.awake .fn-title {
+    font-size: clamp(4.25rem, 5.4vw, 6rem);
+  }
+
+  .fn.awake .fn-act0 {
+    display: grid;
+    grid-template-columns: minmax(14rem, 17rem) minmax(0, 1fr);
+    column-gap: 4rem;
+    align-items: center;
+  }
+
+  .fn.awake .fn-act0 .fn-signal {
+    grid-column: 1;
+    grid-row: 1 / span 4;
+    width: min(100%, 15.5rem);
+    margin: 0;
+  }
+
+  .fn.awake .fn-act0 .fn-micro-label,
+  .fn.awake .fn-act0 .fn-title,
+  .fn.awake .fn-act0 .fn-sub {
+    grid-column: 2;
+    text-align: left;
+  }
+
+  .fn.awake .fn-act0 .fn-sub {
+    margin-left: 0;
+    margin-right: 0;
+  }
+
+  .fn.awake .fn-act0 .fn-ghost {
+    grid-column: 2;
+    width: min(100%, 20rem);
+  }
+
+  .fn.awake .fn-act1,
+  .fn.awake .fn-act3 {
+    max-width: 38rem;
+  }
+
+  .fn.awake .fn-act1 .fn-cta-row,
+  .fn.awake .fn-act3 .fn-enter {
+    width: min(100%, 24rem);
+  }
+
+  .fn.awake .fn-act2 {
+    display: grid;
+    grid-template-columns: minmax(18rem, 22rem) minmax(0, 1fr);
+    column-gap: 3.5rem;
+    align-items: center;
+  }
+
+  .fn.awake .fn-act2-head {
+    grid-column: 1 / -1;
+  }
+
+  .fn.awake .fn-act2 .fn-orbit {
+    grid-column: 1;
+    grid-row: 2 / span 2;
+    margin: 0;
+    justify-self: center;
+  }
+
+  .fn.awake .fn-act2 .fn-readout,
+  .fn.awake .fn-act2 .fn-cta-row {
+    grid-column: 2;
+    width: min(100%, 28rem);
+  }
+
+  .fn.awake .fn-act2 .fn-cta-row {
+    margin-top: 0.5rem;
+  }
+}

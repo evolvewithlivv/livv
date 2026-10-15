@@ -142,17 +142,21 @@ export default function AuthScreen({ initialMode, initialSrc }: { initialMode: "
 
   return (
     <main className="auth-page relative min-h-dvh overflow-hidden text-[rgb(var(--livv-ink))]">
+      <aside className="auth-desk">
+        <p className="auth-desk-mark">LIVV</p>
+        <p className="auth-desk-line">An operating system for a life you can actually live.</p>
+      </aside>
       <div aria-hidden className="auth-glow pointer-events-none absolute inset-x-0 top-0" />
-      <div className="relative z-10 mx-auto flex min-h-dvh w-full max-w-md flex-col justify-center px-6 py-12">
-        <div className="mb-9 flex flex-col items-center">
+      <div className="auth-stage relative z-10 mx-auto flex min-h-dvh w-full max-w-md flex-col justify-center px-6 py-12">
+        <div className="auth-brand mb-9 flex flex-col items-center">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src={LOGO} alt="LIVV" className="auth-logo h-14 w-14 object-contain" />
           <h1 className="mt-5 font-display text-3xl font-semibold tracking-tight">LIVV</h1>
           <p className="mt-2 text-center text-[13px] text-[rgb(var(--livv-muted))]">{mode === "signin" ? "Welcome back. Keep building." : "Build the skills to become more capable."}</p>
         </div>
 
-        <div className="rounded-3xl border border-[rgb(var(--livv-border))] bg-[rgb(var(--livv-surface))] p-5 backdrop-blur-sm">
-          <div className="mb-5 grid grid-cols-2 gap-1 rounded-2xl bg-[rgb(var(--livv-border))]/20 p-1">
+        <div className="auth-card rounded-3xl border border-[rgb(var(--livv-border))] bg-[rgb(var(--livv-surface))] p-5 backdrop-blur-sm">
+          <div className="auth-modes mb-5 grid grid-cols-2 gap-1 rounded-2xl bg-[rgb(var(--livv-border))]/20 p-1">
               <button type="button" onClick={() => { setMode("signin"); setError(""); setNotice(""); }} className={`auth-mode rounded-xl px-3 py-2.5 text-[12px] font-medium transition ${mode === "signin" ? "auth-mode-active" : "auth-mode-inactive"}`}>Sign in</button>
               <button type="button" onClick={() => { setMode("signup"); setError(""); setNotice(""); }} className={`auth-mode rounded-xl px-3 py-2.5 text-[12px] font-medium transition ${mode === "signup" ? "auth-mode-active" : "auth-mode-inactive"}`}>Create account</button>
           </div>
@@ -211,7 +215,7 @@ export default function AuthScreen({ initialMode, initialSrc }: { initialMode: "
           {notice && !error ? <p className="auth-muted mt-4 text-center text-[13px]" role="status">{notice}</p> : null}
         </div>
 
-        <p className="mt-8 text-center text-[11px] text-[rgb(var(--livv-muted))]">
+        <p className="auth-legal mt-8 text-center text-[11px] text-[rgb(var(--livv-muted))]">
           <a href="/legal/privacy" className="underline-offset-2 hover:underline">Privacy</a>
           {" · "}
           <a href="/legal/terms" className="underline-offset-2 hover:underline">Terms</a>
