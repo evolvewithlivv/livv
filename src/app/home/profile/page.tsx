@@ -4,6 +4,7 @@ import Link from "next/link";
 import { ChevronRight, Settings2, Users } from "lucide-react";
 import { useEffect, useState } from "react";
 import { loadIdentity, type Identity } from "@/lib/identity";
+import { goalLabels, loadOnboardingDraft, type OnboardingDraft } from "@/lib/onboarding";
 import { loadRecord } from "@/lib/record";
 import { MIN_REDEEM_EMBERS, embersToDollars } from "@/lib/ember-economy";
 import "./profile-signal.css";
@@ -11,11 +12,13 @@ import "./profile-signal.css";
 export default function ProfilePage() {
   const [me, setMe] = useState<Identity | null>(null);
   const [rec, setRec] = useState<ReturnType<typeof loadRecord> | null>(null);
+  const [intent, setIntent] = useState<OnboardingDraft | null>(null);
 
   useEffect(() => {
     const sync = () => {
       setMe(loadIdentity());
       setRec(loadRecord());
+      setIntent(loadOnboardingDraft());
     };
     sync();
     window.addEventListener("livv-identity", sync);
@@ -35,6 +38,10 @@ export default function ProfilePage() {
   const embers = me.embers || 0;
   const dollars = embersToDollars(embers);
   const initial = (name[0] || "L").toUpperCase();
+  const why = intent?.why.trim() || "";
+  const goals = goalLabels(intent?.goals || []);
+  const interests = (intent?.interests || []).map((item) => item.trim()).filter(Boolean);
+  const hasIntent = Boolean(why || goals.length || interests.length);
 
   return (
     <main className="you" aria-label="You">
@@ -66,6 +73,15 @@ export default function ProfilePage() {
             Edit profile
           </Link>
         </section>
+
+        {hasIntent ? (
+          <section className="you-section" aria-label="Onboarding">
+            <p className="you-section-k">Onboarding</p>
+            {why ? <p className="you-link-t">{why}</p> : null}
+            {goals.length ? <p className="you-link-s">Goals · {goals.join(" · ")}</p> : null}
+            {interests.length ? <p className="you-link-s">Interests · {interests.join(" · ")}</p> : null}
+          </section>
+        ) : null}
 
         <section className="you-section" aria-label="Your record">
           <p className="you-section-k">Your record</p>
