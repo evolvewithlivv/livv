@@ -209,8 +209,8 @@
 }
 
 .ho-quote {
-  margin-top: auto;
-  padding-top: 1.75rem;
+  margin-top: 1.75rem;
+  padding-top: 0;
 }
 .ho-q {
   margin: 0;
@@ -228,6 +228,9 @@
   text-transform: uppercase;
   color: color-mix(in srgb, var(--muted) 70%, transparent);
   font-style: normal;
+}
+.ho-pillars {
+  display: none;
 }
 
 @media (min-width: 640px) {
@@ -247,7 +250,4 @@
 .ho-system small{margin-top:3px;color:var(--muted);font-size:9px}
 .ho-system>svg{position:absolute;top:13px;right:13px;color:var(--muted)}
 .ho-system-daily{--system-accent:#9A00FF}.ho-system-train{--system-accent:#F93827}.ho-system-health{--system-accent:#0F7FFF}.ho-system-field{--system-accent:#39B54A}
-.ho-pillars{flex:1;min-height:180px;display:flex;align-items:center;justify-content:center;padding:2rem 0 1rem;opacity:.7}
-.ho-pillars img{width:min(380px,100%);height:auto;max-height:none;object-fit:contain;display:block}
-html[data-theme="dark"] .ho-pillars img{filter:invert(1)}
 @media(max-width:360px){.ho-system-grid{grid-template-columns:1fr}.ho-system{min-height:92px}}

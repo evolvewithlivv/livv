@@ -20,6 +20,7 @@ export type LastWorkout = {
   focus: string;
   duration: string;
   exercises: number;
+  sets?: number;
   at: number;
 };
 
@@ -237,12 +238,14 @@ export function completeWorkout(input: {
   focus: string;
   duration: string;
   exercises: number;
+  sets?: number;
   xp?: number;
 }) {
+  if (input.exercises <= 0 && (input.sets ?? 0) <= 0) return loadRecord();
   const rec = loadRecord();
   const today = dayKey();
   const day = dayOf(rec, today);
-  const xp = input.xp ?? Math.max(40, input.exercises * 20);
+  const xp = input.xp ?? Math.max(20, (input.sets ?? input.exercises) * 12);
   if (!day.workout) {
     rec.workoutsCompleted += 1;
     day.workout = true;
@@ -263,10 +266,37 @@ export function completeWorkout(input: {
     focus: input.focus,
     duration: input.duration,
     exercises: input.exercises,
+    sets: input.sets,
     at: Date.now(),
   };
   rec.days[today] = day;
   evaluateAchievements(rec);
+  saveRecord(rec);
+  return rec;
+}
+
+export function undoCustomByTitle(title: string) {
+  const rec = loadRecord();
+  const today = dayKey();
+  const day = dayOf(rec, today);
+  const list = day.custom || [];
+  let index = -1;
+  for (let i = list.length - 1; i >= 0; i -= 1) {
+    if (list[i]?.title === title) {
+      index = i;
+      break;
+    }
+  }
+  if (index < 0) return rec;
+  const item = list[index];
+  day.custom = list.filter((_, i) => i !== index);
+  day.xp = Math.max(0, day.xp - item.xp);
+  const pid = pillarIdFromName(item.pillar);
+  rec.pillarXp[pid] = Math.max(0, (rec.pillarXp[pid] || 0) - item.xp);
+  rec.goalsCompleted = Math.max(0, rec.goalsCompleted - 1);
+  if (pid === "mind") rec.mindObjectives = Math.max(0, rec.mindObjectives - 1);
+  rec.currentXp = Math.max(0, rec.currentXp - item.xp);
+  rec.days[today] = day;
   saveRecord(rec);
   return rec;
 }

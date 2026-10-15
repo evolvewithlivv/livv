@@ -225,10 +225,46 @@
   }
 
   .ho .ho-pillars {
+    display: flex;
     grid-column: 1 / -1;
-    flex: none;
-    min-height: 0;
-    padding: 2.25rem 0 0.5rem;
+    justify-content: center;
+    align-items: center;
+    min-width: 0;
+    width: 100%;
+    max-width: 100%;
+    margin-top: 2.75rem;
+    padding: 0;
+    overflow: visible;
+  }
+
+  .ho .ho-pillars img {
+    display: block;
+    min-width: 0;
+    width: min(32rem, 100%);
+    max-width: 100%;
+    height: auto;
+    object-fit: contain;
+    object-position: center;
+  }
+
+  .ho .ho-pillars-dark {
+    display: none;
+  }
+
+  html[data-theme="dark"] .ho .ho-pillars-light {
+    display: none;
+  }
+
+  html[data-theme="dark"] .ho .ho-pillars-dark {
+    display: block;
+  }
+
+  html[data-livv-theme="bone"] .ho .ho-pillars-light {
+    display: block;
+  }
+
+  html[data-livv-theme="bone"] .ho .ho-pillars-dark {
+    display: none;
   }
 
   /* Auth */

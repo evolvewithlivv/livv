@@ -1,6 +1,6 @@
 import { type AuthError, type User } from "@supabase/supabase-js";
-import { DEFAULT_ACCENT, applyAppearance, type Identity } from "../identity";
-import { loadAccounts, normalizeUsername, suggestUsername, type Account, type AuthProvider } from "../auth";
+import { DEFAULT_ACCENT, applyAppearance, coerceEmberCount, keepNewerEmberBalance, normalizeLook, readStoredLook, writeStoredLook, type Identity } from "../identity";
+import { loadAccounts, normalizeUsername, suggestUsername, syncIdentityToCloud, type Account, type AuthProvider } from "../auth";
 import { getSupabaseBrowserClient, isSupabaseConfigured } from "./client";
 import { sanitizeTrafficSource } from "../attribution";
 import { ensureAnonymousSession } from "./anon-session";
@@ -35,14 +35,16 @@ async function hydrateCloudProfile(user: User, account: Account): Promise<Accoun
     return account;
   }
   const placeholder = typeof profile.username === "string" && profile.username.startsWith("anon_");
-  const appearance =
+  const pending = readStoredLook();
+  const cloudLook = normalizeLook(
     profile.appearance === "light" || profile.appearance === "system" || profile.appearance === "dark"
       ? profile.appearance
-      : account.appearance;
-  const theme =
-    profile.theme === "daylight" || profile.theme === "midnight"
-      ? profile.theme
-      : account.theme;
+      : account.appearance,
+    typeof profile.theme === "string" ? profile.theme : account.theme,
+  );
+  const look = pending && pending.updatedAt > pending.syncedAt ? pending : cloudLook;
+  const appearance = look.appearance;
+  const theme = look.theme;
   const hydrated: Account = {
     ...account,
     username: placeholder ? account.username : profile.username || account.username,
@@ -54,13 +56,35 @@ async function hydrateCloudProfile(user: User, account: Account): Promise<Accoun
     appearance,
     theme,
     tier: profile.tier || account.tier,
-    embers: typeof profile.embers === "number" ? profile.embers : account.embers,
+    embers: coerceEmberCount(profile.embers) ?? account.embers,
   };
   if (profile.onboarding_completed_at && typeof window !== "undefined") {
     try {
       const { markOnboardingComplete, isOnboardingComplete } = await import("@/lib/onboarding");
       if (!isOnboardingComplete()) markOnboardingComplete();
     } catch { /* non-fatal */ }
+  }
+  const identity: Identity = {
+    displayName: hydrated.displayName,
+    username: hydrated.username,
+    bio: hydrated.bio,
+    goal: hydrated.goal || "",
+    photo: hydrated.photo,
+    accent: hydrated.accent,
+    appearance: hydrated.appearance,
+    tier: hydrated.tier,
+    theme: hydrated.theme,
+    embers: hydrated.embers,
+  };
+  const lookChanged =
+    hydrated.appearance !== profile.appearance || hydrated.theme !== profile.theme;
+  const pendingUnsynced = Boolean(pending && pending.updatedAt > pending.syncedAt);
+  if (!placeholder && (lookChanged || pendingUnsynced)) {
+    void syncIdentityToCloud(identity).then((result) => {
+      if (result !== "cloud") return;
+      const current = readStoredLook();
+      if (current) writeStoredLook({ ...current, syncedAt: current.updatedAt });
+    });
   }
   if (placeholder) {
     const { error: updateError } = await client
@@ -76,6 +100,7 @@ async function hydrateCloudProfile(user: User, account: Account): Promise<Accoun
       })
       .eq("id", user.id);
     if (updateError) console.warn("[LIVV profile] cloud identity write deferred", updateError);
+    else if (pending) writeStoredLook({ ...pending, syncedAt: pending.updatedAt });
   }
   return hydrated;
 }
@@ -83,7 +108,7 @@ function syncUsernameOwnership(account: Account, previousUsername?: string) { co
 
 export function mapSupabaseAuthError(error: unknown): Error { if (!(error instanceof Error) && typeof error !== "object") return new Error("Authentication failed. Try again."); const err = error as AuthError & { message?: string; status?: number; code?: string }; const message = (err.message || "").toLowerCase(); const code = (err.code || "").toLowerCase(); const status = err.status; if (!isSupabaseConfigured()) return new Error("LIVV authentication is temporarily unavailable. Please try again later."); if (message.includes("rate limit") || message.includes("email rate limit") || code.includes("over_email_send_rate_limit")) return new Error("Too many codes requested. Wait a minute, then try again."); if (message.includes("error sending") || message.includes("confirmation email") || message.includes("magic link") || message.includes("error sending otp")) return new Error("We couldn't send your LIVV code. Please try again in a moment."); if (message.includes("otp_expired") || message.includes("token has expired") || code === "otp_expired") return new Error("That code expired or is invalid. Request a new code and try again."); if (message.includes("invalid") && (message.includes("otp") || message.includes("token") || message.includes("code"))) return new Error("That code is incorrect. Check the 8 digits and try again."); if (status === 429) return new Error("Too many attempts. Wait a minute, then try again."); return new Error("We couldn't complete email verification. Check your code and try again."); }
 
-export async function materializeSupabaseUser(user: User, providerHint: AuthProvider = "email") { if (typeof window === "undefined") throw new Error("Authentication requires a browser"); const map = loadCloudMap(); const mapped = map[user.id]; const accounts = loadAccounts(); let account = mapped ? accounts.find((item) => item.id === mapped) || null : null; const previousUsername = account?.username; if (!account) { const suggested = normalizeUsername(metadataUsername(user)); const fromName = suggestUsername(metadataName(user), providerHint); const username = suggested.length >= 3 && suggestUsername(suggested, "email") === suggested ? suggested : fromName; account = { id: `supabase_${user.id}`, provider: "email", email: user.email?.toLowerCase(), displayName: metadataName(user), username, usernameLocked: true, photo: photoForUser(user), accent: DEFAULT_ACCENT, appearance: "system", tier: "spark", theme: "daylight", embers: 0, bio: "", createdAt: Date.now(), lastLoginAt: Date.now() }; } else { account = { ...account, provider: "email", email: user.email?.toLowerCase() || account.email, photo: photoForUser(user) || account.photo, lastLoginAt: Date.now() }; } account = await hydrateCloudProfile(user, account); const finalAccounts = loadAccounts(); const existingIndex = finalAccounts.findIndex((item) => item.id === account!.id); if (existingIndex >= 0) finalAccounts[existingIndex] = account; else finalAccounts.push(account); saveAccounts(finalAccounts); syncUsernameOwnership(account, previousUsername); map[user.id] = account.id; saveCloudMap(map); saveSession(account.id); saveIdentity(account); return account; }
+export async function materializeSupabaseUser(user: User, providerHint: AuthProvider = "email") { if (typeof window === "undefined") throw new Error("Authentication requires a browser"); const hydrateStarted = Date.now(); const map = loadCloudMap(); const mapped = map[user.id]; const accounts = loadAccounts(); let account = mapped ? accounts.find((item) => item.id === mapped) || null : null; const previousUsername = account?.username; if (!account) { const suggested = normalizeUsername(metadataUsername(user)); const fromName = suggestUsername(metadataName(user), providerHint); const username = suggested.length >= 3 && suggestUsername(suggested, "email") === suggested ? suggested : fromName; account = { id: `supabase_${user.id}`, provider: "email", email: user.email?.toLowerCase(), displayName: metadataName(user), username, usernameLocked: true, photo: photoForUser(user), accent: DEFAULT_ACCENT, appearance: "system", tier: "spark", theme: "daylight", embers: 0, bio: "", createdAt: Date.now(), lastLoginAt: Date.now() }; } else { account = { ...account, provider: "email", email: user.email?.toLowerCase() || account.email, photo: photoForUser(user) || account.photo, lastLoginAt: Date.now() }; } account = await hydrateCloudProfile(user, account); const finalAccounts = loadAccounts(); const existingIndex = finalAccounts.findIndex((item) => item.id === account!.id); account = keepNewerEmberBalance(account, hydrateStarted); if (existingIndex >= 0) finalAccounts[existingIndex] = account; else finalAccounts.push(account); saveAccounts(finalAccounts); syncUsernameOwnership(account, previousUsername); map[user.id] = account.id; saveCloudMap(map); saveSession(account.id); saveIdentity(account); return account; }
 export async function getAuthenticatedUser() {
   const client = getSupabaseBrowserClient();
   if (!client) return null;

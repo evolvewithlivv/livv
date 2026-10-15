@@ -26,6 +26,8 @@ import { feedback } from "@/lib/sensory";
 import "./train.css";
 
 type Phase = "select" | "preview" | "session" | "complete";
+type SetLog = { exerciseId: string; reps: string };
+type EndPrompt = "empty" | "partial" | null;
 
 const FULL_KEY = "livv-last-workout-full";
 
@@ -53,6 +55,21 @@ function dayName(code: string) {
 
 function todayCode() {
   return ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"][new Date().getDay()];
+}
+
+function nextTrainingDay<T extends { id: string; day: string; rest?: boolean; label?: string }>(days: T[]) {
+  const order = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"];
+  const start = order.indexOf(todayCode());
+  for (let step = 1; step <= 7; step += 1) {
+    const code = order[(start + step) % 7];
+    const day = days.find((item) => item.day === code && !item.rest);
+    if (day) return day;
+  }
+  return days.find((item) => !item.rest) || null;
+}
+
+function durationLabel(value: string) {
+  return /min/i.test(value) ? value : `${value} min`;
 }
 
 function exerciseCue(ex: Exercise) {
@@ -93,7 +110,10 @@ export default function TrainPage() {
   const [duration, setDuration] = useState<Duration | null>(null);
   const [workout, setWorkout] = useState<Workout | null>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [logged, setLogged] = useState(false);
+  const [logs, setLogs] = useState<SetLog[]>([]);
+  const [repsDraft, setRepsDraft] = useState("");
+  const [endPrompt, setEndPrompt] = useState<EndPrompt>(null);
+  const [summary, setSummary] = useState<{ name: string; sets: number; movements: number; duration: string } | null>(null);
   const [rest, setRest] = useState(0);
   const restRef = useRef<number | null>(null);
 
@@ -101,16 +121,19 @@ export default function TrainPage() {
     const saved = loadActiveSplit();
     const custom = loadCustomSplit();
     setCustomSplit(custom);
+    const selectFor = (days: { id: string; day: string; rest?: boolean }[]) => {
+      const today = days.find((d) => d.day === todayCode());
+      if (today && !today.rest) return today.id;
+      return nextTrainingDay(days)?.id || null;
+    };
     if (saved === "custom" && custom) {
       setSplitId("custom");
-      const today = custom.days.find((d) => d.day === todayCode());
-      setSelectedDayId(today?.id || custom.days.find((d) => !d.rest)?.id || null);
+      setSelectedDayId(selectFor(custom.days));
     } else if (saved) {
       const s = SPLITS.find((x) => x.id === saved);
       if (s) {
         setSplitId(saved);
-        const today = s.days.find((d) => d.day === todayCode());
-        setSelectedDayId(today?.id || s.days.find((d) => !d.rest)?.id || null);
+        setSelectedDayId(selectFor(s.days));
       }
     }
     return () => {
@@ -132,6 +155,9 @@ export default function TrainPage() {
   const split = splitId === "custom" ? customSplit : SPLITS.find((s) => s.id === splitId) || null;
   const selectedDay = split?.days.find((d) => d.id === selectedDayId) || null;
   const focus: Focus | null = selectedDay?.focus || null;
+  const todayDay = split?.days.find((d) => d.day === todayCode()) || null;
+  const restingToday = Boolean(todayDay?.rest);
+  const upcoming = split ? nextTrainingDay(split.days) : null;
   const canGenerate = Boolean(split && selectedDay && !selectedDay.rest && focus && location && duration);
 
   const chooseSplit = (id: SplitId | "custom") => {
@@ -164,7 +190,7 @@ export default function TrainPage() {
     saveActiveSplit(id);
     setEditingCustom(false);
     const today = s.days.find((d) => d.day === todayCode());
-    setSelectedDayId(today?.id || s.days.find((d) => !d.rest)?.id || null);
+    setSelectedDayId(today && !today.rest ? today.id : nextTrainingDay(s.days)?.id || null);
   };
 
   const updateCustomDay = (index: number, patch: Partial<CustomSplit["days"][number]>) => {
@@ -179,7 +205,7 @@ export default function TrainPage() {
   const build = () => {
     if (!selectedDay || !focus || !location || !duration) return;
     const w = generateWorkout(focus, location, duration);
-    w.name = selectedDay.label + " · " + w.name;
+    w.name = selectedDay.label.toLowerCase() === String(focus).toLowerCase() ? w.name : `${selectedDay.label} · ${w.name}`;
     setWorkout(w);
     saveFullWorkout(w);
     setPhase("preview");
@@ -189,8 +215,21 @@ export default function TrainPage() {
   const start = () => {
     if (!workout) return;
     setCurrentIndex(0);
-    setLogged(false);
+    setLogs([]);
+    setRepsDraft("");
+    setEndPrompt(null);
+    setSummary(null);
     setPhase("session");
+    feedback("tick");
+  };
+
+  const logSet = () => {
+    if (!workout) return;
+    const ex = workout.exercises[currentIndex];
+    const reps = repsDraft.trim() || ex.reps || ex.duration || "1";
+    setLogs((prev) => [...prev, { exerciseId: ex.id, reps }]);
+    setRepsDraft("");
+    setEndPrompt(null);
     feedback("tick");
   };
 
@@ -198,26 +237,46 @@ export default function TrainPage() {
     if (!workout) return;
     feedback("tick");
     if (currentIndex >= workout.exercises.length - 1) {
-      finish();
+      requestEnd();
       return;
     }
     setCurrentIndex((i) => i + 1);
+    setRepsDraft("");
     setRest(45);
   };
 
-  const finish = () => {
-    if (!workout || logged) {
-      setPhase("complete");
+  const requestEnd = () => {
+    if (logs.length === 0) setEndPrompt("empty");
+    else setEndPrompt("partial");
+  };
+
+  const confirmEnd = () => {
+    if (!workout) return;
+    if (endPrompt === "empty" || logs.length === 0) {
+      setEndPrompt(null);
+      setPhase("select");
+      setWorkout(null);
+      setLogs([]);
+      setCurrentIndex(0);
+      setRest(0);
       return;
     }
-    feedback("complete");
+    const movements = new Set(logs.map((item) => item.exerciseId)).size;
     completeWorkout({
       name: workout.name,
       focus: String(workout.focus),
-      duration: String(workout.duration),
-      exercises: workout.exercises.length,
+      duration: durationLabel(String(workout.duration)),
+      exercises: movements,
+      sets: logs.length,
     });
-    setLogged(true);
+    setSummary({
+      name: workout.name,
+      sets: logs.length,
+      movements,
+      duration: durationLabel(String(workout.duration)),
+    });
+    setEndPrompt(null);
+    feedback("complete");
     setPhase("complete");
   };
 
@@ -225,12 +284,26 @@ export default function TrainPage() {
     setPhase("select");
     setWorkout(null);
     setCurrentIndex(0);
-    setLogged(false);
+    setLogs([]);
+    setRepsDraft("");
+    setEndPrompt(null);
+    setSummary(null);
     setRest(0);
+  };
+
+  const startRecovery = () => {
+    const w = generateWorkout("Core", location || "Home", duration || "10");
+    w.name = "Recovery";
+    setWorkout(w);
+    saveFullWorkout(w);
+    setPhase("preview");
+    feedback("tick");
   };
 
   if (phase === "session" && workout) {
     const ex = workout.exercises[currentIndex];
+    const loggedSets = logs.filter((item) => item.exerciseId === ex.id).length;
+    const targetSets = ex.sets || 1;
     return (
       <main className="tr" aria-label="Session">
         <div className="tr-inner">
@@ -245,6 +318,7 @@ export default function TrainPage() {
             <h1 className="tr-ex-hero-name">{ex.name}</h1>
             <p className="tr-ex-hero-meta">{metaLine(ex)}</p>
             <p className="tr-ex-hero-cue">{exerciseCue(ex)}</p>
+            <p className="tr-ex-hero-meta">Set {Math.min(loggedSets + 1, targetSets)} of {targetSets} · {loggedSets} logged</p>
           </div>
           {rest > 0 ? (
             <div className="tr-rest">
@@ -252,14 +326,42 @@ export default function TrainPage() {
               <p className="tr-rest-n">{rest}s</p>
             </div>
           ) : null}
-          <div className="tr-session-actions">
-            <button type="button" className="tr-primary" onClick={next}>
-              {currentIndex >= workout.exercises.length - 1 ? "Finish session" : "Next exercise"}
-            </button>
-            <button type="button" className="tr-ghost" onClick={finish}>
-              End early
+          <div className="tr-log">
+            <input
+              aria-label={`Reps for ${ex.name}`}
+              inputMode="text"
+              placeholder={ex.reps || ex.duration || "Reps"}
+              value={repsDraft}
+              onChange={(event) => setRepsDraft(event.target.value)}
+            />
+            <button type="button" className="tr-primary" onClick={logSet}>
+              Log set
             </button>
           </div>
+          {endPrompt ? (
+            <div className="tr-confirm" role="group" aria-label="Confirm end session">
+              <p>
+                {endPrompt === "empty"
+                  ? "Nothing is logged. End without recording this session?"
+                  : `Log ${logs.length} set${logs.length === 1 ? "" : "s"} and end?`}
+              </p>
+              <button type="button" className="tr-primary" onClick={confirmEnd}>
+                {endPrompt === "empty" ? "End without logging" : "Log and end"}
+              </button>
+              <button type="button" className="tr-ghost" onClick={() => setEndPrompt(null)}>
+                Keep going
+              </button>
+            </div>
+          ) : (
+            <div className="tr-session-actions">
+              <button type="button" className="tr-primary" onClick={next}>
+                {currentIndex >= workout.exercises.length - 1 ? "Finish session" : "Next exercise"}
+              </button>
+              <button type="button" className="tr-ghost" onClick={requestEnd}>
+                End early
+              </button>
+            </div>
+          )}
         </div>
       </main>
     );
@@ -272,7 +374,7 @@ export default function TrainPage() {
           <p className="tr-k">Done</p>
           <h1 className="tr-done-title">Session logged.</h1>
           <p className="tr-done-sub">
-            {workout.name} · {workout.exercises.length} movements · {workout.duration} min
+            {(summary?.name || workout.name)} · {summary?.sets ?? 0} sets · {summary?.movements ?? 0} movements · {durationLabel(summary?.duration || String(workout.duration))}
           </p>
           <p className="tr-done-sub">Evidence is on your record.</p>
           <button type="button" className="tr-primary" onClick={reset}>
@@ -290,7 +392,7 @@ export default function TrainPage() {
           <p className="tr-k">Session</p>
           <h1 className="tr-title">{workout.name}</h1>
           <p className="tr-sub">
-            {workout.exercises.length} movements · {workout.duration} min · {workout.location}
+            {workout.exercises.length} movements · {durationLabel(String(workout.duration))} · {workout.location}
           </p>
           <section className="tr-section">
             <p className="tr-section-k">Work</p>
@@ -331,7 +433,7 @@ export default function TrainPage() {
                 className={"tr-chip" + (splitId === s.id ? " on" : "")}
                 onClick={() => chooseSplit(s.id)}
               >
-                {s.name}
+                {s.chip || s.name}
               </button>
             ))}
             <button
@@ -399,7 +501,17 @@ export default function TrainPage() {
                 );
               })}
             </div>
-            {selectedDay && !selectedDay.rest ? (
+            {restingToday ? (
+              <p className="tr-day-hint">
+                Today is a rest day.
+                {selectedDay && !selectedDay.rest
+                  ? ` Build is set to ${dayName(selectedDay.day)} · ${selectedDay.label}.`
+                  : upcoming
+                    ? ` Next training day is ${dayName(upcoming.day)} · ${upcoming.label}.`
+                    : ""}
+                {" "}Or do a short recovery.
+              </p>
+            ) : selectedDay && !selectedDay.rest ? (
               <p className="tr-day-hint">{selectedDay.muscles}</p>
             ) : null}
           </section>
@@ -447,9 +559,21 @@ export default function TrainPage() {
           <button type="button" className="tr-secondary" onClick={() => setEditingCustom(true)}>Edit my weekly split</button>
         ) : null}
 
+        {restingToday ? (
+          <button type="button" className="tr-ghost" onClick={startRecovery}>
+            Recovery instead
+          </button>
+        ) : null}
         <button type="button" className="tr-primary" disabled={!canGenerate} onClick={build}>
-          Build session
+          {restingToday && selectedDay && !selectedDay.rest ? `Build ${dayName(selectedDay.day)}` : "Build session"}
         </button>
+        {split && !canGenerate ? (
+          <p className="tr-day-hint">
+            {restingToday
+              ? "Choose where and how long. Today stays a rest day."
+              : "Choose a training day, where, and how long."}
+          </p>
+        ) : null}
       </div>
     </main>
   );
