@@ -5,6 +5,7 @@ import { ArrowUpRight, Flame } from "lucide-react";
 import { useEffect, useState } from "react";
 import { loadIdentity } from "@/lib/identity";
 import { EMBERS_PER_DOLLAR, MIN_REDEEM_EMBERS, REDEEM_RULES_COPY, embersToDollars } from "@/lib/ember-economy";
+import { SHOP_LINKS_ENABLED } from "@/lib/shop-links";
 import "./shop-rack.css";
 
 const PRODUCTS = [
@@ -37,25 +38,37 @@ export default function ShopPage() {
             <p className="shop-kicker">THE PHYSICAL LAYER</p>
             <h1>COLLECTION 001</h1>
             <p className="shop-subtitle">The first physical expression of LIVV.</p>
+            {SHOP_LINKS_ENABLED ? null : (
+              <p className="shop-unavailable">Coming soon. Ordering is not open yet.</p>
+            )}
           </div>
         </header>
 
         <section className="shop-collection" aria-labelledby="collection-title">
           <div className="shop-section-head"><h2 id="collection-title">THE FIVE</h2></div>
           <div className="shop-grid">
-            {PRODUCTS.map((product) => (
-              <Link key={product.href} href={product.href} className="shop-product">
-                <div className="shop-product-image">
-                  <img src={product.image} alt={product.name + " — " + product.variant} loading={product.no === "01" ? "eager" : "lazy"} />
-                  <span className="shop-product-no">{product.no}</span>
-                  <span className="shop-product-open" aria-hidden="true"><ArrowUpRight size={15} strokeWidth={1.7} /></span>
-                </div>
-                <div className="shop-product-info">
-                  <div><h3>{product.name}</h3><p>{product.variant}</p></div>
-                  <strong>{product.price}</strong>
-                </div>
-              </Link>
-            ))}
+            {PRODUCTS.map((product) => {
+              const card = (
+                <>
+                  <div className="shop-product-image">
+                    <img src={product.image} alt={product.name + " — " + product.variant} loading={product.no === "01" ? "eager" : "lazy"} />
+                    <span className="shop-product-no">{product.no}</span>
+                    {SHOP_LINKS_ENABLED ? (
+                      <span className="shop-product-open" aria-hidden="true"><ArrowUpRight size={15} strokeWidth={1.7} /></span>
+                    ) : null}
+                  </div>
+                  <div className="shop-product-info">
+                    <div><h3>{product.name}</h3><p>{product.variant}</p></div>
+                    <strong>{product.price}</strong>
+                  </div>
+                </>
+              );
+              return SHOP_LINKS_ENABLED ? (
+                <Link key={product.href} href={product.href} className="shop-product">{card}</Link>
+              ) : (
+                <article key={product.href} className="shop-product">{card}</article>
+              );
+            })}
           </div>
         </section>
 

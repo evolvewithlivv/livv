@@ -158,12 +158,12 @@ html[data-livv-theme="ember"][data-theme="dark"]{
   --livv-pro-line:#292929;
 }
 html[data-livv-theme="midnight"][data-theme="dark"]{
-  --livv-pro-bg:#050914;
-  --livv-pro-surface:#0b1220;
-  --livv-pro-surface-2:#121c2e;
-  --livv-pro-ink:#f3f7ff;
-  --livv-pro-muted:#8996aa;
-  --livv-pro-line:#1d2a40;
+  --livv-pro-bg:#090a0c;
+  --livv-pro-surface:#111316;
+  --livv-pro-surface-2:#181a1f;
+  --livv-pro-ink:#f5f5f2;
+  --livv-pro-muted:#969aa3;
+  --livv-pro-line:#292c32;
 }
 html[data-livv-theme="bone"]{
   --livv-pro-bg:#eee9df;

@@ -4,9 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import {
   loadIdentity,
-  patchIdentity,
-  applyAppearance,
-  type Appearance,
+  persistLook,
   type Identity,
   type LivvTheme,
 } from "@/lib/identity";
@@ -23,26 +21,18 @@ import {
 import "./settings.css";
 
 type LookOption = {
-  id: string;
+  id: LivvTheme;
   label: string;
   hint: string;
-  appearance: Appearance;
-  theme: LivvTheme;
 };
 
 const LOOK_OPTIONS: LookOption[] = [
-  { id: "light", label: "Light", hint: "Clean and bright", appearance: "light", theme: "daylight" },
-  { id: "dark", label: "Dark", hint: "Dark appearance", appearance: "dark", theme: "daylight" },
-  { id: "midnight", label: "Midnight", hint: "Deep black appearance", appearance: "dark", theme: "midnight" },
-  { id: "device", label: "Match device", hint: "Follow your device setting", appearance: "system", theme: "daylight" },
+  { id: "daylight", label: "Daylight", hint: "Clean and bright" },
+  { id: "midnight", label: "Midnight", hint: "Deep black" },
 ];
 
 function isLookActive(me: Identity, opt: LookOption): boolean {
-  if (opt.id === "device") return me.appearance === "system";
-  if (opt.id === "light") return me.appearance === "light";
-  if (opt.id === "dark") return me.appearance === "dark" && me.theme === "daylight";
-  if (opt.id === "midnight") return me.appearance === "dark" && me.theme === "midnight";
-  return false;
+  return me.theme === opt.id;
 }
 
 export default function SettingsPage() {
@@ -75,10 +65,18 @@ export default function SettingsPage() {
 
   const setLook = (opt: LookOption) => {
     if (!me) return;
-    const next = patchIdentity({ appearance: opt.appearance, theme: opt.theme });
-    applyAppearance(next.appearance, next.accent || "", next.theme || "daylight");
-    setMe(loadIdentity());
+    const appearance = opt.id === "daylight" ? "light" : "dark";
+    setMe({ ...me, appearance, theme: opt.id });
     feedback("tick");
+    void persistLook(appearance, opt.id).then((result) => {
+      setMe(loadIdentity());
+      if (result === "error") {
+        setError("Saved on this device. Appearance could not sync yet.");
+        setStatus("");
+      } else {
+        setError("");
+      }
+    });
   };
 
   const togglePref = (key: keyof LivvPrefs) => {
@@ -197,6 +195,7 @@ export default function SettingsPage() {
                   className="st-row"
                   role="radio"
                   aria-checked={active}
+                  aria-label={opt.label}
                   onClick={() => setLook(opt)}
                 >
                   <div className="st-row-main">

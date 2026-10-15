@@ -4,10 +4,11 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import {
   completeDailyTask,
   dailySummary,
-  dailyTasks,
+  ensureDailyBoard,
   loadDailyState,
   saveDailyAnswer,
   saveDailyNote,
+  uncompleteDailyTask,
   type DailyTask,
 } from "@/lib/daily";
 import { feedback } from "@/lib/sensory";
@@ -21,10 +22,11 @@ export default function DailyPage() {
   const [savedAnswer, setSavedAnswer] = useState("");
   const [savedNote, setSavedNote] = useState("");
   const [status, setStatus] = useState("");
+  const [emberNote, setEmberNote] = useState("");
+  const [tasks, setTasks] = useState<DailyTask[]>([]);
 
   const question = useMemo(() => dailySummary(now).question, [now]);
-  const tasks = useMemo(() => dailyTasks(now), [now]);
-  const summary = useMemo(() => dailySummary(now), [now, completed, savedAnswer, savedNote]);
+  const summary = useMemo(() => dailySummary(now), [now, completed, savedAnswer, savedNote, tasks]);
 
   const dateLabel = useMemo(
     () =>
@@ -37,6 +39,7 @@ export default function DailyPage() {
   );
 
   const sync = useCallback(() => {
+    setTasks(ensureDailyBoard(now));
     const state = loadDailyState(now);
     setCompleted(state.completed);
     const todayJournal = state.journal.find((j) => j.key === state.key);
@@ -50,9 +53,15 @@ export default function DailyPage() {
     sync();
     window.addEventListener("livv-daily", sync);
     window.addEventListener("livv-record", sync);
+    const onAward = (event: Event) => {
+      const detail = (event as CustomEvent<{ ok?: boolean; error?: string }>).detail;
+      if (detail && detail.ok === false) setEmberNote(detail.error || "Embers could not be awarded.");
+    };
+    window.addEventListener("livv-ember-award", onAward);
     return () => {
       window.removeEventListener("livv-daily", sync);
       window.removeEventListener("livv-record", sync);
+      window.removeEventListener("livv-ember-award", onAward);
     };
   }, [sync]);
 
@@ -64,20 +73,28 @@ export default function DailyPage() {
     return () => window.clearInterval(timer);
   }, []);
 
-  const doneCount = completed.length;
-  const allDone = doneCount >= 3;
-  const hasActed = doneCount > 0 || Boolean(savedNote);
+  const doneCount = tasks.filter((task) => completed.includes(task.id)).length;
+  const total = tasks.length || 3;
 
-  function complete(id: DailyTask["id"]) {
-    if (completed.includes(id)) return;
-    if (id === "mind") {
+  function toggle(task: DailyTask) {
+    if (completed.includes(task.id)) {
+      const next = uncompleteDailyTask(task.id, now);
+      setCompleted(next.completed);
+      setStatus("Marked not done.");
+      feedback("tick");
+      window.dispatchEvent(new Event("livv-daily"));
+      window.setTimeout(() => setStatus(""), 1800);
+      return;
+    }
+    if (task.pillar === "mind" || task.label === "Mind") {
+      const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
       document.getElementById("daily-reflect")?.scrollIntoView({
-        behavior: "smooth",
+        behavior: reduce ? "auto" : "smooth",
         block: "center",
       });
       return;
     }
-    const next = completeDailyTask(id, now);
+    const next = completeDailyTask(task.id, now);
     setCompleted(next.completed);
     feedback("complete");
     window.dispatchEvent(new Event("livv-daily"));
@@ -115,15 +132,15 @@ export default function DailyPage() {
           <h1 className="dy-question">{question}</h1>
           <div
             className="dy-progress"
-            aria-label={`${doneCount} of 3 actions complete`}
+            aria-label={`${doneCount} of ${total} actions complete`}
           >
             <div className="dy-progress-bar">
               <div
                 className="dy-progress-fill"
-                style={{ width: `${Math.min(100, (doneCount / 3) * 100)}%` }}
+                style={{ width: `${Math.min(100, (doneCount / total) * 100)}%` }}
               />
             </div>
-            <span className="dy-progress-n">{doneCount}/3</span>
+            <span className="dy-progress-n">{doneCount}/{total}</span>
           </div>
         </header>
 
@@ -131,14 +148,21 @@ export default function DailyPage() {
           <p className="dy-section-k">Today&apos;s actions</p>
           {tasks.map((task, index) => {
             const done = completed.includes(task.id);
+            const mind = task.pillar === "mind" || task.label === "Mind";
             return (
               <button
                 key={task.id}
                 type="button"
                 className={"dy-action" + (done ? " is-done" : "")}
-                onClick={() => complete(task.id)}
-                disabled={done}
+                onClick={() => toggle(task)}
                 aria-pressed={done}
+                aria-label={
+                  done
+                    ? `Undo ${task.title}`
+                    : mind
+                      ? `Write a reflection to complete ${task.title}`
+                      : `Complete ${task.title}`
+                }
               >
                 <span className="dy-mark" aria-hidden>
                   {done ? "✓" : String(index + 1)}
@@ -148,9 +172,8 @@ export default function DailyPage() {
                   <p className="dy-action-t">{task.title}</p>
                   <p className="dy-action-s">
                     {task.description}
-                    {task.id === "mind" && !done
-                      ? " Write your reflection below to complete this."
-                      : ""}
+                    {mind && !done ? " Write your reflection below to complete this. " : ""}
+                    {done ? " Tap again to undo." : ""}
                   </p>
                 </span>
               </button>
@@ -184,6 +207,7 @@ export default function DailyPage() {
               </button>
             </div>
             {status ? <p className="dy-status">{status}</p> : null}
+            {emberNote ? <p className="dy-status" role="status">{emberNote}</p> : null}
           </div>
         </section>
 

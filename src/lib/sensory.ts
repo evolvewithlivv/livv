@@ -102,6 +102,7 @@ export function playSound(
 ) {
   if (typeof window === "undefined") return;
   if (!loadPrefs().sound) return;
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
   try {
     if (kind === "checkin") {
       tone(392, 0.11, "sine", 0.018);

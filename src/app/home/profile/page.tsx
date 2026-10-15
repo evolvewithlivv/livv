@@ -6,26 +6,31 @@ import { useEffect, useState } from "react";
 import { loadIdentity, type Identity } from "@/lib/identity";
 import { goalLabels, loadOnboardingDraft, type OnboardingDraft } from "@/lib/onboarding";
 import { loadRecord } from "@/lib/record";
+import { loadDailyState } from "@/lib/daily";
 import { MIN_REDEEM_EMBERS, embersToDollars } from "@/lib/ember-economy";
 import "./profile-signal.css";
 
 export default function ProfilePage() {
   const [me, setMe] = useState<Identity | null>(null);
   const [rec, setRec] = useState<ReturnType<typeof loadRecord> | null>(null);
+  const [todayDone, setTodayDone] = useState(0);
   const [intent, setIntent] = useState<OnboardingDraft | null>(null);
 
   useEffect(() => {
     const sync = () => {
       setMe(loadIdentity());
       setRec(loadRecord());
+      setTodayDone(loadDailyState().completed.length);
       setIntent(loadOnboardingDraft());
     };
     sync();
     window.addEventListener("livv-identity", sync);
     window.addEventListener("livv-record", sync);
+    window.addEventListener("livv-daily", sync);
     return () => {
       window.removeEventListener("livv-identity", sync);
       window.removeEventListener("livv-record", sync);
+      window.removeEventListener("livv-daily", sync);
     };
   }, []);
 
@@ -95,8 +100,8 @@ export default function ProfilePage() {
               <span>Sessions</span>
             </div>
             <div>
-              <strong>{rec.goalsCompleted || 0}</strong>
-              <span>Objectives</span>
+              <strong>{todayDone}</strong>
+              <span>Today</span>
             </div>
           </div>
         </section>

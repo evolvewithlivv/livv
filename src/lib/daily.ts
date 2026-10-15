@@ -4,12 +4,12 @@
  */
 
 import { addEmbers, loadIdentity, patchIdentity } from "./identity";
-import { logCustomAction, loadRecord, useStreakFreeze } from "./record";
+import { logCustomAction, loadRecord, undoCustomByTitle } from "./record";
 import { dayKey } from "./dates";
 import { adaptiveDailyTasks } from "./daily-adaptive";
 
 export type DailyTask = {
-  id: "mind" | "body" | "life";
+  id: string;
   label: string;
   title: string;
   description: string;
@@ -204,20 +204,91 @@ export function dailyQuestion(date = new Date()) {
   return QUESTIONS[hash(dayKey(date)) % QUESTIONS.length];
 }
 
-export function dailyTasks(date = new Date()): DailyTask[] {
+const SLOT_IDS = ["mind", "body", "life"] as const;
+
+function objectiveId(pillar: string, title: string) {
+  return `o${hash(`${pillar}:${title}`).toString(36)}`;
+}
+
+function withStableIds(tasks: Array<Omit<DailyTask, "id"> & { id?: string }>): DailyTask[] {
+  return tasks.map((task) => ({
+    ...task,
+    id: objectiveId(task.pillar, task.title),
+  }));
+}
+
+function readBoards(data: Record<string, unknown>): Record<string, DailyTask[]> {
+  const boards = data.boards;
+  if (!boards || typeof boards !== "object") return {};
+  return boards as Record<string, DailyTask[]>;
+}
+
+function isTask(value: unknown): value is DailyTask {
+  if (!value || typeof value !== "object") return false;
+  const task = value as DailyTask;
+  return typeof task.id === "string" && typeof task.title === "string" && typeof task.pillar === "string";
+}
+
+function freshTasks(date: Date): DailyTask[] {
   try {
-    return adaptiveDailyTasks(date, loadRecord());
+    return withStableIds(adaptiveDailyTasks(date, loadRecord()));
   } catch {
     const set = DAILY_SETS[hash(dayKey(date)) % DAILY_SETS.length];
-    return set.map(([label, title, description, pillar, xpSize], index) => ({
-      id: (["mind", "body", "life"] as const)[index],
-      label,
-      title,
-      description,
-      pillar,
-      xpSize: xpSize as DailyTask["xpSize"],
-    }));
+    return withStableIds(
+      set.map(([label, title, description, pillar, xpSize]) => ({
+        label,
+        title,
+        description,
+        pillar,
+        xpSize: xpSize as DailyTask["xpSize"],
+      })),
+    );
   }
+}
+
+/** Read today's frozen board. Does not create one (safe during render). */
+export function dailyTasks(date = new Date()): DailyTask[] {
+  const key = dayKey(date);
+  const boards = readBoards(storage());
+  const existing = boards[key];
+  if (Array.isArray(existing) && existing.length && existing.every(isTask)) return existing;
+  return freshTasks(date);
+}
+
+/** Pin today's objectives for this member so they cannot regenerate mid-day. */
+export function ensureDailyBoard(date = new Date()): DailyTask[] {
+  const key = dayKey(date);
+  const data = storage();
+  const boards = readBoards(data);
+  const existing = boards[key];
+  if (Array.isArray(existing) && existing.length && existing.every(isTask)) return existing;
+  const tasks = freshTasks(date);
+  if (typeof window === "undefined") return tasks;
+  const completed = Array.isArray(data.completed)
+    ? data.completed.filter((item): item is string => typeof item === "string")
+    : [];
+  let changed = false;
+  tasks.forEach((task, index) => {
+    const slot = SLOT_IDS[index];
+    const legacy = `${key}:${slot}`;
+    const token = `${key}:${task.id}`;
+    const legacyAt = slot ? completed.indexOf(legacy) : -1;
+    if (legacyAt >= 0) {
+      completed.splice(legacyAt, 1);
+      if (!completed.includes(token)) completed.push(token);
+      changed = true;
+    }
+  });
+  if (changed) data.completed = completed.slice(-120);
+  const nextBoards: Record<string, DailyTask[]> = {};
+  for (const [boardKey, board] of Object.entries(boards)) {
+    if (boardKey >= key || boardKey === key) nextBoards[boardKey] = board;
+  }
+  nextBoards[key] = tasks;
+  const kept = Object.keys(nextBoards).sort().slice(-21);
+  data.boards = Object.fromEntries(kept.map((boardKey) => [boardKey, nextBoards[boardKey]]));
+  save(data);
+  return tasks;
 }
 
 export function dailyDrop(date = new Date()): DailyDrop {
@@ -249,17 +320,22 @@ export function loadDailyState(date = new Date()) {
   };
 }
 
-export function completeDailyTask(id: DailyTask["id"], date = new Date()) {
+function isMindTask(task: DailyTask | undefined) {
+  return Boolean(task && (task.pillar === "mind" || task.label === "Mind"));
+}
+
+export function completeDailyTask(id: string, date = new Date()) {
+  ensureDailyBoard(date);
   const data = storage();
   const key = dayKey(date);
   const completed = Array.isArray(data.completed) ? data.completed.filter((x): x is string => typeof x === "string") : [];
   const token = `${key}:${id}`;
   if (!completed.includes(token)) {
-    if (id === "mind") {
+    const task = dailyTasks(date).find((item) => item.id === id);
+    if (isMindTask(task)) {
       const journal = Array.isArray(data.journal) ? (data.journal as DailyJournalEntry[]) : [];
       if (!journal.some((j) => j.key === key && j.answer.trim().length > 0)) return loadDailyState(date);
     }
-    const task = dailyTasks(date).find((item) => item.id === id);
     if (task) {
       logCustomAction({ title: `Daily · ${task.title}`, pillar: task.pillar, size: task.xpSize });
     }
@@ -267,6 +343,20 @@ export function completeDailyTask(id: DailyTask["id"], date = new Date()) {
     data.completed = completed.slice(-120);
     save(data);
   }
+  return loadDailyState(date);
+}
+
+export function uncompleteDailyTask(id: string, date = new Date()) {
+  const data = storage();
+  const key = dayKey(date);
+  const token = `${key}:${id}`;
+  const completed = Array.isArray(data.completed)
+    ? data.completed.filter((x): x is string => typeof x === "string" && x !== token)
+    : [];
+  data.completed = completed.slice(-120);
+  save(data);
+  const task = dailyTasks(date).find((item) => item.id === id);
+  if (task) undoCustomByTitle(`Daily · ${task.title}`);
   return loadDailyState(date);
 }
 
@@ -288,7 +378,8 @@ export function saveDailyAnswer(answer: string, date = new Date()) {
   };
   data.journal = [...journal.filter((item) => item.key !== key), entry].slice(-90);
   save(data);
-  return completeDailyTask("mind", date);
+  const mind = ensureDailyBoard(date).find((task) => isMindTask(task));
+  return mind ? completeDailyTask(mind.id, date) : loadDailyState(date);
 }
 
 export function saveDailyNote(note: string, date = new Date()) {
