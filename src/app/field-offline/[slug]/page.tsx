@@ -22,7 +22,7 @@ export default async function OfflineFieldGuidePage({ params }: { params: Promis
   return (
     <main className="field-guide" aria-label={guide.title}>
       <div className="field-guide-inner">
-        <Link href={`/home/field/guides/${guide.slug}`} className="field-guide-back"><ArrowLeft size={14} /> Regular guide</Link>
+        <Link href={`/home/field/guides/${guide.slug}`} prefetch={false} className="field-guide-back"><ArrowLeft size={14} /> Regular guide</Link>
         <header className="field-guide-hero">
           <p className="field-guide-k">LIVV / FIELD / OFFLINE COPY</p>
           <div className="field-guide-title-row"><h1 className="field-guide-title">{guide.title}.</h1><span className="field-guide-mark" aria-hidden="true"><Leaf size={23} /></span></div>
@@ -62,7 +62,7 @@ export default async function OfflineFieldGuidePage({ params }: { params: Promis
           {guide.sources.map((source) => <a key={source.url} href={source.url} target="_blank" rel="noreferrer"><span><strong>{source.title}</strong><small>{source.publisher} · checked {source.checked}</small></span><ExternalLink size={15} /></a>)}
           <p className="field-guide-review">Guide review date: {guide.reviewedAt}. Content status: {guide.reviewStatus === "reviewed" ? "source-checked instructional guide" : "draft awaiting review"}.</p>
         </section>
-        <footer className="field-guide-footer"><Link href={`/home/field/guides/${guide.slug}`} className="field-guide-primary"><ArrowLeft size={15} /> Return to regular guide</Link><p>Capability is built by doing, observing, and repeating.</p></footer>
+        <footer className="field-guide-footer"><Link href={`/home/field/guides/${guide.slug}`} prefetch={false} className="field-guide-primary"><ArrowLeft size={15} /> Return to regular guide</Link><p>Capability is built by doing, observing, and repeating.</p></footer>
       </div>
     </main>
   );

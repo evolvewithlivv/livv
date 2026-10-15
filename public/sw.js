@@ -62,7 +62,13 @@ self.addEventListener("fetch",event=>{
   // Authenticated pages and API responses are deliberately never cached.
   if(url.pathname==="/"&&request.mode==="navigate"){
     event.respondWith((async()=>{
-      try{return await fetch(request);}catch{
+      try{
+        const response=await fetch(request,{redirect:"manual"});
+        if(response.type==="opaqueredirect"||(response.status>=300&&response.status<400)){
+          return Response.redirect("/auth",307);
+        }
+        return response;
+      }catch{
         const fieldCache=await caches.open(FIELD_CACHE);
         const last=await fieldCache.match("/__livv_last_saved_field_guide__");
         if(last){

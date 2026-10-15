@@ -37,7 +37,7 @@ function TopicList({ items }: { items: { name: string; note: string; window?: st
   return <div className="field-list">{items.map((item) => {
     const content = <><div><strong>{item.name}</strong><span>{item.window || item.use || (item.ready ? "Guide available" : "Guide in development")}</span></div><p>{item.note}</p>{item.ready && <span className="field-card-action">Open complete guide <ArrowUpRight size={13} /></span>}</>;
     return item.ready && item.slug
-      ? <Link key={item.name} href={`/home/field/guides/${item.slug}`} className="field-card field-card-link">{content}</Link>
+      ? <Link key={item.name} href={`/home/field/guides/${item.slug}`} prefetch={false} className="field-card field-card-link">{content}</Link>
       : <article key={item.name} className="field-card">{content}</article>;
   })}</div>;
 }
