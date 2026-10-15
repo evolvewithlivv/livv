@@ -1,8 +1,8 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
-import { persistTrafficSource, readTrafficSource, sanitizeTrafficSource } from "@/lib/attribution";
+import { authModeFromParam, persistTrafficSource, readTrafficSource, sanitizeTrafficSource } from "@/lib/attribution";
 import { getAuthenticatedUser, startEmailAuth, verifyEmailAuth } from "@/lib/supabase/real-auth";
 import { isOnboardingComplete, markOnboardingComplete } from "@/lib/onboarding";
 import { isCloudOnboardingComplete, markCloudOnboardingComplete } from "@/lib/supabase/onboarding-state";
@@ -21,14 +21,13 @@ export default function AuthScreen({ initialMode, initialSrc }: { initialMode: "
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
   const [mode, setMode] = useState<"signin" | "signup">(initialMode);
-  const modeFromUrl = useRef(initialMode);
   const [ageBand, setAgeBand] = useState<AgeBand | null>(null);
   const [ageConfirmed, setAgeConfirmed] = useState(false);
 
   useEffect(() => {
-    if (modeFromUrl.current === initialMode) return;
-    modeFromUrl.current = initialMode;
-    setMode(initialMode);
+    const raw = new URLSearchParams(window.location.search).get("mode");
+    const next = raw === "create" || raw === "signin" ? authModeFromParam(raw) : initialMode;
+    setMode(next);
   }, [initialMode]);
 
   useEffect(() => {
