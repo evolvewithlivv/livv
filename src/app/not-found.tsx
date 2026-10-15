@@ -38,11 +38,11 @@ export default function NotFound() {
           {signedIn ? " Your account and progress are unaffected." : ""}
         </p>
         <div className="mt-7 flex justify-center gap-2">
-          <Link href={signedIn ? "/home" : "/"} className="rounded-full bg-livv-ink px-6 py-3 text-sm font-semibold text-livv-bg">
+          <Link href={signedIn ? "/home" : "/"} prefetch={false} className="rounded-full bg-livv-ink px-6 py-3 text-sm font-semibold text-livv-bg">
             Go to Home
           </Link>
           {signedIn ? (
-            <Link href="/" className="rounded-full border border-livv-border px-5 py-3 text-sm font-semibold text-livv-muted">
+            <Link href="/" prefetch={false} className="rounded-full border border-livv-border px-5 py-3 text-sm font-semibold text-livv-muted">
               LIVV landing
             </Link>
           ) : null}

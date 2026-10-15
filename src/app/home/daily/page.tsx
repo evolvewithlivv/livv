@@ -76,6 +76,14 @@ export default function DailyPage() {
   const doneCount = tasks.filter((task) => completed.includes(task.id)).length;
   const total = tasks.length || 3;
 
+  function scrollToAnswer() {
+    const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    document.getElementById("daily-answer")?.scrollIntoView({
+      behavior: reduce ? "auto" : "smooth",
+      block: "center",
+    });
+  }
+
   function toggle(task: DailyTask) {
     if (completed.includes(task.id)) {
       const next = uncompleteDailyTask(task.id, now);
@@ -86,16 +94,18 @@ export default function DailyPage() {
       window.setTimeout(() => setStatus(""), 1800);
       return;
     }
-    if (task.pillar === "mind" || task.label === "Mind") {
-      const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-      document.getElementById("daily-reflect")?.scrollIntoView({
-        behavior: reduce ? "auto" : "smooth",
-        block: "center",
-      });
+    const mind = task.pillar === "mind" || task.label === "Mind";
+    // A saved answer already satisfies the reflection. Re-tick completes now.
+    if (mind && !savedAnswer.trim()) {
+      scrollToAnswer();
       return;
     }
     const next = completeDailyTask(task.id, now);
     setCompleted(next.completed);
+    if (mind && !next.completed.includes(task.id)) {
+      scrollToAnswer();
+      return;
+    }
     feedback("complete");
     window.dispatchEvent(new Event("livv-daily"));
   }
@@ -159,7 +169,7 @@ export default function DailyPage() {
                 aria-label={
                   done
                     ? `Undo ${task.title}`
-                    : mind
+                    : mind && !savedAnswer.trim()
                       ? `Write a reflection to complete ${task.title}`
                       : `Complete ${task.title}`
                 }
@@ -172,7 +182,7 @@ export default function DailyPage() {
                   <p className="dy-action-t">{task.title}</p>
                   <p className="dy-action-s">
                     {task.description}
-                    {mind && !done ? " Write your reflection below to complete this. " : ""}
+                    {mind && !done && !savedAnswer.trim() ? " Write your reflection below to complete this. " : ""}
                     {done ? " Tap again to undo." : ""}
                   </p>
                 </span>
@@ -181,7 +191,7 @@ export default function DailyPage() {
           })}
         </section>
 
-        <section className="dy-question-answer" aria-label="Answer today's question">
+        <section id="daily-answer" className="dy-question-answer" aria-label="Answer today's question">
           <p className="dy-section-k">Your answer</p>
           <p className="dy-answer-prompt">{question}</p>
           <div className="dy-reflect-box">

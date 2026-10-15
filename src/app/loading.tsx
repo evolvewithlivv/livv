@@ -1,8 +1,7 @@
-import "./loading-screen.css";
-
 /**
  * Global route loading UI.
- * Signal rings + single line. No mark, no progress bar.
+ * Signal rings + single line. No mark, so routes that never show this
+ * screen do not preload /livv-logo.png. Styles live with the root shell.
  */
 export default function Loading() {
   return (
@@ -16,10 +15,7 @@ export default function Loading() {
           <div className="ll-ring r1" />
           <div className="ll-ring r2" />
           <div className="ll-ring r3" />
-          <div className="ll-core">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img src="/livv-logo.png" alt="" width={48} height={48} />
-          </div>
+          <div className="ll-core" />
         </div>
 
         <p className="ll-line">Loading your world.</p>

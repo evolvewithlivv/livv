@@ -198,9 +198,9 @@ export default function HomePage() {
         <section className="ho-systems" aria-label="LIVV systems">
           <div className="ho-systems-head"><div><p className="ho-k">LIVV SYSTEM</p><h2>Your world, in motion.</h2></div></div>
           <div className="ho-system-grid">
-            <Link href="/home/daily" className="ho-system ho-system-daily"><span><Brain size={16}/></span><strong>Daily</strong><small>Mind · life · action</small><ArrowUpRight size={15}/></Link>
-            <Link href="/home/train" className="ho-system ho-system-train"><span><Dumbbell size={16}/></span><strong>Train</strong><small>Build · execute · record</small><ArrowUpRight size={15}/></Link>
-            <Link href="/home/health" className="ho-system ho-system-health"><span><HeartPulse size={16}/></span><strong>Health</strong><small>Sleep · food · movement</small><ArrowUpRight size={15}/></Link>
+            <Link href="/home/daily" prefetch={false} className="ho-system ho-system-daily"><span><Brain size={16}/></span><strong>Daily</strong><small>Mind · life · action</small><ArrowUpRight size={15}/></Link>
+            <Link href="/home/train" prefetch={false} className="ho-system ho-system-train"><span><Dumbbell size={16}/></span><strong>Train</strong><small>Build · execute · record</small><ArrowUpRight size={15}/></Link>
+            <Link href="/home/health" prefetch={false} className="ho-system ho-system-health"><span><HeartPulse size={16}/></span><strong>Health</strong><small>Sleep · food · movement</small><ArrowUpRight size={15}/></Link>
             <Link href="/home/field" prefetch={false} className="ho-system ho-system-field"><span><Sprout size={16}/></span><strong>Field</strong><small>Grow · keep · preserve</small><ArrowUpRight size={15}/></Link>
           </div>
         </section>
