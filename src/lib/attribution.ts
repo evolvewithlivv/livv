@@ -1,6 +1,5 @@
-/** First-touch traffic source for /go/001 → /auth. Session-only; not analytics. */
+/** Session traffic source for /auth. Session-only; not analytics. */
 
-export const DEFAULT_GO_001_SOURCE = "go-001";
 const TRAFFIC_SOURCE_KEY = "livv-src";
 const SOURCE_PATTERN = /^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$/;
 
@@ -9,16 +8,6 @@ export function sanitizeTrafficSource(raw: string | null | undefined): string | 
   const value = raw.trim();
   if (!SOURCE_PATTERN.test(value)) return null;
   return value;
-}
-
-export function resolveGo001Source(raw: string | null | undefined): string {
-  return sanitizeTrafficSource(raw) ?? DEFAULT_GO_001_SOURCE;
-}
-
-/** Enter on /go/001 always opens create-account and keeps the traffic source. */
-export function go001AuthHref(raw: string | null | undefined): string {
-  const src = resolveGo001Source(raw);
-  return `/auth?mode=create&src=${encodeURIComponent(src)}`;
 }
 
 export function authModeFromParam(mode: string | null | undefined): "signin" | "signup" {

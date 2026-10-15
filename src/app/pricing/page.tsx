@@ -22,7 +22,7 @@ export default function PricingPage() {
           ))}
         </ul>
         <Link
-          href="/go/001"
+          href="/auth?mode=create"
           className="mt-8 inline-flex min-h-12 items-center justify-center rounded-full bg-[rgb(var(--livv-ink))] px-5 text-[12px] font-semibold uppercase tracking-[0.14em] text-[rgb(var(--livv-bg))]"
         >
           Create a free account
