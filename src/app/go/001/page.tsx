@@ -3,6 +3,7 @@
 import "./field-note-001.css";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
+import { go001AuthHref, persistTrafficSource, resolveGo001Source } from "@/lib/attribution";
 import { haptic } from "@/lib/sensory";
 
 type Act = 0 | 1 | 2 | 3;
@@ -206,7 +207,12 @@ export default function Signal001() {
               A different operating system for real life.
             </p>
             <button type="button" className={"fn-enter" + (ctaReady ? " show" : "")}
-              onClick={() => { haptic("success"); router.push("/auth"); }} disabled={!ctaReady}>
+              onClick={() => {
+                haptic("success");
+                const src = resolveGo001Source(new URLSearchParams(window.location.search).get("src"));
+                persistTrafficSource(src);
+                router.push(go001AuthHref(src));
+              }} disabled={!ctaReady}>
               <span className="fn-enter-label">ENTER LIVV</span>
               <span className="fn-enter-icon" aria-hidden>→</span>
             </button>

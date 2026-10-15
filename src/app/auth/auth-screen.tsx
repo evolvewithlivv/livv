@@ -1,0 +1,242 @@
+"use client";
+
+import { useEffect, useRef, useState } from "react";
+import { Button } from "@/components/ui/button";
+import { persistTrafficSource, readTrafficSource, sanitizeTrafficSource } from "@/lib/attribution";
+import { getAuthenticatedUser, startEmailAuth, verifyEmailAuth } from "@/lib/supabase/real-auth";
+import { isOnboardingComplete, markOnboardingComplete } from "@/lib/onboarding";
+import { isCloudOnboardingComplete, markCloudOnboardingComplete } from "@/lib/supabase/onboarding-state";
+
+const LOGO = "/livv-logo.png";
+const RESEND_SECONDS = 30;
+const AGE_KEY = "livv-age-gate-v1";
+type AgeBand = "under13" | "13to17" | "18plus";
+
+export default function AuthScreen({ initialMode, initialSrc }: { initialMode: "signin" | "signup"; initialSrc: string | null }) {
+  const [email, setEmail] = useState("");
+  const [otp, setOtp] = useState("");
+  const [pending, setPending] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [resendIn, setResendIn] = useState(0);
+  const [error, setError] = useState("");
+  const [notice, setNotice] = useState("");
+  const [mode, setMode] = useState<"signin" | "signup">(initialMode);
+  const modeFromUrl = useRef(initialMode);
+  const [ageBand, setAgeBand] = useState<AgeBand | null>(null);
+  const [ageConfirmed, setAgeConfirmed] = useState(false);
+
+  useEffect(() => {
+    if (modeFromUrl.current === initialMode) return;
+    modeFromUrl.current = initialMode;
+    setMode(initialMode);
+  }, [initialMode]);
+
+  useEffect(() => {
+    const source = sanitizeTrafficSource(initialSrc) ?? readTrafficSource();
+    if (source) persistTrafficSource(source);
+  }, [initialSrc]);
+
+  useEffect(() => {
+    try {
+      const saved = window.localStorage.getItem(AGE_KEY);
+      if (saved === "13to17" || saved === "18plus") {
+        setAgeBand(saved);
+        setAgeConfirmed(true);
+      }
+    } catch {}
+  }, []);
+
+  useEffect(() => {
+    if (resendIn <= 0) return;
+    const timer = window.setInterval(() => setResendIn((value) => Math.max(0, value - 1)), 1000);
+    return () => window.clearInterval(timer);
+  }, [resendIn]);
+
+  // Cold start / PWA reopen: if a real email session already exists, skip the form.
+  useEffect(() => {
+    let cancelled = false;
+    const resume = async () => {
+      try {
+        const user = await getAuthenticatedUser();
+        if (cancelled || !user || user.is_anonymous || !user.email) return;
+        if (isOnboardingComplete()) {
+          window.location.replace("/home");
+          return;
+        }
+        let cloudComplete = false;
+        try {
+          cloudComplete = await isCloudOnboardingComplete();
+        } catch {
+          cloudComplete = false;
+        }
+        if (cancelled) return;
+        if (cloudComplete) {
+          markOnboardingComplete();
+          window.location.replace("/home");
+          return;
+        }
+        window.location.replace("/onboarding");
+      } catch {
+        /* stay on auth form */
+      }
+    };
+    void resume();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const run = async (fn: () => Promise<unknown>) => {
+    setBusy(true);
+    setError("");
+    setNotice("");
+    try { await fn(); }
+    catch (e) { setError(e instanceof Error ? e.message : "Something went wrong. Try again."); }
+    finally { setBusy(false); }
+  };
+
+  const chooseAge = (value: AgeBand) => {
+    setAgeBand(value);
+    setAgeConfirmed(false);
+    setError("");
+    setNotice(value === "under13" ? "LIVV is for people 13 and older. You cannot create an account yet." : "");
+  };
+
+  const confirmAge = () => {
+    if (!ageBand || ageBand === "under13") return;
+    try { window.localStorage.setItem(AGE_KEY, ageBand); } catch {}
+    setAgeConfirmed(true);
+    setNotice("Age eligibility confirmed.");
+  };
+
+  const sendEmail = (resend = false) => void run(async () => {
+    if (resend && resendIn > 0) return;
+    if (mode === "signup" && (!ageBand || ageBand === "under13" || !ageConfirmed)) {
+      throw new Error("Confirm that you are 13 or older before creating an account.");
+    }
+    const source = sanitizeTrafficSource(initialSrc) ?? readTrafficSource();
+    if (source) persistTrafficSource(source);
+    await startEmailAuth(email, mode === "signup", ageBand === "13to17" || ageBand === "18plus" ? ageBand : undefined, mode === "signup" ? source ?? undefined : undefined);
+    setPending(true);
+    setOtp("");
+    setResendIn(RESEND_SECONDS);
+    setNotice(mode === "signin" ? "Welcome back. Enter the 8-digit code from your email." : "Welcome to LIVV. Enter the 8-digit code from your email to get started.");
+  });
+
+  const verifyEmail = () => void run(async () => {
+    await verifyEmailAuth(email, otp);
+    const localComplete = isOnboardingComplete();
+    if (localComplete) {
+      try { await markCloudOnboardingComplete(""); } catch { /* local gate already satisfied */ }
+      window.location.replace("/home");
+      return;
+    }
+    let cloudComplete = false;
+    try { cloudComplete = await isCloudOnboardingComplete(); } catch { cloudComplete = false; }
+    if (cloudComplete) {
+      markOnboardingComplete();
+      window.location.replace("/home");
+      return;
+    }
+    window.location.replace("/onboarding");
+  });
+
+  return (
+    <main className="auth-page relative min-h-dvh overflow-hidden text-[rgb(var(--livv-ink))]">
+      <div aria-hidden className="auth-glow pointer-events-none absolute inset-x-0 top-0" />
+      <div className="relative z-10 mx-auto flex min-h-dvh w-full max-w-md flex-col justify-center px-6 py-12">
+        <div className="mb-9 flex flex-col items-center">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src={LOGO} alt="LIVV" className="auth-logo h-14 w-14 object-contain" />
+          <h1 className="mt-5 font-display text-3xl font-semibold tracking-tight">LIVV</h1>
+          <p className="mt-2 text-center text-[13px] text-[rgb(var(--livv-muted))]">{mode === "signin" ? "Welcome back. Keep building." : "Build the skills to become more capable."}</p>
+        </div>
+
+        <div className="rounded-3xl border border-[rgb(var(--livv-border))] bg-[rgb(var(--livv-surface))] p-5 backdrop-blur-sm">
+          <div className="mb-5 grid grid-cols-2 gap-1 rounded-2xl bg-[rgb(var(--livv-border))]/20 p-1">
+              <button type="button" onClick={() => { setMode("signin"); setError(""); setNotice(""); }} className={`auth-mode rounded-xl px-3 py-2.5 text-[12px] font-medium transition ${mode === "signin" ? "auth-mode-active" : "auth-mode-inactive"}`}>Sign in</button>
+              <button type="button" onClick={() => { setMode("signup"); setError(""); setNotice(""); }} className={`auth-mode rounded-xl px-3 py-2.5 text-[12px] font-medium transition ${mode === "signup" ? "auth-mode-active" : "auth-mode-inactive"}`}>Create account</button>
+          </div>
+
+          {!pending ? (
+            <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); sendEmail(false); }}>
+              {mode === "signup" ? (
+                <section className="space-y-3" aria-labelledby="age-title">
+                  <div>
+                    <p id="age-title" className="text-[11px] font-medium uppercase tracking-[0.14em] text-[rgb(var(--livv-muted))]">Age</p>
+                    <p className="auth-muted mt-1.5 text-[12px] leading-5">LIVV accounts are for people 13 and older.</p>
+                  </div>
+                  <div className="grid grid-cols-3 gap-2" role="radiogroup" aria-label="Age range">
+                    {([
+                      ["under13", "Under 13"],
+                      ["13to17", "13-17"],
+                      ["18plus", "18+"],
+                    ] as const).map(([value, label]) => (
+                      <button key={value} type="button" role="radio" aria-checked={ageBand === value} onClick={() => chooseAge(value)}
+                        className={`rounded-2xl border px-2 py-3 text-[12px] transition ${ageBand === value ? "border-[rgb(var(--livv-accent))] bg-[rgb(var(--livv-ink))] text-[rgb(var(--livv-bg))]" : "border-[rgb(var(--livv-border))] bg-[rgb(var(--livv-surface))] text-[rgb(var(--livv-muted))] hover:border-[rgb(var(--livv-accent))]"}`}>
+                        {label}
+                      </button>
+                    ))}
+                  </div>
+                  {ageBand === "under13" ? <p className="text-[12px] text-red-500">You must be at least 13 to create an account.</p> : null}
+                  {ageBand && ageBand !== "under13" ? (
+                    <label className="auth-muted flex items-start gap-3 text-[11px] leading-5">
+                      <input type="checkbox" checked={ageConfirmed} onChange={(e) => { setAgeConfirmed(e.target.checked); if (e.target.checked) confirmAge(); }} className="mt-1 accent-[rgb(var(--livv-accent))]" />
+                      <span>I confirm that I am 13 or older and agree to the <a className="text-[rgb(var(--livv-ink))] underline" href="/legal/terms">Terms</a> and <a className="auth-link underline" href="/legal/privacy">Privacy Policy</a>.</span>
+                    </label>
+                  ) : null}
+                </section>
+              ) : null}
+              <Field label="Email" value={email} onChange={setEmail} type="email" autoComplete="email" placeholder="you@example.com" />
+              <Button className="w-full" disabled={busy || !email.includes("@") || (mode === "signup" && (!ageBand || ageBand === "under13" || !ageConfirmed))} type="submit">
+                {busy ? "Sending…" : mode === "signin" ? "Sign in with email" : "Create account with email"}
+              </Button>
+            </form>
+          ) : (
+            <form className="space-y-4" onSubmit={(e) => { e.preventDefault(); verifyEmail(); }}>
+              <Field label="8-digit code" value={otp} onChange={(v) => setOtp(v.replace(/\D/g, "").slice(0, 8))} inputMode="numeric" autoComplete="one-time-code" placeholder="00000000" />
+              <p className="auth-muted text-[12px] leading-5">Enter the code sent to <span className="text-[rgb(var(--livv-ink))]">{email.trim().toLowerCase()}</span>.</p>
+              <Button className="w-full" disabled={busy || otp.length !== 8} type="submit">
+                {busy ? "Verifying…" : "Continue"}
+              </Button>
+              <div className="flex items-center justify-between gap-3 pt-1">
+                <button type="button" disabled={busy} onClick={() => { setPending(false); setOtp(""); setError(""); setNotice(""); setResendIn(0); }} className="auth-muted text-[12px] disabled:opacity-30">Change email</button>
+                <button type="button" disabled={busy || resendIn > 0} onClick={() => sendEmail(true)} className="auth-muted text-[12px] disabled:opacity-30">
+                  {resendIn > 0 ? `Resend in ${resendIn}s` : "Resend code"}
+                </button>
+              </div>
+            </form>
+          )}
+
+          {error ? <p className="mt-4 text-center text-[13px] text-red-400" role="alert">{error}</p> : null}
+          {notice && !error ? <p className="auth-muted mt-4 text-center text-[13px]" role="status">{notice}</p> : null}
+        </div>
+
+        <p className="mt-8 text-center text-[11px] text-[rgb(var(--livv-muted))]">
+          <a href="/legal/privacy" className="underline-offset-2 hover:underline">Privacy</a>
+          {" · "}
+          <a href="/legal/terms" className="underline-offset-2 hover:underline">Terms</a>
+          {" · "}
+          <a href="/legal/dmca" className="underline-offset-2 hover:underline">Copyright</a>
+        </p>
+      </div>
+    </main>
+  );
+}
+
+function Field({ label, value, onChange, type = "text", autoComplete, inputMode, placeholder }: { label: string; value: string; onChange: (value: string) => void; type?: string; autoComplete?: string; inputMode?: "numeric" | "tel" | "email" | "text"; placeholder?: string; }) {
+  return (
+    <label className="block">
+      <span className="auth-muted mb-1.5 block text-[11px] font-medium uppercase tracking-[0.14em]">{label}</span>
+      <input
+        type={type}
+        value={value}
+        onChange={(e) => onChange(e.target.value)}
+        autoComplete={autoComplete}
+        inputMode={inputMode}
+        placeholder={placeholder}
+        className="w-full rounded-2xl border border-[rgb(var(--livv-border))] bg-[rgb(var(--livv-surface))] px-4 py-3.5 text-[15px] text-[rgb(var(--livv-ink))] outline-none placeholder:text-[rgb(var(--livv-muted))] focus:border-[rgb(var(--livv-accent))]"
+      />
+    </label>
+  );
+}
