@@ -333,3 +333,7 @@ assert.equal(bootSystem.theme, "dark");
 assert.equal(bootSystem.scheme, "system");
 
 console.log("theme boot script passed");
+
+const og = fs.readFileSync(new URL("../src/app/opengraph-image.tsx", import.meta.url), "utf8");
+const topLevelRead = og.split("\n").some((line) => !/^\s/.test(line) && line.includes("readFileSync("));
+assert.equal(topLevelRead, false, "opengraph image must not read the wordmark while the module loads");

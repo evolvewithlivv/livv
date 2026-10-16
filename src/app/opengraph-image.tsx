@@ -7,9 +7,14 @@ export const alt = "LIVV";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
 
-const wordmark = readFileSync(path.join(process.cwd(), "public/brand/wordmark-white.png")).toString("base64");
+const WORDMARK_PATH = path.join(process.cwd(), "public/brand/wordmark-white.png");
+
+function wordmarkDataUrl() {
+  return `data:image/png;base64,${readFileSync(WORDMARK_PATH).toString("base64")}`;
+}
 
 export default function OpenGraphImage() {
+  const wordmark = wordmarkDataUrl();
   return new ImageResponse(
     (
       <div
@@ -26,7 +31,7 @@ export default function OpenGraphImage() {
         }}
       >
         <img
-          src={`data:image/png;base64,${wordmark}`}
+          src={wordmark}
           width={456}
           height={75}
           alt=""
