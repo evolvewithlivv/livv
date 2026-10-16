@@ -106,6 +106,17 @@ html[data-livv-landing-hold="1"] .livv-landing {
   visibility: hidden;
 }
 
+@media (max-width: 1279px) {
+  .livv-landing {
+    align-items: flex-start;
+    padding-top: max(1.25rem, env(safe-area-inset-top));
+  }
+
+  .livv-landing-inner {
+    margin-top: clamp(1.25rem, 7dvh, 3.5rem);
+  }
+}
+
 @media (min-width: 1280px) {
   .livv-landing {
     padding-left: max(4.5rem, env(safe-area-inset-left));

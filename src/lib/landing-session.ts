@@ -6,11 +6,53 @@
  * place the auth screen does: `/home` when local onboarding is complete,
  * otherwise a hold until the cloud onboarding check finishes.
  * Logged-out visitors stay on the landing page.
+ * With no saved Daylight or Midnight choice, `/` follows the system scheme.
  * The head script does not set cookies or send identifiers.
  */
 export const LANDING_SESSION_SCRIPT = `(function(){
   try {
     if (location.pathname !== "/") return;
+    try {
+      var saved = false;
+      var lookRaw = localStorage.getItem("livv-look-v1");
+      if (lookRaw) {
+        var look = JSON.parse(lookRaw);
+        if (look && typeof look.updatedAt === "number" && look.updatedAt > (look.syncedAt || 0)) saved = true;
+      }
+      if (!saved) {
+        var idRaw = localStorage.getItem("livv-identity-v1");
+        if (idRaw) {
+          var id = JSON.parse(idRaw);
+          if (id && (id.appearance || id.theme)) saved = true;
+        }
+      }
+      if (!saved) {
+        var applyScheme = function () {
+          var stillSaved = false;
+          var nextLook = localStorage.getItem("livv-look-v1");
+          if (nextLook) {
+            var parsedLook = JSON.parse(nextLook);
+            if (parsedLook && typeof parsedLook.updatedAt === "number" && parsedLook.updatedAt > (parsedLook.syncedAt || 0)) stillSaved = true;
+          }
+          if (!stillSaved) {
+            var nextId = localStorage.getItem("livv-identity-v1");
+            if (nextId) {
+              var parsedId = JSON.parse(nextId);
+              if (parsedId && (parsedId.appearance || parsedId.theme)) stillSaved = true;
+            }
+          }
+          if (stillSaved) return;
+          var dark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+          var root = document.documentElement;
+          root.setAttribute("data-theme", dark ? "dark" : "light");
+          root.setAttribute("data-livv-theme", dark ? "midnight" : "daylight");
+          root.style.colorScheme = dark ? "dark" : "light";
+        };
+        applyScheme();
+        var schemeQuery = window.matchMedia("(prefers-color-scheme: dark)");
+        if (schemeQuery.addEventListener) schemeQuery.addEventListener("change", applyScheme);
+      }
+    } catch (schemeError) {}
     var raw = localStorage.getItem("livv-supabase-auth");
     if (raw) {
       var session = JSON.parse(raw);
@@ -36,13 +78,24 @@ export const LANDING_SESSION_SCRIPT = `(function(){
       if (!link) return;
       var name = link.getAttribute("data-landing-event");
       if (name !== "landing_create_account" && name !== "landing_sign_in") return;
-      fetch("/api/landing-event", {
-        method: "POST",
-        headers: { "content-type": "application/json" },
-        body: JSON.stringify({ name: name }),
-        keepalive: true,
-        credentials: "same-origin"
-      }).catch(function () {});
+      var body = JSON.stringify({ name: name });
+      var sent = false;
+      try {
+        if (navigator.sendBeacon) {
+          sent = navigator.sendBeacon("/api/landing-event", new Blob([body], { type: "application/json" })) === true;
+        }
+      } catch (beaconError) {
+        sent = false;
+      }
+      if (!sent) {
+        fetch("/api/landing-event", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body: body,
+          keepalive: true,
+          credentials: "same-origin"
+        }).catch(function () {});
+      }
     }, true);
     if (typeof window !== "undefined") {
       window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };

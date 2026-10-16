@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
-import { applyAppearance, loadIdentity, resolvedAppearance } from "@/lib/identity";
+import { applyAppearance, loadIdentity, readStoredLook, resolvedAppearance } from "@/lib/identity";
 import { LIVV_ICON_BLACK } from "@/lib/header-logo-black";
 import { hydrateServerEntitlement } from "@/lib/billing";
 import { startCloudMemberStateSync } from "@/lib/supabase/cloud-state";
@@ -11,6 +11,35 @@ import "@/app/loading-screen.css";
 
 const BOOT_MS = 2400;
 const BOOT_KEY = "livv-boot-shown";
+
+/** A Daylight or Midnight choice already stored on this device. */
+function hasSavedLandingChoice() {
+  try {
+    const look = readStoredLook();
+    if (look && look.updatedAt > (look.syncedAt || 0)) return true;
+    const raw = window.localStorage.getItem("livv-identity-v1");
+    if (!raw) return false;
+    const parsed = JSON.parse(raw) as { appearance?: unknown; theme?: unknown };
+    return Boolean(parsed && (parsed.appearance || parsed.theme));
+  } catch {
+    return false;
+  }
+}
+
+/** Public `/` with no saved choice follows the system scheme. Midnight or Daylight only. */
+function applyLandingSystemScheme() {
+  const dark = window.matchMedia("(prefers-color-scheme: dark)").matches;
+  const root = document.documentElement;
+  root.dataset.theme = dark ? "dark" : "light";
+  root.dataset.livvTheme = dark ? "midnight" : "daylight";
+  root.style.colorScheme = dark ? "dark" : "light";
+  root.style.removeProperty("background-color");
+  document.body?.style.removeProperty("background-color");
+  document
+    .querySelector('meta[name="theme-color"]')
+    ?.setAttribute("content", dark ? "#090a0c" : "#f7f7f5");
+  return dark;
+}
 
 function BootOverlay({ onDone, mark }: { onDone: () => void; mark: string }) {
   useEffect(() => {
@@ -77,6 +106,10 @@ export function ThemeShell({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const apply = () => {
+      if (window.location.pathname === "/" && !hasSavedLandingChoice()) {
+        setMark(applyLandingSystemScheme() ? "/livv-logo.png" : LIVV_ICON_BLACK);
+        return;
+      }
       const me = loadIdentity();
       applyAppearance(me.appearance, me.accent, me.theme);
       setMark(resolvedAppearance(me.appearance) === "light" ? LIVV_ICON_BLACK : "/livv-logo.png");
@@ -119,6 +152,10 @@ export function ThemeShell({ children }: { children: React.ReactNode }) {
     }
     const mq = window.matchMedia("(prefers-color-scheme: light)");
     const onScheme = () => {
+      if (window.location.pathname === "/" && !hasSavedLandingChoice()) {
+        apply();
+        return;
+      }
       if (loadIdentity().appearance === "system") apply();
     };
     mq.addEventListener("change", onScheme);
@@ -138,6 +175,10 @@ export function ThemeShell({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const onVisible = () => {
       if (document.visibilityState !== "visible") return;
+      if (window.location.pathname === "/" && !hasSavedLandingChoice()) {
+        setMark(applyLandingSystemScheme() ? "/livv-logo.png" : LIVV_ICON_BLACK);
+        return;
+      }
       const me = loadIdentity();
       applyAppearance(me.appearance, me.accent, me.theme);
       setMark(resolvedAppearance(me.appearance) === "light" ? LIVV_ICON_BLACK : "/livv-logo.png");
