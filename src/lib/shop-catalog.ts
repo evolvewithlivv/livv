@@ -28,8 +28,8 @@ export const SHOP_PRODUCTS: ShopProduct[] = [
   {
     handle: "men-s-premium-heavyweight-tee-1",
     name: "LIVV Heavyweight Tee - White Logo",
-    price: "From $39.95",
-    priceCents: 3995,
+    price: "From $45.95",
+    priceCents: 4595,
     image:
       "https://cdn.shopify.com/s/files/1/1091/3644/5726/files/mens-premium-heavyweight-tee-black-front-6ac2572409a64.png?v=1791121207",
     description: "Premium heavyweight cotton. White LIVV mark. Made to order.",
@@ -49,8 +49,8 @@ export const SHOP_PRODUCTS: ShopProduct[] = [
   {
     handle: "men-s-premium-heavyweight-tee",
     name: "LIVV Heavyweight Tee - Black Logo",
-    price: "From $39.95",
-    priceCents: 3995,
+    price: "From $45.95",
+    priceCents: 4595,
     image:
       "https://cdn.shopify.com/s/files/1/1091/3644/5726/files/mens-premium-heavyweight-tee-white-front-6ac256bda7240.png?v=1791121101",
     description: "Premium heavyweight cotton. Black LIVV mark. Made to order.",
@@ -112,8 +112,8 @@ export const SHOP_PRODUCTS: ShopProduct[] = [
   {
     handle: "tough-case-for-iphone",
     name: "LIVV Tough iPhone Case",
-    price: "$34.95",
-    priceCents: 3495,
+    price: "$20.50",
+    priceCents: 2050,
     image:
       "https://cdn.shopify.com/s/files/1/1091/3644/5726/files/tough-case-for-iphone-matte-iphone-17-pro-max-front-6ac255eaa6549.png?v=1791120889",
     description: "Protective tough case with LIVV mark. Select your model at checkout.",
