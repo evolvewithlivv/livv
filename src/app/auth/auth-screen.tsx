@@ -177,12 +177,9 @@ export default function AuthScreen({ initialMode, initialSrc }: { initialMode: "
         <p className="auth-desk-line">An operating system for a life you can actually live.</p>
       </aside>
       <div aria-hidden className="auth-glow pointer-events-none absolute inset-x-0 top-0" />
-      <div className="auth-stage relative z-10 mx-auto flex min-h-dvh w-full max-w-md flex-col justify-center px-6 py-12">
-        <div className="auth-brand mb-9 flex flex-col items-center">
-          <LivvMark kind="flame" alt="" className="auth-flame" priority />
-          <h1 className="auth-wordmark">
-            <LivvMark kind="wordmark" alt="LIVV" priority />
-          </h1>
+      <div className="auth-stage relative z-10 mx-auto flex min-h-dvh w-full max-w-md flex-col justify-start px-6 pt-10 pb-[max(24px,env(safe-area-inset-bottom))]">
+        <div className="auth-brand mb-7 flex flex-col items-center">
+          <LivvMark kind="flame" alt="LIVV" className="auth-flame" priority />
           <p className="mt-2 text-center text-[13px] text-[rgb(var(--livv-muted))]">{mode === "signin" ? "Welcome back. Keep building." : "Build the skills to become more capable."}</p>
         </div>
 
@@ -208,7 +205,7 @@ export default function AuthScreen({ initialMode, initialSrc }: { initialMode: "
                       ["18plus", "18+"],
                     ] as const).map(([value, label]) => (
                       <button key={value} type="button" role="radio" aria-checked={ageBand === value} onClick={() => chooseAge(value)}
-                        className={`rounded-2xl border px-2 py-3 text-[12px] transition ${ageBand === value ? "border-[rgb(var(--livv-accent))] bg-[rgb(var(--livv-ink))] text-[rgb(var(--livv-bg))]" : "border-[rgb(var(--livv-border))] bg-[rgb(var(--livv-surface))] text-[rgb(var(--livv-muted))] hover:border-[rgb(var(--livv-accent))]"}`}>
+                        className={`rounded-2xl border px-2 py-3 text-[12px] transition ${ageBand === value ? "border-[rgb(var(--livv-ink))] bg-[rgb(var(--livv-ink))] !text-white" : "border-[rgb(var(--livv-border))] bg-[rgb(var(--livv-surface))] text-[rgb(var(--livv-ink))] hover:border-[rgb(var(--livv-accent))]"}`}>
                         {label}
                       </button>
                     ))}
@@ -248,7 +245,10 @@ export default function AuthScreen({ initialMode, initialSrc }: { initialMode: "
           </div>
         </div>
 
-        <p className="auth-legal mt-8 text-center text-[11px] text-[rgb(var(--livv-muted))]">
+        <div className="auth-bottom-brand mt-auto flex w-full justify-center pt-8 pb-3" aria-label="LIVV">
+          <LivvMark kind="wordmark" alt="LIVV" />
+        </div>
+        <p className="auth-legal mt-2 text-center text-[11px] text-[rgb(var(--livv-muted))]">
           <a href="/legal/privacy" className="underline-offset-2 hover:underline">Privacy</a>
           {" · "}
           <a href="/legal/terms" className="underline-offset-2 hover:underline">Terms</a>
