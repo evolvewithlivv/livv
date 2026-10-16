@@ -26,10 +26,10 @@ export default function OpenGraphImage() {
         </div>
         <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
           <div style={{ fontSize: 72, fontWeight: 600, letterSpacing: "-0.04em", lineHeight: 1.05, maxWidth: 900 }}>
-            A system for a life you can actually live.
+            A system for becoming more capable in real life.
           </div>
           <div style={{ fontSize: 28, opacity: 0.55, maxWidth: 720, lineHeight: 1.35 }}>
-            Body. Mind. Work. Money. People. Life.
+            Body. Mind. Life. The core is free.
           </div>
         </div>
         <div style={{ display: "flex", fontSize: 22, opacity: 0.4, letterSpacing: "0.08em" }}>
