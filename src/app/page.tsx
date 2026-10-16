@@ -41,10 +41,10 @@ export default function RootPage() {
         </ul>
         <p className="livv-landing-free">The core is free.</p>
         <div className="livv-landing-actions">
-          <a className="livv-landing-primary" href="/auth?mode=create" data-landing-event="landing_create_account">
+          <a className="livv-landing-primary" href="/auth?mode=create" data-landing-event="cta_start_click" data-landing-position="primary">
             Create account
           </a>
-          <a className="livv-landing-secondary" href="/auth" data-landing-event="landing_sign_in">
+          <a className="livv-landing-secondary" href="/auth" data-landing-event="cta_start_click" data-landing-position="secondary">
             Sign in
           </a>
         </div>

@@ -13,6 +13,7 @@ import {
 import { isCloudOnboardingComplete, markCloudOnboardingComplete } from "@/lib/supabase/onboarding-state";
 import { getSupabaseBrowserClient, isSupabaseConfigured } from "@/lib/supabase/client";
 import { getAuthenticatedUser } from "@/lib/supabase/real-auth";
+import { track } from "@/lib/funnel";
 import { cn } from "@/lib/utils";
 
 const GOALS = [
@@ -104,6 +105,7 @@ export default function OnboardingPage() {
       persist({ why, goals: selectedGoals, interests: selectedInterests, displayName: name });
       markOnboardingComplete();
       markFirstSessionPending();
+      track("onboarding_completed");
       router.replace("/home");
     } catch (e) {
       setError(e instanceof Error ? e.message : "Could not finish onboarding");

@@ -9,7 +9,7 @@ export default function PrivacyPage() {
         <header className="mt-10 border-b border-livv-border pb-8">
           <p className="text-[10px] font-semibold uppercase tracking-[.22em] text-livv-muted">Legal</p>
           <h1 className="mt-2 text-4xl font-semibold tracking-[-.05em]">Privacy Policy</h1>
-          <p className="mt-3 text-sm text-livv-muted">Effective October 6, 2026</p>
+          <p className="mt-3 text-sm text-livv-muted">Effective October 16, 2026</p>
         </header>
         <article className="livv-legal mt-10 max-w-none">
           <p><strong>In plain English:</strong> LIVV collects the information needed to run your account, provide the features you use, process memberships, and keep the service secure. We do not sell your personal information.</p>
@@ -21,6 +21,7 @@ export default function PrivacyPage() {
           <ul><li>Authenticate and maintain your account.</li><li>Provide, personalize, and improve LIVV features.</li><li>Save your progress and preferences.</li><li>Process memberships and purchases.</li><li>Send account, security, and service communications.</li><li>Prevent abuse, troubleshoot issues, and protect the service.</li></ul>
           <h2>4. Service providers</h2>
           <p>LIVV uses third-party infrastructure to operate the product, including hosting, authentication, database, email, payments, and related technical services. These providers process information as needed to provide their services under their own terms and policies.</p>
+          <p>Product analytics are processed by PostHog in the United States. LIVV sends events such as page views and actions in the product. Those events do not include your email, your name, or journal text. This analytics data is not sold.</p>
           <h2>5. Payments</h2>
           <p>Membership payments are processed by Stripe. LIVV does not need to store your full payment-card number. Stripe may process billing information under Stripe's own privacy policy and terms.</p>
           <h2>6. Sharing</h2>
