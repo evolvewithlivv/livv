@@ -28,16 +28,16 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     siteName: "LIVV",
-    title: "LIVV",
-    description: "A modern operating system for a life you can actually live.",
+    title: "Become more capable in real life.",
+    description: "Build capability across body, mind, and life.",
     url: "https://evolvewithlivv.com",
-    images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "LIVV" }],
+    images: [{ url: "/opengraph-image", width: 1200, height: 630, alt: "Become more capable in real life. Body, mind, life." }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "LIVV",
-    description: "A modern operating system for a life you can actually live.",
-    images: ["/opengraph-image"],
+    title: "Become more capable in real life.",
+    description: "Build capability across body, mind, and life.",
+    images: [{ url: "/twitter-image", alt: "Become more capable in real life. Body, mind, life." }],
   },
   appleWebApp: { capable: true, title: "LIVV", statusBarStyle: "default" },
   icons: {
