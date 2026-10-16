@@ -12,6 +12,46 @@
 export const LANDING_SESSION_SCRIPT = `(function(){
   try {
     if (location.pathname !== "/") return;
+    var src = "";
+    var variant = "default";
+    try {
+      var tokenOk = /^[A-Za-z0-9][A-Za-z0-9._-]{0,63}$/;
+      var cleanToken = function (value) {
+        return value && tokenOk.test(value) ? value : "";
+      };
+      var params = new URLSearchParams(location.search || "");
+      var storedAttr = {};
+      try { storedAttr = JSON.parse(sessionStorage.getItem("livv-attr-v1") || "{}") || {}; } catch (attrRead) { storedAttr = {}; }
+      src = cleanToken(params.get("src")) || cleanToken(storedAttr.src) || "";
+      variant = cleanToken(params.get("variant")) || cleanToken(params.get("v")) || cleanToken(storedAttr.variant) || "default";
+      var utmKeys = ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"];
+      var attr = {};
+      if (src) attr.src = src;
+      if (variant) attr.variant = variant;
+      for (var i = 0; i < utmKeys.length; i++) {
+        var utmKey = utmKeys[i];
+        var utmValue = cleanToken(params.get(utmKey)) || cleanToken(storedAttr[utmKey]) || "";
+        if (utmValue) attr[utmKey] = utmValue;
+      }
+      sessionStorage.setItem("livv-attr-v1", JSON.stringify(attr));
+      if (src) sessionStorage.setItem("livv-src", src);
+    } catch (attrError) {}
+    var emitFunnel = function (eventName, props) {
+      if (typeof window.__livvTrack === "function") {
+        try { window.__livvTrack(eventName, props || {}); return; } catch (trackError) {}
+      }
+      try {
+        var queued = [];
+        var rawQueue = sessionStorage.getItem("livv-funnel-queue");
+        if (rawQueue) queued = JSON.parse(rawQueue);
+        if (!Array.isArray(queued)) queued = [];
+        queued.push({ event: eventName, props: props || {} });
+        sessionStorage.setItem("livv-funnel-queue", JSON.stringify(queued.slice(-20)));
+      } catch (queueError) {}
+    };
+    var deviceKind = function () {
+      return window.matchMedia("(max-width: 767px)").matches ? "mobile" : "desktop";
+    };
     try {
       var saved = false;
       var lookRaw = localStorage.getItem("livv-look-v1");
@@ -71,31 +111,19 @@ export const LANDING_SESSION_SCRIPT = `(function(){
         document.documentElement.setAttribute("data-livv-landing-hold", "1");
       }
     }
+    if (document.documentElement.getAttribute("data-livv-landing-hold") !== "1") {
+      emitFunnel("landing_view", { src: src, variant: variant, device: deviceKind() });
+    }
     document.addEventListener("click", function (event) {
       var target = event.target;
       if (target && target.nodeType === 3) target = target.parentElement;
       var link = target && target.closest ? target.closest("a[data-landing-event]") : null;
       if (!link) return;
       var name = link.getAttribute("data-landing-event");
-      if (name !== "landing_create_account" && name !== "landing_sign_in") return;
-      var body = JSON.stringify({ name: name });
-      var sent = false;
-      try {
-        if (navigator.sendBeacon) {
-          sent = navigator.sendBeacon("/api/landing-event", new Blob([body], { type: "application/json" })) === true;
-        }
-      } catch (beaconError) {
-        sent = false;
-      }
-      if (!sent) {
-        fetch("/api/landing-event", {
-          method: "POST",
-          headers: { "content-type": "application/json" },
-          body: body,
-          keepalive: true,
-          credentials: "same-origin"
-        }).catch(function () {});
-      }
+      if (name !== "cta_start_click") return;
+      var position = link.getAttribute("data-landing-position");
+      if (position !== "primary" && position !== "secondary") return;
+      emitFunnel("cta_start_click", { src: src, variant: variant, position: position });
     }, true);
     if (typeof window !== "undefined") {
       window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };

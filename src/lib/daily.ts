@@ -4,6 +4,7 @@
  */
 
 import { addEmbers, loadIdentity, patchIdentity } from "./identity";
+import { FIRST_DAILY_KEY, noteFirstAction } from "./funnel-core.mjs";
 import { logCustomAction, loadRecord, undoCustomByTitle } from "./record";
 import { dayKey } from "./dates";
 import { adaptiveDailyTasks } from "./daily-adaptive";
@@ -364,6 +365,10 @@ export function completeDailyTask(id: string, date = new Date()) {
     completed.push(token);
     data.completed = completed.slice(-120);
     save(data);
+    if (typeof window !== "undefined") {
+      noteFirstAction(window.localStorage, window.sessionStorage, FIRST_DAILY_KEY, "first_daily_action");
+      window.dispatchEvent(new Event("livv-funnel-flush"));
+    }
   }
   return loadDailyState(date);
 }

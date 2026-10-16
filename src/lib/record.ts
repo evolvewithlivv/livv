@@ -2,6 +2,7 @@ import { dayKey } from "./dates";
 import { ACHIEVEMENT_DEFS, OBJECTIVE_DEFS, PILLAR_DEFS } from "./evolve-data";
 import { activityFromAchievement, activityFromLevelUp } from "./activity";
 import { addEmbers, loadIdentity, patchIdentity } from "./identity";
+import { FIRST_TRAIN_KEY, noteFirstAction } from "./funnel-core.mjs";
 import { isSupabaseConfigured } from "./supabase/client";
 import { noteBrokenStreak } from "./streak-repair";
 import { enqueueMilestone, evaluateMilestones } from "./milestones";
@@ -246,6 +247,7 @@ export function completeWorkout(input: {
   const rec = loadRecord();
   const today = dayKey();
   const day = dayOf(rec, today);
+  const newlyTrained = !day.workout;
   const xp = input.xp ?? Math.max(20, (input.sets ?? input.exercises) * 12);
   if (!day.workout) {
     rec.workoutsCompleted += 1;
@@ -273,6 +275,10 @@ export function completeWorkout(input: {
   rec.days[today] = day;
   evaluateAchievements(rec);
   saveRecord(rec);
+  if (newlyTrained && typeof window !== "undefined") {
+    noteFirstAction(window.localStorage, window.sessionStorage, FIRST_TRAIN_KEY, "first_train_action");
+    window.dispatchEvent(new Event("livv-funnel-flush"));
+  }
   return rec;
 }
 

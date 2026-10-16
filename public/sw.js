@@ -117,7 +117,7 @@ self.addEventListener("fetch",event=>{
     return;
   }
 
-  if(url.pathname.startsWith("/api/")||url.pathname.startsWith("/home")||url.pathname.startsWith("/auth"))return;
+  if(url.pathname.startsWith("/api/")||url.pathname.startsWith("/ingest")||url.pathname.startsWith("/home")||url.pathname.startsWith("/auth"))return;
   event.respondWith(fetch(request).catch(()=>caches.match(request).then(cached=>cached||caches.match("/"))));
 });
 

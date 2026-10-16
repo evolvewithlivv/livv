@@ -5,9 +5,9 @@ const EVENTS = new Set(["landing_create_account", "landing_sign_in"]);
 export const dynamic = "force-dynamic";
 
 /**
- * First-party click counts for the public landing page.
- * Hobby Web Analytics includes pageviews only. Custom events are a Pro feature,
- * so clicks stay on this route: no cookies, no identifiers, no stored payload.
+ * Legacy landing click counts. New funnel events go to PostHog.
+ * Cached pages may still POST the old names. The route stays a no-store 204
+ * with no cookies and no stored payload.
  */
 export async function POST(request: Request) {
   const length = Number(request.headers.get("content-length") || "0");

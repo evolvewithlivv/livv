@@ -7,14 +7,16 @@ const match = source.match(/export const LANDING_SESSION_SCRIPT = `([\s\S]*)`;\s
 assert.ok(match, "landing session script export missing");
 const script = match[1];
 
-function run({ path = "/", storage = {}, clicks = [], scheme = "light", beacon = "ok" } = {}) {
+function run({ path = "/", search = "", storage = {}, clicks = [], scheme = "light", width = 390, track = null } = {}) {
   const attrs = {};
   const style = {};
   const listeners = [];
   const fetches = [];
-  const beacons = [];
+  const tracked = [];
+  const sessionData = {};
   const location = {
     pathname: path,
+    search,
     origin: "https://evolvewithlivv.com",
     replaced: null,
     replace(url) {
@@ -40,26 +42,29 @@ function run({ path = "/", storage = {}, clicks = [], scheme = "light", beacon =
       return Object.prototype.hasOwnProperty.call(storage, key) ? storage[key] : null;
     },
   };
-  const navigator = {
-    sendBeacon(url, data) {
-      beacons.push({ url, type: data && data.type, size: data && data.size });
-      if (beacon === "throw") throw new Error("beacon failed");
-      return beacon !== "fail";
+  const sessionStorage = {
+    getItem(key) {
+      return Object.prototype.hasOwnProperty.call(sessionData, key) ? sessionData[key] : null;
+    },
+    setItem(key, value) {
+      sessionData[key] = String(value);
     },
   };
-  if (beacon === "missing") delete navigator.sendBeacon;
   const context = {
     location,
     document,
     localStorage,
-    navigator,
-    Blob,
+    sessionStorage,
     URL,
+    URLSearchParams,
     fetch(url, init) {
       fetches.push({ url, init });
       return Promise.resolve();
     },
     matchMedia(query) {
+      if (query.includes("max-width")) {
+        return { matches: width < 768, addEventListener() {} };
+      }
       const wantsDark = query.includes("dark");
       return {
         matches: wantsDark ? scheme === "dark" : scheme === "light",
@@ -67,6 +72,7 @@ function run({ path = "/", storage = {}, clicks = [], scheme = "light", beacon =
       };
     },
   };
+  if (track) context.__livvTrack = (eventName, props) => tracked.push({ eventName, props });
   context.window = context;
   vm.runInNewContext(script, context);
   for (const click of clicks) {
@@ -77,7 +83,9 @@ function run({ path = "/", storage = {}, clicks = [], scheme = "light", beacon =
           if (selector !== "a[data-landing-event]") return null;
           return {
             getAttribute(name) {
-              return name === "data-landing-event" ? click : null;
+              if (name === "data-landing-event") return click.event || "cta_start_click";
+              if (name === "data-landing-position") return click.position || null;
+              return null;
             },
           };
         },
@@ -91,7 +99,10 @@ function run({ path = "/", storage = {}, clicks = [], scheme = "light", beacon =
     livvTheme: attrs["data-livv-theme"] || null,
     colorScheme: style.colorScheme || null,
     fetches,
-    beacons,
+    tracked,
+    queue: sessionData["livv-funnel-queue"] ? JSON.parse(sessionData["livv-funnel-queue"]) : [],
+    attr: sessionData["livv-attr-v1"] ? JSON.parse(sessionData["livv-attr-v1"]) : null,
+    src: sessionData["livv-src"] || null,
     listeners,
   };
 }
@@ -174,35 +185,47 @@ assert.equal(otherPath.replaced, null);
 assert.equal(otherPath.theme, null);
 assert.equal(otherPath.listeners.length, 0);
 
-const clicks = run({ clicks: ["landing_create_account", "landing_sign_in", "not_allowed"] });
-assert.equal(clicks.beacons.length, 2);
+const clicks = run({
+  search: "?src=ig&utm_source=instagram&utm_medium=social",
+  clicks: [{ position: "primary" }, { position: "secondary" }, { position: "nope" }],
+});
 assert.equal(clicks.fetches.length, 0);
+assert.equal(clicks.src, "ig");
+assert.equal(clicks.attr.utm_source, "instagram");
+assert.equal(clicks.attr.utm_medium, "social");
 assert.deepEqual(
-  clicks.beacons.map((item) => item.url),
-  ["/api/landing-event", "/api/landing-event"]
+  clicks.queue.map((item) => item.event),
+  ["landing_view", "cta_start_click", "cta_start_click"]
 );
-assert.equal(clicks.beacons.every((item) => item.type === "application/json"), true);
-assert.equal(clicks.beacons[0].size, JSON.stringify({ name: "landing_create_account" }).length);
-assert.equal(clicks.beacons[1].size, JSON.stringify({ name: "landing_sign_in" }).length);
+assert.equal(clicks.queue[0].props.device, "mobile");
+assert.equal(clicks.queue[0].props.src, "ig");
+assert.deepEqual(
+  clicks.queue.slice(1).map((item) => item.props.position),
+  ["primary", "secondary"]
+);
 
-const beaconFails = run({ beacon: "fail", clicks: ["landing_sign_in"] });
-assert.equal(beaconFails.beacons.length, 1);
-assert.equal(beaconFails.fetches.length, 1);
-assert.equal(beaconFails.fetches[0].init.keepalive, true);
-assert.equal(beaconFails.fetches[0].init.body, JSON.stringify({ name: "landing_sign_in" }));
+const tracked = run({
+  track: true,
+  clicks: [{ position: "primary" }],
+});
+assert.equal(tracked.queue.length, 0);
+assert.deepEqual(
+  tracked.tracked.map((item) => item.eventName),
+  ["landing_view", "cta_start_click"]
+);
 
-const beaconThrows = run({ beacon: "throw", clicks: ["landing_create_account"] });
-assert.equal(beaconThrows.fetches.length, 1);
-assert.equal(beaconThrows.fetches[0].init.keepalive, true);
-
-const beaconMissing = run({ beacon: "missing", clicks: ["landing_create_account", "landing_sign_in"] });
-assert.equal(beaconMissing.beacons.length, 0);
-assert.equal(beaconMissing.fetches.length, 2);
-assert.equal(beaconMissing.fetches.every((item) => item.url === "/api/landing-event" && item.init.keepalive === true), true);
+const held = run({
+  storage: {
+    "livv-supabase-auth": JSON.stringify({ user: { email: "member@example.com" } }),
+  },
+});
+assert.equal(held.queue.some((item) => item.event === "landing_view"), false);
 
 assert.equal(script.includes("/go/001"), false);
 assert.equal(script.includes("—"), false);
-assert.equal(script.includes("navigator.sendBeacon"), true);
-assert.equal(script.includes("keepalive: true"), true);
+assert.equal(script.includes("/api/landing-event"), false);
+assert.equal(script.includes("cta_start_click"), true);
+assert.equal(script.includes("landing_view"), true);
+assert.equal(script.includes("utm_source"), true);
 
 console.log("landing entry script passed");

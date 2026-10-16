@@ -1,8 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { authModeFromParam, persistTrafficSource, readTrafficSource, sanitizeTrafficSource } from "@/lib/attribution";
+import { persistQueryAttribution } from "@/lib/funnel-core.mjs";
+import { funnelErrorCode, track, trackSignupCompleted } from "@/lib/funnel";
 import { getAuthenticatedUser, startEmailAuth, verifyEmailAuth } from "@/lib/supabase/real-auth";
 import { isOnboardingComplete, markOnboardingComplete } from "@/lib/onboarding";
 import { isCloudOnboardingComplete, markCloudOnboardingComplete } from "@/lib/supabase/onboarding-state";
@@ -23,6 +25,7 @@ export default function AuthScreen({ initialMode, initialSrc }: { initialMode: "
   const [mode, setMode] = useState<"signin" | "signup">(initialMode);
   const [ageBand, setAgeBand] = useState<AgeBand | null>(null);
   const [ageConfirmed, setAgeConfirmed] = useState(false);
+  const viewedMode = useRef<string | null>(null);
 
   useEffect(() => {
     const raw = new URLSearchParams(window.location.search).get("mode");
@@ -31,9 +34,16 @@ export default function AuthScreen({ initialMode, initialSrc }: { initialMode: "
   }, [initialMode]);
 
   useEffect(() => {
+    persistQueryAttribution(window.sessionStorage, window.location.search);
     const source = sanitizeTrafficSource(initialSrc) ?? readTrafficSource();
     if (source) persistTrafficSource(source);
   }, [initialSrc]);
+
+  useEffect(() => {
+    if (viewedMode.current === mode) return;
+    viewedMode.current = mode;
+    track("auth_view", { mode });
+  }, [mode]);
 
   useEffect(() => {
     try {
@@ -115,7 +125,13 @@ export default function AuthScreen({ initialMode, initialSrc }: { initialMode: "
     }
     const source = sanitizeTrafficSource(initialSrc) ?? readTrafficSource();
     if (source) persistTrafficSource(source);
-    await startEmailAuth(email, mode === "signup", ageBand === "13to17" || ageBand === "18plus" ? ageBand : undefined, mode === "signup" ? source ?? undefined : undefined);
+    try {
+      await startEmailAuth(email, mode === "signup", ageBand === "13to17" || ageBand === "18plus" ? ageBand : undefined, source ?? undefined);
+    } catch (error) {
+      track("otp_request_failed", { error_code: funnelErrorCode(error) });
+      throw error;
+    }
+    track("otp_requested");
     setPending(true);
     setOtp("");
     setResendIn(RESEND_SECONDS);
@@ -123,7 +139,14 @@ export default function AuthScreen({ initialMode, initialSrc }: { initialMode: "
   });
 
   const verifyEmail = () => void run(async () => {
-    await verifyEmailAuth(email, otp);
+    let verified: Awaited<ReturnType<typeof verifyEmailAuth>>;
+    try {
+      verified = await verifyEmailAuth(email, otp);
+    } catch (error) {
+      track("otp_verify_failed", { error_code: funnelErrorCode(error) });
+      throw error;
+    }
+    if (verified.isNewAccount) trackSignupCompleted(verified.createdAt);
     const localComplete = isOnboardingComplete();
     if (localComplete) {
       try { await markCloudOnboardingComplete(""); } catch { /* local gate already satisfied */ }
