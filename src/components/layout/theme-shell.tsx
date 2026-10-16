@@ -7,6 +7,7 @@ import { applyAppearance, loadIdentity, readStoredLook } from "@/lib/identity";
 import { hydrateServerEntitlement } from "@/lib/billing";
 import { startCloudMemberStateSync } from "@/lib/supabase/cloud-state";
 import { ensureCloudAuthForCurrentBrowser } from "@/lib/supabase/real-auth";
+import { flushIdentityCloudSync } from "@/lib/auth";
 import "@/app/loading-screen.css";
 
 const BOOT_MS = 2400;
@@ -171,17 +172,25 @@ export function ThemeShell({ children }: { children: React.ReactNode }) {
   }, [isPublicDiscovery]);
 
   useEffect(() => {
-    const onVisible = () => {
-      if (document.visibilityState !== "visible") return;
-      if (!hasSavedLandingChoice()) {
-        applyLandingSystemScheme();
-        return;
+    const onVisibility = () => {
+      if (document.visibilityState === "visible") {
+        if (!hasSavedLandingChoice()) {
+          applyLandingSystemScheme();
+          return;
+        }
+        const me = loadIdentity();
+        applyAppearance(me.appearance, me.accent, me.theme);
+      } else {
+        void flushIdentityCloudSync();
       }
-      const me = loadIdentity();
-      applyAppearance(me.appearance, me.accent, me.theme);
     };
-    document.addEventListener("visibilitychange", onVisible);
-    return () => document.removeEventListener("visibilitychange", onVisible);
+    const onHide = () => { void flushIdentityCloudSync(); };
+    document.addEventListener("visibilitychange", onVisibility);
+    window.addEventListener("pagehide", onHide);
+    return () => {
+      document.removeEventListener("visibilitychange", onVisibility);
+      window.removeEventListener("pagehide", onHide);
+    };
   }, []);
 
   return (

@@ -29,7 +29,7 @@ async function hydrateCloudProfile(user: User, account: Account): Promise<Accoun
   if (!client) return account;
   const { data: profile, error } = await client
     .from("profiles")
-    .select("username, display_name, bio, goal, photo_url, accent, appearance, theme, tier, embers, onboarding_completed_at")
+    .select("username, display_name, bio, goal, photo_url, accent, appearance, theme, tier, embers, onboarding_completed_at, updated_at")
     .eq("id", user.id)
     .maybeSingle();
   if (error || !profile) {
@@ -37,6 +37,9 @@ async function hydrateCloudProfile(user: User, account: Account): Promise<Accoun
     return account;
   }
   const placeholder = typeof profile.username === "string" && profile.username.startsWith("anon_");
+  const cloudUpdatedAt = profile.updated_at ? Date.parse(String(profile.updated_at)) : 0;
+  const localUpdatedAt = typeof account.identityUpdatedAt === "number" ? account.identityUpdatedAt : 0;
+  const localWins = Number.isFinite(localUpdatedAt) && localUpdatedAt > 0 && localUpdatedAt > (Number.isFinite(cloudUpdatedAt) ? cloudUpdatedAt : 0);
   const pending = readStoredLook();
   const cloudLook = normalizeLook(
     profile.appearance === "light" || profile.appearance === "system" || profile.appearance === "dark"
@@ -50,15 +53,16 @@ async function hydrateCloudProfile(user: User, account: Account): Promise<Accoun
   const hydrated: Account = {
     ...account,
     username: placeholder ? account.username : profile.username || account.username,
-    displayName: profile.display_name || account.displayName,
-    bio: profile.bio || account.bio,
-    goal: typeof profile.goal === "string" ? profile.goal : account.goal,
-    photo: profile.photo_url || account.photo,
-    accent: profile.accent || account.accent,
-    appearance,
-    theme,
+    displayName: localWins ? account.displayName : (profile.display_name || account.displayName),
+    bio: localWins ? account.bio : (profile.bio || account.bio),
+    goal: localWins ? (account.goal || "") : (typeof profile.goal === "string" ? profile.goal : account.goal),
+    photo: localWins ? account.photo : (profile.photo_url || account.photo),
+    accent: localWins ? account.accent : (profile.accent || account.accent),
+    appearance: localWins ? account.appearance : appearance,
+    theme: localWins ? account.theme : theme,
     tier: profile.tier || account.tier,
     embers: coerceEmberCount(profile.embers) ?? account.embers,
+    identityUpdatedAt: localWins ? localUpdatedAt : (Number.isFinite(cloudUpdatedAt) ? cloudUpdatedAt : account.identityUpdatedAt),
   };
   if (profile.onboarding_completed_at && typeof window !== "undefined") {
     try {
@@ -88,13 +92,14 @@ async function hydrateCloudProfile(user: User, account: Account): Promise<Accoun
       if (current) writeStoredLook({ ...current, syncedAt: current.updatedAt });
     });
   }
-  if (placeholder) {
+  if (placeholder || localWins) {
     const { error: updateError } = await client
       .from("profiles")
       .update({
         username: hydrated.username,
         display_name: hydrated.displayName,
         bio: hydrated.bio,
+        goal: hydrated.goal || "",
         photo_url: hydrated.photo,
         accent: hydrated.accent,
         appearance: hydrated.appearance,
