@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
-import { applyAppearance, loadIdentity, readStoredLook, resolvedAppearance } from "@/lib/identity";
-import { LIVV_ICON_BLACK } from "@/lib/header-logo-black";
+import { LivvMark } from "@/components/brand/livv-mark";
+import { applyAppearance, loadIdentity, readStoredLook } from "@/lib/identity";
 import { hydrateServerEntitlement } from "@/lib/billing";
 import { startCloudMemberStateSync } from "@/lib/supabase/cloud-state";
 import { ensureCloudAuthForCurrentBrowser } from "@/lib/supabase/real-auth";
@@ -41,7 +41,7 @@ function applyLandingSystemScheme() {
   return dark;
 }
 
-function BootOverlay({ onDone, mark }: { onDone: () => void; mark: string }) {
+function BootOverlay({ onDone }: { onDone: () => void }) {
   useEffect(() => {
     const reduced =
       typeof window !== "undefined" &&
@@ -62,8 +62,7 @@ function BootOverlay({ onDone, mark }: { onDone: () => void; mark: string }) {
           <div className="ll-ring r2" />
           <div className="ll-ring r3" />
           <div className="ll-core">
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img className="ll-mark" src={mark} alt="" width={48} height={48} />
+            <LivvMark kind="flame" alt="" />
           </div>
         </div>
         <p className="ll-line">Loading your world.</p>
@@ -75,7 +74,6 @@ function BootOverlay({ onDone, mark }: { onDone: () => void; mark: string }) {
 export function ThemeShell({ children }: { children: React.ReactNode }) {
   const [offline, setOffline] = useState(false);
   const [boot, setBoot] = useState(false);
-  const [mark, setMark] = useState("/livv-logo.png");
   const pathname = usePathname();
   // Public `/` is the logged-out landing. Skip the member boot screen there.
   const isPublicDiscovery = pathname === "/" || pathname.startsWith("/go/");
@@ -107,12 +105,11 @@ export function ThemeShell({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const apply = () => {
       if (window.location.pathname === "/" && !hasSavedLandingChoice()) {
-        setMark(applyLandingSystemScheme() ? "/livv-logo.png" : LIVV_ICON_BLACK);
+        applyLandingSystemScheme();
         return;
       }
       const me = loadIdentity();
       applyAppearance(me.appearance, me.accent, me.theme);
-      setMark(resolvedAppearance(me.appearance) === "light" ? LIVV_ICON_BLACK : "/livv-logo.png");
       const mode =
         me.appearance === "light"
           ? "light"
@@ -176,12 +173,11 @@ export function ThemeShell({ children }: { children: React.ReactNode }) {
     const onVisible = () => {
       if (document.visibilityState !== "visible") return;
       if (window.location.pathname === "/" && !hasSavedLandingChoice()) {
-        setMark(applyLandingSystemScheme() ? "/livv-logo.png" : LIVV_ICON_BLACK);
+        applyLandingSystemScheme();
         return;
       }
       const me = loadIdentity();
       applyAppearance(me.appearance, me.accent, me.theme);
-      setMark(resolvedAppearance(me.appearance) === "light" ? LIVV_ICON_BLACK : "/livv-logo.png");
     };
     document.addEventListener("visibilitychange", onVisible);
     return () => document.removeEventListener("visibilitychange", onVisible);
@@ -189,7 +185,7 @@ export function ThemeShell({ children }: { children: React.ReactNode }) {
 
   return (
     <>
-      {boot && !isPublicDiscovery ? <BootOverlay onDone={finishBoot} mark={mark} /> : null}
+      {boot && !isPublicDiscovery ? <BootOverlay onDone={finishBoot} /> : null}
       {offline && !isPublicDiscovery && (
         <div
           role="status"

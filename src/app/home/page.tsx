@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { LivvMark } from "@/components/brand/livv-mark";
 import { ArrowUpRight, HeartPulse, Dumbbell, Sprout, Brain } from "lucide-react";
 import Link from "next/link";
 import { loadIdentity, addEmbers, emberBalanceIsFresh, type Identity } from "@/lib/identity";
@@ -221,9 +222,8 @@ export default function HomePage() {
             <p className="ho-qa">{quote.author}</p>
           </footer>
         ) : null}
-        <div className="ho-pillars" aria-hidden="true">
-          <img className="ho-pillars-light" src="/brand/livv-pillars-black.png" alt="" />
-          <img className="ho-pillars-dark" src="/brand/livv-pillars-white.png" alt="" />
+        <div className="ho-pillars">
+          <LivvMark kind="wordmark" alt="LIVV" />
         </div>
       </div>
     </main>

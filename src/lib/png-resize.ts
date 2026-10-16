@@ -153,6 +153,20 @@ function encodeRgba(width: number, height: number, pixels: Uint8Array): Uint8Arr
   return out;
 }
 
+/** Composite a transparent PNG onto a solid background without changing its pixel size. */
+export function flattenPng(png: Uint8Array, background: [number, number, number]): Uint8Array {
+  const decoded = decodeRgba(png);
+  const pixels = decoded.pixels;
+  for (let i = 0; i < pixels.length; i += 4) {
+    const alpha = pixels[i + 3] / 255;
+    pixels[i] = Math.round(pixels[i] * alpha + background[0] * (1 - alpha));
+    pixels[i + 1] = Math.round(pixels[i + 1] * alpha + background[1] * (1 - alpha));
+    pixels[i + 2] = Math.round(pixels[i + 2] * alpha + background[2] * (1 - alpha));
+    pixels[i + 3] = 255;
+  }
+  return encodeRgba(decoded.width, decoded.height, pixels);
+}
+
 const scaled = new Map<string, Uint8Array>();
 
 /** Resize an 8-bit RGBA PNG so the bytes match the size declared in the manifest. */

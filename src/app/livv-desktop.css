@@ -59,15 +59,27 @@
   }
 
   .livv-glass-dock-inner::before {
-    content: "LIVV" !important;
-    display: block !important;
-    margin: 0;
-    padding: 0.15rem 1.2rem 0;
-    font-family: var(--font-display), var(--font-body), system-ui, sans-serif;
-    font-size: 13px;
-    font-weight: 700;
-    letter-spacing: 0.18em;
-    color: rgb(var(--livv-ink));
+    content: none !important;
+    display: none !important;
+  }
+
+  .livv-dock-wordmark {
+    display: block;
+    box-sizing: border-box;
+    width: calc(100% - 1.8rem);
+    max-width: 100%;
+    min-width: 0;
+    margin: 0 0.9rem;
+    aspect-ratio: 1140 / 188;
+    background: url("/brand/wordmark-black.png") left center / contain no-repeat;
+  }
+
+  html[data-theme="dark"] .livv-dock-wordmark {
+    background-image: url("/brand/wordmark-white.png");
+  }
+
+  html[data-livv-theme="bone"] .livv-dock-wordmark {
+    background-image: url("/brand/wordmark-black.png");
   }
 
   .livv-glass-dock-grid {
@@ -75,7 +87,7 @@
     flex-direction: column;
     align-items: stretch;
     gap: 0.1rem;
-    margin-top: 2.4rem;
+    margin-top: 1.35rem;
     padding: 0 0.7rem;
   }
 
@@ -122,6 +134,7 @@
     box-sizing: border-box;
     width: min(1120px, 100%);
     max-width: 1120px;
+    min-width: 0;
     min-height: 100%;
     margin: 0 auto;
     padding: 1.85rem 2.75rem 2.5rem;
@@ -225,46 +238,28 @@
   }
 
   .ho .ho-pillars {
-    display: flex;
+    display: block;
     grid-column: 1 / -1;
-    justify-content: center;
-    align-items: center;
+    justify-self: start;
     min-width: 0;
-    width: 100%;
+    width: min(28rem, 100%);
     max-width: 100%;
     margin-top: 2.75rem;
     padding: 0;
-    overflow: visible;
+    overflow: hidden;
   }
 
-  .ho .ho-pillars img {
-    display: block;
-    min-width: 0;
-    width: min(32rem, 100%);
+  .ho .ho-pillars .livv-mark {
+    width: 100%;
     max-width: 100%;
+    min-width: 0;
+  }
+
+  .ho .ho-pillars .livv-mark > img {
+    width: 100%;
+    max-width: 100%;
+    min-width: 0;
     height: auto;
-    object-fit: contain;
-    object-position: center;
-  }
-
-  .ho .ho-pillars-dark {
-    display: none;
-  }
-
-  html[data-theme="dark"] .ho .ho-pillars-light {
-    display: none;
-  }
-
-  html[data-theme="dark"] .ho .ho-pillars-dark {
-    display: block;
-  }
-
-  html[data-livv-theme="bone"] .ho .ho-pillars-light {
-    display: block;
-  }
-
-  html[data-livv-theme="bone"] .ho .ho-pillars-dark {
-    display: none;
   }
 
   /* Auth */
@@ -288,11 +283,8 @@
   }
 
   .auth-desk-mark {
+    width: min(100%, 20rem);
     margin: 0;
-    font-family: var(--font-display), var(--font-body), system-ui, sans-serif;
-    font-size: 13px;
-    font-weight: 700;
-    letter-spacing: 0.18em;
   }
 
   .auth-desk-line {

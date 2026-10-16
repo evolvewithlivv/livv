@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import Script from "next/script";
+import { LivvMark } from "@/components/brand/livv-mark";
 import { LandingSignedInEntry } from "@/components/landing/signed-in-entry";
+import { Button } from "@/components/ui/button";
 import { sanitizeTrafficSource } from "@/lib/attribution";
 import "./landing.css";
 
@@ -42,7 +44,9 @@ export default async function RootPage({ searchParams }: { searchParams: Promise
     <main className="livv-landing">
       <LandingSignedInEntry />
       <div className="livv-landing-inner">
-        <p className="livv-landing-mark">LIVV</p>
+        <div className="livv-landing-mark">
+          <LivvMark kind="wordmark" alt="LIVV" priority />
+        </div>
         <h1>{THESIS}</h1>
         <ul className="livv-landing-lines">
           <li><strong>Body.</strong> Train, move, and keep a record of the work.</li>
@@ -51,9 +55,9 @@ export default async function RootPage({ searchParams }: { searchParams: Promise
         </ul>
         <p className="livv-landing-free">The core is free.</p>
         <div className="livv-landing-actions">
-          <a className="livv-landing-primary" href={createHref} data-landing-event="cta_start_click" data-landing-position="primary">
+          <Button href={createHref} className="livv-landing-primary" data-landing-event="cta_start_click" data-landing-position="primary">
             Create account
-          </a>
+          </Button>
           <a className="livv-landing-secondary" href="/auth" data-landing-event="cta_start_click" data-landing-position="secondary">
             Sign in
           </a>

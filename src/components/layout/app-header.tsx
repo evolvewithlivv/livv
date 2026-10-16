@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { Avatar } from "@/components/identity/avatar";
+import { LivvMark } from "@/components/brand/livv-mark";
 import { loadIdentity, type Identity } from "@/lib/identity";
-import { LIVV_ICON_BLACK, LIVV_ICON_WHITE } from "@/lib/header-logo";
 import { useEffect, useState } from "react";
 
 export function AppHeader() {
@@ -32,20 +32,7 @@ export function AppHeader() {
           aria-label="LIVV home"
           className="flex min-h-11 items-center"
         >
-          {/* LIVV app icon: black in light mode, white in dark mode. */}
-          <img
-            src={LIVV_ICON_BLACK}
-            alt="LIVV"
-            className="livv-header-icon livv-header-icon-light"
-            draggable={false}
-          />
-          <img
-            src={LIVV_ICON_WHITE}
-            alt=""
-            aria-hidden="true"
-            className="livv-header-icon livv-header-icon-dark"
-            draggable={false}
-          />
+          <LivvMark kind="flame" alt="LIVV" className="livv-header-icon" />
         </Link>
         {me && (
           <Link href="/home/profile" aria-label="Profile" className="rounded-full">

@@ -173,7 +173,7 @@ async function renderIdentityCard(c: CanvasRenderingContext2D, d: ShareCardData)
 
   // Official LIVV icon, centered. No "LIVV Identity" label and no avatar circle.
   try {
-    const mark = await loadImage("/livv-logo.png");
+    const mark = await loadImage("/brand/icon-flame-l-white.png");
     const maxW = 92;
     const maxH = 92;
     const scale = Math.min(maxW / mark.naturalWidth, maxH / mark.naturalHeight);

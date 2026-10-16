@@ -1,7 +1,7 @@
 /**
  * Global route loading UI.
  * Signal rings + single line. No mark, so routes that never show this
- * screen do not preload /livv-logo.png. Styles live with the root shell.
+ * screen do not preload a logo. Styles live with the root shell.
  */
 export default function Loading() {
   return (

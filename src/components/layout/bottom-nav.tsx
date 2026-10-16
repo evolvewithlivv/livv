@@ -69,6 +69,7 @@ export function BottomNav() {
       aria-hidden={keyboard}
     >
       <div className="livv-glass-dock-inner">
+        <Link href="/home" className="livv-dock-wordmark" aria-label="LIVV home" />
         <div className="livv-glass-dock-grid">
           {NAV.map(({ href, label, Icon, match }) => {
             const active = match(pathname);
