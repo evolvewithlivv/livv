@@ -105,7 +105,7 @@ export const LANDING_SESSION_SCRIPT = `(function(){
           complete = !!(draft && typeof draft.completedAt === "number" && draft.completedAt > 0);
         }
         if (complete) {
-          location.replace("/home");
+          location.replace("/home" + location.search);
           return;
         }
         document.documentElement.setAttribute("data-livv-landing-hold", "1");

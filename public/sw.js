@@ -1,7 +1,7 @@
-const CACHE="livv-shell-v2";
+const CACHE="livv-shell-v3";
 const FIELD_CACHE="livv-field-guides-v1";
 const ASSET_CACHE="livv-static-assets-v1";
-const SHELL=["/","/auth","/manifest.webmanifest"];
+const SHELL=["/manifest.webmanifest"];
 
 self.addEventListener("install",event=>{
   event.waitUntil(
@@ -58,29 +58,10 @@ self.addEventListener("fetch",event=>{
   if(request.method!=="GET"||new URL(request.url).origin!==self.location.origin)return;
   const url=new URL(request.url);
 
-  // Only public, read-only Field guide documents are eligible for page caching.
-  // Authenticated pages and API responses are deliberately never cached.
-  if(url.pathname==="/"&&request.mode==="navigate"){
-    event.respondWith((async()=>{
-      try{
-        const response=await fetch(request,{redirect:"manual"});
-        if(response.type==="opaqueredirect"||(response.status>=300&&response.status<400)){
-          return Response.redirect("/auth",307);
-        }
-        return response;
-      }catch{
-        const fieldCache=await caches.open(FIELD_CACHE);
-        const last=await fieldCache.match("/__livv_last_saved_field_guide__");
-        if(last){
-          const path=(await last.text()).trim();
-          const saved=await fieldCache.match(path);
-          if(saved)return saved;
-        }
-        return(await caches.match(request))||new Response("Open LIVV online once and save a Field guide for offline use.",{status:503,headers:{"Content-Type":"text/plain; charset=utf-8","Cache-Control":"no-store"}});
-      }
-    })());
-    return;
-  }
+  // Document navigations stay with the browser. An older worker sent `/`
+  // to /auth and dropped src and utm. Field guides are the only navigations
+  // this worker still handles, and it returns the guide or a 503, never a redirect.
+  if(request.mode==="navigate"&&!url.pathname.startsWith("/field-offline/"))return;
 
   if(url.pathname.startsWith("/field-offline/")&&request.mode==="navigate"){
     event.respondWith((async()=>{

@@ -172,6 +172,18 @@ assert.equal(signedInHome.replaced, "/home");
 assert.equal(signedInHome.listeners.some((item) => item.type === "click"), false);
 assert.equal(signedInHome.queue.some((item) => item.event === "landing_view"), false);
 
+const signedInAttributed = run({
+  search: "?src=test_growth&utm_source=x",
+  storage: {
+    "livv-supabase-auth": JSON.stringify({ user: { is_anonymous: false, email: "member@example.com" } }),
+    "livv-onboarding-v1": JSON.stringify({ completedAt: 1_700_000_000_000 }),
+  },
+});
+assert.equal(signedInAttributed.replaced, "/home?src=test_growth&utm_source=x");
+assert.equal(signedInAttributed.attr.src, "test_growth");
+assert.equal(signedInAttributed.attr.utm_source, "x");
+assert.equal(signedInAttributed.src, "test_growth");
+
 const signedInHold = run({
   storage: {
     "livv-supabase-auth": JSON.stringify({ user: { email: "member@example.com" } }),

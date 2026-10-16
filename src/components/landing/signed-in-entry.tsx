@@ -23,7 +23,7 @@ export function LandingSignedInEntry() {
           return;
         }
         if (isOnboardingComplete()) {
-          window.location.replace("/home");
+          window.location.replace("/home" + window.location.search);
           return;
         }
         let cloudComplete = false;
@@ -35,10 +35,10 @@ export function LandingSignedInEntry() {
         if (cancelled) return;
         if (cloudComplete) {
           markOnboardingComplete();
-          window.location.replace("/home");
+          window.location.replace("/home" + window.location.search);
           return;
         }
-        window.location.replace("/onboarding");
+        window.location.replace("/onboarding" + window.location.search);
       } catch {
         if (!cancelled) document.documentElement.removeAttribute("data-livv-landing-hold");
       }
