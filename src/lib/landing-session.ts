@@ -111,9 +111,22 @@ export const LANDING_SESSION_SCRIPT = `(function(){
         document.documentElement.setAttribute("data-livv-landing-hold", "1");
       }
     }
-    if (document.documentElement.getAttribute("data-livv-landing-hold") !== "1") {
-      emitFunnel("landing_view", { src: src, variant: variant, device: deviceKind() });
+    var withAttr = function (props) {
+      var next = {};
+      var key;
+      var base = attr && typeof attr === "object" ? attr : {};
+      for (key in base) if (Object.prototype.hasOwnProperty.call(base, key)) next[key] = base[key];
+      for (key in props) if (Object.prototype.hasOwnProperty.call(props, key)) next[key] = props[key];
+      return next;
+    };
+    if (document.documentElement.getAttribute("data-livv-landing-hold") !== "1" && !window.__livvLandingViewed) {
+      window.__livvLandingViewed = 1;
+      emitFunnel("landing_view", withAttr({ src: src, variant: variant, device: deviceKind() }));
     }
+    var stampCreateHref = function (link) {
+      if (!src || !link || !link.setAttribute) return;
+      link.setAttribute("href", "/auth?mode=create&src=" + src);
+    };
     document.addEventListener("click", function (event) {
       var target = event.target;
       if (target && target.nodeType === 3) target = target.parentElement;
@@ -123,8 +136,15 @@ export const LANDING_SESSION_SCRIPT = `(function(){
       if (name !== "cta_start_click") return;
       var position = link.getAttribute("data-landing-position");
       if (position !== "primary" && position !== "secondary") return;
-      emitFunnel("cta_start_click", { src: src, variant: variant, position: position });
+      if (position === "primary") stampCreateHref(link);
+      emitFunnel("cta_start_click", withAttr({ src: src, variant: variant, position: position }));
     }, true);
+    var stampWhenReady = function () {
+      if (!src || !document.querySelector) return;
+      stampCreateHref(document.querySelector('a[data-landing-position="primary"]'));
+    };
+    if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", stampWhenReady);
+    else stampWhenReady();
     if (typeof window !== "undefined") {
       window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
       window.va("beforeSend", function (event) {

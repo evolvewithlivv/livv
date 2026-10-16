@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Script from "next/script";
 import { LandingSignedInEntry } from "@/components/landing/signed-in-entry";
+import { sanitizeTrafficSource } from "@/lib/attribution";
 import "./landing.css";
 
 const THESIS = "A system for becoming more capable in real life.";
@@ -27,7 +28,16 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootPage() {
+function first(value: string | string[] | undefined): string | null {
+  if (typeof value === "string") return value;
+  if (Array.isArray(value)) return value[0] ?? null;
+  return null;
+}
+
+export default async function RootPage({ searchParams }: { searchParams: Promise<{ src?: string | string[] }> }) {
+  const params = await searchParams;
+  const src = sanitizeTrafficSource(first(params.src));
+  const createHref = src ? `/auth?mode=create&src=${encodeURIComponent(src)}` : "/auth?mode=create";
   return (
     <main className="livv-landing">
       <LandingSignedInEntry />
@@ -41,7 +51,7 @@ export default function RootPage() {
         </ul>
         <p className="livv-landing-free">The core is free.</p>
         <div className="livv-landing-actions">
-          <a className="livv-landing-primary" href="/auth?mode=create" data-landing-event="cta_start_click" data-landing-position="primary">
+          <a className="livv-landing-primary" href={createHref} data-landing-event="cta_start_click" data-landing-position="primary">
             Create account
           </a>
           <a className="livv-landing-secondary" href="/auth" data-landing-event="cta_start_click" data-landing-position="secondary">
