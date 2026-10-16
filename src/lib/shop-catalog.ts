@@ -112,8 +112,8 @@ export const SHOP_PRODUCTS: ShopProduct[] = [
   {
     handle: "tough-case-for-iphone",
     name: "LIVV Tough iPhone Case",
-    price: "$20.50",
-    priceCents: 2050,
+    price: "$39.95",
+    priceCents: 3995,
     image:
       "https://cdn.shopify.com/s/files/1/1091/3644/5726/files/tough-case-for-iphone-matte-iphone-17-pro-max-front-6ac255eaa6549.png?v=1791120889",
     description: "Protective tough case with LIVV mark. Select your model at checkout.",
