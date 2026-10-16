@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { LivvMark } from "@/components/brand/livv-mark";
 import { Button } from "@/components/ui/button";
 import { authModeFromParam, persistTrafficSource, readTrafficSource, sanitizeTrafficSource } from "@/lib/attribution";
 import { persistQueryAttribution } from "@/lib/funnel-core.mjs";
@@ -9,7 +10,6 @@ import { getAuthenticatedUser, startEmailAuth, verifyEmailAuth } from "@/lib/sup
 import { isOnboardingComplete, markOnboardingComplete } from "@/lib/onboarding";
 import { isCloudOnboardingComplete, markCloudOnboardingComplete } from "@/lib/supabase/onboarding-state";
 
-const LOGO = "/livv-logo.png";
 const RESEND_SECONDS = 30;
 const AGE_KEY = "livv-age-gate-v1";
 type AgeBand = "under13" | "13to17" | "18plus";
@@ -166,15 +166,18 @@ export default function AuthScreen({ initialMode, initialSrc }: { initialMode: "
   return (
     <main className="auth-page relative min-h-dvh overflow-hidden text-[rgb(var(--livv-ink))]">
       <aside className="auth-desk">
-        <p className="auth-desk-mark">LIVV</p>
+        <div className="auth-desk-mark">
+          <LivvMark kind="wordmark" alt="LIVV" priority />
+        </div>
         <p className="auth-desk-line">An operating system for a life you can actually live.</p>
       </aside>
       <div aria-hidden className="auth-glow pointer-events-none absolute inset-x-0 top-0" />
       <div className="auth-stage relative z-10 mx-auto flex min-h-dvh w-full max-w-md flex-col justify-center px-6 py-12">
         <div className="auth-brand mb-9 flex flex-col items-center">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={LOGO} alt="LIVV" className="auth-logo h-14 w-14 object-contain" />
-          <h1 className="mt-5 font-display text-3xl font-semibold tracking-tight">LIVV</h1>
+          <LivvMark kind="flame" alt="" className="auth-flame" priority />
+          <h1 className="auth-wordmark">
+            <LivvMark kind="wordmark" alt="LIVV" priority />
+          </h1>
           <p className="mt-2 text-center text-[13px] text-[rgb(var(--livv-muted))]">{mode === "signin" ? "Welcome back. Keep building." : "Build the skills to become more capable."}</p>
         </div>
 

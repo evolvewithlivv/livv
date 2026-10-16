@@ -1,9 +1,13 @@
+import { readFileSync } from "node:fs";
+import path from "node:path";
 import { ImageResponse } from "next/og";
 
-export const runtime = "edge";
+export const runtime = "nodejs";
 export const alt = "LIVV";
 export const size = { width: 1200, height: 630 };
 export const contentType = "image/png";
+
+const wordmark = readFileSync(path.join(process.cwd(), "public/brand/wordmark-white.png")).toString("base64");
 
 export default function OpenGraphImage() {
   return new ImageResponse(
@@ -21,9 +25,12 @@ export default function OpenGraphImage() {
           fontFamily: "system-ui, -apple-system, sans-serif",
         }}
       >
-        <div style={{ display: "flex", fontSize: 28, letterSpacing: "0.28em", fontWeight: 600, opacity: 0.55 }}>
-          LIVV
-        </div>
+        <img
+          src={`data:image/png;base64,${wordmark}`}
+          width={456}
+          height={75}
+          alt=""
+        />
         <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
           <div style={{ fontSize: 72, fontWeight: 600, letterSpacing: "-0.04em", lineHeight: 1.05, maxWidth: 900 }}>
             A system for becoming more capable in real life.

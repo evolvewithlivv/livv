@@ -1,0 +1,82 @@
+/* Official marks. Theme is chosen with the html data-theme attribute set in the head. */
+.livv-mark {
+  display: inline-grid;
+  line-height: 0;
+  max-width: 100%;
+}
+.livv-mark > img {
+  grid-area: 1 / 1;
+  display: block;
+  width: 100%;
+  height: auto;
+  max-width: 100%;
+  object-fit: contain;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+.livv-mark-dark {
+  display: none !important;
+}
+html[data-theme="dark"] .livv-mark-light {
+  display: none !important;
+}
+html[data-theme="dark"] .livv-mark-dark {
+  display: block !important;
+}
+html[data-theme="light"] .livv-mark-light {
+  display: block !important;
+}
+html[data-theme="light"] .livv-mark-dark {
+  display: none !important;
+}
+html[data-livv-theme="bone"] .livv-mark-light {
+  display: block !important;
+}
+html[data-livv-theme="bone"] .livv-mark-dark {
+  display: none !important;
+}
+
+.livv-header-icon.livv-mark {
+  width: 32px;
+  height: 32px;
+}
+.livv-header-icon.livv-mark > img {
+  width: 32px;
+  height: 32px;
+}
+
+.ll-core .livv-mark {
+  width: 28px;
+  height: 48px;
+}
+.ll-core .livv-mark > img {
+  width: 28px;
+  height: 48px;
+}
+
+.auth-flame {
+  width: 42px;
+  height: 84px;
+}
+.auth-flame > img {
+  width: 42px;
+  height: 84px;
+}
+.auth-wordmark {
+  width: min(100%, 20rem);
+  margin: 1.15rem 0 0;
+}
+.auth-wordmark .livv-mark {
+  width: 100%;
+}
+.auth-desk-mark {
+  width: min(100%, 18rem);
+  margin: 0;
+}
+.auth-desk-mark .livv-mark {
+  width: 100%;
+}
+
+.livv-dock-wordmark {
+  display: none;
+}

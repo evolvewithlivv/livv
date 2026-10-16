@@ -3,6 +3,7 @@
 @tailwind utilities;
 @import "./livv-page-header.css";
 @import "./livv-header-icon-fix.css";
+@import "./livv-brand.css";
 
 html,
 :root {
@@ -128,7 +129,6 @@ html[data-theme="light"] .livv-page [class*="bg-white/"]{background:color-mix(in
 }
 .auth-muted { color: rgb(var(--livv-muted)) !important; }
 .auth-link { color: rgb(var(--livv-ink)) !important; }
-html[data-theme="light"] .auth-logo { filter: brightness(0); }
 html[data-theme="light"] .auth-glow {
   background: radial-gradient(ellipse at 50% 22%, rgba(15,127,255,.09) 0%, rgba(15,127,255,.04) 38%, rgba(15,127,255,0) 76%);
 }
