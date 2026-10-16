@@ -5,6 +5,7 @@ import { getSupabaseBrowserClient, isSupabaseConfigured } from "./client";
 import { sanitizeTrafficSource } from "../attribution";
 import { isNewAccount, readAttribution } from "../funnel-core.mjs";
 import { ensureAnonymousSession } from "./anon-session";
+import { consumeApexHandoff } from "../apex-handoff";
 
 const SESSION_KEY = "livv-session-v1";
 const ACCOUNTS_KEY = "livv-accounts-v1";
@@ -113,6 +114,7 @@ export async function materializeSupabaseUser(user: User, providerHint: AuthProv
 export async function getAuthenticatedUser() {
   const client = getSupabaseBrowserClient();
   if (!client) return null;
+  await consumeApexHandoff();
 
   // Restore the persisted browser session first. On iOS Safari/PWA launches,
   // getUser() can briefly race session restoration even though the session is

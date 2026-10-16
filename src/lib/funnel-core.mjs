@@ -28,6 +28,8 @@ const PII_KEYS = new Set([
   "otp",
   "token",
   "password",
+  "access_token",
+  "refresh_token",
 ]);
 
 const ERROR_CODES = new Set([
@@ -60,6 +62,13 @@ export function funnelEventNames() {
 
 export function isPiiKey(key) {
   return PII_KEYS.has(String(key || "").toLowerCase().replace(/[^a-z0-9_]/g, ""));
+}
+
+/** Drop a session-handoff fragment before an analytics value can be sent. */
+export function scrubHandoffValue(value) {
+  if (typeof value !== "string" || value.indexOf("livv_handoff") === -1) return value;
+  const hash = value.indexOf("#");
+  return hash === -1 ? value : value.slice(0, hash);
 }
 
 export function cleanToken(value) {

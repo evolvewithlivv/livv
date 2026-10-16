@@ -10,6 +10,7 @@ import {
   isNewAccount,
   isPiiKey,
   readAttribution,
+  scrubHandoffValue,
   takeQueue,
 } from "./funnel-core.mjs";
 
@@ -77,7 +78,11 @@ export function initFunnel() {
       } as Record<string, unknown>;
       for (const key of Object.keys(properties)) {
         // PostHog drops the event if properties.token is removed. That value is the public project key.
-        if (key !== "token" && isPiiKey(key)) delete properties[key];
+        if (key !== "token" && isPiiKey(key)) {
+          delete properties[key];
+          continue;
+        }
+        properties[key] = scrubHandoffValue(properties[key]);
       }
       event.properties = properties;
       return event;

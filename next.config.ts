@@ -2,7 +2,7 @@ import type { NextConfig } from "next";
 
 const posthogHost = process.env.NEXT_PUBLIC_POSTHOG_HOST || "https://us.i.posthog.com";
 
-const nextConfig:NextConfig={poweredByHeader:false,skipTrailingSlashRedirect:true,async redirects(){return[{source:"/:path*",has:[{type:"host",value:"www.evolvewithlivv.com"}],destination:"https://evolvewithlivv.com/:path*",permanent:true}]},async rewrites(){return[
+const nextConfig:NextConfig={poweredByHeader:false,skipTrailingSlashRedirect:true,async rewrites(){return[
 {source:"/ingest/static/:path*",destination:"https://us-assets.i.posthog.com/static/:path*"},
 {source:"/ingest/:path*",destination:`${posthogHost}/:path*`},
 ]},async headers(){return[
