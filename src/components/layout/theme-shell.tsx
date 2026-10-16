@@ -78,7 +78,7 @@ export function ThemeShell({ children }: { children: React.ReactNode }) {
   const [boot, setBoot] = useState(false);
   const pathname = usePathname();
   // Public `/` is the logged-out landing. Skip the member boot screen there.
-  const isPublicDiscovery = pathname === "/" || pathname.startsWith("/go/");
+  const isPublicDiscovery = pathname === "/" || pathname.startsWith("/go/") || pathname === "/home/health/recipes";
 
   useEffect(() => {
     document.documentElement.dataset.livvRoute =
