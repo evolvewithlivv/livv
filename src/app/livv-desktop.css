@@ -78,6 +78,12 @@
     background-image: url("/brand/wordmark-white.png");
   }
 
+  @media (prefers-color-scheme: dark) {
+    html:not([data-livv-scheme="choice"]) .livv-dock-wordmark {
+      background-image: url("/brand/wordmark-white.png");
+    }
+  }
+
   html[data-livv-theme="bone"] .livv-dock-wordmark {
     background-image: url("/brand/wordmark-black.png");
   }
