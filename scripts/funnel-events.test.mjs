@@ -8,7 +8,9 @@ import {
   isNewAccount,
   persistQueryAttribution,
   sanitizeEvent,
+  scrubHandoffValue,
   takeQueue,
+  isPiiKey,
 } from "../src/lib/funnel-core.mjs";
 
 function memory() {
@@ -79,5 +81,14 @@ assert.equal(source.includes("disable_cookie"), false);
 assert.equal(source.includes("autocapture: false"), true);
 assert.equal(source.includes("disable_session_recording: true"), true);
 assert.equal(source.includes('key !== "token"'), true);
+assert.equal(source.includes("scrubHandoffValue"), true);
+
+const handoffUrl = "https://evolvewithlivv.com/home?src=ig&utm_source=october#livv_handoff=secret-value";
+const scrubbed = scrubHandoffValue(handoffUrl);
+assert.equal(scrubbed, "https://evolvewithlivv.com/home?src=ig&utm_source=october");
+assert.equal(scrubbed.includes("secret-value"), false);
+assert.equal(scrubHandoffValue("https://evolvewithlivv.com/home?src=ig&utm_source=october"), "https://evolvewithlivv.com/home?src=ig&utm_source=october");
+assert.equal(isPiiKey("access_token"), true);
+assert.equal(isPiiKey("refresh_token"), true);
 
 console.log("funnel events passed");
