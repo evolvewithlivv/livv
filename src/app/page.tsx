@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { LandingAnalytics } from "@/components/landing/landing-analytics";
+import Script from "next/script";
 import { LandingSignedInEntry } from "@/components/landing/signed-in-entry";
 import "./landing.css";
 
@@ -49,7 +49,9 @@ export default function RootPage() {
           </a>
         </div>
       </div>
-      {process.env.NODE_ENV === "production" ? <LandingAnalytics /> : null}
+      {process.env.NODE_ENV === "production" ? (
+        <Script src="/_vercel/insights/script.js" strategy="afterInteractive" />
+      ) : null}
     </main>
   );
 }

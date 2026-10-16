@@ -6,7 +6,7 @@
  * place the auth screen does: `/home` when local onboarding is complete,
  * otherwise a hold until the cloud onboarding check finishes.
  * Logged-out visitors stay on the landing page.
- * No cookies, no identifiers, no third-party calls.
+ * The head script does not set cookies or send identifiers.
  */
 export const LANDING_SESSION_SCRIPT = `(function(){
   try {
@@ -44,5 +44,16 @@ export const LANDING_SESSION_SCRIPT = `(function(){
         credentials: "same-origin"
       }).catch(function () {});
     }, true);
+    if (typeof window !== "undefined") {
+      window.va = window.va || function () { (window.vaq = window.vaq || []).push(arguments); };
+      window.va("beforeSend", function (event) {
+        try {
+          if (document.documentElement.getAttribute("data-livv-landing-hold") === "1") return null;
+          var path = new URL(event.url, location.origin).pathname;
+          if (path !== "/") return null;
+        } catch (err) { return null; }
+        return event;
+      });
+    }
   } catch (e) {}
 })();`;
