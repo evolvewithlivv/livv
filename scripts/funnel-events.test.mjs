@@ -75,7 +75,9 @@ assert.equal(isNewAccount("2020-01-01T00:00:00.000Z"), false);
 const source = await import("node:fs").then((fs) => fs.readFileSync(new URL("../src/lib/funnel.ts", import.meta.url), "utf8"));
 assert.equal(source.includes(".identify("), false);
 assert.equal(source.includes('persistence: "localStorage"'), true);
+assert.equal(source.includes("disable_cookie"), false);
 assert.equal(source.includes("autocapture: false"), true);
 assert.equal(source.includes("disable_session_recording: true"), true);
+assert.equal(source.includes('key !== "token"'), true);
 
 console.log("funnel events passed");

@@ -68,7 +68,6 @@ export function initFunnel() {
     disable_surveys_automatic_display: true,
     person_profiles: "identified_only",
     persistence: "localStorage",
-    disable_cookie: true,
     advanced_disable_feature_flags: true,
     before_send: (event) => {
       if (!event) return event;
@@ -77,9 +76,11 @@ export function initFunnel() {
         ...(event.properties || {}),
       } as Record<string, unknown>;
       for (const key of Object.keys(properties)) {
-        if (isPiiKey(key)) delete properties[key];
+        // PostHog drops the event if properties.token is removed. That value is the public project key.
+        if (key !== "token" && isPiiKey(key)) delete properties[key];
       }
-      return { ...event, properties };
+      event.properties = properties;
+      return event;
     },
     loaded: () => {
       flushFunnel();
