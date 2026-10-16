@@ -77,17 +77,24 @@ function run({ path = "/", search = "", storage = {}, clicks = [], scheme = "lig
   vm.runInNewContext(script, context);
   for (const click of clicks) {
     const listener = listeners.find((item) => item.type === "click");
+    const link = {
+      href: click.href || (click.position === "primary" ? "/auth?mode=create" : "/auth"),
+      getAttribute(name) {
+        if (name === "data-landing-event") return click.event || "cta_start_click";
+        if (name === "data-landing-position") return click.position || null;
+        if (name === "href") return this.href;
+        return null;
+      },
+      setAttribute(name, value) {
+        if (name === "href") this.href = value;
+      },
+    };
+    click.link = link;
     listener?.handler({
       target: {
         closest(selector) {
           if (selector !== "a[data-landing-event]") return null;
-          return {
-            getAttribute(name) {
-              if (name === "data-landing-event") return click.event || "cta_start_click";
-              if (name === "data-landing-position") return click.position || null;
-              return null;
-            },
-          };
+          return link;
         },
       },
     });
@@ -163,6 +170,7 @@ const signedInHome = run({
 });
 assert.equal(signedInHome.replaced, "/home");
 assert.equal(signedInHome.listeners.some((item) => item.type === "click"), false);
+assert.equal(signedInHome.queue.some((item) => item.event === "landing_view"), false);
 
 const signedInHold = run({
   storage: {
@@ -227,5 +235,25 @@ assert.equal(script.includes("/api/landing-event"), false);
 assert.equal(script.includes("cta_start_click"), true);
 assert.equal(script.includes("landing_view"), true);
 assert.equal(script.includes("utm_source"), true);
+
+const growthClicks = [{ position: "primary", href: "/auth?mode=create" }];
+const growth = run({
+  search: "?src=test_growth&utm_source=october",
+  width: 1280,
+  clicks: growthClicks,
+});
+assert.deepEqual(
+  growth.queue.map((item) => item.event),
+  ["landing_view", "cta_start_click"]
+);
+assert.equal(growth.queue.filter((item) => item.event === "landing_view").length, 1);
+assert.equal(growth.queue.filter((item) => item.event === "cta_start_click").length, 1);
+assert.equal(growth.queue[0].props.src, "test_growth");
+assert.equal(growth.queue[0].props.device, "desktop");
+assert.equal(growth.queue[0].props.utm_source, "october");
+assert.equal(growth.queue[1].props.src, "test_growth");
+assert.equal(growth.queue[1].props.position, "primary");
+assert.equal(growthClicks[0].link.href, "/auth?mode=create&src=test_growth");
+assert.equal(growth.queue[0].props.email, undefined);
 
 console.log("landing entry script passed");
