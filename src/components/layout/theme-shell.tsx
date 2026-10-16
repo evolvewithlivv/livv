@@ -48,7 +48,8 @@ export function ThemeShell({ children }: { children: React.ReactNode }) {
   const [boot, setBoot] = useState(false);
   const [mark, setMark] = useState("/livv-logo.png");
   const pathname = usePathname();
-  const isPublicDiscovery = pathname.startsWith("/go/");
+  // Public `/` is the logged-out landing. Skip the member boot screen there.
+  const isPublicDiscovery = pathname === "/" || pathname.startsWith("/go/");
 
   useEffect(() => {
     document.documentElement.dataset.livvRoute =

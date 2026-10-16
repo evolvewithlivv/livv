@@ -1,0 +1,119 @@
+/* Public landing only. Do not style in-app screens from here. */
+.livv-landing {
+  min-height: 100dvh;
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+  padding:
+    max(2rem, env(safe-area-inset-top))
+    max(1.25rem, env(safe-area-inset-right))
+    max(2rem, env(safe-area-inset-bottom))
+    max(1.25rem, env(safe-area-inset-left));
+  background: var(--livv-pro-bg, var(--livv-bg));
+  color: var(--livv-pro-ink, rgb(var(--livv-ink)));
+  font-family: var(--font-body), system-ui, sans-serif;
+  overflow-x: hidden;
+}
+
+.livv-landing-inner {
+  width: min(100%, 34rem);
+  margin-inline: auto;
+}
+
+.livv-landing-mark {
+  margin: 0;
+  font-family: var(--font-display), var(--font-body), system-ui, sans-serif;
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.18em;
+}
+
+.livv-landing h1 {
+  margin: 1.15rem 0 0;
+  max-width: 18ch;
+  font-family: var(--font-display), var(--font-body), system-ui, sans-serif;
+  font-size: clamp(2.05rem, 7vw, 3.35rem);
+  font-weight: 600;
+  letter-spacing: -0.045em;
+  line-height: 1.04;
+  text-wrap: balance;
+}
+
+.livv-landing-lines {
+  margin: 1.75rem 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 0.75rem;
+}
+
+.livv-landing-lines li {
+  margin: 0;
+  max-width: 36rem;
+  font-size: 1.02rem;
+  line-height: 1.45;
+  color: var(--livv-pro-muted, rgb(var(--livv-muted)));
+}
+
+.livv-landing-lines strong {
+  color: var(--livv-pro-ink, rgb(var(--livv-ink)));
+  font-weight: 600;
+}
+
+.livv-landing-free {
+  margin: 1.6rem 0 0;
+  font-size: 0.98rem;
+  line-height: 1.4;
+}
+
+.livv-landing-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 1.15rem 1.4rem;
+  margin: 1.85rem 0 0;
+}
+
+.livv-landing-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 2.75rem;
+  padding: 0.65rem 1.05rem;
+  background: var(--livv-pro-ink, rgb(var(--livv-ink)));
+  color: var(--livv-pro-bg, var(--livv-bg));
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1;
+  text-decoration: none;
+}
+
+.livv-landing-secondary {
+  color: var(--livv-pro-muted, rgb(var(--livv-muted)));
+  font-size: 0.875rem;
+  line-height: 1.2;
+  text-decoration: underline;
+  text-underline-offset: 0.22em;
+}
+
+.livv-landing a:focus-visible {
+  outline: 2px solid var(--livv-pro-ink, rgb(var(--livv-ink)));
+  outline-offset: 3px;
+}
+
+html[data-livv-landing-hold="1"] .livv-landing {
+  visibility: hidden;
+}
+
+@media (min-width: 1280px) {
+  .livv-landing {
+    padding-left: max(4.5rem, env(safe-area-inset-left));
+    padding-right: max(4.5rem, env(safe-area-inset-right));
+  }
+
+  .livv-landing-inner {
+    width: min(100%, 40rem);
+    margin-inline: 0;
+  }
+}
