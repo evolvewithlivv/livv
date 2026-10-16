@@ -145,4 +145,11 @@ const workerFetch = wwwMiddlewareAction(
 assert.equal(workerFetch.type, "redirect");
 assert.equal(workerFetch.location, `https://evolvewithlivv.com/${search}`);
 
+const workerScript = wwwMiddlewareAction(
+  { host: "www.evolvewithlivv.com", "sec-fetch-dest": "serviceworker", accept: "*/*" },
+  "/sw.js",
+  "",
+);
+assert.equal(workerScript.type, "next");
+
 console.log("service worker navigation passed");

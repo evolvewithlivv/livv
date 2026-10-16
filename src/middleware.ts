@@ -15,7 +15,11 @@ export function middleware(request: NextRequest) {
     request.nextUrl.pathname,
     request.nextUrl.search,
   );
-  if (action.type === "next" || !action.location) return NextResponse.next();
+  if (action.type === "next" || !action.location) {
+    const response = NextResponse.next();
+    if (request.nextUrl.pathname === "/sw.js") response.headers.set("Cache-Control", NO_STORE);
+    return response;
+  }
   if (action.type === "redirect") {
     const redirect = NextResponse.redirect(action.location, 307);
     redirect.headers.set("Cache-Control", NO_STORE);

@@ -207,6 +207,9 @@ export function renderWwwHandoffHtml(destination, apexOrigin = APEX_ORIGIN) {
 
 export function wwwMiddlewareAction(headers, pathname, search) {
   if (requestHostname(headers) !== WWW_HOST) return { type: "next" };
+  // The registered www worker updates from this exact URL. A redirect would
+  // be rejected and the old worker would keep sending / to /auth.
+  if (pathname === "/sw.js") return { type: "next" };
   const location = apexDestination(pathname, search);
   if (!isDocumentNavigation(headers)) return { type: "redirect", location };
   return { type: "html", location, body: renderWwwHandoffHtml(location) };
