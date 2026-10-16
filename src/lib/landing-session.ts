@@ -84,6 +84,7 @@ export const LANDING_SESSION_SCRIPT = `(function(){
           if (stillSaved) return;
           var dark = window.matchMedia("(prefers-color-scheme: dark)").matches;
           var root = document.documentElement;
+          root.setAttribute("data-livv-scheme", "system");
           root.setAttribute("data-theme", dark ? "dark" : "light");
           root.setAttribute("data-livv-theme", dark ? "midnight" : "daylight");
           root.style.colorScheme = dark ? "dark" : "light";

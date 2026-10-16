@@ -104,6 +104,7 @@ function run({ path = "/", search = "", storage = {}, clicks = [], scheme = "lig
     hold: attrs["data-livv-landing-hold"] || null,
     theme: attrs["data-theme"] || null,
     livvTheme: attrs["data-livv-theme"] || null,
+    scheme: attrs["data-livv-scheme"] || null,
     colorScheme: style.colorScheme || null,
     fetches,
     tracked,
@@ -119,12 +120,14 @@ assert.equal(loggedOut.replaced, null);
 assert.equal(loggedOut.hold, null);
 assert.equal(loggedOut.theme, "light");
 assert.equal(loggedOut.livvTheme, "daylight");
+assert.equal(loggedOut.scheme, "system");
 assert.equal(loggedOut.colorScheme, "light");
 assert.equal(loggedOut.listeners.some((item) => item.type === "click"), true);
 
 const darkScheme = run({ scheme: "dark" });
 assert.equal(darkScheme.theme, "dark");
 assert.equal(darkScheme.livvTheme, "midnight");
+assert.equal(darkScheme.scheme, "system");
 assert.equal(darkScheme.colorScheme, "dark");
 assert.equal(darkScheme.replaced, null);
 
@@ -136,6 +139,7 @@ const savedDaylight = run({
 });
 assert.equal(savedDaylight.theme, null);
 assert.equal(savedDaylight.livvTheme, null);
+assert.equal(savedDaylight.scheme, null);
 
 const savedMidnight = run({
   scheme: "light",
@@ -257,3 +261,63 @@ assert.equal(growthClicks[0].link.href, "/auth?mode=create&src=test_growth");
 assert.equal(growth.queue[0].props.email, undefined);
 
 console.log("landing entry script passed");
+
+const layout = fs.readFileSync(new URL("../src/app/layout.tsx", import.meta.url), "utf8");
+const themeBoot = layout.match(/const THEME_BOOT=`([\s\S]*?)`;/);
+assert.ok(themeBoot, "theme boot script missing");
+assert.equal(themeBoot[1].includes("matchMedia('(prefers-color-scheme: dark)')"), true);
+
+function runThemeBoot({ scheme = "light", storage = {} } = {}) {
+  const attrs = {};
+  const style = {};
+  const localStorage = {
+    getItem(key) {
+      return Object.prototype.hasOwnProperty.call(storage, key) ? storage[key] : null;
+    },
+  };
+  const context = {
+    localStorage,
+    matchMedia(query) {
+      return { matches: query.includes("dark") ? scheme === "dark" : scheme !== "dark" };
+    },
+    document: {
+      documentElement: {
+        setAttribute(name, value) {
+          attrs[name] = value;
+        },
+        style,
+      },
+    },
+  };
+  context.window = context;
+  vm.runInNewContext(themeBoot[1], context);
+  return { theme: attrs["data-theme"], livvTheme: attrs["data-livv-theme"], scheme: attrs["data-livv-scheme"], colorScheme: style.colorScheme };
+}
+
+const bootDark = runThemeBoot({ scheme: "dark" });
+assert.equal(bootDark.theme, "dark");
+assert.equal(bootDark.livvTheme, "midnight");
+assert.equal(bootDark.scheme, "system");
+assert.equal(bootDark.colorScheme, "dark");
+
+const bootLight = runThemeBoot({ scheme: "light" });
+assert.equal(bootLight.theme, "light");
+assert.equal(bootLight.livvTheme, "daylight");
+assert.equal(bootLight.scheme, "system");
+
+const bootSaved = runThemeBoot({
+  scheme: "dark",
+  storage: { "livv-identity-v1": JSON.stringify({ appearance: "light", theme: "daylight" }) },
+});
+assert.equal(bootSaved.theme, "light");
+assert.equal(bootSaved.livvTheme, "daylight");
+assert.equal(bootSaved.scheme, "choice");
+
+const bootSystem = runThemeBoot({
+  scheme: "dark",
+  storage: { "livv-identity-v1": JSON.stringify({ appearance: "system", theme: "daylight" }) },
+});
+assert.equal(bootSystem.theme, "dark");
+assert.equal(bootSystem.scheme, "system");
+
+console.log("theme boot script passed");

@@ -30,6 +30,7 @@ function hasSavedLandingChoice() {
 function applyLandingSystemScheme() {
   const dark = window.matchMedia("(prefers-color-scheme: dark)").matches;
   const root = document.documentElement;
+  root.dataset.livvScheme = "system";
   root.dataset.theme = dark ? "dark" : "light";
   root.dataset.livvTheme = dark ? "midnight" : "daylight";
   root.style.colorScheme = dark ? "dark" : "light";
@@ -104,7 +105,7 @@ export function ThemeShell({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     const apply = () => {
-      if (window.location.pathname === "/" && !hasSavedLandingChoice()) {
+      if (!hasSavedLandingChoice()) {
         applyLandingSystemScheme();
         return;
       }
@@ -149,7 +150,7 @@ export function ThemeShell({ children }: { children: React.ReactNode }) {
     }
     const mq = window.matchMedia("(prefers-color-scheme: light)");
     const onScheme = () => {
-      if (window.location.pathname === "/" && !hasSavedLandingChoice()) {
+      if (!hasSavedLandingChoice()) {
         apply();
         return;
       }
@@ -172,7 +173,7 @@ export function ThemeShell({ children }: { children: React.ReactNode }) {
   useEffect(() => {
     const onVisible = () => {
       if (document.visibilityState !== "visible") return;
-      if (window.location.pathname === "/" && !hasSavedLandingChoice()) {
+      if (!hasSavedLandingChoice()) {
         applyLandingSystemScheme();
         return;
       }

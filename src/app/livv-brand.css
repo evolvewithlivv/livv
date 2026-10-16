@@ -35,6 +35,17 @@ html[data-livv-theme="bone"] .livv-mark-light {
 html[data-livv-theme="bone"] .livv-mark-dark {
   display: none !important;
 }
+/* No saved Daylight/Midnight choice: follow the system scheme even if the
+   pre-paint script has not set data-theme yet. A saved choice sets
+   data-livv-scheme="choice" and wins. */
+@media (prefers-color-scheme: dark) {
+  html:not([data-livv-scheme="choice"]) .livv-mark-light {
+    display: none !important;
+  }
+  html:not([data-livv-scheme="choice"]) .livv-mark-dark {
+    display: block !important;
+  }
+}
 
 .livv-header-icon.livv-mark {
   width: 32px;
