@@ -150,6 +150,22 @@ const workerScript = wwwMiddlewareAction(
   "/sw.js",
   "",
 );
-assert.equal(workerScript.type, "next");
+assert.equal(workerScript.type, "script");
+assert.equal(workerScript.body.includes("skipWaiting"), true);
+assert.equal(workerScript.body.includes("caches.delete"), true);
+assert.equal(workerScript.body.includes("self.registration.unregister()"), true);
+assert.equal(workerScript.body.includes("client.navigate(client.url)"), true);
+assert.equal(workerScript.body.includes("Clear-Site-Data"), false);
+assert.equal(workerScript.body.includes("livv-shell-v2"), false);
+assert.equal(workerScript.body.includes("Response.redirect"), false);
+const deleteAt = workerScript.body.indexOf("caches.delete");
+const unregisterAt = workerScript.body.indexOf("self.registration.unregister()");
+const navigateAt = workerScript.body.indexOf("client.navigate(client.url)");
+assert.ok(deleteAt > 0 && deleteAt < unregisterAt && unregisterAt < navigateAt);
+
+const authScreen = fs.readFileSync(new URL("../src/app/auth/auth-screen.tsx", import.meta.url), "utf8");
+assert.equal(authScreen.includes('router.replace(path + window.location.search)'), true);
+assert.equal(authScreen.includes('window.location.replace("/home")'), false);
+assert.equal(authScreen.includes('window.location.replace("/onboarding")'), false);
 
 console.log("service worker navigation passed");

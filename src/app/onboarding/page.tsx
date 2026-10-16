@@ -56,7 +56,7 @@ export default function OnboardingPage() {
       const user = await getAuthenticatedUser();
       if (cancelled) return;
       if (!user || user.is_anonymous || !user.email) {
-        router.replace("/auth");
+        router.replace("/auth" + window.location.search);
         return;
       }
       const draft = loadOnboardingDraft();
@@ -65,7 +65,7 @@ export default function OnboardingPage() {
       if (draft.interests.length) setSelectedInterests(draft.interests);
       if (draft.displayName) setDisplayName(draft.displayName);
       if (draft.completedAt) {
-        router.replace("/home");
+        router.replace("/home" + window.location.search);
         return;
       }
       try {
@@ -73,7 +73,7 @@ export default function OnboardingPage() {
         if (cancelled) return;
         if (cloudComplete) {
           markOnboardingComplete();
-          router.replace("/home");
+          router.replace("/home" + window.location.search);
           return;
         }
       } catch {
@@ -91,10 +91,10 @@ export default function OnboardingPage() {
 
   const finish = async () => {
     const client = getSupabaseBrowserClient();
-    if (!client) { router.replace("/auth"); return; }
+    if (!client) { router.replace("/auth" + window.location.search); return; }
     const { data, error: authError } = await client.auth.getUser();
     const user = data?.user;
-    if (authError || !user || user.is_anonymous || !user.email) { router.replace("/auth"); return; }
+    if (authError || !user || user.is_anonymous || !user.email) { router.replace("/auth" + window.location.search); return; }
     const name = displayName.trim();
     if (!name) { setError("Add a display name to continue."); return; }
     setBusy(true);
@@ -106,7 +106,7 @@ export default function OnboardingPage() {
       markOnboardingComplete();
       markFirstSessionPending();
       track("onboarding_completed");
-      router.replace("/home");
+      router.replace("/home" + window.location.search);
     } catch (e) {
       setError(e instanceof Error ? e.message : "Could not finish onboarding");
     } finally {

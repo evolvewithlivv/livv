@@ -15,6 +15,17 @@ export function middleware(request: NextRequest) {
     request.nextUrl.pathname,
     request.nextUrl.search,
   );
+  if (action.type === "script") {
+    return new NextResponse(action.body, {
+      status: 200,
+      headers: {
+        "Content-Type": "application/javascript; charset=utf-8",
+        "Cache-Control": NO_STORE,
+        "Service-Worker-Allowed": "/",
+        "X-Content-Type-Options": "nosniff",
+      },
+    });
+  }
   if (action.type === "next" || !action.location) {
     const response = NextResponse.next();
     if (request.nextUrl.pathname === "/sw.js") response.headers.set("Cache-Control", NO_STORE);

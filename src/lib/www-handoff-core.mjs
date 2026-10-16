@@ -134,30 +134,64 @@ export function wwwHandoffScript(apexOrigin = APEX_ORIGIN) {
     } catch (storageError) {}
     return cookieTokens();
   }
+  function handoff() {
+    try {
+      if (location.hostname !== WWW) return;
+      var path = location.pathname || "/";
+      if (path.charAt(0) !== "/" || path.slice(0, 2) === "//") path = "/";
+      var search = typeof location.search === "string" && location.search.charAt(0) === "?" ? location.search.split("#")[0] : "";
+      var dest = APEX + path + search;
+      var go = function (hash) { location.replace(dest + (hash || "")); };
+      var params;
+      try { params = new URLSearchParams(search); } catch (paramError) { params = null; }
+      if (params && params.get("code")) { go(""); return; }
+      var tokens = null;
+      try { tokens = readTokens(); } catch (readError) { tokens = null; }
+      if (!tokens) { go(""); return; }
+      go("#livv_handoff=" + encodeURIComponent(JSON.stringify({ access_token: tokens.access_token, refresh_token: tokens.refresh_token })));
+    } catch (handoffError) {
+      try {
+        var fallbackPath = location.pathname || "/";
+        if (fallbackPath.charAt(0) !== "/" || fallbackPath.slice(0, 2) === "//") fallbackPath = "/";
+        var fallbackSearch = typeof location.search === "string" && location.search.charAt(0) === "?" ? location.search.split("#")[0] : "";
+        location.replace(APEX + fallbackPath + fallbackSearch);
+      } catch (fallbackError) {}
+    }
+  }
   try {
     if (location.hostname !== WWW) return;
-    var path = location.pathname || "/";
-    if (path.charAt(0) !== "/" || path.slice(0, 2) === "//") path = "/";
-    var search = typeof location.search === "string" && location.search.charAt(0) === "?" ? location.search.split("#")[0] : "";
-    var dest = APEX + path + search;
-    var go = function (hash) { location.replace(dest + (hash || "")); };
-    var params;
-    try { params = new URLSearchParams(search); } catch (paramError) { params = null; }
-    if (params && params.get("code")) { go(""); return; }
-    var tokens = null;
-    try { tokens = readTokens(); } catch (readError) { tokens = null; }
-    if (!tokens) { go(""); return; }
-    go("#livv_handoff=" + encodeURIComponent(JSON.stringify({ access_token: tokens.access_token, refresh_token: tokens.refresh_token })));
-  } catch (handoffError) {
+    var agent = typeof navigator === "undefined" ? null : navigator;
+    var workers = agent && agent.serviceWorker;
+    if (!workers || typeof workers.getRegistrations !== "function") {
+      handoff();
+      return;
+    }
+    var settled = false;
+    function finish() {
+      if (settled) return;
+      settled = true;
+      handoff();
+    }
+    setTimeout(finish, 300);
     try {
-      var fallbackPath = location.pathname || "/";
-      if (fallbackPath.charAt(0) !== "/" || fallbackPath.slice(0, 2) === "//") fallbackPath = "/";
-      var fallbackSearch = typeof location.search === "string" && location.search.charAt(0) === "?" ? location.search.split("#")[0] : "";
-      location.replace(APEX + fallbackPath + fallbackSearch);
-    } catch (fallbackError) {}
+      workers.getRegistrations().then(function (regs) {
+        var jobs = [];
+        var r;
+        for (r = 0; regs && r < regs.length; r++) {
+          try { jobs.push(regs[r].unregister()); } catch (unregisterError) {}
+        }
+        return Promise.all(jobs);
+      }).then(finish, finish);
+    } catch (registrationError) {
+      finish();
+    }
+  } catch (outerError) {
+    handoff();
   }
 })();`;
 }
+
+export const WWW_KILL_SWITCH = `self.addEventListener("install",function(event){event.waitUntil(self.skipWaiting());});self.addEventListener("activate",function(event){event.waitUntil(caches.keys().then(function(keys){return Promise.all(keys.map(function(key){return caches.delete(key);}));}).then(function(){return self.registration.unregister();}).then(function(){return self.clients.matchAll({type:"window",includeUncontrolled:true});}).then(function(list){return Promise.all(list.map(function(client){return client.navigate(client.url);}));}));});`;
 
 export const APEX_HANDOFF_BOOT = `(function(){
   try {
@@ -207,9 +241,9 @@ export function renderWwwHandoffHtml(destination, apexOrigin = APEX_ORIGIN) {
 
 export function wwwMiddlewareAction(headers, pathname, search) {
   if (requestHostname(headers) !== WWW_HOST) return { type: "next" };
-  // The registered www worker updates from this exact URL. A redirect would
-  // be rejected and the old worker would keep sending / to /auth.
-  if (pathname === "/sw.js") return { type: "next" };
+  // Same-origin kill switch. A redirect is rejected, and the apex worker must
+  // not be installed on www: the handoff leaves before that update can finish.
+  if (pathname === "/sw.js") return { type: "script", body: WWW_KILL_SWITCH };
   const location = apexDestination(pathname, search);
   if (!isDocumentNavigation(headers)) return { type: "redirect", location };
   return { type: "html", location, body: renderWwwHandoffHtml(location) };

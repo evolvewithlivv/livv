@@ -29,7 +29,7 @@ export function RequireAuth({ children }: { children: React.ReactNode }) {
       }
 
       setState("denied");
-      router.replace("/auth");
+      router.replace("/auth" + window.location.search);
     };
 
     void check();

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { LivvMark } from "@/components/brand/livv-mark";
 import { Button } from "@/components/ui/button";
 import { authModeFromParam, persistTrafficSource, readTrafficSource, sanitizeTrafficSource } from "@/lib/attribution";
@@ -26,6 +27,10 @@ export default function AuthScreen({ initialMode, initialSrc }: { initialMode: "
   const [ageBand, setAgeBand] = useState<AgeBand | null>(null);
   const [ageConfirmed, setAgeConfirmed] = useState(false);
   const viewedMode = useRef<string | null>(null);
+  const router = useRouter();
+  const continueWithSession = (path: "/home" | "/onboarding") => {
+    router.replace(path + window.location.search);
+  };
 
   useEffect(() => {
     const raw = new URLSearchParams(window.location.search).get("mode");
@@ -69,7 +74,7 @@ export default function AuthScreen({ initialMode, initialSrc }: { initialMode: "
         const user = await getAuthenticatedUser();
         if (cancelled || !user || user.is_anonymous || !user.email) return;
         if (isOnboardingComplete()) {
-          window.location.replace("/home");
+          continueWithSession("/home");
           return;
         }
         let cloudComplete = false;
@@ -81,10 +86,10 @@ export default function AuthScreen({ initialMode, initialSrc }: { initialMode: "
         if (cancelled) return;
         if (cloudComplete) {
           markOnboardingComplete();
-          window.location.replace("/home");
+          continueWithSession("/home");
           return;
         }
-        window.location.replace("/onboarding");
+        continueWithSession("/onboarding");
       } catch {
         /* stay on auth form */
       }
@@ -150,17 +155,17 @@ export default function AuthScreen({ initialMode, initialSrc }: { initialMode: "
     const localComplete = isOnboardingComplete();
     if (localComplete) {
       try { await markCloudOnboardingComplete(""); } catch { /* local gate already satisfied */ }
-      window.location.replace("/home");
+      continueWithSession("/home");
       return;
     }
     let cloudComplete = false;
     try { cloudComplete = await isCloudOnboardingComplete(); } catch { cloudComplete = false; }
     if (cloudComplete) {
       markOnboardingComplete();
-      window.location.replace("/home");
+      continueWithSession("/home");
       return;
     }
-    window.location.replace("/onboarding");
+    continueWithSession("/onboarding");
   });
 
   return (

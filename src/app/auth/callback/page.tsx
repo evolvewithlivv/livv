@@ -29,7 +29,15 @@ export default function AuthCallbackPage() {
             /* fall through */
           }
         }
-        if (active) router.replace(complete ? "/home" : "/onboarding");
+        if (active) {
+          const kept = new URLSearchParams(window.location.search);
+          kept.delete("code");
+          kept.delete("error");
+          kept.delete("error_description");
+          const keptText = kept.toString();
+          const keptSearch = keptText ? `?${keptText}` : window.location.search.slice(window.location.search.length);
+          router.replace((complete ? "/home" : "/onboarding") + keptSearch);
+        }
       } catch (err) {
         if (active) setError(err instanceof Error ? err.message : "Authentication could not be completed.");
       }
@@ -51,7 +59,15 @@ export default function AuthCallbackPage() {
           <>
             <h1 className="text-xl font-semibold">We couldn't finish that sign-in</h1>
             <p className="mt-3 text-sm leading-6 text-red-300">{error}</p>
-            <button type="button" onClick={() => router.replace("/auth")} className="mt-6 rounded-2xl border border-white/10 bg-white/[0.05] px-5 py-3 text-sm text-white/75">Back to sign in</button>
+            <button type="button" onClick={() => {
+              const kept = new URLSearchParams(window.location.search);
+              kept.delete("code");
+              kept.delete("error");
+              kept.delete("error_description");
+              const keptText = kept.toString();
+              const keptSearch = keptText ? `?${keptText}` : window.location.search.slice(window.location.search.length);
+              router.replace("/auth" + keptSearch);
+            }} className="mt-6 rounded-2xl border border-white/10 bg-white/[0.05] px-5 py-3 text-sm text-white/75">Back to sign in</button>
           </>
         )}
       </div>

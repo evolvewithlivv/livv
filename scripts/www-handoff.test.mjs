@@ -9,6 +9,7 @@ import {
   renderWwwHandoffHtml,
   wwwHandoffScript,
   wwwMiddlewareAction,
+  WWW_KILL_SWITCH,
 } from "../src/lib/www-handoff-core.mjs";
 
 const ACCESS = "test-access-token";
@@ -259,7 +260,143 @@ assert.equal(html.includes("<noscript>"), true);
 assert.equal(html.includes("console.log"), false);
 assert.equal(wwwHandoffScript().includes("console."), false);
 assert.equal(wwwHandoffScript().includes("/^\\s+/"), true);
+assert.equal(wwwHandoffScript().includes("getRegistrations"), true);
+assert.equal(wwwHandoffScript().includes("setTimeout(finish, 300)"), true);
+assert.equal(wwwHandoffScript().includes("Clear-Site-Data"), false);
 assert.equal(APEX_HANDOFF_BOOT.includes("history.replaceState"), true);
 assert.equal(APEX_HANDOFF_BOOT.includes("console."), false);
+
+const killSwitch = wwwMiddlewareAction(
+  { host: "www.evolvewithlivv.com", accept: "*/*", "sec-fetch-dest": "serviceworker" },
+  "/sw.js",
+  "?src=test_growth",
+);
+assert.equal(killSwitch.type, "script");
+assert.equal(killSwitch.body, WWW_KILL_SWITCH);
+assert.equal(WWW_KILL_SWITCH.includes("Clear-Site-Data"), false);
+
+function runKillSwitch() {
+  const deleted = [];
+  const navigated = [];
+  const order = [];
+  let unregistered = false;
+  const listeners = {};
+  const self = {
+    skipWaiting() {
+      return Promise.resolve();
+    },
+    registration: {
+      async unregister() {
+        order.push("unregister");
+        unregistered = true;
+        return true;
+      },
+    },
+    clients: {
+      async matchAll() {
+        return [
+          { url: "https://www.evolvewithlivv.com/?src=test_growth&utm_source=x", async navigate(url) { order.push("navigate"); navigated.push(url); } },
+          { url: "https://www.evolvewithlivv.com/auth?src=kept", async navigate(url) { order.push("navigate"); navigated.push(url); } },
+        ];
+      },
+    },
+    addEventListener(type, fn) {
+      listeners[type] = fn;
+    },
+  };
+  const caches = {
+    async keys() {
+      return ["livv-shell-v2", "livv-field-guides-v1"];
+    },
+    async delete(key) {
+      order.push("delete");
+      deleted.push(key);
+      return true;
+    },
+  };
+  vm.runInNewContext(WWW_KILL_SWITCH, { self, caches, Promise }, { filename: "www-sw.js" });
+  return { listeners, deleted, navigated, order, unregistered: () => unregistered };
+}
+
+const killer = runKillSwitch();
+let installTask;
+killer.listeners.install({
+  waitUntil(value) {
+    installTask = value;
+  },
+});
+await installTask;
+let activateTask;
+killer.listeners.activate({
+  waitUntil(value) {
+    activateTask = value;
+  },
+});
+await activateTask;
+assert.deepEqual(killer.deleted.sort(), ["livv-field-guides-v1", "livv-shell-v2"]);
+assert.equal(killer.unregistered(), true);
+assert.deepEqual(killer.order, ["delete", "delete", "unregister", "navigate", "navigate"]);
+assert.deepEqual(killer.navigated, [
+  "https://www.evolvewithlivv.com/?src=test_growth&utm_source=x",
+  "https://www.evolvewithlivv.com/auth?src=kept",
+]);
+
+function runWwwWithWorkers(registrations, { hang = false } = {}) {
+  return new Promise((resolve) => {
+    const unregistered = [];
+    const location = {
+      hostname: WWW_HOST,
+      pathname: "/",
+      search: "?src=test_growth&utm_source=x",
+      hash: "",
+      replaced: null,
+      replace(url) {
+        this.replaced = url;
+        resolve({ location, unregistered });
+      },
+    };
+    const context = {
+      location,
+      localStorage: { getItem() { return null; } },
+      document: { cookie: "" },
+      navigator: {
+        serviceWorker: {
+          getRegistrations() {
+            if (hang) return new Promise(() => {});
+            return Promise.resolve(registrations.map(() => ({
+              unregister() {
+                unregistered.push(true);
+                return Promise.resolve(true);
+              },
+            })));
+          },
+        },
+      },
+      URLSearchParams,
+      JSON,
+      Object,
+      Number,
+      RegExp,
+      encodeURIComponent,
+      decodeURIComponent,
+      atob,
+      setTimeout,
+      Promise,
+      console: { log() {}, info() {}, debug() {} },
+    };
+    vm.runInNewContext(wwwHandoffScript(), context, { filename: "handoff.js" });
+  });
+}
+
+const retired = await runWwwWithWorkers([1]);
+assert.equal(retired.unregistered.length, 1);
+assert.equal(retired.location.replaced, `${APEX_ORIGIN}/?src=test_growth&utm_source=x`);
+
+const started = Date.now();
+const timedOut = await runWwwWithWorkers([1], { hang: true });
+assert.ok(Date.now() - started >= 250);
+assert.ok(Date.now() - started < 800);
+assert.equal(timedOut.unregistered.length, 0);
+assert.equal(timedOut.location.replaced, `${APEX_ORIGIN}/?src=test_growth&utm_source=x`);
 
 console.log("www session handoff passed");
