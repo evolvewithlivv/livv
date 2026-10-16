@@ -1,6 +1,6 @@
-const CACHE="livv-shell-v3";
+const CACHE="livv-shell-v4";
 const FIELD_CACHE="livv-field-guides-v1";
-const ASSET_CACHE="livv-static-assets-v1";
+const ASSET_CACHE="livv-static-assets-v2";
 const SHELL=["/manifest.webmanifest"];
 
 self.addEventListener("install",event=>{
