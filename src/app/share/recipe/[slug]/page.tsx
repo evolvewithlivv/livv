@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Clock3 } from "lucide-react";
 import { RECIPES } from "@/lib/recipes-data";
-import "../public-share.css";
+import "../../public-share.css";
 
 export function generateStaticParams() { return RECIPES.map((recipe) => ({ slug: recipe.id })); }
 export const dynamicParams = false;
