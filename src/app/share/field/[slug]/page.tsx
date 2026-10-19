@@ -2,7 +2,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ExternalLink, Leaf, ShieldCheck } from "lucide-react";
 import { FIELD_GUIDES, getFieldGuide } from "@/lib/field-guides";
-import "../public-share.css";
+import "../../public-share.css";
 
 export function generateStaticParams() { return FIELD_GUIDES.map((guide) => ({ slug: guide.slug })); }
 export const dynamicParams = false;
