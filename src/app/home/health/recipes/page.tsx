@@ -6,6 +6,7 @@ import { Bookmark, ChevronLeft, Clock3 } from "lucide-react";
 import { CATEGORIES, RECIPES, type CategoryFilter } from "@/lib/recipes-data";
 import { blankDay, loadHealthDays, todayKey, upsertHealthDay } from "@/lib/health";
 import "../health-systems.css";
+import { ShareItemButton } from "@/components/share/share-item-button";
 
 const SAVED_KEY="livv-recipes-saved-v1";
 function loadSaved():string[]{if(typeof window==="undefined")return[];try{const raw=localStorage.getItem(SAVED_KEY),parsed=raw?JSON.parse(raw):[];return Array.isArray(parsed)?parsed.filter((x)=>typeof x==="string"):[]}catch{return[]}}
@@ -26,7 +27,7 @@ export default function RecipesPage(){
     <SystemNav/>
     <section className="hsys-section"><p className="hsys-label">Ingredients</p><div className="hsys-card"><div className="hsys-list">{selected.ingredients.map(ing=><div key={ing} className="hsys-item"><p className="hsys-item-t" style={{fontWeight:500}}>{ing}</p></div>)}</div></div></section>
     <section className="hsys-section"><p className="hsys-label">Method</p><div className="hsys-card"><div className="hsys-list">{selected.steps.map((step,i)=><div key={step} className="hsys-item"><div><p className="hsys-item-t">{String(i+1).padStart(2,"0")}</p><p className="hsys-item-s">{step}</p></div></div>)}</div></div></section>
-    <div className="hsys-actions"><button type="button" className="hsys-btn" style={{marginTop:0}} onClick={logMeal}>Log meal</button><button type="button" className="hsys-btn ghost" style={{marginTop:0}} onClick={()=>toggleSave(selected.id)}><Bookmark size={12} style={{verticalAlign:-2,marginRight:5}}/>{saved.includes(selected.id)?"Saved":"Save"}</button></div>
+    <div className="hsys-actions"><button type="button" className="hsys-btn" style={{marginTop:0}} onClick={logMeal}>Log meal</button><button type="button" className="hsys-btn ghost" style={{marginTop:0}} onClick={()=>toggleSave(selected.id)}><Bookmark size={12} style={{verticalAlign:-2,marginRight:5}}/>{saved.includes(selected.id)?"Saved":"Save"}</button><ShareItemButton url={`/share/recipe/${selected.id}`} title={selected.title}/></div>
   </div></main>;
 
   return <main className="hsys hsys-recipes" aria-label="Recipes"><div className="hsys-inner">
