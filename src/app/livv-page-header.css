@@ -74,3 +74,42 @@ main.field .field-hero,
 main.you .you-top {
   padding-top: 16px !important;
 }
+
+
+/* Shared top alignment: every primary screen starts its section label on the same baseline. */
+main.dy .dy-inner,
+main.tr .tr-inner,
+main.health-home .health-shell,
+main.shop-page .shop-shell,
+main.field .field-inner,
+main.you .you-inner {
+  padding-top: 16px !important;
+}
+
+main.dy header,
+main.tr .tr-inner > header,
+main.health-home .health-mast,
+main.shop-page .shop-header,
+main.field .field-hero,
+main.you .you-top {
+  padding-top: 0 !important;
+  margin-top: 0 !important;
+}
+
+/* Keep the section label typography identical, including pages with nested header styles. */
+main.dy .dy-k,
+main.tr .tr-k,
+main.health-home .health-eyebrow,
+main.shop-page .shop-header-top,
+main.field .field-k,
+main.you .you-top-k {
+  display: block !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  font-size: 11px !important;
+  font-weight: 650 !important;
+  line-height: 13px !important;
+  letter-spacing: 0.14em !important;
+  text-transform: uppercase !important;
+  color: var(--livv-blue, #0F7FFF) !important;
+}
