@@ -17,6 +17,7 @@ import {
 } from "lucide-react";
 import { getFieldGuide } from "@/lib/field-guides";
 import "./field-guide.css";
+import { ShareItemButton } from "@/components/share/share-item-button";
 
 type GuideProgress = {
   completedSteps: string[];
@@ -191,10 +192,10 @@ export default function FieldGuidePage() {
             <span>{guide.level}</span>
             <span><ShieldCheck size={13} /> Sources included</span>
           </div>
-          <button type="button" className={`field-guide-save ${offlineStatus === "saved" ? "is-saved" : ""}`} onClick={saveForOffline} disabled={offlineStatus === "saving"}>
+          <div style={{display:"flex",flexWrap:"wrap",alignItems:"center",gap:9,marginTop:18}}><button type="button" className={`field-guide-save ${offlineStatus === "saved" ? "is-saved" : ""}`} style={{marginTop:0}} onClick={saveForOffline} disabled={offlineStatus === "saving"}>
             <Download size={15} />
             {offlineStatus === "saving" ? "Saving offline copy…" : offlineStatus === "saved" ? "Saved for offline access" : "Save for offline access"}
-          </button>
+          </button><ShareItemButton url={`/share/field/${guide.slug}`} title={guide.title} /></div>
           <p className="field-guide-save-note" role="status">
             {offlineStatus === "saved"
               ? "The guide and its checklist are saved on this device. You can reopen LIVV offline to return to the last saved Field guide. Source links need a connection."
