@@ -46,3 +46,31 @@
   padding-bottom: 0.25rem;
   color: var(--livv-pro-muted, var(--livv-muted, rgba(255, 255, 255, 0.45)));
 }
+
+
+/* Primary app section labels: one consistent LIVV system across screens.
+   Keep the section marker blue, with a shared scale and baseline. */
+main.dy .dy-k,
+main.tr .tr-k,
+main.health-home .health-eyebrow,
+main.shop-page .shop-header-top,
+main.field .field-k,
+main.you .you-top-k {
+  margin: 0 !important;
+  font-size: 11px !important;
+  font-weight: 650 !important;
+  line-height: 1.2 !important;
+  letter-spacing: 0.14em !important;
+  text-transform: uppercase !important;
+  color: var(--livv-blue, #0F7FFF) !important;
+}
+
+/* Align the start of each primary page header without changing page content order. */
+main.dy .dy-inner > header,
+main.tr .tr-inner > header,
+main.health-home .health-mast,
+main.shop-page .shop-header,
+main.field .field-hero,
+main.you .you-top {
+  padding-top: 16px !important;
+}
