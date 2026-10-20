@@ -146,9 +146,10 @@ html[data-theme="dark"] .auth-glow {
 
 /* Auth refresh: restrained, premium account-entry experience. */
 .auth-page { min-height: 100dvh; background: var(--livv-bg); }
-.auth-stage { max-width: 28rem; padding-top: clamp(2.5rem, 9vh, 5.5rem); }
-.auth-brand { margin-bottom: 2.25rem !important; }
-.auth-flame { width: 3.25rem !important; height: 3.25rem !important; }
+.auth-stage { max-width: 28rem; padding-top: 2.5rem; }
+.auth-brand { margin-bottom: 1.75rem !important; gap: .25rem; }
+.auth-flame { display: block; width: 2.5rem !important; height: 2.5rem !important; flex-shrink: 0; margin-bottom: .25rem; }
+.auth-brand p { position: relative; display: block; width: 100%; margin-top: .25rem !important; line-height: 1.5; }
 .auth-card { border-radius: 1.15rem !important; border-color: color-mix(in srgb, rgb(var(--livv-border)) 55%, transparent) !important; background: rgb(var(--livv-surface)) !important; padding: clamp(1.25rem, 4vw, 2rem) !important; box-shadow: 0 12px 36px rgba(0,0,0,.045); backdrop-filter: none !important; }
 .auth-panel { min-height: 0; }
 .auth-modes { gap: 1.25rem; margin-bottom: 1.5rem; }
