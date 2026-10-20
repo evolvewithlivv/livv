@@ -245,9 +245,6 @@ export default function AuthScreen({ initialMode, initialSrc }: { initialMode: "
           </div>
         </div>
 
-        <div className="auth-bottom-brand mt-auto flex w-full justify-center pt-8 pb-3" aria-label="LIVV">
-          <LivvMark kind="wordmark" alt="LIVV" />
-        </div>
         <p className="auth-legal mt-2 text-center text-[11px] text-[rgb(var(--livv-muted))]">
           <a href="/legal/privacy" className="underline-offset-2 hover:underline">Privacy</a>
           {" · "}
