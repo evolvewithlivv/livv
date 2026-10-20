@@ -138,3 +138,7 @@ html[data-theme="dark"] .auth-glow {
 @media (prefers-reduced-motion: reduce) {
   .auth-mode { transition: none !important; }
 }
+
+
+/* Auth/onboarding: remove the blue halo behind the LIVV mark. */
+.auth-glow { display: none !important; }
