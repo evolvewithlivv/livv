@@ -42,7 +42,7 @@ export async function POST(req: NextRequest) {
     }
 
     const product = price.product;
-    if (typeof product === "string" || !product.active) {
+    if (typeof product === "string" || !("active" in product) || !product.active) {
       return json({ error: "This membership is temporarily unavailable." }, 503);
     }
 
