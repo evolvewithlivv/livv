@@ -130,7 +130,16 @@ export default function ProfilePage() {
           </div>
         </section>
 
-        <section className="you-section" aria-label="Membership">\n          <p className="you-section-k">Membership</p>\n          <Link href="/home/membership" className="you-social">\n            <span className="you-social-mark"><Crown size={18} /></span>\n            <span><strong>Membership & billing</strong><small>Free core, Rise, Apex, and Circle</small></span>\n            <ChevronRight size={17} className="you-chev" />\n          </Link>\n        </section>\n\n        <section className="you-section" aria-label="Crew">
+        <section className="you-section" aria-label="Membership">
+          <p className="you-section-k">Membership</p>
+          <Link href="/home/membership" className="you-social">
+            <span className="you-social-mark"><Crown size={18} /></span>
+            <span><strong>Membership & billing</strong><small>Free core, Rise, Apex, and Circle</small></span>
+            <ChevronRight size={17} className="you-chev" />
+          </Link>
+        </section>
+
+        <section className="you-section" aria-label="Crew">
           <p className="you-section-k">Your circle</p>
           <Link href="/home/crew" className="you-social">
             <span className="you-social-mark">
