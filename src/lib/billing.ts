@@ -2,7 +2,7 @@ import type { LivvTier } from "./identity";
 import { patchIdentity } from "./identity";
 import { getSupabaseBrowserClient } from "./supabase/client";
 
-export type Entitlements = { tier: LivvTier; source: "spark"; expiresAt: null };
+export type Entitlements = { tier: LivvTier; source: "stripe" | "spark"; expiresAt: string | null };
 export type ServerEntitlement = { tier: LivvTier; status: string; stripe_customer_id: string | null; stripe_subscription_id: string | null; current_period_end: string | null };
 const FREE: Entitlements = { tier: "spark", source: "spark", expiresAt: null };
 
