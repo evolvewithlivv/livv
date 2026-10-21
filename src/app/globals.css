@@ -160,3 +160,47 @@ html[data-theme="dark"] .auth-glow {
 .auth-bottom-brand { display: none !important; }
 .auth-desk { display: none; }
 @media (min-width: 768px) { .auth-stage { padding-top: 7vh; } }
+
+
+/* LIVV mark sizing: constrain both theme assets to their wrapper so the logo
+   cannot escape its box or overlap the auth headline on mobile. */
+.livv-mark {
+  position: relative;
+  display: inline-block;
+  flex: 0 0 auto;
+  line-height: 0;
+}
+.livv-mark > img {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+}
+.livv-mark > .livv-mark-light { display: block; }
+.livv-mark > .livv-mark-dark { display: none; }
+html[data-theme="dark"] .livv-mark > .livv-mark-light { display: none; }
+html[data-theme="dark"] .livv-mark > .livv-mark-dark { display: block; }
+
+/* The flame-and-L symbol is a tall mark (1:2 aspect ratio), not a square. */
+.auth-flame {
+  display: block !important;
+  position: relative;
+  width: 2.5rem !important;
+  height: 5rem !important;
+  flex: 0 0 5rem;
+  margin: 0 auto !important;
+  overflow: hidden;
+}
+.auth-brand {
+  align-items: center;
+  gap: 0.5rem !important;
+  margin-bottom: 1.75rem !important;
+}
+.auth-brand p {
+  margin: 0.25rem 0 0 !important;
+  line-height: 1.5;
+  position: static;
+  max-width: 22rem;
+}
