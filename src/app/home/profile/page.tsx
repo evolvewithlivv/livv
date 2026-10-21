@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ChevronRight, Settings2, Users, Crown } from "lucide-react";
+import { ChevronRight, Settings2, Users } from "lucide-react";
 import { useEffect, useState } from "react";
 import { loadIdentity, type Identity } from "@/lib/identity";
 import { goalLabels, loadOnboardingDraft, type OnboardingDraft } from "@/lib/onboarding";
@@ -128,15 +128,6 @@ export default function ProfilePage() {
               <ChevronRight size={18} className="you-chev" />
             </Link>
           </div>
-        </section>
-
-        <section className="you-section" aria-label="Membership">
-          <p className="you-section-k">Membership</p>
-          <Link href="/home/membership" className="you-social">
-            <span className="you-social-mark"><Crown size={18} /></span>
-            <span><strong>Membership & billing</strong><small>Free access. No paid tiers.</small></span>
-            <ChevronRight size={17} className="you-chev" />
-          </Link>
         </section>
 
         <section className="you-section" aria-label="Crew">
