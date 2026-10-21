@@ -134,7 +134,7 @@ export default function ProfilePage() {
           <p className="you-section-k">Membership</p>
           <Link href="/home/membership" className="you-social">
             <span className="you-social-mark"><Crown size={18} /></span>
-            <span><strong>Membership & billing</strong><small>Free core, Rise, Apex, and Circle</small></span>
+            <span><strong>Membership & billing</strong><small>Free access. No paid tiers.</small></span>
             <ChevronRight size={17} className="you-chev" />
           </Link>
         </section>
