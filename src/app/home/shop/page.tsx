@@ -33,6 +33,7 @@ function ShopPhoto({ src, alt, eager }: { src: string; alt: string; eager: boole
   );
 }
 
+/* Shopify front PNGs already include straight alpha. They sit on the page in both themes. */
 const PRODUCTS = [
   { no:"01", name:"Heavyweight Tee", variant:"White Logo", price:"$39.95", image:"https://cdn.shopify.com/s/files/1/1091/3644/5726/files/mens-premium-heavyweight-tee-black-front-6ac2572409a64.png?v=1791121207", href:"https://n8tv6p-pu.myshopify.com/products/men-s-premium-heavyweight-tee-1" },
   { no:"02", name:"Heavyweight Tee", variant:"Black Logo", price:"$39.95", image:"https://cdn.shopify.com/s/files/1/1091/3644/5726/files/mens-premium-heavyweight-tee-white-front-6ac256bda7240.png?v=1791121101", href:"https://n8tv6p-pu.myshopify.com/products/men-s-premium-heavyweight-tee" },

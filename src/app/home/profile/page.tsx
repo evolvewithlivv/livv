@@ -97,15 +97,15 @@ export default function ProfilePage() {
           <p className="you-section-k">Your record</p>
           <div className="you-record">
             <div>
-              <strong><CountUp value={rec.streak || 0} /></strong>
+              <strong className="you-record-num"><CountUp value={rec.streak || 0} /></strong>
               <span>Day streak</span>
             </div>
             <div>
-              <strong>{rec.workoutsCompleted || 0}</strong>
+              <strong className="you-record-num">{rec.workoutsCompleted || 0}</strong>
               <span>Sessions</span>
             </div>
             <div>
-              <strong>{todayDone}</strong>
+              <strong className="you-record-num">{todayDone}</strong>
               <span>Today</span>
             </div>
           </div>
