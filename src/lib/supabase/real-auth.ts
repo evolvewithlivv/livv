@@ -96,7 +96,6 @@ async function hydrateCloudProfile(user: User, account: Account): Promise<Accoun
     const { error: updateError } = await client
       .from("profiles")
       .update({
-        username: hydrated.username,
         display_name: hydrated.displayName,
         bio: hydrated.bio,
         goal: hydrated.goal || "",
@@ -108,6 +107,10 @@ async function hydrateCloudProfile(user: User, account: Account): Promise<Accoun
       .eq("id", user.id);
     if (updateError) console.warn("[LIVV profile] cloud identity write deferred", updateError);
     else if (pending) writeStoredLook({ ...pending, syncedAt: pending.updatedAt });
+    if (placeholder && hydrated.username && !hydrated.username.startsWith("anon_")) {
+      const { error: usernameError } = await client.rpc("claim_initial_username", { new_username: hydrated.username });
+      if (usernameError) console.warn("[LIVV profile] username claim deferred", usernameError);
+    }
   }
   return hydrated;
 }
