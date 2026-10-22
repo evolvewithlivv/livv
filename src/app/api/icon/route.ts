@@ -18,7 +18,8 @@ const rendered = new Map<string, Uint8Array>();
 
 export async function GET(request: NextRequest) {
   const sizeParam = request.nextUrl.searchParams.get("s");
-  const size = Math.min(512, Math.max(16, Number(sizeParam) || 32));
+  const parsedSize = Number(sizeParam);
+  const size = Number.isFinite(parsedSize) ? Math.min(512, Math.max(16, Math.trunc(parsedSize))) : 32;
   const color: IconColor = request.nextUrl.searchParams.get("c") === "white" ? "white" : "black";
   const opaque = request.nextUrl.searchParams.get("bg") === "1";
   const key = `${size}:${color}:${opaque ? "bg" : "clear"}`;

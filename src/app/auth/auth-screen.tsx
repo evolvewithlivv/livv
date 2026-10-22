@@ -266,7 +266,7 @@ function Field({ label, value, onChange, type = "text", autoComplete, inputMode,
         autoComplete={autoComplete}
         inputMode={inputMode}
         placeholder={placeholder}
-        className="w-full rounded-2xl border border-[rgb(var(--livv-border))] bg-[rgb(var(--livv-surface))] px-4 py-3.5 text-[15px] text-[rgb(var(--livv-ink))] outline-none placeholder:text-[rgb(var(--livv-muted))] focus:border-[rgb(var(--livv-accent))]"
+        className="w-full rounded-2xl border border-[rgb(var(--livv-border))] bg-[rgb(var(--livv-surface))] px-4 py-3.5 text-[15px] text-[rgb(var(--livv-ink))] outline-none placeholder:text-[rgb(var(--livv-muted))] focus:border-[rgb(var(--livv-accent))] focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[rgb(var(--livv-accent))]"
       />
     </label>
   );
