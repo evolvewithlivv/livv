@@ -53,35 +53,30 @@ export const LANDING_SESSION_SCRIPT = `(function(){
       return window.matchMedia("(max-width: 767px)").matches ? "mobile" : "desktop";
     };
     try {
-      var saved = false;
-      var lookRaw = localStorage.getItem("livv-look-v1");
-      if (lookRaw) {
-        var look = JSON.parse(lookRaw);
-        if (look && typeof look.updatedAt === "number" && look.updatedAt > (look.syncedAt || 0)) saved = true;
-      }
-      if (!saved) {
-        var idRaw = localStorage.getItem("livv-identity-v1");
-        if (idRaw) {
-          var id = JSON.parse(idRaw);
-          if (id && (id.appearance || id.theme)) saved = true;
+      var lookChosen = function (record) {
+        if (!record) return false;
+        var ap = record.appearance || "";
+        var th = record.theme || "";
+        var midnight = th === "midnight" || th === "ember" || th === "dark" || ap === "dark";
+        if (ap === "system") return midnight;
+        if (midnight) return true;
+        if (ap === "light" || th === "daylight" || th === "bone") return !!(record.displayName || record.username || record.bio || record.photo || (record.embers > 0));
+        return false;
+      };
+      var savedLook = function () {
+        var lookRaw = localStorage.getItem("livv-look-v1");
+        if (lookRaw) {
+          var look = JSON.parse(lookRaw);
+          if (look && typeof look.updatedAt === "number" && look.updatedAt > 0) return true;
         }
-      }
+        var idRaw = localStorage.getItem("livv-identity-v1");
+        if (!idRaw) return false;
+        return lookChosen(JSON.parse(idRaw));
+      };
+      var saved = savedLook();
       if (!saved) {
         var applyScheme = function () {
-          var stillSaved = false;
-          var nextLook = localStorage.getItem("livv-look-v1");
-          if (nextLook) {
-            var parsedLook = JSON.parse(nextLook);
-            if (parsedLook && typeof parsedLook.updatedAt === "number" && parsedLook.updatedAt > (parsedLook.syncedAt || 0)) stillSaved = true;
-          }
-          if (!stillSaved) {
-            var nextId = localStorage.getItem("livv-identity-v1");
-            if (nextId) {
-              var parsedId = JSON.parse(nextId);
-              if (parsedId && (parsedId.appearance || parsedId.theme)) stillSaved = true;
-            }
-          }
-          if (stillSaved) return;
+          if (savedLook()) return;
           var dark = window.matchMedia("(prefers-color-scheme: dark)").matches;
           var root = document.documentElement;
           root.setAttribute("data-livv-scheme", "system");

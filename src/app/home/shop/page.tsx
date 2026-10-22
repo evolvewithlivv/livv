@@ -5,6 +5,7 @@ import { ArrowUpRight, Flame } from "lucide-react";
 import { useEffect, useState } from "react";
 import { loadIdentity } from "@/lib/identity";
 import { EMBERS_PER_DOLLAR, MIN_REDEEM_EMBERS, REDEEM_RULES_COPY, embersToDollars } from "@/lib/ember-economy";
+import { PageHeader } from "@/components/layout/page-header";
 import "./shop-rack.css";
 
 const PRODUCTS = [
@@ -31,14 +32,12 @@ export default function ShopPage() {
   return (
     <main className="shop-page">
       <div className="shop-shell">
-        <header className="shop-header">
-          <div className="shop-header-top"><span>SHOP</span></div>
+        <PageHeader className="shop-header" eyebrow="Shop">
           <div className="shop-title-block">
-            <p className="shop-kicker">THE PHYSICAL LAYER</p>
             <h1>COLLECTION 001</h1>
             <p className="shop-subtitle">The first physical expression of LIVV.</p>
           </div>
-        </header>
+        </PageHeader>
 
         <section className="shop-collection" aria-labelledby="collection-title">
           <div className="shop-section-head"><h2 id="collection-title">THE FIVE</h2></div>

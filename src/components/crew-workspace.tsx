@@ -14,6 +14,7 @@ import {
 } from "lucide-react";
 import { getSupabaseBrowserClient } from "@/lib/supabase/client";
 import type { CrewUpdate, CrewUpdateKind } from "@/lib/crew/types";
+import { PageHeader } from "@/components/layout/page-header";
 import "./crew-workspace.css";
 
 type Crew = {
@@ -216,20 +217,23 @@ export function CrewWorkspace() {
   return (
     <main className="crew" aria-label="Crew">
       <div className="crew-inner">
-        <Link href="/home/profile" className="crew-back">
-          <ArrowLeft size={17} strokeWidth={1.7} />
-          You
-        </Link>
-
-        <header className="crew-mast">
-          <p className="crew-k">Your circle</p>
+        <PageHeader
+          className="crew-mast"
+          eyebrow="Crew"
+          trailing={
+            <Link href="/home/profile" className="crew-back">
+              <ArrowLeft size={17} strokeWidth={1.7} />
+              You
+            </Link>
+          }
+        >
           <h1 className="crew-title">
             Crew<span className="crew-dot">.</span>
           </h1>
           <p className="crew-sub">
             Grow together. Share what you’re learning. Support each other.
           </p>
-        </header>
+        </PageHeader>
 
         {error ? (
           <p role="alert" className="crew-banner crew-banner-error">

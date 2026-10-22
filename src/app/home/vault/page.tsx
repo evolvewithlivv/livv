@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { BookOpen, Download, FlaskConical, Sparkles, Wrench } from "lucide-react";
 import { VAULT_MODULES, type VaultModule } from "@/lib/vault";
+import { PageHeader } from "@/components/layout/page-header";
 
 const KIND_ICON = {
   protocol: BookOpen,
@@ -16,11 +17,10 @@ export default function VaultPage() {
   return (
     <main className="livv-page min-h-full pb-24">
       <div className="mx-auto w-full max-w-xl px-5 pt-6 sm:px-6">
-        <header>
-          <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-livv-muted">Vault</p>
-          <h1 className="mt-2 text-[32px] font-semibold leading-[0.96] tracking-[-0.05em] sm:text-[36px]">Tools for real life.</h1>
+        <PageHeader eyebrow="Vault">
+          <h1 className="text-[32px] font-semibold leading-[0.96] tracking-[-0.05em] sm:text-[36px]">Tools for real life.</h1>
           <p className="mt-3 max-w-[36ch] text-[14px] leading-6 text-livv-muted">Protocols, tools, programs, and downloads. Useful by design. Free to every LIVV user.</p>
-        </header>
+        </PageHeader>
         <section className="mt-10">
           <h2 className="text-[11px] font-semibold uppercase tracking-[0.16em] text-livv-muted">The collection</h2>
           <div className="mt-4 space-y-3">

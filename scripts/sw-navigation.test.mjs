@@ -8,7 +8,8 @@ const entry = fs.readFileSync(new URL("../src/components/landing/signed-in-entry
 const landing = fs.readFileSync(new URL("../src/lib/landing-session.ts", import.meta.url), "utf8");
 
 assert.equal(source.includes("Response.redirect"), false);
-assert.equal(source.includes("livv-shell-v3"), true);
+assert.equal(source.includes("livv-shell-v4"), true);
+assert.equal(source.includes("livv-shell-v3"), false);
 assert.equal(source.includes("livv-shell-v2"), false);
 assert.equal(source.includes('request.mode==="navigate"&&!url.pathname.startsWith("/field-offline/")'), true);
 assert.equal(entry.includes('window.location.replace("/home" + window.location.search)'), true);
@@ -91,7 +92,7 @@ worker.listeners.activate({
   },
 });
 await activation;
-assert.deepEqual(worker.deleted.sort(), ["livv-other", "livv-shell-v2"]);
+assert.deepEqual(worker.deleted.sort(), ["livv-other", "livv-shell-v2", "livv-shell-v3", "livv-static-assets-v1"].sort());
 
 const rootNavigation = dispatch(worker.listeners, {
   method: "GET",

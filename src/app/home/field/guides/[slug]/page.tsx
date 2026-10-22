@@ -18,6 +18,7 @@ import {
 import { getFieldGuide } from "@/lib/field-guides";
 import "./field-guide.css";
 import { ShareItemButton } from "@/components/share/share-item-button";
+import { PageHeader } from "@/components/layout/page-header";
 
 type GuideProgress = {
   completedSteps: string[];
@@ -165,10 +166,10 @@ export default function FieldGuidePage() {
     return (
       <main className="field-guide">
         <div className="field-guide-inner">
-          <Link href="/home/field" prefetch={false} className="field-guide-back"><ArrowLeft size={14} /> Field</Link>
-          <p className="field-guide-k">LIVV / FIELD</p>
+          <PageHeader eyebrow="Field" trailing={<Link href="/home/field" prefetch={false} className="field-guide-back"><ArrowLeft size={14} /> Field</Link>}>
           <h1 className="field-guide-title">Guide not found.</h1>
           <p className="field-guide-intro">This guide is not available yet. We will add topics when their instructions and sources are ready.</p>
+          </PageHeader>
           <Link href="/home/field" prefetch={false} className="field-guide-primary">Return to Field</Link>
         </div>
       </main>
@@ -178,10 +179,7 @@ export default function FieldGuidePage() {
   return (
     <main className="field-guide" aria-label={guide.title}>
       <div className="field-guide-inner">
-        <Link href="/home/field" prefetch={false} className="field-guide-back"><ArrowLeft size={14} /> Field</Link>
-
-        <header className="field-guide-hero">
-          <p className="field-guide-k">{guide.eyebrow}</p>
+        <PageHeader className="field-guide-hero" eyebrow="Field" trailing={<Link href="/home/field" prefetch={false} className="field-guide-back"><ArrowLeft size={14} /> Field</Link>}>
           <div className="field-guide-title-row">
             <h1 className="field-guide-title">{guide.title}.</h1>
             <span className="field-guide-mark" aria-hidden="true"><Leaf size={23} /></span>
@@ -204,7 +202,7 @@ export default function FieldGuidePage() {
                 : "Save the complete instructions, checklist, and field notes for when you have no connection."}
           </p>
           {offlineStatus === "saved" && <Link href={`/field-offline/${guide.slug}`} className="field-guide-open-offline">Open saved offline copy <ExternalLink size={13} /></Link>}
-        </header>
+        </PageHeader>
 
         <section className="field-guide-progress" aria-label="Guide progress">
           <div className="field-guide-progress-top">

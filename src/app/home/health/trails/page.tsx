@@ -5,6 +5,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { ChevronLeft, MapPin, Play, Square } from "lucide-react";
 import "../health-systems.css";
 import { blankDay, loadHealthDays, todayKey, upsertHealthDay } from "@/lib/health";
+import { PageHeader } from "@/components/layout/page-header";
 
 type Activity="Walk"|"Run"|"Bike";
 type Log={id:string;date:string;activity:Activity;distance:number;duration:number;note:string};
@@ -23,8 +24,7 @@ export default function TrailsPage(){
  const total=useMemo(()=>logs.reduce((s,x)=>s+x.distance,0),[logs]);
  const time=String(Math.floor(sec/3600)).padStart(2,"0")+":"+String(Math.floor(sec/60)%60).padStart(2,"0")+":"+String(sec%60).padStart(2,"0");
  return <main className="hsys hsys-move" aria-label="Move"><div className="hsys-inner">
-  <Link href="/home/health" className="hsys-back"><ChevronLeft size={14}/> Health</Link>
-  <header className="hsys-mast"><p className="hsys-k">04 / Movement</p><h1 className="hsys-title">Move</h1><p className="hsys-sub">Go outside. Lift your pace. Keep the body useful.</p><div className="hsys-stats"><div><strong>{dist.toFixed(2)}</strong><span>Current mi</span></div><div><strong>{time}</strong><span>Elapsed</span></div><div><strong>{total.toFixed(1)}</strong><span>Total mi</span></div></div></header>
+  <PageHeader className="hsys-mast" eyebrow="Move" trailing={<Link href="/home/health" className="hsys-back"><ChevronLeft size={14}/> Health</Link>}><h1 className="hsys-title">Move</h1><p className="hsys-sub">Go outside. Lift your pace. Keep the body useful.</p><div className="hsys-stats"><div><strong>{dist.toFixed(2)}</strong><span>Current mi</span></div><div><strong>{time}</strong><span>Elapsed</span></div><div><strong>{total.toFixed(1)}</strong><span>Total mi</span></div></div></PageHeader>
   {nav}
   <section className="hsys-section"><p className="hsys-label">Choose your movement</p><div className="hsys-card"><div className="hsys-chips">{(["Walk","Run","Bike"] as Activity[]).map(x=><button key={x} type="button" disabled={running} className={"hsys-chip"+(activity===x?" on":"")} onClick={()=>setActivity(x)}>{x}</button>)}</div><button type="button" className="hsys-btn" onClick={running?stop:start}>{running?<><Square size={12}/> Stop session</>:<><Play size={12}/> Start session</>}</button><p className="hsys-item-s" style={{marginTop:9}}><MapPin size={11} style={{verticalAlign:-2,marginRight:4}}/> GPS is active only while a session is running.</p></div></section>
   <section className="hsys-section"><p className="hsys-label">Finish the record</p><div className="hsys-card"><label className="hsys-field"><span>Distance · miles</span><input type="number" min={0} step={0.01} value={dist||""} onChange={e=>setDist(Number(e.target.value)||0)} disabled={running} placeholder="0.00"/></label><label className="hsys-field"><span>Context <em>(optional)</em></span><input value={note} onChange={e=>setNote(e.target.value)} disabled={running} placeholder="Route, weather, how it felt"/></label><button type="button" className="hsys-btn" disabled={!dist||running} onClick={save}>Log movement</button></div></section>

@@ -1,5 +1,6 @@
 import { type AuthError, type User } from "@supabase/supabase-js";
-import { DEFAULT_ACCENT, applyAppearance, coerceEmberCount, keepNewerEmberBalance, normalizeLook, readStoredLook, writeStoredLook, type Identity } from "../identity";
+import { DEFAULT_ACCENT, applyAppearance, coerceEmberCount, keepNewerEmberBalance, readStoredLook, writeStoredLook, type Identity } from "../identity";
+import { explicitPaint } from "../look.mjs";
 import { loadAccounts, normalizeUsername, suggestUsername, syncIdentityToCloud, type Account, type AuthProvider } from "../auth";
 import { getSupabaseBrowserClient, isSupabaseConfigured } from "./client";
 import { sanitizeTrafficSource } from "../attribution";
@@ -41,15 +42,14 @@ async function hydrateCloudProfile(user: User, account: Account): Promise<Accoun
   const localUpdatedAt = typeof account.identityUpdatedAt === "number" ? account.identityUpdatedAt : 0;
   const localWins = Number.isFinite(localUpdatedAt) && localUpdatedAt > 0 && localUpdatedAt > (Number.isFinite(cloudUpdatedAt) ? cloudUpdatedAt : 0);
   const pending = readStoredLook();
-  const cloudLook = normalizeLook(
-    profile.appearance === "light" || profile.appearance === "system" || profile.appearance === "dark"
-      ? profile.appearance
-      : account.appearance,
-    typeof profile.theme === "string" ? profile.theme : account.theme,
-  );
-  const look = pending && pending.updatedAt > pending.syncedAt ? pending : cloudLook;
-  const appearance = look.appearance;
-  const theme = look.theme;
+  const rawAppearance = profile.appearance === "light" || profile.appearance === "system" || profile.appearance === "dark"
+    ? profile.appearance
+    : account.appearance;
+  const rawTheme = typeof profile.theme === "string" ? profile.theme : account.theme;
+  const pendingWins = Boolean(pending && pending.updatedAt > pending.syncedAt);
+  const chosen = pendingWins ? pending : explicitPaint(rawAppearance, rawTheme);
+  const appearance = chosen ? chosen.appearance : "system";
+  const theme = chosen ? chosen.theme : "daylight";
   const hydrated: Account = {
     ...account,
     username: placeholder ? account.username : profile.username || account.username,

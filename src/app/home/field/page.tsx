@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { ChevronLeft, Leaf, PawPrint, Droplets, Sun, Sprout, Wheat, ArrowUpRight, BookOpen, ShieldCheck } from "lucide-react";
+import { PageHeader } from "@/components/layout/page-header";
 import "./field.css";
 
 const GROW = [
@@ -45,12 +46,10 @@ function TopicList({ items }: { items: { name: string; note: string; window?: st
 export default function FieldPage() {
   return <main className="field" aria-label="LIVV Field">
     <div className="field-inner">
-      <Link href="/home" className="field-back"><ChevronLeft size={14}/> Home</Link>
-      <header className="field-hero">
-        <p className="field-k">LIVV / FIELD</p>
+      <PageHeader className="field-hero" eyebrow="Field" trailing={<Link href="/home" className="field-back"><ChevronLeft size={14}/> Home</Link>}>
         <h1>Become harder to depend on.</h1>
         <p>Learn to grow food, care for living things, preserve what you produce, and store what your household needs. Build practical capability instead of outsourcing every basic need.</p>
-      </header>
+      </PageHeader>
 
       <section className="field-orbit" aria-label="Field pillars">
         <a href="#grow"><Leaf size={17}/><span>Grow</span></a>

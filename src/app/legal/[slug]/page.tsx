@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { LEGAL, LEGAL_DOCS, legalBySlug } from "@/lib/legal";
+import { PageHeader } from "@/components/layout/page-header";
 import "../legal.css";
 
 export default function LegalPage() {
@@ -21,15 +22,13 @@ export default function LegalPage() {
   return (
     <main className="min-h-dvh bg-[#050505] pb-20 text-white">
       <div className="mx-auto max-w-lg px-5 pt-8">
-        <Link href="/home/settings" className="text-[11px] text-white/35">
-          ← Settings
-        </Link>
-        <p className="mt-6 text-[10px] uppercase tracking-[0.28em] text-white/30">Legal</p>
-        <h1 className="font-display mt-2 text-[34px] font-semibold tracking-tight">{doc.title}</h1>
+        <PageHeader eyebrow="Legal" trailing={<Link href="/home/settings" className="text-[11px] text-white/35">Settings</Link>}>
+        <h1 className="font-display text-[34px] font-semibold tracking-tight">{doc.title}</h1>
         <p className="mt-3 text-[14px] leading-relaxed text-white/45">{doc.blurb}</p>
         <p className="mt-2 text-[11px] text-white/30">
           {LEGAL.product} · Effective {LEGAL.effective}
         </p>
+        </PageHeader>
 
         <nav className="mt-6 flex flex-wrap gap-2">
           {LEGAL_DOCS.map((d) => (

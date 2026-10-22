@@ -1,115 +1,114 @@
-/* LIVV page header system — primary screens share one type scale.
-   Blue is reserved for UI state, not page labels.
-   Titles: premium native-app editorial — dominant but restrained. */
-.livv-page-hero {
+/* One page header. Blue eyebrow, shared type, shared top offset. */
+:root {
+  --livv-ph-top: calc(16px + env(safe-area-inset-top, 0px));
+  --livv-ph-gap: 0.625rem;
+}
+
+header.livv-ph {
+  display: block;
+  padding-top: var(--livv-ph-top);
+}
+
+.livv-ph-row {
   display: flex;
-  align-items: flex-end;
+  align-items: center;
   justify-content: space-between;
   gap: 1rem;
-  padding-top: 0.35rem;
-  padding-bottom: 1.5rem;
-  border-bottom: 1px solid var(--livv-pro-line, var(--livv-border, rgba(255, 255, 255, 0.08)));
+  min-height: 13px;
 }
-.livv-page-hero-main {
-  min-width: 0;
-  flex: 1;
-}
-.livv-page-eyebrow {
+
+.livv-ph-eyebrow {
   margin: 0;
-  font-size: 0.875rem;
-  font-weight: 600;
-  line-height: 1.2;
-  letter-spacing: 0.16em;
+  font-size: 11px;
+  font-weight: 650;
+  line-height: 13px;
+  letter-spacing: 0.14em;
   text-transform: uppercase;
-  color: var(--livv-pro-muted, var(--livv-muted, rgba(255, 255, 255, 0.45)));
+  color: var(--livv-blue, #0f7fff);
 }
-.livv-page-title {
-  margin: 0.625rem 0 0;
-  max-width: 22ch;
-  font-family: var(--font-display), var(--font-body), -apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif;
-  font-size: clamp(1.6875rem, 6.5vw, 2.5rem);
-  font-weight: 500;
-  line-height: 1.12;
-  letter-spacing: -0.035em;
-  color: var(--livv-pro-ink, var(--livv-ink, #f5f5f5));
-}
-.livv-page-subtitle {
-  margin: 1rem 0 0;
-  max-width: 48ch;
-  font-size: 0.8125rem;
-  font-weight: 400;
-  line-height: 1.55;
-  color: var(--livv-pro-muted, var(--livv-muted, rgba(255, 255, 255, 0.45)));
-}
-.livv-page-hero-right {
+
+.livv-ph-trailing {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 0.75rem;
   flex-shrink: 0;
-  padding-bottom: 0.25rem;
-  color: var(--livv-pro-muted, var(--livv-muted, rgba(255, 255, 255, 0.45)));
 }
 
-
-/* Primary app section labels: one consistent LIVV system across screens.
-   Keep the section marker blue, with a shared scale and baseline. */
-main.dy .dy-k,
-main.tr .tr-k,
-main.health-home .health-eyebrow,
-main.shop-page .shop-header-top,
-main.field .field-k,
-main.you .you-top-k {
-  margin: 0 !important;
-  font-size: 11px !important;
-  font-weight: 650 !important;
-  line-height: 1.2 !important;
-  letter-spacing: 0.14em !important;
-  text-transform: uppercase !important;
-  color: var(--livv-blue, #0F7FFF) !important;
+.livv-ph > .dy-date,
+.livv-ph > h1,
+.livv-ph > .dy-question,
+.livv-ph > .tr-title,
+.livv-ph > .hsys-title,
+.livv-ph > .st-title,
+.livv-ph > .ed-title,
+.livv-ph > .field-guide-title,
+.livv-ph > .field-guide-title-row,
+.livv-ph > .crew-title,
+.livv-ph > .em-balance {
+  margin-top: var(--livv-ph-gap);
 }
 
-/* Align the start of each primary page header without changing page content order. */
-main.dy .dy-inner > header,
-main.tr .tr-inner > header,
-main.health-home .health-mast,
-main.shop-page .shop-header,
-main.field .field-hero,
-main.you .you-top {
-  padding-top: 16px !important;
-}
-
-
-/* Shared top alignment: every primary screen starts its section label on the same baseline. */
-main.dy .dy-inner,
-main.tr .tr-inner,
-main.health-home .health-shell,
-main.shop-page .shop-shell,
-main.field .field-inner,
-main.you .you-inner {
-  padding-top: 16px !important;
-}
-
-main.dy header,
-main.tr .tr-inner > header,
-main.health-home .health-mast,
-main.shop-page .shop-header,
-main.field .field-hero,
-main.you .you-top {
+/* Shells that start with the shared header do not add a second top inset. */
+.dy-inner:has(> .livv-ph),
+.tr-inner:has(> .livv-ph),
+.you-inner:has(> .livv-ph),
+.shop-shell:has(> .livv-ph),
+.health-shell:has(> .livv-ph),
+.field-inner:has(> .livv-ph),
+.field-guide-inner:has(> .livv-ph),
+.st-inner:has(> .livv-ph),
+.em-inner:has(> .livv-ph),
+.hsys-inner:has(> .livv-ph),
+.rec-inner:has(> .livv-ph),
+.crew-inner:has(> .livv-ph),
+.fast-page .mx-auto:has(> .livv-ph),
+.fast-page:has(.livv-ph),
+.livv-page .mx-auto:has(> .livv-ph),
+main .mx-auto:has(> .livv-ph) {
   padding-top: 0 !important;
+}
+
+.dy header.livv-ph,
+.hsys-mast.livv-ph,
+.field-hero.livv-ph,
+.field-guide-hero.livv-ph,
+.shop-header.livv-ph,
+.st-heading.livv-ph,
+.rec-top.livv-ph {
+  padding-top: var(--livv-ph-top) !important;
   margin-top: 0 !important;
 }
 
-/* Keep the section label typography identical, including pages with nested header styles. */
-main.dy .dy-k,
-main.tr .tr-k,
-main.health-home .health-eyebrow,
-main.shop-page .shop-header-top,
-main.field .field-k,
-main.you .you-top-k {
-  display: block !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  font-size: 11px !important;
-  font-weight: 650 !important;
-  line-height: 13px !important;
-  letter-spacing: 0.14em !important;
-  text-transform: uppercase !important;
-  color: var(--livv-blue, #0F7FFF) !important;
+.livv-ph .shop-title-block {
+  padding-top: var(--livv-ph-gap);
+}
+
+.livv-ph + .health-hero,
+.livv-ph + .you-id,
+.livv-ph + .ho-today,
+.you-inner .livv-ph + .you-id {
+  margin-top: 0;
+  padding-top: var(--livv-ph-gap);
+}
+
+/* Home keeps its greeting. The top edge matches the eyebrow offset. */
+.ho-shell {
+  padding-top: var(--livv-ph-top) !important;
+}
+
+.livv-ph .hsys-back,
+.livv-ph .field-back,
+.livv-ph .st-back,
+.livv-ph .em-back,
+.livv-ph .field-guide-back,
+.livv-ph .crew-back,
+.livv-ph .ed-back {
+  min-height: 0;
+  margin: 0;
+}
+
+.public-share .livv-ph,
+.print-sheet .livv-ph {
+  padding-top: 0;
 }

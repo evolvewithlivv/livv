@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { LivvMark } from "@/components/brand/livv-mark";
-import { applyAppearance, loadIdentity, readStoredLook } from "@/lib/identity";
+import { applyAppearance, hasExplicitLookChoice, loadIdentity } from "@/lib/identity";
 import { hydrateServerEntitlement } from "@/lib/billing";
 import { startCloudMemberStateSync } from "@/lib/supabase/cloud-state";
 import { ensureCloudAuthForCurrentBrowser } from "@/lib/supabase/real-auth";
@@ -15,16 +15,7 @@ const BOOT_KEY = "livv-boot-shown";
 
 /** A Daylight or Midnight choice already stored on this device. */
 function hasSavedLandingChoice() {
-  try {
-    const look = readStoredLook();
-    if (look && look.updatedAt > (look.syncedAt || 0)) return true;
-    const raw = window.localStorage.getItem("livv-identity-v1");
-    if (!raw) return false;
-    const parsed = JSON.parse(raw) as { appearance?: unknown; theme?: unknown };
-    return Boolean(parsed && (parsed.appearance || parsed.theme));
-  } catch {
-    return false;
-  }
+  return hasExplicitLookChoice();
 }
 
 /** Public `/` with no saved choice follows the system scheme. Midnight or Daylight only. */

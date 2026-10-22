@@ -2,6 +2,7 @@ import Link from "next/link";
 import { ArrowLeft, ExternalLink, Leaf, ShieldCheck } from "lucide-react";
 import { FIELD_GUIDES, getFieldGuide } from "@/lib/field-guides";
 import { FieldGuideOfflineRecord } from "@/components/field/field-guide-offline-record";
+import { PageHeader } from "@/components/layout/page-header";
 import "@/app/home/field/guides/[slug]/field-guide.css";
 
 export function generateStaticParams() {
@@ -16,20 +17,18 @@ export default async function OfflineFieldGuidePage({ params }: { params: Promis
   const { slug } = await params;
   const guide = getFieldGuide(slug);
   if (!guide) {
-    return <main className="field-guide"><div className="field-guide-inner"><p className="field-guide-k">LIVV / FIELD / OFFLINE</p><h1 className="field-guide-title">Guide unavailable.</h1><p className="field-guide-intro">This guide has not been included in the offline library.</p></div></main>;
+    return <main className="field-guide"><div className="field-guide-inner"><PageHeader eyebrow="Field"><h1 className="field-guide-title">Guide unavailable.</h1><p className="field-guide-intro">This guide has not been included in the offline library.</p></PageHeader></div></main>;
   }
 
   return (
     <main className="field-guide" aria-label={guide.title}>
       <div className="field-guide-inner">
-        <Link href={`/home/field/guides/${guide.slug}`} prefetch={false} className="field-guide-back"><ArrowLeft size={14} /> Regular guide</Link>
-        <header className="field-guide-hero">
-          <p className="field-guide-k">LIVV / FIELD / OFFLINE COPY</p>
+        <PageHeader className="field-guide-hero" eyebrow="Field" trailing={<Link href={`/home/field/guides/${guide.slug}`} prefetch={false} className="field-guide-back"><ArrowLeft size={14} /> Regular guide</Link>}>
           <div className="field-guide-title-row"><h1 className="field-guide-title">{guide.title}.</h1><span className="field-guide-mark" aria-hidden="true"><Leaf size={23} /></span></div>
           <p className="field-guide-intro">{guide.summary}</p>
           <div className="field-guide-meta"><span>{guide.level}</span><span>{guide.duration}</span><span><ShieldCheck size={13} /> Offline guide + field record</span></div>
           <p className="field-guide-save-note">This saved copy includes the full instructions and a local checklist. Step completion and field notes save on this device without a connection. Source links need a connection.</p>
-        </header>
+        </PageHeader>
 
         <section className="field-guide-section">
           <p className="field-guide-overline">01 / Understand</p><h2>Before you begin</h2><p className="field-guide-body">{guide.overview}</p>

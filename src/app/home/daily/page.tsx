@@ -12,6 +12,7 @@ import {
   type DailyTask,
 } from "@/lib/daily";
 import { feedback } from "@/lib/sensory";
+import { PageHeader } from "@/components/layout/page-header";
 import "./daily.css";
 
 export default function DailyPage() {
@@ -136,8 +137,7 @@ export default function DailyPage() {
   return (
     <main className="dy" aria-label="Daily">
       <div className="dy-inner">
-        <header>
-          <p className="dy-k">Today</p>
+        <PageHeader eyebrow="Daily">
           <p className="dy-date">{dateLabel}</p>
           <h1 className="dy-question">{question}</h1>
           <div
@@ -152,7 +152,7 @@ export default function DailyPage() {
             </div>
             <span className="dy-progress-n">{doneCount}/{total}</span>
           </div>
-        </header>
+        </PageHeader>
 
         <section className="dy-section" aria-label="Today's actions">
           <p className="dy-section-k">Today&apos;s actions</p>

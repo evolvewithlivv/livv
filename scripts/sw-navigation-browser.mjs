@@ -214,7 +214,7 @@ try {
   if (!Array.isArray(result.caches) || result.caches.includes("livv-shell-v2")) {
     throw new Error(`old cache still present: ${JSON.stringify(result.caches)}`);
   }
-  if (!result.caches.includes("livv-shell-v3")) {
+  if (!result.caches.includes("livv-shell-v4")) {
     throw new Error(`new cache missing: ${JSON.stringify(result.caches)}`);
   }
   console.log(

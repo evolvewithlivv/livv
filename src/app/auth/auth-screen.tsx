@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { LivvMark } from "@/components/brand/livv-mark";
+import { BrandLockup } from "@/components/brand/brand-lockup";
 import { Button } from "@/components/ui/button";
 import { authModeFromParam, persistTrafficSource, readTrafficSource, sanitizeTrafficSource } from "@/lib/attribution";
 import { persistQueryAttribution } from "@/lib/funnel-core.mjs";
@@ -171,15 +171,13 @@ export default function AuthScreen({ initialMode, initialSrc }: { initialMode: "
   return (
     <main className="auth-page relative min-h-dvh overflow-hidden text-[rgb(var(--livv-ink))]">
       <aside className="auth-desk">
-        <div className="auth-desk-mark">
-          <LivvMark kind="wordmark" alt="LIVV" priority />
-        </div>
+        <BrandLockup priority className="auth-desk-mark" />
         <p className="auth-desk-line">An operating system for a life you can actually live.</p>
       </aside>
       <div aria-hidden className="auth-glow pointer-events-none absolute inset-x-0 top-0" />
       <div className="auth-stage relative z-10 mx-auto flex min-h-dvh w-full max-w-md flex-col justify-start px-6 pt-10 pb-[max(24px,env(safe-area-inset-bottom))]">
         <div className="auth-brand mb-7 flex flex-col items-center">
-          <LivvMark kind="flame" alt="LIVV" className="auth-flame" priority />
+          <BrandLockup flame wordmark={false} priority />
           <p className="mt-2 text-center text-[13px] text-[rgb(var(--livv-muted))]">{mode === "signin" ? "Welcome back. Keep building." : "Build the skills to become more capable."}</p>
         </div>
 

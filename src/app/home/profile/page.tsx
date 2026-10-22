@@ -8,6 +8,7 @@ import { goalLabels, loadOnboardingDraft, type OnboardingDraft } from "@/lib/onb
 import { loadRecord } from "@/lib/record";
 import { countCompletedObjectives } from "@/lib/daily";
 import { MIN_REDEEM_EMBERS, embersToDollars } from "@/lib/ember-economy";
+import { PageHeader } from "@/components/layout/page-header";
 import "./profile-signal.css";
 
 export default function ProfilePage() {
@@ -51,12 +52,14 @@ export default function ProfilePage() {
   return (
     <main className="you" aria-label="You">
       <div className="you-inner">
-        <header className="you-top">
-          <p className="you-top-k">You</p>
-          <Link href="/home/settings" className="you-icon" aria-label="Settings">
-            <Settings2 size={18} strokeWidth={1.7} />
-          </Link>
-        </header>
+        <PageHeader
+          eyebrow="You"
+          trailing={
+            <Link href="/home/settings" className="you-icon" aria-label="Settings">
+              <Settings2 size={18} strokeWidth={1.7} />
+            </Link>
+          }
+        />
 
         <section className="you-id">
           <div className="you-photo-wrap" aria-hidden>

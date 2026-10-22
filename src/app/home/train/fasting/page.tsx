@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { Container } from "@/components/ui/container";
+import { PageHeader } from "@/components/layout/page-header";
 import "./fasting.css";
 import { PROTOCOLS, cancelFast, elapsedMs, endFast, fastingStats, formatClock, getActiveFast, loadFastState, progressPct, startFast, type FastSession } from "@/lib/fasting";
 
@@ -34,10 +35,10 @@ export default function FastingPage() {
 
   return <main className="fast-page">
     <Container>
-      <div className="flex items-center justify-between gap-3">
-        <div><p className="text-[10px] uppercase tracking-[0.28em] text-white/35">Train · Recovery</p><h1 className="mt-2 text-3xl font-semibold tracking-tight">Fasting</h1><p className="mt-1 text-sm text-white/50">Track the fast. Keep the data. You decide the protocol.</p></div>
-        <Link href="/home/train" className="rounded-full border border-white/10 bg-white/[0.04] px-3 py-2 text-[10px] uppercase tracking-[0.18em] text-white/50">Train</Link>
-      </div>
+      <PageHeader eyebrow="Fasting" trailing={<Link href="/home/train" className="text-[11px] font-semibold uppercase tracking-[0.14em] text-livv-muted">Train</Link>}>
+        <h1 className="text-3xl font-semibold tracking-tight">Fasting</h1>
+        <p className="mt-1 text-sm text-livv-muted">Track the fast. Keep the data. You decide the protocol.</p>
+      </PageHeader>
 
       {active ? <section className="mt-7 overflow-hidden rounded-[30px] border border-white/10 bg-white/[0.045] p-6 backdrop-blur-xl">
         <div className="flex items-center justify-between"><span className="text-[10px] uppercase tracking-[0.24em] text-white/35">Currently fasting</span><span className="rounded-full bg-emerald-400/10 px-3 py-1 text-[10px] font-semibold text-emerald-300">ACTIVE</span></div>

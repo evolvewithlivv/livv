@@ -15,6 +15,7 @@ import { getSupabaseBrowserClient, isSupabaseConfigured } from "@/lib/supabase/c
 import { getAuthenticatedUser } from "@/lib/supabase/real-auth";
 import { track } from "@/lib/funnel";
 import { cn } from "@/lib/utils";
+import { PageHeader } from "@/components/layout/page-header";
 
 const GOALS = [
   { id: "fitness", label: "Train the body with intent" },
@@ -118,13 +119,14 @@ export default function OnboardingPage() {
   if (error && !displayName && !busy) return <main className="livv-page flex min-h-dvh items-center justify-center px-5 text-white"><p className="text-sm text-red-400">{error}</p></main>;
 
   return (
-    <main className="livv-page onb relative min-h-dvh overflow-hidden pb-16 pt-10 text-white">
+    <main className="livv-page onb relative min-h-dvh overflow-hidden pb-16 text-white">
       <div className="onb-stage relative z-10 mx-auto max-w-md px-5">
         <div className="onb-copy">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.28em] text-livv-accent-soft">Onboarding</p>
-          <h1 className="onb-q font-display mt-2 text-3xl font-semibold tracking-tight">
+          <PageHeader eyebrow="Onboarding">
+          <h1 className="onb-q font-display text-3xl font-semibold tracking-tight">
             {step === "why" && "Why are you here?"}{step === "goals" && "What are you building?"}{step === "interests" && "What pulls you in?"}{step === "profile" && "What should we call you?"}
           </h1>
+          </PageHeader>
         </div>
         <div className="onb-form">
         {step === "why" && <div className="mt-8"><textarea value={why} onChange={e => {setWhy(e.target.value);persist({why:e.target.value});}} rows={5} placeholder="One honest sentence." className="w-full rounded-2xl border border-white/10 bg-white/[0.04] px-4 py-3 text-[15px] text-white outline-none placeholder:text-white/25 focus:border-white/25"/><Button className="mt-6 w-full" onClick={() => setStep("goals")}>Continue</Button></div>}

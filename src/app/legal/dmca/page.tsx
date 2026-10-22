@@ -1,16 +1,15 @@
 import Link from "next/link";
+import { PageHeader } from "@/components/layout/page-header";
 import "../legal.css";
 
 export default function DmcaPage() {
   return (
     <main className="livv-page min-h-dvh pb-20 text-livv-ink">
       <div className="mx-auto w-full max-w-2xl px-5 pt-8 sm:px-6 sm:pt-12">
-        <Link href="/legal/terms" className="text-xs font-medium text-livv-muted hover:text-livv-ink">Back to Legal</Link>
-        <header className="mt-10 border-b border-livv-border pb-8">
-          <p className="text-[10px] font-semibold uppercase tracking-[.22em] text-livv-muted">Legal / Copyright</p>
-          <h1 className="mt-2 text-4xl font-semibold tracking-[-.05em]">DMCA & Copyright Policy</h1>
+        <PageHeader className="border-b border-livv-border pb-8" eyebrow="Copyright" trailing={<Link href="/legal/terms" className="text-xs font-medium text-livv-muted hover:text-livv-ink">Legal</Link>}>
+          <h1 className="text-4xl font-semibold tracking-[-.05em]">DMCA & Copyright Policy</h1>
           <p className="mt-3 text-sm text-livv-muted">Effective October 6, 2026</p>
-        </header>
+        </PageHeader>
         <article className="livv-legal mt-10 max-w-none">
           <p><strong>In plain English:</strong> do not upload or share material you do not have the right to use. If you believe material on LIVV infringes your copyright, send a notice using the contact below.</p>
           <h2>1. User content</h2>
