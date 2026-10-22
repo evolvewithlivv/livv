@@ -124,12 +124,15 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 0.5rem;
+  align-items: start;
 }
 .you-record > div {
   padding: 0.15rem 0;
 }
-.you-record strong {
-  display: block;
+/* One numeral style. Count-up nests spans inside the streak figure, so the
+   same metrics have to land on those spans or the label rule shrinks them. */
+.you-record-num,
+.you-record-num .livv-count > span {
   font-family: var(--font-display), var(--font-body), system-ui, sans-serif;
   font-size: 1.85rem;
   font-weight: 650;
@@ -137,7 +140,21 @@
   font-variant-numeric: tabular-nums;
   line-height: 1;
 }
-.you-record span {
+.you-record-num {
+  display: block;
+  margin: 0;
+}
+.you-record-num .livv-count {
+  display: inline-grid;
+  vertical-align: baseline;
+  color: inherit;
+}
+.you-record-num .livv-count > span {
+  margin: 0;
+  color: inherit;
+  text-transform: none;
+}
+.you-record > div > span {
   display: block;
   margin-top: 0.4rem;
   font-size: 10px;
