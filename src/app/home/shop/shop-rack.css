@@ -14,7 +14,7 @@
 .shop-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:12px;row-gap:28px}
 .shop-product{min-width:0;color:inherit;text-decoration:none}
 .shop-product-image{position:relative;display:flex;align-items:center;justify-content:center;aspect-ratio:1/1.12;overflow:visible;background:transparent;padding:2px 0 6px}
-.shop-product-image img{display:block;width:100%;height:100%;max-width:100%;object-fit:contain;object-position:center;transition:transform .5s cubic-bezier(.22,1,.36,1)}
+.shop-product-image img{display:block;width:100%;height:100%;max-width:100%;object-fit:contain;object-position:center;transition:transform var(--livv-dur-slow) var(--livv-ease-out)}
 .shop-product:hover .shop-product-image img{transform:scale(1.025)}
 .shop-product-no{position:absolute;top:2px;left:0;color:rgb(var(--livv-muted));font-size:8px;font-weight:800;letter-spacing:.14em;z-index:1}
 .shop-product-open{position:absolute;right:0;bottom:2px;display:grid;place-items:center;width:25px;height:25px;border:1px solid rgb(var(--livv-border));border-radius:50%;color:rgb(var(--livv-muted));z-index:1}
@@ -33,7 +33,7 @@
 .shop-embers-reading>span{color:rgb(var(--livv-muted));font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:7px;font-weight:700;letter-spacing:.12em}
 .shop-embers-reading .shop-embers-value{margin-left:auto;color:rgb(var(--livv-muted));font-size:8px;letter-spacing:.03em}
 .shop-embers-progress{height:2px;margin-top:17px;background:rgb(var(--livv-border));overflow:hidden}
-.shop-embers-progress span{display:block;height:100%;background:rgb(var(--livv-accent));transition:width .5s ease}
+.shop-embers-progress span{display:block;height:100%;background:rgb(var(--livv-accent))}
 .shop-embers-meta{display:flex;justify-content:space-between;gap:12px;margin-top:8px;color:rgb(var(--livv-muted));font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:7px;font-weight:700;letter-spacing:.06em}
 .shop-embers-rules{margin-top:14px;padding-top:11px;border-top:1px solid rgb(var(--livv-border))}
 .shop-embers-rules summary{cursor:pointer;color:rgb(var(--livv-muted));font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:7px;font-weight:700;letter-spacing:.1em;text-transform:uppercase}

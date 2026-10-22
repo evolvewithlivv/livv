@@ -4,6 +4,8 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import { Container } from "@/components/ui/container";
 import { PageHeader } from "@/components/layout/page-header";
+import { CountUp } from "@/components/motion/count-up";
+import { barStyle } from "@/components/motion/bar";
 import "./fasting.css";
 import { PROTOCOLS, cancelFast, elapsedMs, endFast, fastingStats, formatClock, getActiveFast, loadFastState, progressPct, startFast, type FastSession } from "@/lib/fasting";
 
@@ -44,7 +46,7 @@ export default function FastingPage() {
         <div className="flex items-center justify-between"><span className="text-[10px] uppercase tracking-[0.24em] text-white/35">Currently fasting</span><span className="rounded-full bg-emerald-400/10 px-3 py-1 text-[10px] font-semibold text-emerald-300">ACTIVE</span></div>
         <p className="mt-7 text-center text-5xl font-semibold tabular-nums tracking-tight">{formatClock(activeMs)}</p>
         <p className="mt-2 text-center text-xs text-white/35">{active.protocolName} · target {active.targetHours}h</p>
-        <div className="mt-7 h-2 overflow-hidden rounded-full bg-white/10"><div className="h-full rounded-full bg-white transition-all" style={{ width: `${progressPct(active, now)}%` }} /></div>
+        <div className="mt-7 h-2 overflow-hidden rounded-full bg-white/10"><div className="livv-bar h-full rounded-full bg-white" style={barStyle(progressPct(active, now))} /></div>
         <div className="mt-2 flex justify-between text-[10px] text-white/30"><span>{progressPct(active, now)}%</span><span>{Math.max(0, active.targetHours - activeMs / 3600000).toFixed(1)}h remaining</span></div>
         <div className="mt-7 grid grid-cols-2 gap-2.5"><button onClick={() => finish(false)} className="rounded-full bg-white py-3.5 text-sm font-semibold text-black">Finish fast</button><button onClick={() => finish(true)} className="rounded-full border border-white/10 bg-white/[0.04] py-3.5 text-sm text-white/55">End early</button></div>
         <button onClick={() => { cancelFast(); setState(loadFastState()); }} className="mt-3 w-full py-2 text-[10px] uppercase tracking-[0.18em] text-white/25">Cancel without logging</button>
@@ -54,7 +56,7 @@ export default function FastingPage() {
         <button onClick={begin} className="mt-6 w-full rounded-full bg-white py-4 text-sm font-semibold text-black">Start {selected.name} fast</button>
       </>}
 
-      <section className="mt-7 grid grid-cols-3 gap-2.5"><div className="rounded-[22px] border border-white/10 bg-white/[0.035] p-4"><p className="text-[9px] uppercase tracking-[0.18em] text-white/30">Completed</p><p className="mt-2 text-2xl font-semibold">{stats.completed}</p></div><div className="rounded-[22px] border border-white/10 bg-white/[0.035] p-4"><p className="text-[9px] uppercase tracking-[0.18em] text-white/30">Hours</p><p className="mt-2 text-2xl font-semibold">{stats.totalHours}</p></div><div className="rounded-[22px] border border-white/10 bg-white/[0.035] p-4"><p className="text-[9px] uppercase tracking-[0.18em] text-white/30">Streak</p><p className="mt-2 text-2xl font-semibold">{stats.streak}d</p></div></section>
+      <section className="mt-7 grid grid-cols-3 gap-2.5"><div className="rounded-[22px] border border-white/10 bg-white/[0.035] p-4"><p className="text-[9px] uppercase tracking-[0.18em] text-white/30">Completed</p><p className="mt-2 text-2xl font-semibold"><CountUp value={stats.completed} /></p></div><div className="rounded-[22px] border border-white/10 bg-white/[0.035] p-4"><p className="text-[9px] uppercase tracking-[0.18em] text-white/30">Hours</p><p className="mt-2 text-2xl font-semibold"><CountUp value={stats.totalHours} /></p></div><div className="rounded-[22px] border border-white/10 bg-white/[0.035] p-4"><p className="text-[9px] uppercase tracking-[0.18em] text-white/30">Streak</p><p className="mt-2 text-2xl font-semibold"><CountUp value={stats.streak} suffix="d" /></p></div></section>
 
       <p className="mt-6 text-center text-[10px] leading-relaxed text-white/25">Fasting can affect people differently. LIVV is a tracker, not medical advice. Stop if you feel unwell and use appropriate professional guidance for your situation.</p>
     </Container>

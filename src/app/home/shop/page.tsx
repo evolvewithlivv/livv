@@ -6,6 +6,8 @@ import { useEffect, useState } from "react";
 import { loadIdentity } from "@/lib/identity";
 import { EMBERS_PER_DOLLAR, MIN_REDEEM_EMBERS, REDEEM_RULES_COPY, embersToDollars } from "@/lib/ember-economy";
 import { PageHeader } from "@/components/layout/page-header";
+import { CountUp } from "@/components/motion/count-up";
+import { barStyle } from "@/components/motion/bar";
 import "./shop-rack.css";
 
 const PRODUCTS = [
@@ -68,11 +70,11 @@ export default function ShopPage() {
             <Link href="/home/profile" className="shop-embers-open" aria-label="View Embers in profile"><ArrowUpRight size={15} /></Link>
           </div>
           <div className="shop-embers-reading">
-            <strong>{embers.toLocaleString()}</strong>
+            <strong><CountUp value={embers} /></strong>
             <span>EMBERS</span>
             <span className="shop-embers-value">≈ ${dollars.toFixed(2)}</span>
           </div>
-          <div className="shop-embers-progress" aria-hidden="true"><span style={{ width: progress + "%" }} /></div>
+          <div className="shop-embers-progress" aria-hidden="true"><span className="livv-bar" style={barStyle(progress)} /></div>
           <div className="shop-embers-meta">
             <span>{remaining === 0 ? "REDEMPTION READY" : remaining.toLocaleString() + " TO REDEEM"}</span>
             <span>{MIN_REDEEM_EMBERS.toLocaleString()} EMBER MINIMUM</span>

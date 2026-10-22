@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState } from "react";
 import type { FieldGuide } from "@/lib/field-guides";
+import { barStyle } from "@/components/motion/bar";
 
 type GuideProgress = {
   completedSteps: string[];
@@ -103,7 +104,7 @@ export function FieldGuideOfflineRecord({ guide }: { guide: FieldGuide }) {
         <span>{Math.round((completedCount / guide.steps.length) * 100)}%</span>
       </div>
       <div className="field-guide-progress-track" role="progressbar" aria-valuenow={Math.round((completedCount / guide.steps.length) * 100)} aria-valuemin={0} aria-valuemax={100} aria-label="Offline guide steps completed">
-        <span style={{ width: `${Math.round((completedCount / guide.steps.length) * 100)}%` }} />
+        <span className="livv-bar" style={barStyle(Math.round((completedCount / guide.steps.length) * 100))} />
       </div>
       <div className="field-guide-verification">
         {guide.steps.map((step, index) => (

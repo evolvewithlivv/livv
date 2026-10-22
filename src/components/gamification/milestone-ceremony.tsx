@@ -8,6 +8,7 @@ import {
   type MilestoneDef,
 } from "@/lib/milestones";
 import { feedback } from "@/lib/sensory";
+import { Presence } from "@/components/motion/presence";
 
 export function MilestoneCeremony() {
   const [m, setM] = useState<MilestoneDef | null>(null);
@@ -28,11 +29,9 @@ export function MilestoneCeremony() {
     };
   }, []);
 
-  if (!m) return null;
-
   return (
-    <div className="fixed inset-0 z-[90] flex flex-col items-center justify-center bg-black/[0.97] px-6 backdrop-blur-xl">
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_50%_38%,rgba(255,255,255,.045),transparent_34%)]" />
+    <Presence open={Boolean(m)}>
+    {m ? <div className="fixed inset-0 z-[90] flex flex-col items-center justify-center bg-black/[0.97] px-6">
       <div className="relative flex max-w-md flex-col items-center text-center">
         <div className="h-px w-16 bg-white/20" />
         <p className="mt-7 text-[10px] uppercase tracking-[0.36em] text-white/45">Progress</p>
@@ -54,6 +53,7 @@ export function MilestoneCeremony() {
           Continue
         </button>
       </div>
-    </div>
+    </div> : null}
+    </Presence>
   );
 }

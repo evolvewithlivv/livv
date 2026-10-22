@@ -11,6 +11,8 @@ import { dailySummary, dailyQuestion } from "@/lib/daily";
 import { quoteForSession, type Quote } from "@/lib/quotes";
 import { nextMove, type Move } from "@/lib/command";
 import { consumeFirstSessionPending } from "@/lib/onboarding";
+import { CountUp } from "@/components/motion/count-up";
+import { SkeletonScreen } from "@/components/motion/skeleton";
 import "./home-signal.css";
 
 function greetingForHour(hour: number): string {
@@ -91,7 +93,7 @@ export default function HomePage() {
   }, []);
 
   if (!rec || !me) {
-    return <main className="ho" aria-hidden />;
+    return <SkeletonScreen label="Loading home" />;
   }
 
   const checkedIn = isCheckedInToday(rec);
@@ -207,9 +209,9 @@ export default function HomePage() {
         </section>
 
         <p className="ho-signal" aria-label="Signal">
-          <span>{streak}d present</span>
+          <span><CountUp value={streak} suffix="d" /> present</span>
           <span className="ho-dot" aria-hidden />
-          <span>{embers.toLocaleString()} embers</span>
+          <span><CountUp value={embers} /> embers</span>
           <span className="ho-dot" aria-hidden />
           <span>
             {sessions} session{sessions === 1 ? "" : "s"}

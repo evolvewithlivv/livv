@@ -16,6 +16,7 @@ import { getAuthenticatedUser } from "@/lib/supabase/real-auth";
 import { track } from "@/lib/funnel";
 import { cn } from "@/lib/utils";
 import { PageHeader } from "@/components/layout/page-header";
+import { SkeletonScreen } from "@/components/motion/skeleton";
 
 const GOALS = [
   { id: "fitness", label: "Train the body with intent" },
@@ -115,7 +116,7 @@ export default function OnboardingPage() {
     }
   };
 
-  if (checkingAccess) return <main className="livv-page flex min-h-dvh items-center justify-center px-5 text-white"><p className="text-sm text-white/45">Verifying your LIVV session…</p></main>;
+  if (checkingAccess) return <SkeletonScreen label="Verifying your LIVV session" />;
   if (error && !displayName && !busy) return <main className="livv-page flex min-h-dvh items-center justify-center px-5 text-white"><p className="text-sm text-red-400">{error}</p></main>;
 
   return (

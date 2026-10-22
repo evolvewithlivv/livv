@@ -1,62 +1,21 @@
-/* LIVV motion system — product depth, not Field Note theatrics.
-   Restraint + hierarchy. Reduced-motion respected. */
+/* LIVV motion. Transform and opacity only. One easing set, 150 to 350ms. */
 
 :root {
-  --livv-ease-out: cubic-bezier(0.16, 1, 0.3, 1);
-  --livv-ease-soft: cubic-bezier(0.2, 0.85, 0.2, 1);
-  --livv-dur-page: 0.55s;
-  --livv-dur-fast: 0.22s;
+  --livv-ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --livv-ease-in-out: cubic-bezier(0.4, 0, 0.2, 1);
+  --livv-ease-spring: cubic-bezier(0.2, 0.9, 0.2, 1);
+  --livv-dur-fast: 150ms;
+  --livv-dur-base: 220ms;
+  --livv-dur-page: 280ms;
+  --livv-dur-slow: 320ms;
 }
 
-/* ---- Page enter (route content) ---- */
+/* ---- Page enter ---- */
 .livv-page-motion {
   animation: livv-page-in var(--livv-dur-page) var(--livv-ease-out) both;
 }
 
 @keyframes livv-page-in {
-  from {
-    opacity: 0;
-    transform: translateY(12px);
-    filter: blur(6px);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-    filter: none;
-  }
-}
-
-/* Stagger children when parent has .livv-stagger */
-.livv-stagger > * {
-  animation: livv-rise 0.5s var(--livv-ease-out) both;
-}
-.livv-stagger > *:nth-child(1) { animation-delay: 0.04s; }
-.livv-stagger > *:nth-child(2) { animation-delay: 0.09s; }
-.livv-stagger > *:nth-child(3) { animation-delay: 0.14s; }
-.livv-stagger > *:nth-child(4) { animation-delay: 0.19s; }
-.livv-stagger > *:nth-child(5) { animation-delay: 0.24s; }
-.livv-stagger > *:nth-child(6) { animation-delay: 0.29s; }
-.livv-stagger > *:nth-child(7) { animation-delay: 0.34s; }
-.livv-stagger > *:nth-child(8) { animation-delay: 0.39s; }
-.livv-stagger > *:nth-child(n+9) { animation-delay: 0.44s; }
-
-@keyframes livv-rise {
-  from {
-    opacity: 0;
-    transform: translateY(10px);
-  }
-  to {
-    opacity: 1;
-    transform: none;
-  }
-}
-
-/* Hero enters slightly ahead of body */
-.livv-page-hero {
-  animation: livv-hero-in 0.6s var(--livv-ease-out) both;
-}
-
-@keyframes livv-hero-in {
   from {
     opacity: 0;
     transform: translateY(8px);
@@ -67,98 +26,179 @@
   }
 }
 
-/* Interactive press feedback */
-.livv-press {
-  transition: transform var(--livv-dur-fast) var(--livv-ease-soft),
-    opacity var(--livv-dur-fast) ease;
+/* Stagger sections on load. The shell div stays put so the page does not double-move. */
+.livv-page-motion main > :is(section, header, article, form, aside, ul, footer, p),
+.livv-page-motion main > div > :is(section, header, article, form, aside, ul, footer, p, .livv-ph) {
+  animation: livv-rise var(--livv-dur-slow) var(--livv-ease-out) both;
 }
-.livv-press:active {
-  transform: scale(0.97);
-}
+.livv-page-motion main > :is(section, header, article, form, aside, ul, footer, p):nth-child(1),
+.livv-page-motion main > div > :is(section, header, article, form, aside, ul, footer, p, .livv-ph):nth-child(1) { animation-delay: 0ms; }
+.livv-page-motion main > :is(section, header, article, form, aside, ul, footer, p):nth-child(2),
+.livv-page-motion main > div > :is(section, header, article, form, aside, ul, footer, p, .livv-ph):nth-child(2) { animation-delay: 40ms; }
+.livv-page-motion main > :is(section, header, article, form, aside, ul, footer, p):nth-child(3),
+.livv-page-motion main > div > :is(section, header, article, form, aside, ul, footer, p, .livv-ph):nth-child(3) { animation-delay: 80ms; }
+.livv-page-motion main > :is(section, header, article, form, aside, ul, footer, p):nth-child(4),
+.livv-page-motion main > div > :is(section, header, article, form, aside, ul, footer, p, .livv-ph):nth-child(4) { animation-delay: 120ms; }
+.livv-page-motion main > :is(section, header, article, form, aside, ul, footer, p):nth-child(5),
+.livv-page-motion main > div > :is(section, header, article, form, aside, ul, footer, p, .livv-ph):nth-child(5) { animation-delay: 150ms; }
+.livv-page-motion main > :is(section, header, article, form, aside, ul, footer, p):nth-child(n + 6),
+.livv-page-motion main > div > :is(section, header, article, form, aside, ul, footer, p, .livv-ph):nth-child(n + 6) { animation-delay: 180ms; }
 
-/* Default press feel on primary controls inside app pages */
-.livv-page button:not(:disabled),
-.livv-page a[role="button"],
-.livv-page .rounded-full.border {
-  transition: transform var(--livv-dur-fast) var(--livv-ease-soft);
-}
-.livv-page button:not(:disabled):active,
-.livv-page a[role="button"]:active {
-  transform: scale(0.97);
-}
-
-/* Cards / surfaces — subtle depth on interaction */
-.livv-surface-lift {
-  transition:
-    transform 0.28s var(--livv-ease-soft),
-    box-shadow 0.28s ease,
-    border-color 0.28s ease;
-}
-@media (hover: hover) {
-  .livv-surface-lift:hover {
-    transform: translateY(-2px);
+@keyframes livv-rise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
   }
 }
-.livv-surface-lift:active {
-  transform: scale(0.99);
+
+/* Pressed states. Scale stays under 2% so rows do not jump. */
+:where(.livv-app-shell, .livv-page-motion, .livv-sheet) :where(button, .dy-action, .you-link, .health-system, .ho-system, .shop-product, .st-row, .ho-primary):not(:disabled) {
+  transition: transform var(--livv-dur-fast) var(--livv-ease-spring);
+}
+:where(.livv-app-shell, .livv-page-motion, .livv-sheet) :where(button, .dy-action, .you-link, .health-system, .ho-system, .shop-product, .st-row, .ho-primary):not(:disabled):active {
+  transform: scale(0.985);
 }
 
-/* Tab bar active indicator motion */
+/* Tab bar icon */
 .livv-tab {
-  transition:
-    color 0.25s ease,
-    background 0.25s ease,
-    transform 0.2s var(--livv-ease-soft);
+  transition: color var(--livv-dur-fast) var(--livv-ease-out), transform var(--livv-dur-fast) var(--livv-ease-spring);
   position: relative;
 }
 .livv-tab .livv-tab-icon {
-  transition: transform 0.25s var(--livv-ease-soft);
+  opacity: 0.72;
+  transition: transform var(--livv-dur-base) var(--livv-ease-out), opacity var(--livv-dur-base) var(--livv-ease-out);
 }
 .livv-tab.is-active .livv-tab-icon {
-  transform: translateY(-1px) scale(1.06);
+  opacity: 1;
+  transform: translateY(-1px);
 }
 .livv-tab:active {
-  transform: scale(0.94);
+  transform: scale(0.98);
 }
 
-/* Soft depth under scroll content */
-.livv-app-shell {
-  position: relative;
+/* Progress. Width stays full so the fill moves with scale, not layout. */
+.livv-bar {
+  display: block;
+  width: 100% !important;
+  height: 100%;
+  transform-origin: left center;
+  transform: scaleX(var(--livv-p, 0));
+  transition: transform var(--livv-dur-slow) var(--livv-ease-out);
+  animation: livv-bar-in var(--livv-dur-slow) var(--livv-ease-out) backwards;
 }
-.livv-app-shell::before {
+.livv-bar-y {
+  transform-origin: bottom center;
+  transform: scaleY(var(--livv-p, 0));
+  transition: transform var(--livv-dur-slow) var(--livv-ease-out);
+  animation: livv-bar-y-in var(--livv-dur-slow) var(--livv-ease-out) backwards;
+}
+.health-day-track > .livv-bar-y {
+  height: 100%;
+}
+@keyframes livv-bar-in {
+  from { transform: scaleX(0); }
+}
+@keyframes livv-bar-y-in {
+  from { transform: scaleY(0); }
+}
+
+/* Daily complete */
+.dy-action.is-completing .dy-mark {
+  animation: livv-check var(--livv-dur-base) var(--livv-ease-out) both;
+}
+@keyframes livv-check {
+  from { opacity: 0; transform: scale(0.82); }
+  to { opacity: 1; transform: none; }
+}
+
+/* Sheets and modals */
+.livv-presence { display: contents; }
+.livv-presence.is-in > *,
+.livv-sheet.is-in {
+  animation: livv-sheet-in var(--livv-dur-slow) var(--livv-ease-out) both;
+}
+.livv-presence.is-out > *,
+.livv-sheet.is-out {
+  animation: livv-sheet-out var(--livv-dur-base) var(--livv-ease-in-out) both;
+}
+@keyframes livv-sheet-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: none; }
+}
+@keyframes livv-sheet-out {
+  from { opacity: 1; transform: none; }
+  to { opacity: 0; transform: translateY(8px); }
+}
+
+/* Count-up keeps the final width so digits do not shift layout. */
+.livv-count {
+  display: inline-grid;
+  font-variant-numeric: tabular-nums;
+}
+.livv-count > span { grid-area: 1 / 1; }
+.livv-count-sizer { visibility: hidden; }
+
+/* Skeleton shimmer. A moving band, not a gradient. The loop is a load state, not a transition. */
+.livv-skel-screen {
+  width: min(100%, 720px);
+  margin: 0 auto;
+  min-height: 70dvh;
+  padding: var(--livv-ph-top, calc(16px + env(safe-area-inset-top, 0px))) 1.1rem 2rem;
+}
+.livv-skel {
+  position: relative;
+  display: block;
+  overflow: hidden;
+  border-radius: 8px;
+  background: color-mix(in srgb, rgb(var(--livv-ink)) 8%, transparent);
+}
+.livv-skel::after {
   content: "";
-  pointer-events: none;
   position: absolute;
-  inset: 0;
-  z-index: 0;
-  background:
-    radial-gradient(ellipse 80% 40% at 50% -10%, rgba(100, 140, 200, 0.06), transparent 55%);
-  opacity: 1;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 38%;
+  background: color-mix(in srgb, rgb(var(--livv-fg)) 16%, transparent);
+  transform: translateX(-140%);
+  animation: livv-shimmer 1.1s var(--livv-ease-in-out) infinite;
 }
-.livv-app-shell > * {
-  position: relative;
-  z-index: 1;
-}
-
-/* Progress bars across the product */
-.livv-page [class*="rounded-full"][class*="h-1"],
-.livv-page [class*="rounded-full"][class*="h-1.5"],
-.livv-page [class*="rounded-full"][class*="h-2"] {
-  transition: width 0.5s var(--livv-ease-out);
+.livv-skel-k { width: 4.5rem; height: 0.55rem; }
+.livv-skel-title { width: min(62%, 16rem); height: 1.55rem; margin-top: 0.85rem; }
+.livv-skel-line { width: 100%; height: 0.7rem; margin-top: 0.7rem; }
+.livv-skel-line.is-short { width: 68%; }
+.livv-skel-block { height: 7.5rem; margin-top: 1.25rem; border-radius: 16px; }
+@keyframes livv-shimmer {
+  to { transform: translateX(280%); }
 }
 
 @media (prefers-reduced-motion: reduce) {
   .livv-page-motion,
-  .livv-stagger > *,
-  .livv-page-hero {
+  .livv-page-motion main > :is(section, header, article, form, aside, ul, footer, p),
+  .livv-page-motion main > div > :is(section, header, article, form, aside, ul, footer, p, .livv-ph),
+  .livv-bar,
+  .livv-bar-y,
+  .livv-skel::after,
+  .dy-action.is-completing .dy-mark,
+  .livv-presence.is-in > *,
+  .livv-presence.is-out > *,
+  .livv-sheet.is-in,
+  .livv-sheet.is-out {
     animation: none !important;
+    transition: none !important;
   }
-  .livv-press:active,
+  .livv-tab,
+  .livv-tab .livv-tab-icon,
+  :where(.livv-app-shell, .livv-page-motion, .livv-sheet) :where(button, .dy-action, .you-link, .health-system, .ho-system, .shop-product, .st-row, .ho-primary) {
+    transition: none !important;
+  }
   .livv-tab:active,
-  .livv-surface-lift:active,
-  .livv-surface-lift:hover,
-  .livv-page button:active,
-  .livv-page a[role="button"]:active {
+  .livv-tab.is-active .livv-tab-icon,
+  :where(.livv-app-shell, .livv-page-motion, .livv-sheet) :where(button, .dy-action, .you-link, .health-system, .ho-system, .shop-product, .st-row, .ho-primary):active {
     transform: none !important;
   }
 }

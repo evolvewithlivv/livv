@@ -19,6 +19,7 @@ import {
   parseBackupFile,
 } from "@/lib/data-portability";
 import { PageHeader } from "@/components/layout/page-header";
+import { SkeletonScreen } from "@/components/motion/skeleton";
 import "./settings.css";
 
 type LookOption = {
@@ -152,7 +153,7 @@ export default function SettingsPage() {
     }
   };
 
-  if (!me) return <main className="st" aria-hidden />;
+  if (!me) return <SkeletonScreen label="Loading settings" />;
 
   const accountLine = [
     me.displayName || null,
