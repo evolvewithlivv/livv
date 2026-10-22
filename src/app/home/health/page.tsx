@@ -28,6 +28,8 @@ import {
 } from "@/lib/health";
 import { feedback } from "@/lib/sensory";
 import { PageHeader } from "@/components/layout/page-header";
+import { CountUp } from "@/components/motion/count-up";
+import { barStyle } from "@/components/motion/bar";
 import "./health-signal.css";
 
 const SLEEP_TARGET = 8;
@@ -104,9 +106,9 @@ export default function HealthPage() {
           <div className="health-readout">
             <div className="health-readout-top">
               <span>TODAY</span>
-              <strong>{completion.percent}%</strong>
+              <strong><CountUp value={completion.percent} suffix="%" /></strong>
             </div>
-            <div className="health-rule"><i style={{ width: completion.percent + "%" }} /></div>
+            <div className="health-rule"><i className="livv-bar" style={barStyle(completion.percent)} /></div>
             <p>{completion.count} of {completion.total} baseline signals logged</p>
           </div>
         </section>
@@ -123,7 +125,7 @@ export default function HealthPage() {
           <div className="health-metrics">
             <div className="health-metric">
               <div className="health-metric-head"><Moon size={15} /><span>SLEEP</span></div>
-              <strong>{current.sleep ? current.sleep + "h" : "00"}</strong>
+              <strong>{current.sleep ? <CountUp value={current.sleep} digits={1} suffix="h" /> : "00"}</strong>
               <p>{current.sleep >= SLEEP_TARGET ? "8h baseline reached" : current.sleep ? "Logged" : "Suggested: 8h"}</p>
               <div className="health-stepper">
                 <button type="button" aria-label="Decrease sleep" onClick={() => update({ sleep: Math.max(0, Math.round((current.sleep - 0.5) * 10) / 10) })}>−</button>
@@ -133,7 +135,7 @@ export default function HealthPage() {
 
             <div className="health-metric">
               <div className="health-metric-head"><Waves size={15} /><span>WATER</span></div>
-              <strong>{current.water}<small> / {WATER_TARGET}</small></strong>
+              <strong><CountUp value={current.water} /><small> / {WATER_TARGET}</small></strong>
               <p>{current.water >= WATER_TARGET ? "Baseline reached" : "Cups today"}</p>
               <div className="health-stepper">
                 <button type="button" aria-label="Decrease water" onClick={() => update({ water: Math.max(0, current.water - 1) })}>−</button>
@@ -143,7 +145,7 @@ export default function HealthPage() {
 
             <div className="health-metric">
               <div className="health-metric-head"><Salad size={15} /><span>MEALS</span></div>
-              <strong>{current.meals}<small> / {MEALS_TARGET}</small></strong>
+              <strong><CountUp value={current.meals} /><small> / {MEALS_TARGET}</small></strong>
               <p>{current.meals >= MEALS_TARGET ? "Baseline reached" : "Meals today"}</p>
               <div className="health-stepper">
                 <button type="button" aria-label="Decrease meals" onClick={() => update({ meals: Math.max(0, current.meals - 1) })}>−</button>
@@ -199,7 +201,7 @@ export default function HealthPage() {
               const c = dayCompletion(day);
               return (
                 <div key={day.date} className="health-day">
-                  <div className="health-day-track"><i style={{ height: Math.max(c.percent, c.percent > 0 ? 10 : 0) + "%" }} /></div>
+                  <div className="health-day-track"><i className="livv-bar-y" style={barStyle(Math.max(c.percent, c.percent > 0 ? 10 : 0))} /></div>
                   <span>{weekdayShort(day.date)}</span>
                   <strong>{c.percent}%</strong>
                 </div>

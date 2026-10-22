@@ -16,6 +16,7 @@ import {
 } from "@/lib/auth";
 import { feedback } from "@/lib/sensory";
 import { PageHeader } from "@/components/layout/page-header";
+import { SkeletonScreen } from "@/components/motion/skeleton";
 import "../profile-signal.css";
 import "./edit.css";
 
@@ -42,7 +43,7 @@ export default function EditProfilePage() {
     setPhoto(id.photo);
   }, []);
 
-  if (!me) return <main className="you" aria-hidden />;
+  if (!me) return <SkeletonScreen label="Loading profile" />;
 
   const initial = ((displayName || "L")[0] || "L").toUpperCase();
 

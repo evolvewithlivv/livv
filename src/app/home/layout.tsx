@@ -12,7 +12,7 @@ export default function HomeLayout({ children }: { children: React.ReactNode }) 
   // Recipes are an intentionally public, shareable resource. Keep the exact
   // existing URL working for links shared outside the signed-in app.
   if (pathname === "/home/health/recipes") {
-    return <>{children}</>;
+    return <PageMotion>{children}</PageMotion>;
   }
 
   return (

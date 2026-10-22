@@ -18,6 +18,7 @@ import {
 import { getFieldGuide } from "@/lib/field-guides";
 import "./field-guide.css";
 import { ShareItemButton } from "@/components/share/share-item-button";
+import { barStyle } from "@/components/motion/bar";
 import { PageHeader } from "@/components/layout/page-header";
 
 type GuideProgress = {
@@ -210,7 +211,7 @@ export default function FieldGuidePage() {
             <span>{completedCount} of {guide.steps.length} steps complete</span>
           </div>
           <div className="field-guide-progress-track" role="progressbar" aria-valuenow={progressPercent} aria-valuemin={0} aria-valuemax={100} aria-label="Guide steps completed">
-            <span style={{ width: `${progressPercent}%` }} />
+            <span className="livv-bar" style={barStyle(progressPercent)} />
           </div>
           <div className="field-guide-stages" aria-label={`Current stage: ${currentStage}`}>
             {["Learn", "Follow", "Practice", "Verify", "Maintain"].map((stage, index) => (

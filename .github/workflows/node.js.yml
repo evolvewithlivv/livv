@@ -32,6 +32,8 @@ jobs:
       run: node scripts/www-handoff.test.mjs
     - name: Service worker navigation
       run: node scripts/sw-navigation.test.mjs
+    - name: Motion pass
+      run: node scripts/motion-pass.test.mjs
     - name: Build
       id: build
       continue-on-error: true

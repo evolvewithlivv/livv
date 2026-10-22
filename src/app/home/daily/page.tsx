@@ -13,6 +13,7 @@ import {
 } from "@/lib/daily";
 import { feedback } from "@/lib/sensory";
 import { PageHeader } from "@/components/layout/page-header";
+import { barStyle } from "@/components/motion/bar";
 import "./daily.css";
 
 export default function DailyPage() {
@@ -23,6 +24,7 @@ export default function DailyPage() {
   const [savedAnswer, setSavedAnswer] = useState("");
   const [savedNote, setSavedNote] = useState("");
   const [status, setStatus] = useState("");
+  const [completingId, setCompletingId] = useState<string | null>(null);
   const [emberNote, setEmberNote] = useState("");
   const [tasks, setTasks] = useState<DailyTask[]>([]);
 
@@ -89,6 +91,7 @@ export default function DailyPage() {
     if (completed.includes(task.id)) {
       const next = uncompleteDailyTask(task.id, now);
       setCompleted(next.completed);
+      setCompletingId(null);
       setStatus("Marked not done.");
       feedback("tick");
       window.dispatchEvent(new Event("livv-daily"));
@@ -103,6 +106,7 @@ export default function DailyPage() {
     }
     const next = completeDailyTask(task.id, now);
     setCompleted(next.completed);
+    if (next.completed.includes(task.id)) setCompletingId(task.id);
     if (mind && !next.completed.includes(task.id)) {
       scrollToAnswer();
       return;
@@ -146,8 +150,8 @@ export default function DailyPage() {
           >
             <div className="dy-progress-bar">
               <div
-                className="dy-progress-fill"
-                style={{ width: `${Math.min(100, (doneCount / total) * 100)}%` }}
+                className="dy-progress-fill livv-bar"
+                style={barStyle(total ? (doneCount / total) * 100 : 0)}
               />
             </div>
             <span className="dy-progress-n">{doneCount}/{total}</span>
@@ -163,7 +167,7 @@ export default function DailyPage() {
               <button
                 key={task.id}
                 type="button"
-                className={"dy-action" + (done ? " is-done" : "")}
+                className={"dy-action" + (done ? " is-done" : "") + (completingId === task.id ? " is-completing" : "")}
                 onClick={() => toggle(task)}
                 aria-pressed={done}
                 aria-label={

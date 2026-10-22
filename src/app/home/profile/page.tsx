@@ -9,6 +9,8 @@ import { loadRecord } from "@/lib/record";
 import { countCompletedObjectives } from "@/lib/daily";
 import { MIN_REDEEM_EMBERS, embersToDollars } from "@/lib/ember-economy";
 import { PageHeader } from "@/components/layout/page-header";
+import { CountUp } from "@/components/motion/count-up";
+import { SkeletonScreen } from "@/components/motion/skeleton";
 import "./profile-signal.css";
 
 export default function ProfilePage() {
@@ -35,7 +37,7 @@ export default function ProfilePage() {
     };
   }, []);
 
-  if (!me || !rec) return <main className="you" aria-hidden />;
+  if (!me || !rec) return <SkeletonScreen label="Loading profile" />;
 
   const name = (me.displayName || "").trim() || "LIVV";
   const handle = me.username
@@ -95,7 +97,7 @@ export default function ProfilePage() {
           <p className="you-section-k">Your record</p>
           <div className="you-record">
             <div>
-              <strong>{rec.streak || 0}</strong>
+              <strong><CountUp value={rec.streak || 0} /></strong>
               <span>Day streak</span>
             </div>
             <div>
@@ -121,7 +123,7 @@ export default function ProfilePage() {
                     : `${MIN_REDEEM_EMBERS.toLocaleString()} to unlock redemption`}
                 </p>
               </div>
-              <span className="you-link-v">{embers.toLocaleString()}</span>
+              <span className="you-link-v"><CountUp value={embers} /></span>
             </Link>
             <Link href="/home/settings" className="you-link">
               <div>

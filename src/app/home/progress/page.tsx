@@ -11,6 +11,8 @@ import {
 import { evolutionTitle } from "@/lib/levels";
 import { buildProgressInsights } from "@/lib/progress-insights";
 import { PageHeader } from "@/components/layout/page-header";
+import { barStyle } from "@/components/motion/bar";
+import { SkeletonScreen } from "@/components/motion/skeleton";
 import "./progress-signal.css";
 
 export default function ProgressPage() {
@@ -33,7 +35,7 @@ export default function ProgressPage() {
   }, []);
 
   const insights = useMemo(() => (rec ? buildProgressInsights(rec, 14) : null), [rec]);
-  if (!rec || !insights) return <main className="rec min-h-[70dvh]" aria-hidden />;
+  if (!rec || !insights) return <SkeletonScreen label="Loading progress" />;
 
   const week = weekBars(rec);
   const pillars = livePillars(rec);
@@ -113,7 +115,7 @@ export default function ProgressPage() {
           <div className="rec-week-bars">
             {week.map((d) => (
               <div key={d.key} className={"rec-day" + (d.active ? " is-on" : "")}>
-                <div className="rec-day-bar" style={{ height: `${Math.max(12, d.v)}%` }} />
+                <div className="rec-day-bar livv-bar-y" style={barStyle(Math.max(12, d.v))} />
                 <span className="rec-day-label">{d.d}</span>
               </div>
             ))}
@@ -136,8 +138,8 @@ export default function ProgressPage() {
                 </div>
                 <div className="rec-pillar-track">
                   <div
-                    className="rec-pillar-fill"
-                    style={{ width: `${Math.min(100, p.progress)}%` }}
+                    className="rec-pillar-fill livv-bar"
+                    style={barStyle(Math.min(100, p.progress))}
                   />
                 </div>
               </div>

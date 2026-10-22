@@ -11,6 +11,8 @@ import { quoteForSession, type Quote } from "@/lib/quotes";
 import { ANNOUNCEMENTS } from "@/lib/announcements";
 import { WIKI, type WikiArticle } from "@/lib/wiki";
 import { PageHeader } from "@/components/layout/page-header";
+import { Presence } from "@/components/motion/presence";
+import { SkeletonScreen } from "@/components/motion/skeleton";
 
 const hand = { className: "livv-bulletin-hand" };
 
@@ -175,7 +177,7 @@ export default function BulletinPage() {
   const primaryUpdate = ANNOUNCEMENTS[0];
   const secondaryUpdate = ANNOUNCEMENTS[1];
 
-  if (!rec || !me) return <main className="min-h-dvh" />;
+  if (!rec || !me) return <SkeletonScreen label="Loading bulletin" />;
 
   const checkedIn = isCheckedInToday(rec);
 
@@ -338,8 +340,8 @@ export default function BulletinPage() {
         </div>
       </div>
 
-      {composerOpen ? (
-        <div className="fixed inset-0 z-[90] flex items-end justify-center bg-black/50 p-4 sm:items-center">
+      <Presence open={composerOpen}>
+        <div className="livv-sheet fixed inset-0 z-[90] flex items-end justify-center bg-black/50 p-4 sm:items-center">
           <div className="w-full max-w-md rounded-[22px] border border-livv-border bg-livv-bg p-5 shadow-2xl">
             <div className="flex items-center justify-between">
               <p className="text-[12px] font-semibold uppercase tracking-[0.14em] text-livv-muted">
@@ -395,7 +397,7 @@ export default function BulletinPage() {
             <p className="mt-3 text-center text-[11px] text-livv-muted">Up to three personal notes.</p>
           </div>
         </div>
-      ) : null}
+      </Presence>
     </main>
   );
 }

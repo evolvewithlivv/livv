@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { getAuthenticatedUser } from "@/lib/supabase/real-auth";
+import { SkeletonScreen } from "@/components/motion/skeleton";
 
 /**
  * Protects member routes using the authoritative Supabase session.
@@ -38,16 +39,7 @@ export function RequireAuth({ children }: { children: React.ReactNode }) {
     };
   }, [router]);
 
-  if (state === "checking") {
-    return (
-      <main className="flex min-h-dvh items-center justify-center bg-livv-bg px-6 text-livv-ink">
-        <div className="text-center" role="status" aria-live="polite">
-          <div className="mx-auto mb-4 h-7 w-7 animate-spin rounded-full border-2 border-black/10 border-t-black/60" />
-          <p className="text-sm text-livv-muted">Checking your LIVV session…</p>
-        </div>
-      </main>
-    );
-  }
+  if (state === "checking") return <SkeletonScreen label="Checking your LIVV session" />;
 
   if (state === "denied") return null;
   return <>{children}</>;

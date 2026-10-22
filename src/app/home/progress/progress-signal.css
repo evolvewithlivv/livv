@@ -37,7 +37,7 @@
   justify-content: space-between;
   opacity: 0;
   transform: translateY(-6px);
-  transition: opacity 0.7s ease 0.1s, transform 0.7s ease 0.1s;
+  transition: opacity var(--livv-dur-slow) var(--livv-ease-out) 40ms, transform var(--livv-dur-slow) var(--livv-ease-out) 40ms;
 }
 .rec.awake .rec-top {
   opacity: 1;
@@ -70,7 +70,7 @@
   padding: 1.75rem 0 1.5rem;
   opacity: 0;
   transform: translateY(14px);
-  transition: opacity 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.15s, transform 0.85s cubic-bezier(0.16, 1, 0.3, 1) 0.15s;
+  transition: opacity var(--livv-dur-page) var(--livv-ease-out) 40ms, transform var(--livv-dur-page) var(--livv-ease-out) 40ms;
 }
 .rec.awake .rec-hero {
   opacity: 1;
@@ -171,7 +171,7 @@
   grid-template-columns: repeat(4, 1fr);
   gap: 0.5rem;
   opacity: 0;
-  transition: opacity 0.7s ease 0.3s;
+  transition: opacity var(--livv-dur-slow) var(--livv-ease-out) 80ms;
 }
 .rec.awake .rec-metrics {
   opacity: 1;
@@ -215,7 +215,7 @@
 .rec-week {
   margin-top: 1.75rem;
   opacity: 0;
-  transition: opacity 0.7s ease 0.4s;
+  transition: opacity var(--livv-dur-slow) var(--livv-ease-out) 120ms;
 }
 .rec.awake .rec-week {
   opacity: 1;
@@ -268,15 +268,14 @@
 .rec-day-bar {
   width: 100%;
   max-width: 1.35rem;
-  min-height: 6px;
+  flex: 1 1 auto;
+  min-height: 0;
   border-radius: 4px 4px 2px 2px;
   background: color-mix(in srgb, var(--rec-ink) 12%, transparent);
-  transition: height 0.5s ease, background 0.3s ease;
 }
 
 .rec-day.is-on .rec-day-bar {
   background: var(--rec-accent);
-  box-shadow: 0 0 12px color-mix(in srgb, var(--rec-accent) 35%, transparent);
 }
 
 .rec-day-label {
@@ -294,7 +293,7 @@
 .rec-pillars {
   margin-top: 1.75rem;
   opacity: 0;
-  transition: opacity 0.7s ease 0.45s;
+  transition: opacity var(--livv-dur-slow) var(--livv-ease-out) 150ms;
 }
 .rec.awake .rec-pillars {
   opacity: 1;
@@ -353,14 +352,14 @@
   height: 100%;
   border-radius: 999px;
   background: var(--rec-accent);
-  transition: width 0.6s ease;
+  transition: none;
 }
 
 /* Evidence */
 .rec-evidence {
   margin-top: 1.75rem;
   opacity: 0;
-  transition: opacity 0.7s ease 0.5s;
+  transition: opacity var(--livv-dur-slow) var(--livv-ease-out) 180ms;
 }
 .rec.awake .rec-evidence {
   opacity: 1;

@@ -9,6 +9,8 @@ import {
   embersToDollars,
 } from "@/lib/ember-economy";
 import { PageHeader } from "@/components/layout/page-header";
+import { CountUp } from "@/components/motion/count-up";
+import { barStyle } from "@/components/motion/bar";
 import "./embers.css";
 
 export default function EmbersPage() {
@@ -32,7 +34,7 @@ export default function EmbersPage() {
         <PageHeader eyebrow="Embers" trailing={<Link href="/home/profile" className="em-back">You</Link>} />
 
         <section className="em-hero">
-          <h1 className="em-balance">{embers.toLocaleString()}</h1>
+          <h1 className="em-balance"><CountUp value={embers} /></h1>
           <p className="em-value">
             {dollars > 0
               ? `≈ $${dollars.toFixed(2)} toward Collection 001`
@@ -46,7 +48,7 @@ export default function EmbersPage() {
             <span>{progress}%</span>
           </div>
           <div className="em-track" role="progressbar" aria-valuenow={progress} aria-valuemin={0} aria-valuemax={100}>
-            <div className="em-fill" style={{ width: `${progress}%` }} />
+            <div className="em-fill livv-bar" style={barStyle(progress)} />
           </div>
           <p className="em-progress-note">
             {MIN_REDEEM_EMBERS.toLocaleString()} Embers unlocks credit in the Shop
