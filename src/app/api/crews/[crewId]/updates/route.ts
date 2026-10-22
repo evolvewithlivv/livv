@@ -1,13 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
+import { isUuid, readJsonLimited, takeRateLimit } from "@/lib/request-guards";
 import { getSupabaseAdmin } from "@/lib/supabase/admin";
 import { getVerifiedSupabaseUser } from "@/lib/supabase/server-auth";
 
 export const runtime = "nodejs";
 
-const json = (data: unknown, status = 200) =>
+const json = (data: unknown, status = 200, extra: Record<string, string> = {}) =>
   NextResponse.json(data, {
     status,
-    headers: { "Cache-Control": "private, no-store, max-age=0" },
+    headers: { "Cache-Control": "private, no-store, max-age=0", ...extra },
   });
 
 const cleanText = (value: unknown, max: number) =>
@@ -37,7 +38,7 @@ export async function GET(
     const user = await getVerifiedSupabaseUser(req);
     if (!user || user.isAnonymous) return json({ error: "Sign in to view Crew activity." }, 401);
     const { crewId } = await params;
-    if (!/^[0-9a-f-]{36}$/i.test(crewId)) return json({ error: "Invalid Crew." }, 400);
+    if (!isUuid(crewId)) return json({ error: "Invalid Crew." }, 400);
 
     const { db, member } = await requireMembership(crewId, user.id);
     if (!db) return json({ error: "Crew service unavailable." }, 503);
@@ -107,9 +108,13 @@ export async function POST(
     const user = await getVerifiedSupabaseUser(req);
     if (!user || user.isAnonymous) return json({ error: "Sign in to share with your Crew." }, 401);
     const { crewId } = await params;
-    if (!/^[0-9a-f-]{36}$/i.test(crewId)) return json({ error: "Invalid Crew." }, 400);
+    if (!isUuid(crewId)) return json({ error: "Invalid Crew." }, 400);
 
-    const body = await req.json().catch(() => null);
+    const limited = takeRateLimit(`crews:update:${user.id}`, 20, 60_000);
+    if (!limited.ok) return json({ error: "Too many updates. Try again shortly." }, 429, { "Retry-After": String(limited.retryAfterSec) });
+    const parsed = await readJsonLimited(req, 4_096);
+    if (!parsed.ok) return json({ error: parsed.status === 413 ? "Request too large." : "Invalid update." }, parsed.status);
+    const body = parsed.value as { body?: unknown; kind?: unknown } | null;
     const text = cleanText(body?.body, 800);
     const kindRaw = typeof body?.kind === "string" ? body.kind.trim().toLowerCase() : "growth";
     const kind = KINDS.has(kindRaw) ? kindRaw : "growth";

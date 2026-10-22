@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { readJsonLimited, requestActor, takeRateLimit } from "@/lib/request-guards";
 
 const EVENTS = new Set(["landing_create_account", "landing_sign_in"]);
 
@@ -10,18 +11,20 @@ export const dynamic = "force-dynamic";
  * with no cookies and no stored payload.
  */
 export async function POST(request: Request) {
-  const length = Number(request.headers.get("content-length") || "0");
-  if (length > 200) {
-    return new NextResponse(null, { status: 413, headers: { "Cache-Control": "no-store" } });
+  const limited = takeRateLimit(`landing:${requestActor(request.headers)}`, 20, 60_000);
+  if (!limited.ok) {
+    return new NextResponse(null, {
+      status: 429,
+      headers: { "Cache-Control": "no-store", "Retry-After": String(limited.retryAfterSec) },
+    });
   }
 
-  let name = "";
-  try {
-    const body = (await request.json()) as { name?: unknown };
-    name = typeof body?.name === "string" ? body.name : "";
-  } catch {
-    return new NextResponse(null, { status: 400, headers: { "Cache-Control": "no-store" } });
+  const parsed = await readJsonLimited(request, 200);
+  if (!parsed.ok) {
+    return new NextResponse(null, { status: parsed.status, headers: { "Cache-Control": "no-store" } });
   }
+  const body = parsed.value as { name?: unknown } | null;
+  const name = typeof body?.name === "string" ? body.name : "";
 
   if (!EVENTS.has(name)) {
     return new NextResponse(null, { status: 400, headers: { "Cache-Control": "no-store" } });

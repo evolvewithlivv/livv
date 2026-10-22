@@ -3,6 +3,7 @@
  * Never import from client components. Never put the key in NEXT_PUBLIC_*.
  */
 
+import "server-only";
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
 function clean(value: string | undefined) {

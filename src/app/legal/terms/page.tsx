@@ -8,7 +8,7 @@ export default function TermsPage() {
       <div className="mx-auto w-full max-w-2xl px-5 pt-8 sm:px-6">
         <PageHeader className="border-b border-livv-border pb-8" eyebrow="Terms" trailing={<Link href="/auth" className="text-xs font-medium text-livv-muted hover:text-livv-ink">Back</Link>}>
           <h1 className="text-4xl font-semibold tracking-[-.05em]">Terms &amp; Conditions</h1>
-          <p className="mt-3 text-sm text-livv-muted">Effective October 6, 2026</p>
+          <p className="mt-3 text-sm text-livv-muted">Effective October 22, 2026</p>
         </PageHeader>
         <article className="livv-legal mt-10 max-w-none">
           <p><strong>In plain English:</strong> LIVV is a lifestyle, training, wellness, learning, and personal-development product. Use it lawfully, use your account responsibly, and understand that its educational content is not professional advice.</p>
@@ -21,7 +21,7 @@ export default function TermsPage() {
           <h2>4. Your content</h2>
           <p>You retain ownership of content you submit. You give LIVV the limited rights necessary to store, process, display, and operate that content as part of the service. Do not submit material you do not have the right to use.</p>
           <h2>5. Memberships and billing</h2>
-          <p>Membership prices, billing cadence, and included features are shown in LIVV when you subscribe. Payments are processed through Stripe. Subscription management, cancellation, and billing history may be available through the billing portal. Cancellation generally stops future renewal; refund rights depend on the purchase terms and applicable law.</p>
+          <p>New paid memberships are not currently offered, and core access is free. If you already subscribed, payments were processed through Stripe, and subscription management may still be available in the billing portal. Cancellation generally stops future renewal; refund rights depend on the purchase terms and applicable law.</p>
           <h2>6. Shop and physical products</h2>
           <p>When LIVV sells physical products, the applicable product page and checkout control the price, availability, shipping, and purchase details for that order. Availability and product specifications may change.</p>
           <h2>7. Health, training, and lifestyle content</h2>
@@ -33,7 +33,7 @@ export default function TermsPage() {
           <h2>10. Disclaimers and limits</h2>
           <p>LIVV is provided on an as-available basis. To the extent permitted by law, warranties not expressly stated here are disclaimed. Nothing in these terms limits rights or remedies that cannot legally be limited.</p>
           <h2>11. Contact</h2>
-          <p>Questions about these terms should use the current contact information published by LIVV on the website.</p>
+          <p>Questions about these terms, your account, or a privacy request: <a href="mailto:privacy@evolvewithlivv.com">privacy@evolvewithlivv.com</a>. Copyright notices use the contact on the DMCA page.</p>
         </article>
       </div>
     </main>

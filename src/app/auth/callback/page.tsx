@@ -53,7 +53,7 @@ export default function AuthCallbackPage() {
           <>
             <div className="mx-auto h-10 w-10 animate-pulse rounded-full border border-white/20" />
             <h1 className="mt-6 text-xl font-semibold">Finishing your LIVV sign-in…</h1>
-            <p className="mt-2 text-sm text-white/40">Securely confirming your account and restoring your LIVV session.</p>
+            <p className="mt-2 text-sm text-white/75">Securely confirming your account and restoring your LIVV session.</p>
           </>
         ) : (
           <>

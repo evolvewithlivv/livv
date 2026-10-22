@@ -1,18 +1,23 @@
 import { createHash } from "node:crypto";
 import { NextRequest, NextResponse } from "next/server";
+import { readJsonLimited, takeRateLimit } from "@/lib/request-guards";
 import { getSupabaseAdmin } from "@/lib/supabase/admin";
 import { getVerifiedSupabaseUser } from "@/lib/supabase/server-auth";
 
 export const runtime = "nodejs";
-const json = (data: unknown, status = 200) => NextResponse.json(data, {
-  status, headers: { "Cache-Control": "private, no-store, max-age=0" },
+const json = (data: unknown, status = 200, extra: Record<string, string> = {}) => NextResponse.json(data, {
+  status, headers: { "Cache-Control": "private, no-store, max-age=0", ...extra },
 });
 
 export async function POST(req: NextRequest) {
   try {
     const user = await getVerifiedSupabaseUser(req);
     if (!user || user.isAnonymous) return json({ error: "Sign in to join a Crew." }, 401);
-    const body = await req.json().catch(() => null);
+    const limited = takeRateLimit(`crews:join:${user.id}`, 8, 60_000);
+    if (!limited.ok) return json({ error: "Too many invitation attempts. Try again shortly." }, 429, { "Retry-After": String(limited.retryAfterSec) });
+    const parsed = await readJsonLimited(req, 2_048);
+    if (!parsed.ok) return json({ error: parsed.status === 413 ? "Request too large." : "Invalid invitation link." }, parsed.status);
+    const body = parsed.value as { token?: unknown } | null;
     const token = typeof body?.token === "string" ? body.token.trim() : "";
     if (!/^[A-Za-z0-9_-]{40,60}$/.test(token)) return json({ error: "Invalid invitation link." }, 400);
     const db = getSupabaseAdmin();

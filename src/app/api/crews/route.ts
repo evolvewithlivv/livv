@@ -1,10 +1,11 @@
 import { NextRequest, NextResponse } from "next/server";
+import { isUuid, readJsonLimited, takeRateLimit } from "@/lib/request-guards";
 import { getSupabaseAdmin, isSupabaseAdminConfigured } from "@/lib/supabase/admin";
 import { getVerifiedSupabaseUser } from "@/lib/supabase/server-auth";
 
 export const runtime = "nodejs";
-const json = (data: unknown, status = 200) => NextResponse.json(data, {
-  status, headers: { "Cache-Control": "private, no-store, max-age=0" },
+const json = (data: unknown, status = 200, extra: Record<string, string> = {}) => NextResponse.json(data, {
+  status, headers: { "Cache-Control": "private, no-store, max-age=0", ...extra },
 });
 const cleanText = (value: unknown, max: number) =>
   typeof value === "string" ? value.trim().replace(/\s+/g, " ").slice(0, max) : "";
@@ -34,7 +35,11 @@ export async function POST(req: NextRequest) {
   try {
     const user = await getVerifiedSupabaseUser(req);
     if (!user || user.isAnonymous) return json({ error: "Sign in to create a Crew." }, 401);
-    const body = await req.json().catch(() => null);
+    const limited = takeRateLimit(`crews:create:${user.id}`, 10, 60_000);
+    if (!limited.ok) return json({ error: "Too many Crew requests. Try again shortly." }, 429, { "Retry-After": String(limited.retryAfterSec) });
+    const parsed = await readJsonLimited(req, 4_096);
+    if (!parsed.ok) return json({ error: parsed.status === 413 ? "Request too large." : "Invalid request." }, parsed.status);
+    const body = parsed.value as { name?: unknown; description?: unknown } | null;
     const name = cleanText(body?.name, 40);
     const description = cleanText(body?.description, 240);
     if (name.length < 2) return json({ error: "Crew name must be at least 2 characters." }, 400);
@@ -77,7 +82,7 @@ export async function DELETE(req: NextRequest) {
     const user = await getVerifiedSupabaseUser(req);
     if (!user || user.isAnonymous) return json({ error: "Sign in to manage Crews." }, 401);
     const { crewId } = await req.json().catch(() => ({}));
-    if (typeof crewId !== "string" || !/^[0-9a-f-]{36}$/i.test(crewId)) return json({ error: "Invalid Crew." }, 400);
+    if (!isUuid(crewId)) return json({ error: "Invalid Crew." }, 400);
     const db = getSupabaseAdmin();
     if (!db) return json({ error: "Crew service unavailable." }, 503);
 

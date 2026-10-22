@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { isUuid } from "@/lib/request-guards";
 import { getSupabaseAdmin } from "@/lib/supabase/admin";
 import { getVerifiedSupabaseUser } from "@/lib/supabase/server-auth";
 
@@ -12,7 +13,7 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ crew
     const user = await getVerifiedSupabaseUser(req);
     if (!user || user.isAnonymous) return json({ error: "Sign in to view Crew members." }, 401);
     const { crewId } = await params;
-    if (!/^[0-9a-f-]{36}$/i.test(crewId)) return json({ error: "Invalid Crew." }, 400);
+    if (!isUuid(crewId)) return json({ error: "Invalid Crew." }, 400);
     const db = getSupabaseAdmin();
     if (!db) return json({ error: "Crew service unavailable." }, 503);
     const { data: access, error: accessError } = await db.from("crew_members").select("role")
