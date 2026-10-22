@@ -216,7 +216,7 @@ export default function SettingsPage() {
         <section className="st-group st-preferences">
           <p className="st-group-k">Preferences</p>
           <div className="st-list">
-            <button type="button" className="st-row" onClick={() => togglePref("sound")}>
+            <button type="button" className="st-row" aria-pressed={prefs.sound} onClick={() => togglePref("sound")}>
               <div className="st-row-main">
                 <p className="st-row-t">Sound</p>
                 <p className="st-row-s">Feedback tones</p>
@@ -235,7 +235,7 @@ export default function SettingsPage() {
             <button type="button" className="st-row" onClick={onExport} disabled={busy}>
               <div className="st-row-main">
                 <p className="st-row-t">Export backup</p>
-                <p className="st-row-s">{keyCount} keys on this device</p>
+                <p className="st-row-s">{keyCount} progress keys on this device. Not your account or billing.</p>
               </div>
               <span className="st-chev" aria-hidden>
                 ›
@@ -260,7 +260,7 @@ export default function SettingsPage() {
                 <p className="st-row-t">
                   {confirmDelete ? "Tap again to confirm" : "Clear local data"}
                 </p>
-                <p className="st-row-s">Removes progress stored on this device</p>
+                <p className="st-row-s">Removes saved progress on this device. Does not delete your account.</p>
               </div>
             </button>
           </div>
@@ -268,6 +268,8 @@ export default function SettingsPage() {
             ref={fileRef}
             type="file"
             accept="application/json,.json"
+            aria-label="Import backup file"
+            tabIndex={-1}
             style={{ position: "absolute", width: 1, height: 1, opacity: 0 }}
             onChange={(e) => {
               const f = e.target.files?.[0];
@@ -275,6 +277,18 @@ export default function SettingsPage() {
               e.target.value = "";
             }}
           />
+        </section>
+
+        <section className="st-group st-support">
+          <p className="st-group-k">Support</p>
+          <div className="st-list">
+            <a className="st-row" href="mailto:privacy@evolvewithlivv.com">
+              <div className="st-row-main">
+                <p className="st-row-t">Contact LIVV</p>
+                <p className="st-row-s">privacy@evolvewithlivv.com · account access, correction, or deletion</p>
+              </div>
+            </a>
+          </div>
         </section>
 
         <section className="st-group st-session">

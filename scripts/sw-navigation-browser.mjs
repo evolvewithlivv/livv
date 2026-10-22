@@ -211,7 +211,7 @@ try {
     return { stripped, kept, caches, updated };
   });
 
-  if (!Array.isArray(result.caches) || result.caches.includes("livv-shell-v2")) {
+  if (!Array.isArray(result.caches) || result.caches.includes("livv-shell-v2") || result.caches.includes("livv-shell-v3")) {
     throw new Error(`old cache still present: ${JSON.stringify(result.caches)}`);
   }
   if (!result.caches.includes("livv-shell-v4")) {

@@ -8,7 +8,6 @@ export async function GET() {
     {
       ok: true,
       service: "livv",
-      version: process.env.VERCEL_GIT_COMMIT_SHA?.slice(0, 12) ?? "local",
     },
     {
       headers: {

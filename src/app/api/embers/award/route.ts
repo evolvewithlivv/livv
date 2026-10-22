@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { readJsonLimited, takeRateLimit } from "@/lib/request-guards";
 import { getSupabaseAdmin, isSupabaseAdminConfigured } from "@/lib/supabase/admin";
 import { getVerifiedSupabaseUser } from "@/lib/supabase/server-auth";
 
@@ -19,10 +20,10 @@ export const runtime = "nodejs";
 const ACTIONS = ["checkin", "workout", "objective", "custom"] as const;
 type AwardAction = (typeof ACTIONS)[number];
 
-function json(data: unknown, status = 200) {
+function json(data: unknown, status = 200, extra: Record<string, string> = {}) {
   return NextResponse.json(data, {
     status,
-    headers: { "Cache-Control": "private, no-store, max-age=0" },
+    headers: { "Cache-Control": "private, no-store, max-age=0", ...extra },
   });
 }
 
@@ -67,8 +68,12 @@ export async function POST(req: NextRequest) {
 
     const verified = await getVerifiedSupabaseUser(req);
     if (!verified || verified.isAnonymous) return json({ error: "Sign in to earn Embers." }, 401);
+    const limited = takeRateLimit(`embers:award:${verified.id}`, 30, 60_000);
+    if (!limited.ok) return json({ error: "Too many Ember requests. Try again shortly." }, 429, { "Retry-After": String(limited.retryAfterSec) });
 
-    const body = (await req.json().catch(() => null)) as {
+    const parsed = await readJsonLimited(req, 2_048);
+    if (!parsed.ok) return json({ error: parsed.status === 413 ? "Request too large." : "Invalid Ember award." }, parsed.status);
+    const body = parsed.value as {
       action?: unknown;
       detail?: unknown;
       size?: unknown;

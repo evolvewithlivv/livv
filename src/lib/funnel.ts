@@ -14,7 +14,7 @@ import {
   takeQueue,
 } from "./funnel-core.mjs";
 
-const POSTHOG_KEY = process.env.NEXT_PUBLIC_POSTHOG_KEY || "phc_Dfy3Yy6gyQbKxve6bDCsHzJ4uMacQJ7nkf2HbPkTMcHi";
+const POSTHOG_KEY = process.env.NEXT_PUBLIC_POSTHOG_KEY || "";
 const POSTHOG_HOST = process.env.NEXT_PUBLIC_POSTHOG_HOST || "https://us.i.posthog.com";
 
 let started = false;
@@ -52,7 +52,7 @@ export function flushFunnel() {
 }
 
 export function initFunnel() {
-  if (started || typeof window === "undefined") return;
+  if (started || typeof window === "undefined" || !POSTHOG_KEY) return;
   started = true;
   posthog.init(POSTHOG_KEY, {
     api_host: "/ingest",

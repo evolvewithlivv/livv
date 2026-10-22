@@ -1,13 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
+import { isUuid, takeRateLimit } from "@/lib/request-guards";
 import { getSupabaseAdmin } from "@/lib/supabase/admin";
 import { getVerifiedSupabaseUser } from "@/lib/supabase/server-auth";
 
 export const runtime = "nodejs";
 
-const json = (data: unknown, status = 200) =>
+const json = (data: unknown, status = 200, extra: Record<string, string> = {}) =>
   NextResponse.json(data, {
     status,
-    headers: { "Cache-Control": "private, no-store, max-age=0" },
+    headers: { "Cache-Control": "private, no-store, max-age=0", ...extra },
   });
 
 export async function POST(
@@ -18,7 +19,9 @@ export async function POST(
     const user = await getVerifiedSupabaseUser(req);
     if (!user || user.isAnonymous) return json({ error: "Sign in to like an update." }, 401);
     const { updateId } = await params;
-    if (!/^[0-9a-f-]{36}$/i.test(updateId)) return json({ error: "Invalid update." }, 400);
+    if (!isUuid(updateId)) return json({ error: "Invalid update." }, 400);
+    const limited = takeRateLimit(`crews:encourage:${user.id}`, 30, 60_000);
+    if (!limited.ok) return json({ error: "Too many reactions. Try again shortly." }, 429, { "Retry-After": String(limited.retryAfterSec) });
 
     const db = getSupabaseAdmin();
     if (!db) return json({ error: "Crew service unavailable." }, 503);

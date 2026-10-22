@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { isUuid } from "@/lib/request-guards";
 import { getSupabaseAdmin } from "@/lib/supabase/admin";
 import { getVerifiedSupabaseUser } from "@/lib/supabase/server-auth";
 
@@ -19,7 +20,7 @@ export async function DELETE(
     const user = await getVerifiedSupabaseUser(req);
     if (!user || user.isAnonymous) return json({ error: "Sign in to manage updates." }, 401);
     const { updateId } = await params;
-    if (!/^[0-9a-f-]{36}$/i.test(updateId)) return json({ error: "Invalid update." }, 400);
+    if (!isUuid(updateId)) return json({ error: "Invalid update." }, 400);
 
     const db = getSupabaseAdmin();
     if (!db) return json({ error: "Crew service unavailable." }, 503);
