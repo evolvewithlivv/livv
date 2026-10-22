@@ -62,7 +62,7 @@ export function InstallApp() {
       </button>
 
       <Presence open={open}>
-        <div className="fixed inset-0 z-[120] flex items-end justify-center bg-black/60 p-3" role="dialog" aria-modal="true" aria-labelledby="install-title">
+        <div className="livv-sheet fixed inset-0 z-[120] flex items-end justify-center bg-black/60 p-3" role="dialog" aria-modal="true" aria-labelledby="install-title">
           <div className="livv-install-card w-full max-w-md rounded-[30px] bg-[rgb(var(--livv-surface))] p-5 shadow-2xl">
             <div className="flex items-start justify-between gap-4">
               <div>

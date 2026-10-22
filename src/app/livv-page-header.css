@@ -84,12 +84,17 @@ main .mx-auto:has(> .livv-ph) {
   padding-top: var(--livv-ph-gap);
 }
 
-.livv-ph + .health-hero,
 .livv-ph + .you-id,
 .livv-ph + .ho-today,
 .you-inner .livv-ph + .you-id {
   margin-top: 0;
   padding-top: var(--livv-ph-gap);
+}
+
+/* Health: the card is the content, so the shared gap sits above the card. */
+.livv-ph + .health-hero {
+  margin-top: var(--livv-ph-gap);
+  padding-top: 1.35rem;
 }
 
 /* Home keeps its greeting. The top edge matches the eyebrow offset. */

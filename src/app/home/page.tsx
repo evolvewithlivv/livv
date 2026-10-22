@@ -12,7 +12,7 @@ import { quoteForSession, type Quote } from "@/lib/quotes";
 import { nextMove, type Move } from "@/lib/command";
 import { consumeFirstSessionPending } from "@/lib/onboarding";
 import { CountUp } from "@/components/motion/count-up";
-import { SkeletonScreen } from "@/components/motion/skeleton";
+import { HomeRouteSkeleton } from "@/components/motion/route-skeletons";
 import "./home-signal.css";
 
 function greetingForHour(hour: number): string {
@@ -93,7 +93,7 @@ export default function HomePage() {
   }, []);
 
   if (!rec || !me) {
-    return <SkeletonScreen label="Loading home" />;
+    return <HomeRouteSkeleton />;
   }
 
   const checkedIn = isCheckedInToday(rec);

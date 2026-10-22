@@ -10,7 +10,7 @@ import { countCompletedObjectives } from "@/lib/daily";
 import { MIN_REDEEM_EMBERS, embersToDollars } from "@/lib/ember-economy";
 import { PageHeader } from "@/components/layout/page-header";
 import { CountUp } from "@/components/motion/count-up";
-import { SkeletonScreen } from "@/components/motion/skeleton";
+import { YouRouteSkeleton } from "@/components/motion/route-skeletons";
 import "./profile-signal.css";
 
 export default function ProfilePage() {
@@ -37,7 +37,7 @@ export default function ProfilePage() {
     };
   }, []);
 
-  if (!me || !rec) return <SkeletonScreen label="Loading profile" />;
+  if (!me || !rec) return <YouRouteSkeleton />;
 
   const name = (me.displayName || "").trim() || "LIVV";
   const handle = me.username

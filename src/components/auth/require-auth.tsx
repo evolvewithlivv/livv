@@ -1,9 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { getAuthenticatedUser } from "@/lib/supabase/real-auth";
-import { SkeletonScreen } from "@/components/motion/skeleton";
+import { RouteSkeleton } from "@/components/motion/route-skeletons";
 
 /**
  * Protects member routes using the authoritative Supabase session.
@@ -12,6 +12,7 @@ import { SkeletonScreen } from "@/components/motion/skeleton";
  */
 export function RequireAuth({ children }: { children: React.ReactNode }) {
   const router = useRouter();
+  const pathname = usePathname();
   const [state, setState] = useState<"checking" | "allowed" | "denied">("checking");
 
   useEffect(() => {
@@ -39,7 +40,7 @@ export function RequireAuth({ children }: { children: React.ReactNode }) {
     };
   }, [router]);
 
-  if (state === "checking") return <SkeletonScreen label="Checking your LIVV session" />;
+  if (state === "checking") return <RouteSkeleton pathname={pathname} />;
 
   if (state === "denied") return null;
   return <>{children}</>;
