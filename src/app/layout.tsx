@@ -51,7 +51,6 @@ export const metadata: Metadata = {
       { url: "/api/icon?s=180&c=black&bg=1", sizes: "180x180", media: "(prefers-color-scheme: light)" },
       { url: "/api/icon?s=180&c=white&bg=1", sizes: "180x180", media: "(prefers-color-scheme: dark)" },
     ],
-    shortcut: ["/api/icon?s=32&c=black"],
   },
   other: { "mobile-web-app-capable": "yes" },
 };

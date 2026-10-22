@@ -11,7 +11,7 @@ header.livv-ph {
 
 .livv-ph-row {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 1rem;
   min-height: 13px;
