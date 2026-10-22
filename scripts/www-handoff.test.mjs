@@ -7,6 +7,7 @@ import {
   WWW_HOST,
   adoptStashedHandoff,
   apexDestination,
+  apexHandoffBrowserScript,
   handoffRefreshErrorIsBenign,
   handoffSessionAlreadyCurrent,
   renderWwwHandoffHtml,
@@ -265,6 +266,11 @@ assert.equal(handoffRefreshErrorIsBenign(refreshError, currentSession, { access_
 assert.equal(handoffRefreshErrorIsBenign(refreshError, null, { access_token: staleAccess, refresh_token: "stale-refresh" }), false);
 assert.equal(handoffRefreshErrorIsBenign({ status: 400, message: "Invalid payload" }, currentSession, { access_token: staleAccess, refresh_token: "stale-refresh" }), false);
 assert.equal(handoffRefreshErrorIsBenign({ status: 500, message: "Invalid Refresh Token" }, currentSession, { access_token: staleAccess, refresh_token: "stale-refresh" }), false);
+
+const browserScript = apexHandoffBrowserScript();
+assert.equal(browserScript.includes("function handoffSessionAlreadyCurrent"), true);
+assert.equal(browserScript.includes("async function adoptStashedHandoff"), true);
+assert.equal(browserScript.includes("function readStoredSession"), true);
 
 const handoffSource = wwwHandoffScript();
 assert.equal(handoffSource.includes("refreshSession"), false);

@@ -277,7 +277,7 @@ function unwrapStoredSession(value) {
 function readStoredSession(win) {
   try {
     if (!win || !win.localStorage || typeof win.localStorage.getItem !== "function") return null;
-    const raw = win.localStorage.getItem(STORAGE_KEY);
+    const raw = win.localStorage.getItem("livv-supabase-auth");
     if (!raw) return null;
     return unwrapStoredSession(raw);
   } catch {
@@ -334,6 +334,20 @@ export function handoffRefreshErrorIsBenign(error, existing, handoff, now = Date
   const invalidRefresh = status === 400 && (message.includes("refresh") || code.includes("refresh"));
   if (!invalidRefresh) return false;
   return handoffSessionAlreadyCurrent(existing, handoff, now);
+}
+
+/** Source for the browser harness. The page has no module scope, so every helper has to travel with adoptStashedHandoff. */
+export function apexHandoffBrowserScript() {
+  return [
+    decodeBase64Url,
+    jwtPayload,
+    unwrapStoredSession,
+    readStoredSession,
+    sessionSubject,
+    sessionExpiryMs,
+    handoffSessionAlreadyCurrent,
+    adoptStashedHandoff,
+  ].map((fn) => fn.toString()).join("\n");
 }
 
 export async function adoptStashedHandoff(win, setSession) {

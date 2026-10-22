@@ -6,7 +6,7 @@ import http from "node:http";
 import { spawn } from "node:child_process";
 import {
   APEX_HANDOFF_BOOT,
-  adoptStashedHandoff,
+  apexHandoffBrowserScript,
   renderWwwHandoffHtml,
 } from "../src/lib/www-handoff-core.mjs";
 
@@ -27,7 +27,8 @@ window.__livvSetSession = function (tokens) {
   }));
   return Promise.resolve();
 };
-(${adoptStashedHandoff.toString()})(window, window.__livvSetSession).then(function () {
+${apexHandoffBrowserScript()}
+adoptStashedHandoff(window, window.__livvSetSession).then(function () {
   document.documentElement.setAttribute("data-livv-adopted", "1");
 }).catch(function (error) {
   var message = String(error && (error.message || error) || "error");
