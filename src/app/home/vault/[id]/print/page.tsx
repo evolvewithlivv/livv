@@ -4,6 +4,7 @@ import { useMemo } from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { moduleById } from "@/lib/vault";
+import { PageHeader } from "@/components/layout/page-header";
 
 export default function VaultPrintPage() {
   const params = useParams();
@@ -29,7 +30,7 @@ export default function VaultPrintPage() {
 
   return (
     <main className="min-h-screen bg-white text-black">
-      <div className="mx-auto max-w-[760px] px-7 py-8 sm:px-10 sm:py-12">
+      <div className="print-sheet mx-auto max-w-[760px] px-7 py-8 sm:px-10 sm:py-12">
         <div className="mb-8 flex items-center gap-2 print:hidden">
           <button
             type="button"
@@ -46,10 +47,7 @@ export default function VaultPrintPage() {
           </Link>
         </div>
 
-        <header className="border-b border-black/15 pb-7">
-          <p className="text-[10px] font-bold uppercase tracking-[0.2em] text-neutral-500">
-            LIVV FIELD GUIDE / {mod.kind}
-          </p>
+        <PageHeader className="border-b border-black/15 pb-7" eyebrow="Vault">
           <h1 className="mt-3 text-[34px] font-bold leading-[1.02] tracking-[-0.04em]">
             {mod.title}
           </h1>
@@ -59,7 +57,7 @@ export default function VaultPrintPage() {
             <span>Personal field guide</span>
             <span>evolvewithlivv.com</span>
           </div>
-        </header>
+        </PageHeader>
 
         {guide ? (
           <>

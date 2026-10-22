@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useParams } from "next/navigation";
 import { ArrowLeft, ArrowUpRight, BookOpen, Check, Printer } from "lucide-react";
 import { moduleById } from "@/lib/vault";
+import { PageHeader } from "@/components/layout/page-header";
 
 export default function VaultModulePage() {
   const params = useParams();
@@ -33,29 +34,25 @@ export default function VaultModulePage() {
   return (
     <main className="livv-page min-h-full pb-28">
       <div className="mx-auto w-full max-w-2xl px-5 pt-5 sm:px-6">
-        <div className="flex items-center justify-between">
-          <Link
-            href="/home/vault"
-            className="inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.16em] text-livv-muted"
-          >
-            <ArrowLeft size={12} /> Vault
-          </Link>
-          <span className="text-[9px] font-semibold uppercase tracking-[0.16em] text-livv-muted">
-            {mod.kind}
-          </span>
-        </div>
-
-        <header className="mt-8">
-          <p className="text-[9px] font-bold uppercase tracking-[0.2em] text-livv-accent">
-            FIELD GUIDE / {mod.meta}
-          </p>
-          <h1 className="mt-2 max-w-xl text-[32px] font-semibold leading-[1.02] tracking-[-0.05em] sm:text-[40px]">
+        <PageHeader
+          eyebrow="Vault"
+          trailing={
+            <Link
+              href="/home/vault"
+              className="inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-[0.16em] text-livv-muted"
+            >
+              <ArrowLeft size={12} /> Vault
+            </Link>
+          }
+        >
+          <h1 className="max-w-xl text-[32px] font-semibold leading-[1.02] tracking-[-0.05em] sm:text-[40px]">
             {mod.title}
           </h1>
           <p className="mt-4 max-w-xl text-[15px] leading-6 text-livv-muted">
             {mod.blurb}
           </p>
-        </header>
+          <p className="mt-3 text-[12px] text-livv-muted">{mod.meta}</p>
+        </PageHeader>
 
         <nav className="mt-7 flex gap-2 overflow-x-auto pb-1" aria-label="Guide sections">
           {[

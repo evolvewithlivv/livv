@@ -23,29 +23,36 @@ export default function OpenGraphImage() {
           height: "100%",
           display: "flex",
           flexDirection: "column",
-          justifyContent: "space-between",
+          alignItems: "center",
+          justifyContent: "center",
           background: "#090a0c",
           color: "#f5f5f2",
-          padding: "72px 80px",
           fontFamily: "system-ui, -apple-system, sans-serif",
         }}
       >
-        <img
-          src={wordmark}
-          width={456}
-          height={75}
-          alt=""
-        />
-        <div style={{ display: "flex", flexDirection: "column", gap: 18 }}>
-          <div style={{ fontSize: 72, fontWeight: 600, letterSpacing: "-0.04em", lineHeight: 1.05, maxWidth: 900 }}>
-            A system for becoming more capable in real life.
-          </div>
-          <div style={{ fontSize: 28, opacity: 0.55, maxWidth: 720, lineHeight: 1.35 }}>
-            Body. Mind. Life. The core is free.
-          </div>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            width: 570,
+            height: 94,
+          }}
+        >
+          <img src={wordmark} width={570} height={94} alt="" />
         </div>
-        <div style={{ display: "flex", fontSize: 22, opacity: 0.4, letterSpacing: "0.08em" }}>
-          evolvewithlivv.com
+        <div
+          style={{
+            display: "flex",
+            marginTop: 72,
+            fontSize: 28,
+            fontWeight: 500,
+            letterSpacing: "0.22em",
+            lineHeight: 1,
+            color: "rgba(245,245,242,0.72)",
+          }}
+        >
+          BODY · MIND · LIFE
         </div>
       </div>
     ),

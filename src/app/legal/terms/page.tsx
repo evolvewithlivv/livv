@@ -1,16 +1,15 @@
 import Link from "next/link";
+import { PageHeader } from "@/components/layout/page-header";
 import "../legal.css";
 
 export default function TermsPage() {
   return (
     <main className="livv-page min-h-dvh pb-20 text-livv-ink">
       <div className="mx-auto w-full max-w-2xl px-5 pt-8 sm:px-6">
-        <Link href="/auth" className="text-xs font-medium text-livv-muted hover:text-livv-ink">← Back to LIVV</Link>
-        <header className="mt-10 border-b border-livv-border pb-8">
-          <p className="text-[10px] font-semibold uppercase tracking-[.22em] text-livv-muted">Legal</p>
-          <h1 className="mt-2 text-4xl font-semibold tracking-[-.05em]">Terms &amp; Conditions</h1>
+        <PageHeader className="border-b border-livv-border pb-8" eyebrow="Terms" trailing={<Link href="/auth" className="text-xs font-medium text-livv-muted hover:text-livv-ink">Back</Link>}>
+          <h1 className="text-4xl font-semibold tracking-[-.05em]">Terms &amp; Conditions</h1>
           <p className="mt-3 text-sm text-livv-muted">Effective October 6, 2026</p>
-        </header>
+        </PageHeader>
         <article className="livv-legal mt-10 max-w-none">
           <p><strong>In plain English:</strong> LIVV is a lifestyle, training, wellness, learning, and personal-development product. Use it lawfully, use your account responsibly, and understand that its educational content is not professional advice.</p>
           <h2>1. Using LIVV</h2>

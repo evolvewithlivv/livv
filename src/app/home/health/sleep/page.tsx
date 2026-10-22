@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
 import { ChevronLeft, Moon, Plus } from "lucide-react";
 import { feedback } from "@/lib/sensory";
+import { PageHeader } from "@/components/layout/page-header";
 import { blankDay, loadHealthDays, todayKey, upsertHealthDay } from "@/lib/health";
 import "../health-systems.css";
 
@@ -22,10 +23,9 @@ export default function SleepPage(){
  const target=Math.max(0,8-current);
  function save(){if(!bedtime||!wake)return;const date=dateKey(),entry={date,bedtime,wake,quality,note:note.trim()},next=[...entries.filter(e=>e.date!==date),entry].slice(-90);setEntries(next);localStorage.setItem(KEY,JSON.stringify(next));const d=todayKey(),h=loadHealthDays(),base=h.find(x=>x.date===d)??blankDay(d);upsertHealthDay({...base,sleep:duration(bedtime,wake)},h);setBedtime("");setWake("");setNote("");feedback("complete")}
  return <main className="hsys hsys-sleep" aria-label="Sleep"><div className="hsys-inner">
-  <Link href="/home/health" className="hsys-back"><ChevronLeft size={14}/> Health</Link>
-  <header className="hsys-mast"><p className="hsys-k">01 / Recovery</p><h1 className="hsys-title">Sleep</h1><p className="hsys-sub">Protect the part of your life where your body rebuilds.</p>
+  <PageHeader className="hsys-mast" eyebrow="Sleep" trailing={<Link href="/home/health" className="hsys-back"><ChevronLeft size={14}/> Health</Link>}><h1 className="hsys-title">Sleep</h1><p className="hsys-sub">Protect the part of your life where your body rebuilds.</p>
    <div className="hsys-stats"><div><strong>{current?current+"h":"—"}</strong><span>Tonight</span></div><div><strong>{avg?avg+"h":"—"}</strong><span>7-day average</span></div><div><strong>8h</strong><span>Target</span></div></div>
-  </header>{nav}
+  </PageHeader>{nav}
   <section className="hsys-section"><p className="hsys-label">Log the night</p><div className="hsys-card">
    <label className="hsys-field"><span>Bedtime</span><input type="time" value={bedtime} onChange={e=>setBedtime(e.target.value)}/></label>
    <label className="hsys-field"><span>Wake time</span><input type="time" value={wake} onChange={e=>setWake(e.target.value)}/></label>

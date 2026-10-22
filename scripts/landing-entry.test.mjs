@@ -137,9 +137,29 @@ const savedDaylight = run({
     "livv-identity-v1": JSON.stringify({ appearance: "light", theme: "daylight" }),
   },
 });
-assert.equal(savedDaylight.theme, null);
-assert.equal(savedDaylight.livvTheme, null);
-assert.equal(savedDaylight.scheme, null);
+assert.equal(savedDaylight.theme, "dark");
+assert.equal(savedDaylight.livvTheme, "midnight");
+assert.equal(savedDaylight.scheme, "system");
+assert.equal(savedDaylight.colorScheme, "dark");
+
+const namedDaylight = run({
+  scheme: "dark",
+  storage: {
+    "livv-identity-v1": JSON.stringify({ appearance: "light", theme: "daylight", displayName: "Ada" }),
+  },
+});
+assert.equal(namedDaylight.theme, null);
+assert.equal(namedDaylight.livvTheme, null);
+assert.equal(namedDaylight.scheme, null);
+
+const midnightAlone = run({
+  scheme: "light",
+  storage: {
+    "livv-identity-v1": JSON.stringify({ theme: "midnight" }),
+  },
+});
+assert.equal(midnightAlone.theme, null);
+assert.equal(midnightAlone.scheme, null);
 
 const savedMidnight = run({
   scheme: "light",
@@ -319,11 +339,27 @@ assert.equal(bootLight.scheme, "system");
 
 const bootSaved = runThemeBoot({
   scheme: "dark",
-  storage: { "livv-identity-v1": JSON.stringify({ appearance: "light", theme: "daylight" }) },
+  storage: { "livv-identity-v1": JSON.stringify({ appearance: "light", theme: "daylight", displayName: "Ada" }) },
 });
 assert.equal(bootSaved.theme, "light");
 assert.equal(bootSaved.livvTheme, "daylight");
 assert.equal(bootSaved.scheme, "choice");
+
+const bootStub = runThemeBoot({
+  scheme: "dark",
+  storage: { "livv-identity-v1": JSON.stringify({ appearance: "light", theme: "daylight" }) },
+});
+assert.equal(bootStub.theme, "dark");
+assert.equal(bootStub.livvTheme, "midnight");
+assert.equal(bootStub.scheme, "system");
+
+const bootMidnightAlone = runThemeBoot({
+  scheme: "light",
+  storage: { "livv-identity-v1": JSON.stringify({ theme: "midnight" }) },
+});
+assert.equal(bootMidnightAlone.theme, "dark");
+assert.equal(bootMidnightAlone.livvTheme, "midnight");
+assert.equal(bootMidnightAlone.scheme, "choice");
 
 const bootSystem = runThemeBoot({
   scheme: "dark",

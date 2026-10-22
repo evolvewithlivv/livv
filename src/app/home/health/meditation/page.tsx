@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { ChevronLeft, Play, RotateCcw, Sparkles } from "lucide-react";
 import { feedback } from "@/lib/sensory";
+import { PageHeader } from "@/components/layout/page-header";
 import "../health-systems.css";
 
 const DONE_KEY="livv-meditation-done-v1";
@@ -21,8 +22,7 @@ export default function MeditationPage(){
  const item=PRACTICES[idx], choose=(i:number)=>{setIdx(i);setSec(PRACTICES[i].minutes*60);setRunning(false)},reset=()=>{setSec(item.minutes*60);setRunning(false)};
  const mm=String(Math.floor(sec/60)).padStart(2,"0"),ss=String(sec%60).padStart(2,"0");
  return <main className="hsys hsys-meditation" aria-label="Mind"><div className="hsys-inner">
-  <Link href="/home/health" className="hsys-back"><ChevronLeft size={14}/> Health</Link>
-  <header className="hsys-mast"><p className="hsys-k">02 / Mind</p><h1 className="hsys-title">Mind</h1><p className="hsys-sub">Use a few quiet minutes to change what happens next.</p><div className="hsys-stats"><div><strong>{done}</strong><span>Sessions</span></div><div><strong>{item.minutes}m</strong><span>Practice</span></div><div><strong>{running?"ON":"READY"}</strong><span>Status</span></div></div></header>
+  <PageHeader className="hsys-mast" eyebrow="Mind" trailing={<Link href="/home/health" className="hsys-back"><ChevronLeft size={14}/> Health</Link>}><h1 className="hsys-title">Mind</h1><p className="hsys-sub">Use a few quiet minutes to change what happens next.</p><div className="hsys-stats"><div><strong>{done}</strong><span>Sessions</span></div><div><strong>{item.minutes}m</strong><span>Practice</span></div><div><strong>{running?"ON":"READY"}</strong><span>Status</span></div></div></PageHeader>
   {nav}
   <section className="hsys-section"><p className="hsys-label">Choose a practice</p><div className="hsys-chips">{PRACTICES.map((p,i)=><button key={p.name} type="button" className={"hsys-chip"+(idx===i?" on":"")} onClick={()=>choose(i)}>{p.name} · {p.minutes}m</button>)}</div><div className="hsys-card" style={{marginTop:10}}><p className="hsys-item-t">{item.purpose}</p></div></section>
   <section className="hsys-section"><div className="hsys-timer"><p className="hsys-timer-v">{mm}<span style={{opacity:.3}}>: </span>{ss}</p><p className="hsys-timer-s">{running?"In practice":sec===0?"Complete":"Ready"} · {done} completed</p></div><div className="hsys-actions"><button type="button" className="hsys-btn" style={{marginTop:0}} onClick={()=>{if(sec===0)return;setRunning(v=>!v);feedback("tick")}}>{running?"Pause":<><Play size={12}/> Start</>}</button><button type="button" className="hsys-btn ghost" style={{marginTop:0}} onClick={reset}><RotateCcw size={12}/> Reset</button></div></section>

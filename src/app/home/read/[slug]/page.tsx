@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { articleBySlug, deskMeta, nextArticle } from "@/lib/wiki";
+import { PageHeader } from "@/components/layout/page-header";
 
 export default function ReadArticlePage() {
   const params = useParams();
@@ -13,8 +14,9 @@ export default function ReadArticlePage() {
     return (
       <main className="livv-page min-h-full pb-24">
         <div className="mx-auto w-full max-w-xl px-5 pt-8 sm:px-6">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-livv-muted">Read</p>
-          <h1 className="mt-2 text-[28px] font-semibold tracking-[-0.04em]">Not found.</h1>
+          <PageHeader eyebrow="Read">
+            <h1 className="text-[28px] font-semibold tracking-[-0.04em]">Not found.</h1>
+          </PageHeader>
           <p className="mt-3 text-[14px] text-livv-muted">That piece is not in the library.</p>
           <Link href="/home" className="mt-8 inline-block text-[13px] font-semibold underline-offset-4 hover:underline">
             Back to Home
@@ -30,20 +32,22 @@ export default function ReadArticlePage() {
   return (
     <main className="livv-page min-h-full pb-24">
       <div className="mx-auto w-full max-w-xl px-5 pb-12 pt-6 sm:px-6">
-        <Link
-          href="/home"
-          className="text-[11px] font-semibold text-livv-muted underline-offset-4 hover:underline"
+        <PageHeader
+          eyebrow="Read"
+          trailing={
+            <Link href="/home" className="text-[11px] font-semibold text-livv-muted underline-offset-4 hover:underline">
+              Home
+            </Link>
+          }
         >
-          ← Home
-        </Link>
-
-        <p className="mt-8 text-[10px] font-semibold uppercase tracking-[0.2em] text-livv-muted">
-          {desk.label} · {article.readMins} min
-        </p>
-        <h1 className="mt-2 text-[30px] font-semibold leading-[1.12] tracking-[-0.045em] sm:text-[34px]">
-          {article.title}
-        </h1>
-        <p className="mt-4 max-w-[38ch] text-[15px] leading-relaxed text-livv-muted">{article.hook}</p>
+          <h1 className="text-[30px] font-semibold leading-[1.12] tracking-[-0.045em] sm:text-[34px]">
+            {article.title}
+          </h1>
+          <p className="mt-3 text-[12px] text-livv-muted">
+            {desk.label} · {article.readMins} min
+          </p>
+          <p className="mt-4 max-w-[38ch] text-[15px] leading-relaxed text-livv-muted">{article.hook}</p>
+        </PageHeader>
 
         <div className="mt-10 space-y-8 border-t border-livv-border pt-8">
           {article.beats.map((b) => (

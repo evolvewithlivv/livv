@@ -9,6 +9,7 @@ import {
   shopifyProductUrl,
   type ShopProduct,
 } from "@/lib/shop-catalog";
+import { PageHeader } from "@/components/layout/page-header";
 
 export default function ProductDetailPage() {
   const params = useParams();
@@ -18,10 +19,9 @@ export default function ProductDetailPage() {
   if (!product) {
     return (
       <main className="flex min-h-[100dvh] flex-col items-center justify-center bg-livv-bg px-6 text-livv-ink">
-        <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-livv-muted">
-          LIVV
-        </p>
-        <h1 className="mt-3 text-2xl font-semibold">Product not found</h1>
+        <PageHeader eyebrow="Shop">
+          <h1 className="text-2xl font-semibold">Product not found</h1>
+        </PageHeader>
         <Link
           href="/home/shop"
           prefetch={false}
@@ -47,19 +47,19 @@ function ProductView({ product }: { product: ShopProduct }) {
   return (
     <main className="min-h-[100dvh] bg-livv-bg text-livv-ink">
       <div className="mx-auto w-full max-w-lg px-5 pb-16 pt-4 sm:px-6">
-        <div className="flex items-center justify-between gap-3">
-          <Link
-            href="/home/shop"
-            prefetch={false}
-            className="inline-flex h-10 items-center gap-2 rounded-full border border-livv-border px-3 text-[12px] font-semibold uppercase tracking-[0.12em] text-livv-muted transition hover:text-livv-ink"
-          >
-            <ArrowLeft size={14} />
-            Shop
-          </Link>
-          <span className="text-[10px] font-semibold uppercase tracking-[0.18em] text-livv-muted">
-            Collection 001
-          </span>
-        </div>
+        <PageHeader
+          eyebrow="Shop"
+          trailing={
+            <Link
+              href="/home/shop"
+              prefetch={false}
+              className="inline-flex items-center gap-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-livv-muted"
+            >
+              <ArrowLeft size={14} />
+              Shop
+            </Link>
+          }
+        />
 
         <div className="mt-6 overflow-hidden rounded-[22px] border border-livv-border bg-[color-mix(in_srgb,rgb(var(--livv-ink))_2%,transparent)]">
           <div className="aspect-[4/5] w-full">
@@ -72,9 +72,7 @@ function ProductView({ product }: { product: ShopProduct }) {
         </div>
 
         <div className="mt-6">
-          <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-livv-muted">
-            LIVV
-          </p>
+          <p className="text-[12px] text-livv-muted">Collection 001</p>
           <h1 className="mt-2 text-[26px] font-semibold leading-tight tracking-tight">
             {product.name}
           </h1>

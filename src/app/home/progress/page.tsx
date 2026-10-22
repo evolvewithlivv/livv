@@ -10,6 +10,7 @@ import {
 } from "@/lib/record";
 import { evolutionTitle } from "@/lib/levels";
 import { buildProgressInsights } from "@/lib/progress-insights";
+import { PageHeader } from "@/components/layout/page-header";
 import "./progress-signal.css";
 
 export default function ProgressPage() {
@@ -53,10 +54,7 @@ export default function ProgressPage() {
       <div className="rec-void" aria-hidden />
 
       <div className="rec-inner">
-        <header className="rec-top">
-          <p className="rec-eyebrow">Record</p>
-          <span className="rec-level">Level {rec.level}</span>
-        </header>
+        <PageHeader className="rec-top" eyebrow="Progress" trailing={<span className="rec-level">Level {rec.level}</span>} />
 
         <section className="rec-hero">
           <div className="rec-ring-wrap" aria-hidden>

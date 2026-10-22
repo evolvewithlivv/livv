@@ -15,6 +15,7 @@ import {
   normalizeUsername,
 } from "@/lib/auth";
 import { feedback } from "@/lib/sensory";
+import { PageHeader } from "@/components/layout/page-header";
 import "../profile-signal.css";
 import "./edit.css";
 
@@ -110,21 +111,21 @@ export default function EditProfilePage() {
   return (
     <main className="you" aria-label="Edit profile">
       <div className="you-inner">
-        <header className="ed-top">
-          <Link href="/home/profile" className="ed-back">
-            <ChevronLeft size={16} /> You
-          </Link>
-          <button
-            type="button"
-            className="ed-save"
-            onClick={onSave}
-            disabled={saving}
-          >
-            {saving ? "Saving…" : "Save"}
-          </button>
-        </header>
-
-        <h1 className="ed-title">Edit profile</h1>
+        <PageHeader
+          eyebrow="Edit"
+          trailing={
+            <>
+              <Link href="/home/profile" className="ed-back">
+                <ChevronLeft size={16} /> You
+              </Link>
+              <button type="button" className="ed-save" onClick={onSave} disabled={saving}>
+                {saving ? "Saving…" : "Save"}
+              </button>
+            </>
+          }
+        >
+          <h1 className="ed-title">Edit profile</h1>
+        </PageHeader>
 
         <section className="ed-photo">
           <button

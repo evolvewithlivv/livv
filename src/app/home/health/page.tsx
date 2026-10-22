@@ -27,6 +27,7 @@ import {
   type HealthDay,
 } from "@/lib/health";
 import { feedback } from "@/lib/sensory";
+import { PageHeader } from "@/components/layout/page-header";
 import "./health-signal.css";
 
 const SLEEP_TARGET = 8;
@@ -77,16 +78,6 @@ export default function HealthPage() {
     };
   }, [week]);
 
-  const dateLabel = useMemo(
-    () =>
-      new Intl.DateTimeFormat("en-US", {
-        weekday: "long",
-        month: "long",
-        day: "numeric",
-      }).format(new Date()),
-    [],
-  );
-
   function update(patch: Partial<HealthDay>) {
     setDays((prev) => upsertHealthDay({ ...current, ...patch, date: today }, prev));
     const nextSleep = patch.sleep ?? current.sleep;
@@ -100,13 +91,7 @@ export default function HealthPage() {
   return (
     <main className="health-home" aria-label="Health">
       <div className="health-shell">
-        <header className="health-mast">
-          <div>
-            <p className="health-eyebrow">LIVV / HEALTH</p>
-            <p className="health-date">{dateLabel}</p>
-          </div>
-          
-        </header>
+        <PageHeader eyebrow="Health" />
 
         <section className="health-hero">
           <div>

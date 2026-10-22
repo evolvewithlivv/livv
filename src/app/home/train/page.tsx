@@ -25,6 +25,7 @@ import {
 } from "@/lib/train-colors";
 import { completeWorkout } from "@/lib/record";
 import { feedback } from "@/lib/sensory";
+import { PageHeader } from "@/components/layout/page-header";
 import "./train.css";
 
 type Phase = "select" | "preview" | "session" | "complete";
@@ -419,9 +420,10 @@ export default function TrainPage() {
   return (
     <main className="tr" aria-label="Train">
       <div className="tr-inner">
-        <p className="tr-k">Train</p>
-        <h1 className="tr-title">Build the session.</h1>
-        <p className="tr-sub">Pick split, place, and time. Then execute.</p>
+        <PageHeader eyebrow="Train">
+          <h1 className="tr-title">Build the session.</h1>
+          <p className="tr-sub">Pick split, place, and time. Then execute.</p>
+        </PageHeader>
 
         <section className="tr-section">
           <div className="tr-section-head">

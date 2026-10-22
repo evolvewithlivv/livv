@@ -18,6 +18,7 @@ import {
   importBackup,
   parseBackupFile,
 } from "@/lib/data-portability";
+import { PageHeader } from "@/components/layout/page-header";
 import "./settings.css";
 
 type LookOption = {
@@ -32,6 +33,7 @@ const LOOK_OPTIONS: LookOption[] = [
 ];
 
 function isLookActive(me: Identity, opt: LookOption): boolean {
+  if (me.appearance === "system") return false;
   return me.theme === opt.id;
 }
 
@@ -163,10 +165,9 @@ export default function SettingsPage() {
   return (
     <main className="st" aria-label="Settings">
       <div className="st-inner">
-        <Link href="/home/profile" className="st-back">
-          You
-        </Link>
-        <div className="st-heading"><div><p className="st-kicker">ACCOUNT / CONTROL</p><h1 className="st-title">Settings</h1></div></div>
+        <PageHeader className="st-heading" eyebrow="Settings" trailing={<Link href="/home/profile" className="st-back">You</Link>}>
+          <h1 className="st-title">Settings</h1>
+        </PageHeader>
 
         <section className="st-group st-account">
           <p className="st-group-k">Account</p>

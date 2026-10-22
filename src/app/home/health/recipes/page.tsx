@@ -7,6 +7,7 @@ import { CATEGORIES, RECIPES, type CategoryFilter } from "@/lib/recipes-data";
 import { blankDay, loadHealthDays, todayKey, upsertHealthDay } from "@/lib/health";
 import "../health-systems.css";
 import { ShareItemButton } from "@/components/share/share-item-button";
+import { PageHeader } from "@/components/layout/page-header";
 
 const SAVED_KEY="livv-recipes-saved-v1";
 function loadSaved():string[]{if(typeof window==="undefined")return[];try{const raw=localStorage.getItem(SAVED_KEY),parsed=raw?JSON.parse(raw):[];return Array.isArray(parsed)?parsed.filter((x)=>typeof x==="string"):[]}catch{return[]}}
@@ -22,8 +23,7 @@ export default function RecipesPage(){
   function logMeal(){const date=todayKey(),history=loadHealthDays(),base=history.find(d=>d.date===date)??blankDay(date);upsertHealthDay({...base,meals:Math.min(6,base.meals+1)},history)}
 
   if(selected)return <main className="hsys hsys-recipes" aria-label={selected.title}><div className="hsys-inner">
-    <button type="button" className="hsys-back hsys-back-button" onClick={()=>setSelId(null)}><ChevronLeft size={13}/> Recipes</button>
-    <header className="hsys-mast"><p className="hsys-k">{selected.category}</p><h1 className="hsys-title">{selected.title}</h1><p className="hsys-sub">{selected.blurb}</p><div className="hsys-recipe-meta"><span><Clock3 size={10}/> {selected.time} min</span><span>{selected.servings}</span><span>{selected.tag}</span></div></header>
+    <PageHeader className="hsys-mast" eyebrow="Recipes" trailing={<button type="button" className="hsys-back hsys-back-button" onClick={()=>setSelId(null)}><ChevronLeft size={13}/> Recipes</button>}><h1 className="hsys-title">{selected.title}</h1><p className="hsys-sub">{selected.blurb}</p><div className="hsys-recipe-meta"><span><Clock3 size={10}/> {selected.time} min</span><span>{selected.servings}</span><span>{selected.tag}</span></div></PageHeader>
     <SystemNav/>
     <section className="hsys-section"><p className="hsys-label">Ingredients</p><div className="hsys-card"><div className="hsys-list">{selected.ingredients.map(ing=><div key={ing} className="hsys-item"><p className="hsys-item-t" style={{fontWeight:500}}>{ing}</p></div>)}</div></div></section>
     <section className="hsys-section"><p className="hsys-label">Method</p><div className="hsys-card"><div className="hsys-list">{selected.steps.map((step,i)=><div key={step} className="hsys-item"><div><p className="hsys-item-t">{String(i+1).padStart(2,"0")}</p><p className="hsys-item-s">{step}</p></div></div>)}</div></div></section>
@@ -31,8 +31,7 @@ export default function RecipesPage(){
   </div></main>;
 
   return <main className="hsys hsys-recipes" aria-label="Recipes"><div className="hsys-inner">
-    <Link href="/home/health" className="hsys-back"><ChevronLeft size={13}/> Health</Link>
-    <header className="hsys-mast"><p className="hsys-k">03 / Food</p><h1 className="hsys-title">Food</h1><p className="hsys-sub">Eat in a way that makes the rest of your life easier.</p><div className="hsys-stats"><div><strong>{list.length}</strong><span>Recipes</span></div><div><strong>{saved.length}</strong><span>Saved</span></div><div><strong>{cat==="All"?"ALL":cat}</strong><span>Filter</span></div></div></header>
+    <PageHeader className="hsys-mast" eyebrow="Food" trailing={<Link href="/home/health" className="hsys-back"><ChevronLeft size={13}/> Health</Link>}><h1 className="hsys-title">Food</h1><p className="hsys-sub">Eat in a way that makes the rest of your life easier.</p><div className="hsys-stats"><div><strong>{list.length}</strong><span>Recipes</span></div><div><strong>{saved.length}</strong><span>Saved</span></div><div><strong>{cat==="All"?"ALL":cat}</strong><span>Filter</span></div></div></PageHeader>
     <SystemNav/>
     <section className="hsys-section"><label className="hsys-field"><span>Search the kitchen</span><input value={q} onChange={e=>setQ(e.target.value)} placeholder="Ingredient, dish, category"/></label><div className="hsys-chips" style={{marginTop:10}}>{CATEGORIES.map(c=><button key={c} type="button" className={"hsys-chip"+(cat===c?" on":"")} onClick={()=>setCat(c)}>{c}</button>)}</div></section>
     <section className="hsys-section"><p className="hsys-label">{list.length} {list.length===1?"recipe":"recipes"}</p><div className="hsys-list">{list.length===0?<p className="hsys-item-s" style={{padding:"14px 0"}}>Nothing matched that search.</p>:list.map(r=><button key={r.id} type="button" className="hsys-recipe" onClick={()=>setSelId(r.id)}><p className="hsys-recipe-t">{r.title}{saved.includes(r.id)?" · Saved":""}</p><p className="hsys-recipe-s">{r.blurb}</p><div className="hsys-recipe-meta"><span>{r.category}</span><span>{r.time} min</span><span>{r.tag}</span></div></button>)}</div></section>

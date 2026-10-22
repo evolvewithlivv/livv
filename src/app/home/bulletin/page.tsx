@@ -10,6 +10,7 @@ import { dailySummary } from "@/lib/daily";
 import { quoteForSession, type Quote } from "@/lib/quotes";
 import { ANNOUNCEMENTS } from "@/lib/announcements";
 import { WIKI, type WikiArticle } from "@/lib/wiki";
+import { PageHeader } from "@/components/layout/page-header";
 
 const hand = { className: "livv-bulletin-hand" };
 
@@ -232,21 +233,23 @@ export default function BulletinPage() {
   return (
     <main className="min-h-full text-livv-ink">
       <div className="mx-auto w-full max-w-2xl px-4 pb-10 pt-4 sm:px-6">
-        <div className="mb-4 flex items-end justify-between gap-3">
-          <div>
-            <p className="text-[10px] font-semibold uppercase tracking-[0.2em] text-livv-muted">Bulletin</p>
-            <h1 className="mt-1 text-[22px] font-semibold tracking-tight">The bulletin.</h1>
-          </div>
-          <button
-            type="button"
-            onClick={openNewSticky}
-            disabled={stickies.length >= MAX_STICKIES}
-            className="inline-flex h-10 items-center gap-1.5 rounded-full border border-livv-border px-3 text-[11px] font-semibold uppercase tracking-[0.1em] disabled:opacity-40"
-          >
-            <Plus size={14} />
-            Note
-          </button>
-        </div>
+        <PageHeader
+          className="mb-4"
+          eyebrow="Bulletin"
+          trailing={
+            <button
+              type="button"
+              onClick={openNewSticky}
+              disabled={stickies.length >= MAX_STICKIES}
+              className="inline-flex h-10 items-center gap-1.5 rounded-full border border-livv-border px-3 text-[11px] font-semibold uppercase tracking-[0.1em] disabled:opacity-40"
+            >
+              <Plus size={14} />
+              Note
+            </button>
+          }
+        >
+          <h1 className="text-[22px] font-semibold tracking-tight">The bulletin.</h1>
+        </PageHeader>
 
         <div
           aria-label="LIVV bulletin"

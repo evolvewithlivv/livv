@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { ExternalLink, ShieldCheck } from "lucide-react";
 import { LivvMark } from "@/components/brand/livv-mark";
 import { FIELD_GUIDES, getFieldGuide } from "@/lib/field-guides";
+import { PageHeader } from "@/components/layout/page-header";
 import "../../public-share.css";
 
 export function generateStaticParams() { return FIELD_GUIDES.map((guide) => ({ slug: guide.slug })); }
@@ -18,7 +19,7 @@ export default async function PublicFieldGuide({ params }: { params: Promise<{ s
   if (!guide) notFound();
   return <main className="public-share"><article className="public-share-inner">
     <div className="public-brand"><LivvMark kind="wordmark" alt="LIVV" priority/><span className="public-brand-label">Field guide</span></div>
-    <p className="public-eyebrow">{guide.eyebrow}</p><h1>{guide.title}</h1><p className="public-lede">{guide.summary}</p>
+    <PageHeader eyebrow="Field"><h1>{guide.title}</h1><p className="public-lede">{guide.summary}</p></PageHeader>
     <div className="public-meta"><span>{guide.level}</span><span>{guide.duration}</span><span><ShieldCheck size={13} style={{display:"inline",verticalAlign:"-2px"}}/> Sources included</span></div>
     <section className="public-section"><p className="public-eyebrow" style={{marginTop:0}}>01 / Understand</p><h2>Before you begin</h2><p>{guide.overview}</p><h3>Starter budget</h3><p>{guide.budgetEstimate}</p><h3>Before you start</h3><ul>{guide.prerequisites.map(x=><li key={x}>{x}</li>)}</ul><h3>What you need</h3>{guide.supplies.map(x=><div className="public-supply" key={x.item}><strong>{x.item}{x.optional?" · optional":""}</strong><span>{x.amount}</span></div>)}<h3><ShieldCheck size={15} style={{display:"inline",verticalAlign:"-2px"}}/> Safety first</h3><ul>{guide.safety.map(x=><li key={x}>{x}</li>)}</ul></section>
     <section className="public-section"><p className="public-eyebrow" style={{marginTop:0}}>02 / Do the work</p><h2>Step by step</h2>{guide.steps.map((step,i)=><div className="public-step" data-step={String(i+1).padStart(2,"0")} key={step.id}><h3>{step.title}</h3>{step.timing&&<p><strong>Timing:</strong> {step.timing}</p>}<p>{step.instruction}</p><p>{step.detail}</p><p><strong>Checkpoint:</strong> {step.checkpoint}</p></div>)}</section>

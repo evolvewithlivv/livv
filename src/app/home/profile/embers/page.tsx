@@ -8,6 +8,7 @@ import {
   MIN_REDEEM_EMBERS,
   embersToDollars,
 } from "@/lib/ember-economy";
+import { PageHeader } from "@/components/layout/page-header";
 import "./embers.css";
 
 export default function EmbersPage() {
@@ -28,14 +29,9 @@ export default function EmbersPage() {
   return (
     <main className="em" aria-label="Embers">
       <div className="em-inner">
-        <header className="em-top">
-          <Link href="/home/profile" className="em-back">
-            You
-          </Link>
-        </header>
+        <PageHeader eyebrow="Embers" trailing={<Link href="/home/profile" className="em-back">You</Link>} />
 
         <section className="em-hero">
-          <p className="em-k">Balance</p>
           <h1 className="em-balance">{embers.toLocaleString()}</h1>
           <p className="em-value">
             {dollars > 0
