@@ -19,7 +19,7 @@ const attrAt = landing.indexOf('sessionStorage.setItem("livv-attr-v1"');
 const homeAt = landing.indexOf('location.replace("/home" + location.search)');
 assert.ok(attrAt > 0 && homeAt > attrAt);
 
-function loadWorker() {
+function loadWorker({ fetchImpl, matchImpl } = {}) {
   const listeners = {};
   const deleted = [];
   const opened = [];
@@ -42,8 +42,8 @@ function loadWorker() {
       deleted.push(key);
       return true;
     },
-    async match() {
-      return undefined;
+    async match(request) {
+      return matchImpl ? matchImpl(request) : undefined;
     },
   };
   const self = {
@@ -67,7 +67,7 @@ function loadWorker() {
     Promise,
     Response,
     console,
-    fetch: async () => new Response("offline-guide", { status: 200, headers: { "Content-Type": "text/html" } }),
+    fetch: fetchImpl || (async () => new Response("offline-guide", { status: 200, headers: { "Content-Type": "text/html" } })),
   };
   vm.runInNewContext(source, context, { filename: "sw.js" });
   return { listeners, deleted, opened };
@@ -127,6 +127,81 @@ const api = dispatch(worker.listeners, {
   url: "https://evolvewithlivv.com/api/health",
 });
 assert.equal(api, null);
+
+const manifest = dispatch(worker.listeners, {
+  method: "GET",
+  mode: "cors",
+  destination: "",
+  url: "https://evolvewithlivv.com/manifest.webmanifest",
+});
+assert.ok(manifest);
+assert.equal(await (await manifest).text(), "offline-guide");
+
+function failingFetch() {
+  return Promise.reject(new TypeError("Failed to fetch"));
+}
+
+const offline = loadWorker({ fetchImpl: failingFetch });
+for (const url of [
+  "https://evolvewithlivv.com/health",
+  "https://evolvewithlivv.com/not-a-page",
+]) {
+  const navigation = dispatch(offline.listeners, {
+    method: "GET",
+    mode: "navigate",
+    destination: "document",
+    url,
+  });
+  assert.equal(navigation, null, url);
+  const missed = dispatch(offline.listeners, {
+    method: "GET",
+    mode: "cors",
+    destination: "",
+    url,
+  });
+  assert.ok(missed, url);
+  const response = await missed;
+  assert.ok(response instanceof Response, url);
+  assert.equal(response.status, 503, url);
+  assert.equal(await response.text(), "");
+}
+
+const shell = new Response("cached-shell", { status: 200, headers: { "Content-Type": "text/html" } });
+const withShell = loadWorker({
+  fetchImpl: failingFetch,
+  matchImpl(request) {
+    const url = typeof request === "string" ? request : request.url;
+    if (url === "/" || url === "https://evolvewithlivv.com/") return shell;
+    return undefined;
+  },
+});
+const shelled = dispatch(withShell.listeners, {
+  method: "GET",
+  mode: "cors",
+  destination: "",
+  url: "https://evolvewithlivv.com/health",
+});
+assert.equal(await (await shelled).text(), "cached-shell");
+
+const asset = dispatch(offline.listeners, {
+  method: "GET",
+  mode: "cors",
+  destination: "script",
+  url: "https://evolvewithlivv.com/_next/static/chunks/app.js",
+});
+const assetResponse = await asset;
+assert.ok(assetResponse instanceof Response);
+assert.equal(assetResponse.type, "error");
+
+const guideOffline = dispatch(offline.listeners, {
+  method: "GET",
+  mode: "navigate",
+  destination: "document",
+  url: "https://evolvewithlivv.com/field-offline/grow-leafy-greens/",
+});
+const guideOfflineResponse = await guideOffline;
+assert.equal(guideOfflineResponse.status, 503);
+assert.equal(guideOfflineResponse instanceof Response, true);
 
 const search = "?src=test_growth&utm_source=x";
 const documentHandoff = wwwMiddlewareAction(

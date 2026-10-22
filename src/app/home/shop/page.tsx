@@ -2,13 +2,36 @@
 
 import Link from "next/link";
 import { ArrowUpRight, Flame } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import { loadIdentity } from "@/lib/identity";
 import { EMBERS_PER_DOLLAR, MIN_REDEEM_EMBERS, REDEEM_RULES_COPY, embersToDollars } from "@/lib/ember-economy";
 import { PageHeader } from "@/components/layout/page-header";
 import { CountUp } from "@/components/motion/count-up";
 import { barStyle } from "@/components/motion/bar";
 import "./shop-rack.css";
+
+function ShopPhoto({ src, alt, eager }: { src: string; alt: string; eager: boolean }) {
+  const ref = useRef<HTMLImageElement>(null);
+  const [loaded, setLoaded] = useState(false);
+
+  useLayoutEffect(() => {
+    const node = ref.current;
+    if (node?.complete && node.naturalWidth > 0) setLoaded(true);
+  }, [src]);
+
+  return (
+    <img
+      ref={ref}
+      src={src}
+      alt={alt}
+      width={250}
+      height={280}
+      loading={eager ? "eager" : "lazy"}
+      className={loaded ? "is-loaded" : undefined}
+      onLoad={() => setLoaded(true)}
+    />
+  );
+}
 
 const PRODUCTS = [
   { no:"01", name:"Heavyweight Tee", variant:"White Logo", price:"$39.95", image:"https://cdn.shopify.com/s/files/1/1091/3644/5726/files/mens-premium-heavyweight-tee-black-front-6ac2572409a64.png?v=1791121207", href:"https://n8tv6p-pu.myshopify.com/products/men-s-premium-heavyweight-tee-1" },
@@ -47,7 +70,7 @@ export default function ShopPage() {
             {PRODUCTS.map((product) => (
               <Link key={product.href} href={product.href} className="shop-product">
                 <div className="shop-product-image">
-                  <img src={product.image} alt={product.name + " — " + product.variant} loading={product.no === "01" ? "eager" : "lazy"} />
+                  <ShopPhoto src={product.image} alt={product.name + " / " + product.variant} eager={product.no === "01"} />
                   <span className="shop-product-no">{product.no}</span>
                   <span className="shop-product-open" aria-hidden="true"><ArrowUpRight size={15} strokeWidth={1.7} /></span>
                 </div>

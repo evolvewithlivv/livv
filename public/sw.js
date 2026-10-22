@@ -99,7 +99,19 @@ self.addEventListener("fetch",event=>{
   }
 
   if(url.pathname.startsWith("/api/")||url.pathname.startsWith("/ingest")||url.pathname.startsWith("/home")||url.pathname.startsWith("/auth"))return;
-  event.respondWith(fetch(request).catch(()=>caches.match(request).then(cached=>cached||caches.match("/"))));
+  // Network first. A failed fetch must still settle to a Response: a cache miss
+  // used to resolve respondWith to undefined (Failed to convert value to Response).
+  event.respondWith((async()=>{
+    try{
+      return await fetch(request);
+    }catch{
+      try{
+        const cached=await caches.match(request)||await caches.match("/");
+        if(cached)return cached;
+      }catch{/* cache unavailable */}
+      return new Response("",{status:503,headers:{"Cache-Control":"no-store"}});
+    }
+  })());
 });
 
 // Private /home and /api responses never enter any cache.
