@@ -193,6 +193,12 @@ html[data-theme="dark"] .livv-mark > .livv-mark-dark { display: block; }
   margin: 0 auto !important;
   overflow: hidden;
 }
+/* Landing and the auth desk share a left-aligned headline. The flame sits on that edge. */
+.livv-landing .livv-lockup .auth-flame,
+.auth-desk .livv-lockup .auth-flame {
+  margin-left: 0 !important;
+  margin-right: auto !important;
+}
 .auth-brand {
   align-items: center;
   gap: 0.5rem !important;

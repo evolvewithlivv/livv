@@ -12,6 +12,7 @@ import "@/app/loading-screen.css";
 
 const BOOT_MS = 2400;
 const BOOT_KEY = "livv-boot-shown";
+const TAB_ROUTES = new Set(["/home", "/home/daily", "/home/train", "/home/health", "/home/shop", "/home/profile"]);
 
 /** A Daylight or Midnight choice already stored on this device. */
 function hasSavedLandingChoice() {
@@ -70,6 +71,7 @@ export function ThemeShell({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   // Public `/` is the logged-out landing. Skip the member boot screen there.
   const isPublicDiscovery = pathname === "/" || pathname.startsWith("/go/") || pathname === "/home/health/recipes";
+  const isTabRoute = TAB_ROUTES.has(pathname);
 
   useEffect(() => {
     document.documentElement.dataset.livvRoute =
@@ -77,14 +79,14 @@ export function ThemeShell({ children }: { children: React.ReactNode }) {
   }, [pathname]);
 
   useEffect(() => {
-    if (isPublicDiscovery) return;
+    if (isPublicDiscovery || isTabRoute) return;
     try {
       if (sessionStorage.getItem(BOOT_KEY) === "1") return;
     } catch {
       // private mode \u2014 still show boot
     }
     setBoot(true);
-  }, [isPublicDiscovery]);
+  }, [isPublicDiscovery, isTabRoute]);
 
   const finishBoot = () => {
     try {
@@ -186,7 +188,7 @@ export function ThemeShell({ children }: { children: React.ReactNode }) {
 
   return (
     <>
-      {boot && !isPublicDiscovery ? <BootOverlay onDone={finishBoot} /> : null}
+      {boot && !isPublicDiscovery && !isTabRoute ? <BootOverlay onDone={finishBoot} /> : null}
       {offline && !isPublicDiscovery && (
         <div
           role="status"

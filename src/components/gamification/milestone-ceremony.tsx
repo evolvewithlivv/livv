@@ -31,7 +31,7 @@ export function MilestoneCeremony() {
 
   return (
     <Presence open={Boolean(m)}>
-    {m ? <div className="fixed inset-0 z-[90] flex flex-col items-center justify-center bg-black/[0.97] px-6">
+    {m ? <div className="livv-sheet fixed inset-0 z-[90] flex flex-col items-center justify-center bg-black/[0.97] px-6">
       <div className="relative flex max-w-md flex-col items-center text-center">
         <div className="h-px w-16 bg-white/20" />
         <p className="mt-7 text-[10px] uppercase tracking-[0.36em] text-white/45">Progress</p>
