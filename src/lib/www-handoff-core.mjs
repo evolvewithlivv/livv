@@ -5,6 +5,11 @@
  * (see src/lib/supabase/client.ts). This app does not set Supabase SSR
  * cookies; server auth verifies a Bearer token and does not persist a session.
  * A host-only cookie is read here if one is already present, and is not written.
+ *
+ * The www document only reads that stored session and puts the tokens in the
+ * fragment. It must not construct a Supabase client or call the refresh
+ * endpoint. A refresh here rotates the token, and the apex would then present
+ * the pre-rotation token.
  */
 
 export const WWW_HOST = "www.evolvewithlivv.com";
@@ -222,6 +227,129 @@ export const APEX_HANDOFF_BOOT = `(function(){
   }
 })();`;
 
+function decodeBase64Url(value) {
+  try {
+    let b64 = String(value).replace(/-/g, "+").replace(/_/g, "/");
+    while (b64.length % 4) b64 += "=";
+    if (typeof atob !== "function") return null;
+    return atob(b64);
+  } catch {
+    return null;
+  }
+}
+
+export function jwtPayload(token) {
+  if (typeof token !== "string") return null;
+  const parts = token.split(".");
+  if (parts.length < 2 || !parts[1]) return null;
+  const decoded = decodeBase64Url(parts[1]);
+  if (!decoded) return null;
+  try {
+    const parsed = JSON.parse(decoded);
+    return parsed && typeof parsed === "object" ? parsed : null;
+  } catch {
+    return null;
+  }
+}
+
+function unwrapStoredSession(value) {
+  let parsed = value;
+  if (typeof parsed === "string") {
+    let text = parsed;
+    if (text.indexOf("base64-") === 0) {
+      const decoded = decodeBase64Url(text.slice(7));
+      if (!decoded) return null;
+      text = decoded;
+    }
+    try {
+      parsed = JSON.parse(text);
+    } catch {
+      return null;
+    }
+  }
+  if (!parsed || typeof parsed !== "object") return null;
+  if (typeof parsed.access_token === "string" && typeof parsed.refresh_token === "string") return parsed;
+  if (parsed.currentSession) return unwrapStoredSession(parsed.currentSession);
+  if (parsed.session) return unwrapStoredSession(parsed.session);
+  return null;
+}
+
+function readStoredSession(win) {
+  try {
+    if (!win || !win.localStorage || typeof win.localStorage.getItem !== "function") return null;
+    const raw = win.localStorage.getItem("livv-supabase-auth");
+    if (!raw) return null;
+    return unwrapStoredSession(raw);
+  } catch {
+    return null;
+  }
+}
+
+function sessionSubject(session) {
+  if (!session || typeof session !== "object") return "";
+  const fromToken = jwtPayload(session.access_token);
+  if (fromToken && typeof fromToken.sub === "string" && fromToken.sub) return fromToken.sub;
+  const user = session.user;
+  if (user && typeof user.id === "string" && user.id) return user.id;
+  return "";
+}
+
+function sessionExpiryMs(session) {
+  if (!session || typeof session !== "object") return 0;
+  let expiresAt = session.expires_at;
+  if (typeof expiresAt !== "number" || !Number.isFinite(expiresAt)) {
+    const payload = jwtPayload(session.access_token);
+    expiresAt = payload && typeof payload.exp === "number" ? payload.exp : NaN;
+  }
+  if (typeof expiresAt !== "number" || !Number.isFinite(expiresAt)) return 0;
+  return expiresAt > 1e12 ? expiresAt : expiresAt * 1000;
+}
+
+/**
+ * True when the apex already has a usable session for the handed-off user.
+ * setSession would refresh or overwrite that session with the fragment token.
+ * After the apex client has recovered storage, that second use is what returns
+ * refresh_token HTTP 400.
+ */
+export function handoffSessionAlreadyCurrent(existing, handoff, now = Date.now()) {
+  const stored = unwrapStoredSession(existing);
+  if (!stored || !handoff || typeof handoff !== "object") return false;
+  const handoffAccess = handoff.access_token;
+  const handoffRefresh = handoff.refresh_token;
+  if (typeof handoffAccess !== "string" || !handoffAccess || typeof handoffRefresh !== "string" || !handoffRefresh) return false;
+  if (typeof stored.access_token !== "string" || !stored.access_token || typeof stored.refresh_token !== "string" || !stored.refresh_token) return false;
+  const handoffPayload = jwtPayload(handoffAccess);
+  const handoffSub = handoffPayload && typeof handoffPayload.sub === "string" ? handoffPayload.sub : "";
+  const existingSub = sessionSubject(stored);
+  if (!existingSub || !handoffSub || existingSub !== handoffSub) return false;
+  return sessionExpiryMs(stored) > now;
+}
+
+/** A reused refresh token is non-fatal while the apex session is still valid. */
+export function handoffRefreshErrorIsBenign(error, existing, handoff, now = Date.now()) {
+  if (!error || typeof error !== "object") return false;
+  const status = Number(error.status);
+  const message = String(error.message || "").toLowerCase();
+  const code = String(error.code || "").toLowerCase();
+  const invalidRefresh = status === 400 && (message.includes("refresh") || code.includes("refresh"));
+  if (!invalidRefresh) return false;
+  return handoffSessionAlreadyCurrent(existing, handoff, now);
+}
+
+/** Source for the browser harness. The page has no module scope, so every helper has to travel with adoptStashedHandoff. */
+export function apexHandoffBrowserScript() {
+  return [
+    decodeBase64Url,
+    jwtPayload,
+    unwrapStoredSession,
+    readStoredSession,
+    sessionSubject,
+    sessionExpiryMs,
+    handoffSessionAlreadyCurrent,
+    adoptStashedHandoff,
+  ].map((fn) => fn.toString()).join("\n");
+}
+
 export async function adoptStashedHandoff(win, setSession) {
   const stashed = win && win.__livvHandoff;
   if (!stashed || typeof stashed !== "object") return false;
@@ -230,6 +358,7 @@ export async function adoptStashedHandoff(win, setSession) {
   delete win.__livvHandoff;
   if (typeof access_token !== "string" || !access_token || typeof refresh_token !== "string" || !refresh_token) return false;
   if (access_token.length > 16384 || refresh_token.length > 16384) return false;
+  if (handoffSessionAlreadyCurrent(readStoredSession(win), { access_token, refresh_token })) return true;
   await setSession({ access_token, refresh_token });
   return true;
 }

@@ -6,7 +6,7 @@ import http from "node:http";
 import { spawn } from "node:child_process";
 import {
   APEX_HANDOFF_BOOT,
-  adoptStashedHandoff,
+  apexHandoffBrowserScript,
   renderWwwHandoffHtml,
 } from "../src/lib/www-handoff-core.mjs";
 
@@ -18,6 +18,7 @@ const REFRESH = "test-refresh-token";
 function apexPage() {
   return `<!doctype html><html lang="en"><head><meta charset="utf-8"><script>${APEX_HANDOFF_BOOT}</script><script>
 window.__livvSetSession = function (tokens) {
+  document.documentElement.setAttribute("data-livv-set", "1");
   localStorage.setItem("livv-supabase-auth", JSON.stringify({
     access_token: tokens.access_token,
     refresh_token: tokens.refresh_token,
@@ -26,7 +27,8 @@ window.__livvSetSession = function (tokens) {
   }));
   return Promise.resolve();
 };
-(${adoptStashedHandoff.toString()})(window, window.__livvSetSession).then(function () {
+${apexHandoffBrowserScript()}
+adoptStashedHandoff(window, window.__livvSetSession).then(function () {
   document.documentElement.setAttribute("data-livv-adopted", "1");
 }).catch(function (error) {
   var message = String(error && (error.message || error) || "error");
@@ -36,6 +38,15 @@ window.__livvSetSession = function (tokens) {
 });
 </script></head><body>ok</body></html>`;
 }
+
+function jwt(payload) {
+  return `e30.${Buffer.from(JSON.stringify(payload)).toString("base64url")}.sig`;
+}
+
+const FUTURE_EXP = Math.floor(Date.now() / 1000) + 3600;
+const APEX_REFRESH = "apex-refresh-kept";
+const APEX_ACCESS = jwt({ sub: "member-1", exp: FUTURE_EXP });
+const WWW_ACCESS = jwt({ sub: "member-1", exp: FUTURE_EXP });
 
 function seedPage() {
   const session = JSON.stringify({
@@ -49,6 +60,33 @@ location.replace("/home?src=test_growth&utm_source=october");
 </script></head><body>seed</body></html>`;
 }
 
+function apexSeedPage() {
+  const session = JSON.stringify({
+    access_token: APEX_ACCESS,
+    refresh_token: APEX_REFRESH,
+    expires_at: FUTURE_EXP,
+    token_type: "bearer",
+    user: { id: "member-1", email: "member@example.com", is_anonymous: false },
+  });
+  return `<!doctype html><html><head><script>
+localStorage.setItem("livv-supabase-auth", ${JSON.stringify(session)});
+document.documentElement.setAttribute("data-livv-adopted", "1");
+</script></head><body>seed-apex</body></html>`;
+}
+
+function seedCurrentPage() {
+  const session = JSON.stringify({
+    access_token: WWW_ACCESS,
+    refresh_token: "www-refresh-stale",
+    expires_at: FUTURE_EXP,
+    user: { id: "member-1", email: "member@example.com", is_anonymous: false },
+  });
+  return `<!doctype html><html><head><script>
+localStorage.setItem("livv-supabase-auth", ${JSON.stringify(session)});
+location.replace("/home/daily?src=test_growth&utm_source=october");
+</script></head><body>seed-current</body></html>`;
+}
+
 const server = http.createServer((req, res) => {
   const host = String(req.headers.host || "");
   const url = new URL(req.url || "/", `http://${host || "localhost"}`);
@@ -59,8 +97,16 @@ const server = http.createServer((req, res) => {
       res.end(seedPage());
       return;
     }
+    if (url.pathname === "/seed-current") {
+      res.end(seedCurrentPage());
+      return;
+    }
     const destination = `${LOCAL_APEX}${url.pathname}${url.search}`;
     res.end(renderWwwHandoffHtml(destination, LOCAL_APEX));
+    return;
+  }
+  if (url.pathname === "/apex-seed") {
+    res.end(apexSeedPage());
     return;
   }
   res.end(apexPage());
@@ -167,7 +213,17 @@ async function readState(send) {
         adopted: document.documentElement.getAttribute("data-livv-adopted") || "",
         hold: document.documentElement.getAttribute("data-livv-landing-hold") || "",
         error: document.documentElement.getAttribute("data-livv-error") || "",
-        signedIn: signedIn
+        signedIn: signedIn,
+        set: document.documentElement.getAttribute("data-livv-set") || "",
+        keptApex: (() => {
+          try {
+            const raw = localStorage.getItem("livv-supabase-auth");
+            const session = raw ? JSON.parse(raw) : null;
+            return !!(session && session.refresh_token === ${JSON.stringify(APEX_REFRESH)});
+          } catch (error) {
+            return false;
+          }
+        })()
       };
     })()`,
     returnByValue: true,
@@ -191,6 +247,26 @@ const loggedOut = await withPage(async (send) => {
 
 const signedIn = await withPage(async (send) => {
   return goto(send, `http://www.evolvewithlivv.com:${PORT}/seed`);
+});
+
+async function waitFor(send, predicate) {
+  let last = null;
+  for (let attempt = 0; attempt < 50; attempt += 1) {
+    last = await readState(send);
+    if (last && predicate(last)) return last;
+    await sleep(100);
+  }
+  return last;
+}
+
+const alreadySignedIn = await withPage(async (send) => {
+  await send("Page.navigate", { url: `http://evolvewithlivv.com:${PORT}/apex-seed` });
+  await waitFor(send, (state) => state.host === `evolvewithlivv.com:${PORT}` && state.adopted === "1" && state.keptApex === true);
+  await send("Page.navigate", { url: `http://www.evolvewithlivv.com:${PORT}/seed-current` });
+  return waitFor(
+    send,
+    (state) => state.host === `evolvewithlivv.com:${PORT}` && state.path === "/home/daily" && state.adopted === "1" && state.hashEmpty === true,
+  );
 });
 
 chrome.kill();
@@ -239,6 +315,20 @@ assertState("signed-in www handoff", signedIn, {
   signedIn: true,
   hold: "1",
   leaked: false,
+  set: "1",
 });
 
-console.log("browser handoff passed: logged-out redirect kept path and query; signed-in www session landed signed in on the apex with the fragment removed");
+assertState("apex keeps a valid same-user session", alreadySignedIn, {
+  host: `evolvewithlivv.com:${PORT}`,
+  path: "/home/daily",
+  src: "test_growth",
+  utm_source: "october",
+  hashEmpty: true,
+  signedIn: true,
+  hold: "1",
+  leaked: false,
+  set: "",
+  keptApex: true,
+});
+
+console.log("browser handoff passed: logged-out redirect kept path and query; signed-in www session landed signed in on the apex with the fragment removed; a valid apex session skipped setSession");

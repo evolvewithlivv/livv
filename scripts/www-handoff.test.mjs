@@ -1,11 +1,15 @@
 import vm from "node:vm";
 import assert from "node:assert/strict";
+import fs from "node:fs";
 import {
   APEX_HANDOFF_BOOT,
   APEX_ORIGIN,
   WWW_HOST,
   adoptStashedHandoff,
   apexDestination,
+  apexHandoffBrowserScript,
+  handoffRefreshErrorIsBenign,
+  handoffSessionAlreadyCurrent,
   renderWwwHandoffHtml,
   wwwHandoffScript,
   wwwMiddlewareAction,
@@ -206,6 +210,84 @@ assert.equal(win.__livvHandoff, undefined);
 assert.equal(await adoptStashedHandoff(win, async () => {
   throw new Error("setSession should not run twice");
 }), false);
+
+function jwt(payload) {
+  return `e30.${Buffer.from(JSON.stringify(payload)).toString("base64url")}.sig`;
+}
+
+const futureExp = Math.floor(Date.now() / 1000) + 3600;
+const memberAccess = jwt({ sub: "member-1", exp: futureExp });
+const staleAccess = jwt({ sub: "member-1", exp: futureExp - 30 });
+const otherAccess = jwt({ sub: "member-2", exp: futureExp });
+const currentSession = {
+  access_token: memberAccess,
+  refresh_token: "current-refresh",
+  expires_at: futureExp,
+  user: { id: "member-1", email: "member@example.com" },
+};
+
+assert.equal(handoffSessionAlreadyCurrent(currentSession, { access_token: staleAccess, refresh_token: "stale-refresh" }), true);
+assert.equal(handoffSessionAlreadyCurrent(currentSession, { access_token: otherAccess, refresh_token: "other-refresh" }), false);
+assert.equal(handoffSessionAlreadyCurrent({ ...currentSession, expires_at: Math.floor(Date.now() / 1000) - 10 }, { access_token: staleAccess, refresh_token: "stale-refresh" }), false);
+assert.equal(handoffSessionAlreadyCurrent(null, { access_token: staleAccess, refresh_token: "stale-refresh" }), false);
+assert.equal(handoffSessionAlreadyCurrent(currentSession, { access_token: ACCESS, refresh_token: REFRESH }), false);
+
+const kept = [];
+const already = {
+  __livvHandoff: { access_token: staleAccess, refresh_token: "stale-refresh" },
+  localStorage: {
+    getItem(key) {
+      return key === "livv-supabase-auth" ? JSON.stringify(currentSession) : null;
+    },
+  },
+};
+assert.equal(await adoptStashedHandoff(already, async (tokens) => {
+  kept.push(tokens);
+}), true);
+assert.equal(kept.length, 0);
+assert.equal(already.__livvHandoff, undefined);
+
+const switched = [];
+const otherUser = {
+  __livvHandoff: { access_token: otherAccess, refresh_token: "other-refresh" },
+  localStorage: {
+    getItem(key) {
+      return key === "livv-supabase-auth" ? JSON.stringify(currentSession) : null;
+    },
+  },
+};
+assert.equal(await adoptStashedHandoff(otherUser, async (tokens) => {
+  switched.push(tokens.refresh_token);
+}), true);
+assert.deepEqual(switched, ["other-refresh"]);
+
+const refreshError = { status: 400, message: "Invalid Refresh Token: Already Used", code: "refresh_token_already_used" };
+assert.equal(handoffRefreshErrorIsBenign(refreshError, currentSession, { access_token: staleAccess, refresh_token: "stale-refresh" }), true);
+assert.equal(handoffRefreshErrorIsBenign(refreshError, null, { access_token: staleAccess, refresh_token: "stale-refresh" }), false);
+assert.equal(handoffRefreshErrorIsBenign({ status: 400, message: "Invalid payload" }, currentSession, { access_token: staleAccess, refresh_token: "stale-refresh" }), false);
+assert.equal(handoffRefreshErrorIsBenign({ status: 500, message: "Invalid Refresh Token" }, currentSession, { access_token: staleAccess, refresh_token: "stale-refresh" }), false);
+
+const browserScript = apexHandoffBrowserScript();
+assert.equal(browserScript.includes("function handoffSessionAlreadyCurrent"), true);
+assert.equal(browserScript.includes("async function adoptStashedHandoff"), true);
+assert.equal(browserScript.includes("function readStoredSession"), true);
+
+const handoffSource = wwwHandoffScript();
+assert.equal(handoffSource.includes("refreshSession"), false);
+assert.equal(handoffSource.includes("grant_type"), false);
+assert.equal(handoffSource.includes("/token"), false);
+assert.equal(handoffSource.includes("createClient"), false);
+assert.equal(handoffSource.includes("fetch("), false);
+assert.equal(handoffSource.includes("XMLHttpRequest"), false);
+
+const apexSource = fs.readFileSync(new URL("../src/lib/apex-handoff.ts", import.meta.url), "utf8");
+const recoverAt = apexSource.indexOf("await client.auth.getSession()");
+const adoptAt = apexSource.indexOf("await adoptStashedHandoff");
+assert.ok(recoverAt > 0 && adoptAt > recoverAt);
+assert.equal(apexSource.includes("stopAutoRefresh"), true);
+assert.equal(apexSource.includes("handoffRefreshErrorIsBenign"), true);
+assert.equal(apexSource.includes("signOut"), false);
+assert.equal(apexSource.includes("Clear-Site-Data"), false);
 
 const codeLanding = runApex({
   path: "/auth/callback",
