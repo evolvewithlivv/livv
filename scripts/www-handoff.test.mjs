@@ -136,8 +136,8 @@ assert.deepEqual(payload, { access_token: ACCESS, refresh_token: REFRESH });
 assertNoTokenLeak(signedIn.location.replaced);
 assert.equal(signedIn.logs.length, 0);
 
-const signedOut = runWww({ path: "/pricing", search: "?src=test_growth&utm_source=october" });
-assert.equal(signedOut.location.replaced, `${APEX_ORIGIN}/pricing?src=test_growth&utm_source=october`);
+const signedOut = runWww({ path: "/pricing", search: "?src=test_growth&utm_source=october&utm_medium=email" });
+assert.equal(signedOut.location.replaced, `${APEX_ORIGIN}/pricing?src=test_growth&utm_source=october&utm_medium=email`);
 assert.equal(new URL(signedOut.location.replaced).hash, "");
 assertNoTokenLeak(signedOut.location.replaced);
 
@@ -198,6 +198,61 @@ assert.equal(adopted.window.__livvHandoff.access_token, ACCESS);
 assert.equal(adopted.window.__livvHandoff.refresh_token, REFRESH);
 assert.equal(adopted.attrs["data-livv-landing-hold"], "1");
 assert.equal(adopted.logs.length, 0);
+
+function landedAttribution(pathname, search) {
+  const landingSource = fs.readFileSync(new URL("../src/lib/landing-session.ts", import.meta.url), "utf8");
+  const landingMatch = landingSource.match(/export const LANDING_SESSION_SCRIPT = `([\s\S]*)`;\s*$/);
+  assert.ok(landingMatch, "landing session script export missing");
+  const sessionData = {};
+  const location = {
+    pathname,
+    search,
+    origin: APEX_ORIGIN,
+    replace() {},
+  };
+  const context = {
+    location,
+    document: {
+      documentElement: {
+        setAttribute() {},
+        getAttribute() {
+          return null;
+        },
+        style: {},
+      },
+      addEventListener() {},
+    },
+    localStorage: { getItem() { return null; } },
+    sessionStorage: {
+      getItem(key) {
+        return Object.prototype.hasOwnProperty.call(sessionData, key) ? sessionData[key] : null;
+      },
+      setItem(key, value) {
+        sessionData[key] = String(value);
+      },
+    },
+    URL,
+    URLSearchParams,
+    fetch() {
+      return Promise.resolve();
+    },
+    matchMedia() {
+      return { matches: false, addEventListener() {} };
+    },
+  };
+  context.window = context;
+  vm.runInNewContext(landingMatch[1], context);
+  return sessionData["livv-attr-v1"] ? JSON.parse(sessionData["livv-attr-v1"]) : null;
+}
+
+const priced = new URL(signedOut.location.replaced);
+const pricedAttr = landedAttribution(priced.pathname, priced.search);
+assert.equal(pricedAttr.src, "test_growth");
+assert.equal(pricedAttr.utm_source, "october");
+assert.equal(pricedAttr.utm_medium, "email");
+const adoptedAttr = landedAttribution(adopted.location.pathname, adopted.location.search);
+assert.equal(adoptedAttr.src, "test_growth");
+assert.equal(adoptedAttr.utm_source, "october");
 
 const calls = [];
 const win = { __livvHandoff: { access_token: ACCESS, refresh_token: REFRESH } };

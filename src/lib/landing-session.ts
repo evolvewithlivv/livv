@@ -8,10 +8,11 @@
  * Logged-out visitors stay on the landing page.
  * With no saved Daylight or Midnight choice, `/` follows the system scheme.
  * The head script does not set cookies or send identifiers.
+ * Query attribution is stored on every path so a www handoff to a deep link
+ * still lands in first-touch storage. The signed-in redirect stays on `/`.
  */
 export const LANDING_SESSION_SCRIPT = `(function(){
   try {
-    if (location.pathname !== "/") return;
     var src = "";
     var variant = "default";
     try {
@@ -36,6 +37,7 @@ export const LANDING_SESSION_SCRIPT = `(function(){
       sessionStorage.setItem("livv-attr-v1", JSON.stringify(attr));
       if (src) sessionStorage.setItem("livv-src", src);
     } catch (attrError) {}
+    if (location.pathname !== "/") return;
     var emitFunnel = function (eventName, props) {
       if (typeof window.__livvTrack === "function") {
         try { window.__livvTrack(eventName, props || {}); return; } catch (trackError) {}

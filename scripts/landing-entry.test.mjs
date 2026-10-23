@@ -220,6 +220,7 @@ assert.equal(signedInHold.hold, "1");
 const otherPath = run({
   path: "/home",
   scheme: "dark",
+  search: "?src=test_growth&utm_source=october&utm_medium=email",
   storage: {
     "livv-supabase-auth": JSON.stringify({ user: { email: "member@example.com" } }),
     "livv-onboarding-v1": JSON.stringify({ completedAt: 1_700_000_000_000 }),
@@ -228,6 +229,19 @@ const otherPath = run({
 assert.equal(otherPath.replaced, null);
 assert.equal(otherPath.theme, null);
 assert.equal(otherPath.listeners.length, 0);
+assert.equal(otherPath.attr.src, "test_growth");
+assert.equal(otherPath.attr.utm_source, "october");
+assert.equal(otherPath.attr.utm_medium, "email");
+assert.equal(otherPath.src, "test_growth");
+
+const pricingPath = run({
+  path: "/pricing",
+  search: "?src=newsletter&utm_campaign=october",
+});
+assert.equal(pricingPath.replaced, null);
+assert.equal(pricingPath.listeners.length, 0);
+assert.equal(pricingPath.attr.src, "newsletter");
+assert.equal(pricingPath.attr.utm_campaign, "october");
 
 const clicks = run({
   search: "?src=ig&utm_source=instagram&utm_medium=social",

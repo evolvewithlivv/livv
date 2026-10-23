@@ -22,7 +22,16 @@ export type VerifiedSupabaseUser = {
   id: string;
   email: string | null;
   isAnonymous: boolean;
+  createdAt: string | null;
+  emailConfirmedAt: string | null;
+  userMetadata: Record<string, unknown>;
+  appMetadata: Record<string, unknown>;
 };
+
+function asRecord(value: unknown): Record<string, unknown> {
+  if (!value || typeof value !== "object" || Array.isArray(value)) return {};
+  return value as Record<string, unknown>;
+}
 
 /**
  * Verify the Bearer access token with Supabase Auth.
@@ -58,5 +67,9 @@ export async function getVerifiedSupabaseUser(
     id: data.user.id,
     email: data.user.email ?? null,
     isAnonymous: data.user.is_anonymous === true,
+    createdAt: data.user.created_at ?? null,
+    emailConfirmedAt: data.user.email_confirmed_at ?? null,
+    userMetadata: asRecord(data.user.user_metadata),
+    appMetadata: asRecord(data.user.app_metadata),
   };
 }

@@ -2,6 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { reportVerifiedAccount } from "@/lib/account-analytics";
+import { identifyFunnelUser } from "@/lib/funnel";
 import { finishSupabaseCallback } from "@/lib/supabase/real-auth";
 import { isOnboardingComplete, markOnboardingComplete } from "@/lib/onboarding";
 import { isCloudOnboardingComplete } from "@/lib/supabase/onboarding-state";
@@ -19,6 +21,8 @@ export default function AuthCallbackPage() {
         const authErrorDescription = params.get("error_description");
         if (authError) throw new Error(authErrorDescription || `Authentication request returned ${authError}.`);
         await finishSupabaseCallback(params.get("code") || undefined);
+        const report = await reportVerifiedAccount();
+        if (report.ok) identifyFunnelUser(report.distinctId, report.livvInternal);
 
         let complete = isOnboardingComplete();
         if (!complete) {

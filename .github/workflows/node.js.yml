@@ -28,6 +28,8 @@ jobs:
       run: node scripts/landing-entry.test.mjs
     - name: Funnel events
       run: node scripts/funnel-events.test.mjs
+    - name: Signup analytics
+      run: node scripts/signup-analytics.test.mjs
     - name: WWW session handoff
       run: node scripts/www-handoff.test.mjs
     - name: Service worker navigation
