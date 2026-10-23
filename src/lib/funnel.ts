@@ -3,11 +3,9 @@
 import posthog from "posthog-js";
 import {
   QUEUE_KEY,
-  SIGNUP_KEY,
-  claimOnce,
+  cleanToken,
   enqueue,
   errorCodeFromMessage,
-  isNewAccount,
   isPiiKey,
   readAttribution,
   scrubHandoffValue,
@@ -16,6 +14,7 @@ import {
 
 const POSTHOG_KEY = process.env.NEXT_PUBLIC_POSTHOG_KEY || "";
 const POSTHOG_HOST = process.env.NEXT_PUBLIC_POSTHOG_HOST || "https://us.i.posthog.com";
+const IDENTIFY_KEY = "livv-identify-v1";
 
 let started = false;
 
@@ -30,11 +29,45 @@ export function track(name: string, props?: Record<string, unknown>) {
   flushFunnel();
 }
 
-export function trackSignupCompleted(createdAt: string | null | undefined) {
+export function identifyFunnelUser(distinctId: string, livvInternal?: boolean) {
   if (typeof window === "undefined") return;
-  if (!isNewAccount(createdAt)) return;
-  if (!claimOnce(window.localStorage, SIGNUP_KEY)) return;
-  track("signup_completed");
+  const id = cleanToken(distinctId);
+  if (!id) return;
+  const record: { id: string; livv_internal?: boolean } = { id };
+  if (livvInternal === true || livvInternal === false) record.livv_internal = livvInternal;
+  try {
+    window.sessionStorage.setItem(IDENTIFY_KEY, JSON.stringify(record));
+  } catch {
+    /* private mode */
+  }
+  flushIdentify();
+}
+
+function flushIdentify() {
+  if (typeof window === "undefined" || !posthog.__loaded) return;
+  let raw: string | null = null;
+  try {
+    raw = window.sessionStorage.getItem(IDENTIFY_KEY);
+  } catch {
+    return;
+  }
+  if (!raw) return;
+  let parsed: { id?: unknown; livv_internal?: unknown } | null = null;
+  try {
+    parsed = JSON.parse(raw) as { id?: unknown; livv_internal?: unknown };
+  } catch {
+    try { window.sessionStorage.removeItem(IDENTIFY_KEY); } catch { /* private mode */ }
+    return;
+  }
+  const id = cleanToken(typeof parsed?.id === "string" ? parsed.id : "");
+  if (!id) {
+    try { window.sessionStorage.removeItem(IDENTIFY_KEY); } catch { /* private mode */ }
+    return;
+  }
+  const flag = parsed?.livv_internal;
+  if (flag === true || flag === false) posthog.identify(id, { livv_internal: flag });
+  else posthog.identify(id);
+  try { window.sessionStorage.removeItem(IDENTIFY_KEY); } catch { /* private mode */ }
 }
 
 export function funnelErrorCode(error: unknown) {
@@ -44,7 +77,8 @@ export function funnelErrorCode(error: unknown) {
 
 export function flushFunnel() {
   if (typeof window === "undefined" || !posthog.__loaded) return;
-  const queued = takeQueue(storage()) as Array<{ event: string; props: Record<string, string> } | null>;
+  flushIdentify();
+  const queued = takeQueue(storage()) as Array<{ event: string; props: Record<string, string | boolean> } | null>;
   for (const item of queued) {
     if (!item) continue;
     posthog.capture(item.event, item.props, { transport: "sendBeacon" });
@@ -88,6 +122,7 @@ export function initFunnel() {
       return event;
     },
     loaded: () => {
+      flushIdentify();
       flushFunnel();
     },
   });

@@ -50,6 +50,20 @@ assert.equal(sanitizeEvent("otp_request_failed", { error_code: "rate_limit", ema
 assert.equal(sanitizeEvent("otp_request_failed", { error_code: "member@example.com" }).props.error_code, undefined);
 assert.equal(sanitizeEvent("auth_view", { mode: "signup", src: "bad src" }).props.mode, "signup");
 assert.equal(sanitizeEvent("auth_view", { mode: "signup", src: "bad src" }).props.src, undefined);
+assert.equal(sanitizeEvent("signup_completed", { src: "ig" }), null);
+const verified = sanitizeEvent("otp_verified", {
+  src: "ig",
+  utm_source: "october",
+  utm_medium: "email",
+  is_new_user: false,
+  email: "member@example.com",
+});
+assert.equal(verified.event, "otp_verified");
+assert.equal(verified.props.is_new_user, false);
+assert.equal(verified.props.src, "ig");
+assert.equal(verified.props.utm_source, "october");
+assert.equal(verified.props.email, undefined);
+assert.equal(sanitizeEvent("otp_verified", { is_new_user: true }).props.is_new_user, true);
 
 const store = memory();
 assert.equal(claimOnce(store, FIRST_DAILY_KEY), true);
@@ -75,7 +89,10 @@ assert.equal(isNewAccount(new Date().toISOString()), true);
 assert.equal(isNewAccount("2020-01-01T00:00:00.000Z"), false);
 
 const source = await import("node:fs").then((fs) => fs.readFileSync(new URL("../src/lib/funnel.ts", import.meta.url), "utf8"));
-assert.equal(source.includes(".identify("), false);
+assert.equal(source.includes("posthog.identify("), true);
+assert.equal(source.includes("livv_internal"), true);
+assert.equal(source.includes("email"), false);
+assert.equal(source.includes("trackSignupCompleted"), false);
 assert.equal(source.includes('persistence: "localStorage"'), true);
 assert.equal(source.includes("disable_cookie"), false);
 assert.equal(source.includes("autocapture: false"), true);

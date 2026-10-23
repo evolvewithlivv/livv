@@ -6,6 +6,8 @@
  * Never merges accounts. Never clears local product data.
  */
 
+import { reportVerifiedAccount } from "../account-analytics";
+import { identifyFunnelUser } from "../funnel";
 import { ensureAnonymousSession, getAnonSessionState } from "./anon-session";
 import { getSupabaseBrowserClient, isSupabaseConfigured } from "./client";
 
@@ -179,6 +181,12 @@ export async function linkEmailPasswordToCurrentUser(
   // Confirmation pending: email may be on user.email or awaiting confirm (new_email / unconfirmed).
   const confirmedAt = data.user?.email_confirmed_at;
   const confirmationRequired = !confirmedAt;
+  try {
+    const report = await reportVerifiedAccount();
+    if (report.ok) identifyFunnelUser(report.distinctId, report.livvInternal);
+  } catch {
+    /* Account linking already succeeded. Analytics can retry on the next sign-in. */
+  }
 
   return {
     ok: true,

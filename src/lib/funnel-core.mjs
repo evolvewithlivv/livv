@@ -46,12 +46,12 @@ const ERROR_CODES = new Set([
 const EVENT_PROPS = {
   landing_view: ["src", "variant", "device", ...UTM_KEYS],
   cta_start_click: ["src", "variant", "position", ...UTM_KEYS],
-  signup_completed: ["src", ...UTM_KEYS],
   onboarding_completed: ["src", ...UTM_KEYS],
   first_daily_action: ["src", ...UTM_KEYS],
   first_train_action: ["src", ...UTM_KEYS],
   auth_view: ["src", "mode", ...UTM_KEYS],
   otp_requested: ["src", ...UTM_KEYS],
+  otp_verified: ["src", "is_new_user", ...UTM_KEYS],
   otp_request_failed: ["src", "error_code", ...UTM_KEYS],
   otp_verify_failed: ["src", "error_code", ...UTM_KEYS],
 };
@@ -82,6 +82,11 @@ function cleanProp(key, value) {
   if (key === "position") return value === "primary" || value === "secondary" ? value : "";
   if (key === "mode") return value === "signin" || value === "signup" ? value : "";
   if (key === "error_code") return ERROR_CODES.has(value) ? value : "";
+  if (key === "is_new_user") {
+    if (value === true || value === "true") return true;
+    if (value === false || value === "false") return false;
+    return "";
+  }
   if (key === "src" || key === "variant" || UTM_KEYS.includes(key)) return cleanToken(value);
   return "";
 }
@@ -94,7 +99,7 @@ export function sanitizeEvent(name, props) {
   for (const key of allowed) {
     if (isPiiKey(key)) continue;
     const value = cleanProp(key, source[key]);
-    if (value) next[key] = value;
+    if (value !== "" && value !== undefined && value !== null) next[key] = value;
   }
   return { event: name, props: next };
 }

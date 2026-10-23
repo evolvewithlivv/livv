@@ -5,8 +5,9 @@ import { useRouter } from "next/navigation";
 import { BrandLockup } from "@/components/brand/brand-lockup";
 import { Button } from "@/components/ui/button";
 import { authModeFromParam, persistTrafficSource, readTrafficSource, sanitizeTrafficSource } from "@/lib/attribution";
+import { reportVerifiedAccount } from "@/lib/account-analytics";
 import { persistQueryAttribution } from "@/lib/funnel-core.mjs";
-import { funnelErrorCode, track, trackSignupCompleted } from "@/lib/funnel";
+import { funnelErrorCode, identifyFunnelUser, track } from "@/lib/funnel";
 import { getAuthenticatedUser, startEmailAuth, verifyEmailAuth } from "@/lib/supabase/real-auth";
 import { isOnboardingComplete, markOnboardingComplete } from "@/lib/onboarding";
 import { isCloudOnboardingComplete, markCloudOnboardingComplete } from "@/lib/supabase/onboarding-state";
@@ -27,6 +28,7 @@ export default function AuthScreen({ initialMode, initialSrc }: { initialMode: "
   const [ageBand, setAgeBand] = useState<AgeBand | null>(null);
   const [ageConfirmed, setAgeConfirmed] = useState(false);
   const viewedMode = useRef<string | null>(null);
+  const verifyOnce = useRef(false);
   const router = useRouter();
   const continueWithSession = (path: "/home" | "/onboarding") => {
     router.replace(path + window.location.search);
@@ -124,6 +126,7 @@ export default function AuthScreen({ initialMode, initialSrc }: { initialMode: "
   };
 
   const sendEmail = (resend = false) => void run(async () => {
+    verifyOnce.current = false;
     if (resend && resendIn > 0) return;
     if (mode === "signup" && (!ageBand || ageBand === "under13" || !ageConfirmed)) {
       throw new Error("Confirm that you are 13 or older before creating an account.");
@@ -144,14 +147,21 @@ export default function AuthScreen({ initialMode, initialSrc }: { initialMode: "
   });
 
   const verifyEmail = () => void run(async () => {
+    if (verifyOnce.current) return;
+    verifyOnce.current = true;
     let verified: Awaited<ReturnType<typeof verifyEmailAuth>>;
     try {
       verified = await verifyEmailAuth(email, otp);
     } catch (error) {
+      verifyOnce.current = false;
       track("otp_verify_failed", { error_code: funnelErrorCode(error) });
       throw error;
     }
-    if (verified.isNewAccount) trackSignupCompleted(verified.createdAt);
+    const report = await reportVerifiedAccount();
+    if (report.ok) identifyFunnelUser(report.distinctId, report.livvInternal);
+    else identifyFunnelUser(verified.userId);
+    const isNewUser = report.ok ? report.signupRecorded || verified.isNewAccount : verified.isNewAccount;
+    track("otp_verified", { is_new_user: isNewUser });
     const localComplete = isOnboardingComplete();
     if (localComplete) {
       try { await markCloudOnboardingComplete(""); } catch { /* local gate already satisfied */ }
@@ -230,7 +240,7 @@ export default function AuthScreen({ initialMode, initialSrc }: { initialMode: "
                 {busy ? "Verifying…" : "Continue"}
               </Button>
               <div className="flex items-center justify-between gap-3 pt-1">
-                <button type="button" disabled={busy} onClick={() => { setPending(false); setOtp(""); setError(""); setNotice(""); setResendIn(0); }} className="auth-muted text-[12px] disabled:opacity-30">Change email</button>
+                <button type="button" disabled={busy} onClick={() => { verifyOnce.current = false; setPending(false); setOtp(""); setError(""); setNotice(""); setResendIn(0); }} className="auth-muted text-[12px] disabled:opacity-30">Change email</button>
                 <button type="button" disabled={busy || resendIn > 0} onClick={() => sendEmail(true)} className="auth-muted text-[12px] disabled:opacity-30">
                   {resendIn > 0 ? `Resend in ${resendIn}s` : "Resend code"}
                 </button>
