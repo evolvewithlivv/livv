@@ -48,6 +48,8 @@ export default function SettingsPage() {
   const [busy, setBusy] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [accountEmail, setAccountEmail] = useState<string | null>(null);
+  const [showInstallGuide, setShowInstallGuide] = useState(false);
+  const [installPlatform, setInstallPlatform] = useState<"ios" | "android" | "other">("other");
 
   useEffect(() => {
     const sync = () => {
@@ -58,6 +60,8 @@ export default function SettingsPage() {
       setAccountEmail(acc?.email || null);
     };
     sync();
+    const ua = navigator.userAgent;
+    setInstallPlatform(/iPhone|iPad|iPod/i.test(ua) ? "ios" : /Android/i.test(ua) ? "android" : "other");
     window.addEventListener("focus", sync);
     window.addEventListener("livv-identity", sync);
     return () => {
@@ -182,6 +186,33 @@ export default function SettingsPage() {
                 ›
               </span>
             </Link>
+          </div>
+        </section>
+
+        <section className="st-group st-install">
+          <p className="st-group-k">Get the app experience</p>
+          <div className="st-list">
+            <button type="button" className="st-row" aria-expanded={showInstallGuide} onClick={() => setShowInstallGuide((value) => !value)}>
+              <div className="st-row-main">
+                <p className="st-row-t">Add LIVV to Home Screen</p>
+                <p className="st-row-s">Open LIVV directly from your device, like an app.</p>
+              </div>
+              <span className="st-chev" aria-hidden>{showInstallGuide ? "−" : "›"}</span>
+            </button>
+            {showInstallGuide ? <div className="st-install-guide">
+              {installPlatform === "ios" ? <>
+                <p className="st-install-title">iPhone or iPad</p>
+                <ol><li>Open this page in <strong>Safari</strong>.</li><li>Tap the <strong>Share</strong> button.</li><li>Choose <strong>Add to Home Screen</strong>.</li><li>If shown, turn on <strong>Open as Web App</strong>, then tap <strong>Add</strong>.</li></ol>
+                <p>If you do not see the option, make sure LIVV is open in Safari rather than an in-app browser.</p>
+              </> : installPlatform === "android" ? <>
+                <p className="st-install-title">Android</p>
+                <ol><li>Open LIVV in <strong>Chrome</strong>.</li><li>Tap the browser menu (⋮).</li><li>Choose <strong>Install app</strong> or <strong>Add to Home screen</strong>.</li><li>Follow the prompt to finish.</li></ol>
+              </> : <>
+                <p className="st-install-title">Install on your device</p>
+                <p>Open LIVV in your browser menu and look for <strong>Install app</strong> or <strong>Add to Home Screen</strong>. The exact wording depends on your device and browser.</p>
+                <p>On iPhone or iPad, open LIVV in Safari, tap Share, then choose Add to Home Screen.</p>
+              </>}
+            </div> : null}
           </div>
         </section>
 
