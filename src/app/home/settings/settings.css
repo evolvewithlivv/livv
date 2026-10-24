@@ -196,3 +196,10 @@
   .st-inner{padding-left:18px;padding-right:18px}
   .st-title{font-size:3rem}
 }
+
+.st-install-guide{padding:14px 15px 16px;border-top:1px solid color-mix(in srgb,var(--line) 65%,transparent);color:var(--ink);font-size:11px;line-height:1.6}
+.st-install-title{margin:0 0 7px;font-size:12px;font-weight:750;letter-spacing:-.01em}
+.st-install-guide ol{margin:0;padding-left:19px}
+.st-install-guide li{padding:3px 0;color:var(--muted)}
+.st-install-guide li strong,.st-install-guide p strong{color:var(--ink);font-weight:700}
+.st-install-guide>p:not(.st-install-title){margin:10px 0 0;color:var(--muted);font-size:10px;line-height:1.55}
