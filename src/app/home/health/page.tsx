@@ -93,16 +93,14 @@ export default function HealthPage() {
   return (
     <main className="health-home" aria-label="Health">
       <div className="health-shell">
-        <PageHeader eyebrow="Health" />
+        <PageHeader eyebrow="Health">
+          <h1 className="health-title">Know what is happening.<br />Then change it.</h1>
+          <p className="health-lede">
+            Health in LIVV is not a score to chase. It is a clear record of how you sleep, eat, move, recover, and think.
+          </p>
+        </PageHeader>
 
-        <section className="health-intro">
-          <div>
-            <p className="health-kicker">THE BODY IS THE BASELINE</p>
-            <h1>Know what is happening.<br />Then change it.</h1>
-            <p className="health-lede">
-              Health in LIVV is not a score to chase. It is a clear record of how you sleep, eat, move, recover, and think.
-            </p>
-          </div>
+        <section className="health-readout-wrap" aria-label="Today's progress">
           <div className="health-readout">
             <div className="health-readout-top">
               <span>TODAY</span>
