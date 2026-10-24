@@ -95,7 +95,7 @@ export default function HealthPage() {
       <div className="health-shell">
         <PageHeader eyebrow="Health" />
 
-        <section className="health-hero">
+        <section className="health-intro">
           <div>
             <p className="health-kicker">THE BODY IS THE BASELINE</p>
             <h1>Know what is happening.<br />Then change it.</h1>
