@@ -1,0 +1,98 @@
+/* LIVV Design System — precision, restraint, and consistent hierarchy. */
+:root {
+  --livv-accent: 232 91 39;
+  --livv-accent-soft: 232 91 39;
+  --livv-accent-hex: #E85B27;
+  --livv-orange: #E85B27;
+  --livv-bg: #F7F7F5;
+  --livv-surface: 255 255 255;
+  --livv-border: 218 218 214;
+  --livv-muted: 103 105 108;
+  --livv-fg: 20 21 22;
+  --livv-ink: 20 21 22;
+  --livv-line: 20 21 22;
+  --livv-line-a: .12;
+  --livv-shadow: 0 8px 28px rgba(20, 21, 22, .045);
+  --livv-radius-sm: 10px;
+  --livv-radius-md: 16px;
+  --livv-radius-lg: 22px;
+  --livv-motion-fast: 150ms;
+  --livv-motion-base: 220ms;
+  --livv-ease-out: cubic-bezier(.2, .75, .25, 1);
+}
+html[data-theme="light"] {
+  --livv-accent: 232 91 39;
+  --livv-accent-soft: 232 91 39;
+  --livv-accent-hex: #E85B27;
+  --livv-bg: #F7F7F5;
+  --livv-surface: 255 255 255;
+  --livv-border: 218 218 214;
+  --livv-muted: 103 105 108;
+  --livv-fg: 20 21 22;
+  --livv-ink: 20 21 22;
+  --livv-line: 20 21 22;
+  --livv-line-a: .12;
+  --livv-shadow: 0 8px 28px rgba(20, 21, 22, .045);
+}
+html[data-theme="dark"] {
+  --livv-accent: 255 119 66;
+  --livv-accent-soft: 255 119 66;
+  --livv-accent-hex: #FF7742;
+  --livv-bg: #090A0B;
+  --livv-surface: 19 20 21;
+  --livv-border: 54 55 57;
+  --livv-muted: 157 159 161;
+  --livv-fg: 246 246 243;
+  --livv-ink: 246 246 243;
+  --livv-line: 246 246 243;
+  --livv-line-a: .12;
+  --livv-shadow: 0 14px 38px rgba(0, 0, 0, .24);
+  color-scheme: dark;
+}
+html, body { font-family: var(--font-body), -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased; }
+body { letter-spacing: -.012em; }
+h1, h2, h3, h4, .livv-page-title, .livv-ph-title {
+  font-family: var(--font-display), var(--font-body), sans-serif;
+  font-weight: 600;
+  letter-spacing: -.045em;
+  text-wrap: balance;
+}
+h1, .livv-page-title { line-height: 1.04; }
+h2 { line-height: 1.12; letter-spacing: -.035em; }
+h3, h4 { line-height: 1.2; letter-spacing: -.025em; }
+p, li { text-wrap: pretty; }
+button, input, select, textarea { font: inherit; }
+button, [role="button"], a { -webkit-tap-highlight-color: transparent; }
+button, [role="button"] { transition: background-color var(--livv-motion-fast) var(--livv-ease-out), border-color var(--livv-motion-fast) var(--livv-ease-out), color var(--livv-motion-fast) var(--livv-ease-out), transform var(--livv-motion-fast) var(--livv-ease-out); }
+button:active, [role="button"]:active { transform: scale(.985); }
+:focus-visible { outline: 2px solid rgb(var(--livv-accent)); outline-offset: 3px; }
+::selection { background: rgba(232, 91, 39, .2); }
+.livv-page-eyebrow, .livv-ph-eyebrow {
+  color: rgb(var(--livv-muted)) !important;
+  font-family: var(--font-body), sans-serif;
+  font-size: .6875rem;
+  font-weight: 700;
+  letter-spacing: .14em;
+  line-height: 1.35;
+  text-transform: uppercase;
+}
+.livv-page-title { font-size: clamp(2rem, 7vw, 3.25rem); }
+.livv-page-subtitle { color: rgb(var(--livv-muted)); font-size: .9375rem; line-height: 1.65; letter-spacing: -.01em; max-width: 38rem; }
+.livv-page-hero { gap: 1rem; }
+.livv-page-hero-main { gap: .6rem; }
+.livv-ph { gap: .65rem; }
+.livv-ph-eyebrow { font-size: .6875rem; }
+.livv-app-shell { background: var(--livv-bg); }
+.livv-app-shell main { isolation: isolate; }
+.livv-app-shell :is(input:not([type="checkbox"]):not([type="radio"]), select, textarea) {
+  border-radius: var(--livv-radius-sm);
+  transition: border-color var(--livv-motion-fast) var(--livv-ease-out), box-shadow var(--livv-motion-fast) var(--livv-ease-out);
+}
+.livv-app-shell :is(input, select, textarea):focus-visible {
+  outline: none;
+  border-color: rgb(var(--livv-accent));
+  box-shadow: 0 0 0 3px rgba(232, 91, 39, .12);
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+}
