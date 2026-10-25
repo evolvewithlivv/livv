@@ -254,3 +254,163 @@
 .ho-system-health,
 .ho-system-field{--system-accent: color-mix(in srgb, var(--ink) 70%, transparent)}
 @media(max-width:360px){.ho-system-grid{grid-template-columns:1fr}.ho-system{min-height:92px}}
+
+
+/* Precision pass: home should read like a command surface, not a generic dashboard. */
+.ho-shell {
+  max-width: 31rem;
+  padding-inline: clamp(1.2rem, 5vw, 1.65rem);
+}
+.ho-top {
+  min-height: 2.5rem;
+  padding-bottom: .75rem;
+  border-bottom: 1px solid color-mix(in srgb, var(--line) 58%, transparent);
+}
+.ho-date {
+  font-size: 10px;
+  letter-spacing: .13em;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+.ho-identity { gap: .55rem; }
+.ho-avatar, .ho-avatar-fallback { width: 30px; height: 30px; }
+.ho-status {
+  font-size: 10px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+}
+.ho-today { padding-top: clamp(2rem, 8vw, 3.25rem); }
+.ho-hello {
+  font-size: 11px;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+  font-weight: 700;
+}
+.ho-name {
+  margin-top: .5rem;
+  font-size: clamp(2.75rem, 12vw, 4rem);
+  line-height: .98;
+  letter-spacing: -.065em;
+  font-weight: 600;
+  max-width: 11ch;
+  overflow-wrap: anywhere;
+}
+.ho-presence {
+  margin-top: .8rem;
+  font-size: 1rem;
+  line-height: 1.55;
+  max-width: 32ch;
+}
+.ho-primary {
+  min-height: 3.4rem;
+  margin-top: 1.5rem;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 650;
+  letter-spacing: -.015em;
+}
+.ho-primary:hover { filter: brightness(1.08); }
+.ho-aside {
+  margin-top: 1.25rem;
+  display: grid;
+  gap: 1.1rem;
+}
+.ho-block { margin-top: 0; }
+.ho-k {
+  font-size: 9px;
+  letter-spacing: .16em;
+  font-weight: 750;
+}
+.ho-row {
+  align-items: center;
+  padding: .9rem 0;
+  border-top: 1px solid color-mix(in srgb, var(--line) 58%, transparent);
+  border-bottom: 1px solid color-mix(in srgb, var(--line) 58%, transparent);
+  gap: .8rem;
+}
+.ho-row-t { font-size: 1rem; letter-spacing: -.035em; }
+.ho-row-s { font-size: .82rem; line-height: 1.5; }
+.ho-row-cta { font-size: 11px; text-transform: uppercase; letter-spacing: .07em; }
+.ho-systems {
+  margin-top: 2.3rem;
+  padding-top: 1.25rem;
+  border-top-color: color-mix(in srgb, var(--line) 75%, transparent);
+}
+.ho-systems-head { margin-bottom: 1rem; }
+.ho-systems-head h2 {
+  margin-top: .4rem;
+  font-size: clamp(1.35rem, 5vw, 1.65rem);
+  line-height: 1.08;
+  letter-spacing: -.05em;
+  font-weight: 600;
+}
+.ho-system-grid { gap: 8px; }
+.ho-system {
+  min-height: 128px;
+  padding: 14px;
+  border-radius: 10px;
+  border-color: color-mix(in srgb, var(--line) 48%, transparent);
+  background: transparent;
+  transition: border-color 180ms var(--livv-ease-out), background-color 180ms var(--livv-ease-out), transform 180ms var(--livv-ease-out);
+}
+.ho-system:hover {
+  border-color: color-mix(in srgb, var(--accent) 50%, var(--line));
+  background: color-mix(in srgb, var(--accent) 3%, transparent);
+}
+.ho-system:active { transform: scale(.985); }
+.ho-system>span {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  background: color-mix(in srgb, var(--ink) 5%, transparent);
+}
+.ho-system strong {
+  margin-top: auto;
+  font-size: 16px;
+  font-weight: 650;
+  letter-spacing: -.04em;
+}
+.ho-system small {
+  font-size: 10px;
+  line-height: 1.4;
+  letter-spacing: -.01em;
+}
+.ho-system>svg { top: 14px; right: 14px; width: 14px; height: 14px; }
+.ho-signal {
+  gap: .5rem .2rem;
+  margin-top: 1.6rem;
+  padding-top: 1rem;
+  border-top: 1px solid color-mix(in srgb, var(--line) 48%, transparent);
+  font-size: 10px;
+  letter-spacing: .035em;
+}
+.ho-dot { margin-inline: .35rem; }
+.ho-quote {
+  margin-top: 2rem;
+  padding-top: 1.15rem;
+  border-top: 1px solid color-mix(in srgb, var(--line) 48%, transparent);
+}
+.ho-q { font-size: .9rem; line-height: 1.65; font-style: normal; }
+.ho-qa { font-size: 9px; letter-spacing: .14em; }
+@media (min-width: 760px) {
+  .ho-shell {
+    max-width: 58rem;
+    display: grid;
+    grid-template-columns: minmax(0, 1.1fr) minmax(19rem, .9fr);
+    grid-template-rows: auto auto auto auto auto;
+    column-gap: clamp(2rem, 6vw, 5rem);
+    align-content: start;
+    padding: 2rem clamp(2rem, 5vw, 4rem) 3rem;
+  }
+  .ho-top { grid-column: 1 / -1; }
+  .ho-today { grid-column: 1; grid-row: 2 / span 2; padding-top: 4rem; }
+  .ho-aside { grid-column: 2; grid-row: 2; align-self: end; margin-top: 4rem; }
+  .ho-systems { grid-column: 2; grid-row: 3; align-self: start; margin-top: 2rem; }
+  .ho-signal { grid-column: 1; grid-row: 4; align-self: start; margin-top: 2rem; }
+  .ho-quote { grid-column: 1; grid-row: 5; align-self: start; margin-top: 2rem; }
+  .ho-name { font-size: clamp(3.5rem, 7vw, 5.75rem); max-width: 9ch; }
+  .ho-system-grid { grid-template-columns: 1fr 1fr; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ho-system { transition: none; }
+}

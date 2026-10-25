@@ -1,0 +1,310 @@
+/* LIVV Design System — precision, restraint, and consistent hierarchy. */
+:root {
+  --livv-accent: 232 91 39;
+  --livv-accent-soft: 232 91 39;
+  --livv-accent-hex: #E85B27;
+  --livv-orange: #E85B27;
+  --livv-bg: #F7F7F5;
+  --livv-surface: 255 255 255;
+  --livv-border: 218 218 214;
+  --livv-muted: 103 105 108;
+  --livv-fg: 20 21 22;
+  --livv-ink: 20 21 22;
+  --livv-line: 20 21 22;
+  --livv-line-a: .12;
+  --livv-shadow: 0 8px 28px rgba(20, 21, 22, .045);
+  --livv-radius-sm: 10px;
+  --livv-radius-md: 16px;
+  --livv-radius-lg: 22px;
+  --livv-motion-fast: 150ms;
+  --livv-motion-base: 220ms;
+  --livv-ease-out: cubic-bezier(.2, .75, .25, 1);
+}
+html[data-theme="light"] {
+  --livv-accent: 232 91 39;
+  --livv-accent-soft: 232 91 39;
+  --livv-accent-hex: #E85B27;
+  --livv-bg: #F7F7F5;
+  --livv-surface: 255 255 255;
+  --livv-border: 218 218 214;
+  --livv-muted: 103 105 108;
+  --livv-fg: 20 21 22;
+  --livv-ink: 20 21 22;
+  --livv-line: 20 21 22;
+  --livv-line-a: .12;
+  --livv-shadow: 0 8px 28px rgba(20, 21, 22, .045);
+}
+html[data-theme="dark"] {
+  --livv-accent: 255 119 66;
+  --livv-accent-soft: 255 119 66;
+  --livv-accent-hex: #FF7742;
+  --livv-bg: #090A0B;
+  --livv-surface: 19 20 21;
+  --livv-border: 54 55 57;
+  --livv-muted: 157 159 161;
+  --livv-fg: 246 246 243;
+  --livv-ink: 246 246 243;
+  --livv-line: 246 246 243;
+  --livv-line-a: .12;
+  --livv-shadow: 0 14px 38px rgba(0, 0, 0, .24);
+  color-scheme: dark;
+}
+html, body { font-family: var(--font-body), -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; text-rendering: optimizeLegibility; -webkit-font-smoothing: antialiased; }
+body { letter-spacing: -.012em; }
+h1, h2, h3, h4, .livv-page-title, .livv-ph-title {
+  font-family: var(--font-display), var(--font-body), sans-serif;
+  font-weight: 600;
+  letter-spacing: -.045em;
+  text-wrap: balance;
+}
+h1, .livv-page-title { line-height: 1.04; }
+h2 { line-height: 1.12; letter-spacing: -.035em; }
+h3, h4 { line-height: 1.2; letter-spacing: -.025em; }
+p, li { text-wrap: pretty; }
+button, input, select, textarea { font: inherit; }
+button, [role="button"], a { -webkit-tap-highlight-color: transparent; }
+button, [role="button"] { transition: background-color var(--livv-motion-fast) var(--livv-ease-out), border-color var(--livv-motion-fast) var(--livv-ease-out), color var(--livv-motion-fast) var(--livv-ease-out), transform var(--livv-motion-fast) var(--livv-ease-out); }
+button:active, [role="button"]:active { transform: scale(.985); }
+:focus-visible { outline: 2px solid rgb(var(--livv-accent)); outline-offset: 3px; }
+::selection { background: rgba(232, 91, 39, .2); }
+.livv-page-eyebrow, .livv-ph-eyebrow {
+  color: rgb(var(--livv-muted)) !important;
+  font-family: var(--font-body), sans-serif;
+  font-size: .6875rem;
+  font-weight: 700;
+  letter-spacing: .14em;
+  line-height: 1.35;
+  text-transform: uppercase;
+}
+.livv-page-title { font-size: clamp(2rem, 7vw, 3.25rem); }
+.livv-page-subtitle { color: rgb(var(--livv-muted)); font-size: .9375rem; line-height: 1.65; letter-spacing: -.01em; max-width: 38rem; }
+.livv-page-hero { gap: 1rem; }
+.livv-page-hero-main { gap: .6rem; }
+.livv-ph { gap: .65rem; }
+.livv-ph-eyebrow { font-size: .6875rem; }
+.livv-app-shell { background: var(--livv-bg); }
+.livv-app-shell main { isolation: isolate; }
+.livv-app-shell :is(input:not([type="checkbox"]):not([type="radio"]), select, textarea) {
+  border-radius: var(--livv-radius-sm);
+  transition: border-color var(--livv-motion-fast) var(--livv-ease-out), box-shadow var(--livv-motion-fast) var(--livv-ease-out);
+}
+.livv-app-shell :is(input, select, textarea):focus-visible {
+  outline: none;
+  border-color: rgb(var(--livv-accent));
+  box-shadow: 0 0 0 3px rgba(232, 91, 39, .12);
+}
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+}
+
+
+/* Screen-level craft pass — shared visual grammar across core routes. */
+.livv-app-shell .dy-inner,
+.livv-app-shell .rec-inner,
+.livv-app-shell .you-inner,
+.livv-app-shell .tr-inner,
+.livv-app-shell .field-inner {
+  padding-top: clamp(1.1rem, 4vw, 1.75rem);
+}
+.livv-app-shell .dy-question,
+.livv-app-shell .tr-title,
+.livv-app-shell .you-name,
+.livv-app-shell .rec-evo-name,
+.livv-app-shell .field-hero h1 {
+  font-family: var(--font-display), var(--font-body), -apple-system, BlinkMacSystemFont, sans-serif;
+  font-weight: 600;
+  letter-spacing: -.055em;
+  text-wrap: balance;
+}
+.livv-app-shell .dy-question { line-height: 1.01; }
+.livv-app-shell .dy-action {
+  border-radius: 10px;
+  background: transparent;
+  border-color: color-mix(in srgb, var(--livv-border) 82%, transparent);
+  padding: 1rem;
+  transition: border-color 180ms var(--livv-ease-out), background-color 180ms var(--livv-ease-out), transform 180ms var(--livv-ease-out);
+}
+.livv-app-shell .dy-action:hover { border-color: color-mix(in srgb, var(--livv-accent) 48%, var(--livv-border)); }
+.livv-app-shell .dy-action.is-done { opacity: .72; }
+.livv-app-shell .dy-mark { border-radius: 8px; }
+.livv-app-shell .dy-question-answer,
+.livv-app-shell .dy-callback {
+  border-radius: 12px;
+  box-shadow: none;
+}
+.livv-app-shell .dy-question-answer {
+  border-color: color-mix(in srgb, var(--livv-border) 90%, transparent);
+  background: color-mix(in srgb, var(--livv-ink) 2%, transparent);
+  padding: 1.1rem;
+}
+.livv-app-shell .dy-btn { border-radius: 9px; min-height: 2.65rem; }
+.livv-app-shell .rec-void { background: none; }
+.livv-app-shell .rec-ring-fill { filter: none; }
+.livv-app-shell .rec-metric,
+.livv-app-shell .rec-week-bars,
+.livv-app-shell .rec-pillar,
+.livv-app-shell .rec-evidence-card {
+  border-radius: 10px;
+  box-shadow: none;
+  background: transparent;
+}
+.livv-app-shell .rec-metric { border-color: color-mix(in srgb, var(--livv-border) 82%, transparent); }
+.livv-app-shell .rec-week-bars { border-color: color-mix(in srgb, var(--livv-border) 82%, transparent); }
+.livv-app-shell .rec-pillar { padding-inline: 0; border: 0; border-radius: 0; border-bottom: 1px solid color-mix(in srgb, var(--livv-border) 72%, transparent); }
+.livv-app-shell .rec-pillar-list { gap: 0; }
+.livv-app-shell .rec-pillar-track { height: 3px; }
+.livv-app-shell .rec-level { border-radius: 7px; }
+.livv-app-shell .you-inner { max-width: 31rem; }
+.livv-app-shell .you-photo-wrap { border-radius: 14px; border-color: color-mix(in srgb, var(--livv-border) 85%, transparent); }
+.livv-app-shell .you-edit { border-radius: 9px; min-height: 2.65rem; }
+.livv-app-shell .you-account-grid { gap: 8px; }
+.livv-app-shell .you-account-grid .you-link {
+  border-radius: 10px;
+  background: transparent;
+  border-color: color-mix(in srgb, var(--livv-border) 82%, transparent);
+}
+.livv-app-shell .you-social-mark { border-radius: 8px; }
+.livv-app-shell .tr-chip,
+.livv-app-shell .tr-day-row,
+.livv-app-shell .tr-secondary,
+.livv-app-shell .tr-custom-editor {
+  border-radius: 9px;
+  box-shadow: none;
+}
+.livv-app-shell .tr-chip.on,
+.livv-app-shell .tr-day-row.on {
+  border-color: rgb(var(--livv-accent));
+  background: color-mix(in srgb, var(--livv-accent) 7%, transparent);
+}
+.livv-app-shell .tr-primary { border-radius: 9px; min-height: 3.35rem; }
+.livv-app-shell .field-orbit a { border-radius: 9px; background: transparent; }
+.livv-app-shell .field-hero { padding-top: 2.5rem; }
+.livv-app-shell .field-hero h1 { line-height: .98; }
+.livv-app-shell .field-card,
+.livv-app-shell .field-next { border-color: color-mix(in srgb, var(--livv-border) 82%, transparent); }
+.livv-app-shell :is(.dy-action, .ho-system, .tr-chip, .tr-day-row, .field-orbit a, .field-card-link, .you-link, .you-social) {
+  -webkit-tap-highlight-color: transparent;
+}
+@media (min-width: 760px) {
+  .livv-app-shell .dy-inner,
+  .livv-app-shell .rec-inner,
+  .livv-app-shell .you-inner,
+  .livv-app-shell .tr-inner,
+  .livv-app-shell .field-inner { max-width: 58rem; }
+  .livv-app-shell .dy-inner,
+  .livv-app-shell .rec-inner,
+  .livv-app-shell .you-inner,
+  .livv-app-shell .tr-inner,
+  .livv-app-shell .field-inner { padding-inline: clamp(2rem, 5vw, 4rem); }
+}
+
+
+/* Flow pass: remove the repeated-card rhythm. Let typography, whitespace and live data lead. */
+.livv-app-shell .dy-action {
+  border: 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--livv-border) 62%, transparent);
+  border-radius: 0;
+  padding: 1.05rem .1rem;
+}
+.livv-app-shell .dy-action:first-child { border-top: 1px solid color-mix(in srgb, var(--livv-border) 62%, transparent); }
+.livv-app-shell .dy-action:hover {
+  background: color-mix(in srgb, var(--livv-accent) 3%, transparent);
+  border-color: color-mix(in srgb, var(--livv-accent) 35%, var(--livv-border));
+}
+.livv-app-shell .dy-question-answer {
+  border: 0;
+  border-left: 2px solid rgb(var(--livv-accent));
+  border-radius: 0;
+  background: color-mix(in srgb, var(--livv-ink) 2%, transparent);
+}
+.livv-app-shell .rec-metric,
+.livv-app-shell .rec-week-bars,
+.livv-app-shell .rec-evidence-card {
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+.livv-app-shell .rec-metric {
+  padding: .6rem 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--livv-border) 55%, transparent);
+}
+.livv-app-shell .rec-metric :is(strong, b, .rec-metric-value) {
+  letter-spacing: -.065em;
+  font-variant-numeric: tabular-nums;
+}
+.livv-app-shell .rec-week-bars { padding-inline: 0; }
+.livv-app-shell .you-account-grid { display: flex; flex-direction: column; gap: 0; }
+.livv-app-shell .you-account-grid .you-link {
+  border: 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--livv-border) 62%, transparent);
+  border-radius: 0;
+  padding-inline: .1rem;
+}
+.livv-app-shell .you-account-grid .you-link:first-child {
+  border-top: 1px solid color-mix(in srgb, var(--livv-border) 62%, transparent);
+}
+.livv-app-shell .field-card,
+.livv-app-shell .field-next {
+  border-radius: 0;
+  border-width: 0 0 1px;
+  background: transparent;
+  box-shadow: none;
+}
+.livv-app-shell .field-hero { padding-top: clamp(3rem, 12vw, 6rem); padding-bottom: 2rem; }
+.livv-app-shell .field-hero h1 { max-width: 12ch; }
+.livv-app-shell .tr-custom-editor {
+  border-radius: 0;
+  border-width: 1px 0 0;
+  background: transparent;
+}
+.livv-app-shell .tr-day-row {
+  border-width: 0 0 1px;
+  border-radius: 0;
+  background: transparent;
+}
+.livv-app-shell .tr-chip { border-radius: 999px; }
+.livv-app-shell .tr-primary { border-radius: 999px; }
+.livv-app-shell .dy-btn, .livv-app-shell .you-edit { border-radius: 999px; }
+.livv-app-shell .ho-top { border-bottom: 0; }
+.livv-app-shell .ho-row {
+  border: 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--line) 42%, transparent);
+  padding: 1rem 0;
+}
+.livv-app-shell .ho-row:first-child { border-top: 1px solid color-mix(in srgb, var(--line) 42%, transparent); }
+.livv-app-shell .ho-systems { border-top: 0; padding-top: .5rem; }
+.livv-app-shell .ho-system-grid { gap: 0 1.2rem; }
+.livv-app-shell .ho-system {
+  min-height: 112px;
+  padding: 1rem .1rem;
+  border: 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--line) 48%, transparent);
+  border-radius: 0;
+  background: transparent;
+}
+.livv-app-shell .ho-system>span {
+  width: auto;
+  height: auto;
+  place-items: start;
+  background: transparent;
+  color: rgb(var(--livv-accent));
+}
+.livv-app-shell .ho-system:hover {
+  background: transparent;
+  border-color: rgb(var(--livv-accent));
+}
+.livv-app-shell .ho-system strong { margin-top: 1.1rem; }
+.livv-app-shell .ho-system>svg { opacity: .5; }
+.livv-app-shell .ho-signal,
+.livv-app-shell .ho-quote { border-top: 0; }
+@media (prefers-reduced-motion: no-preference) {
+  .livv-app-shell .ho-system,
+  .livv-app-shell .dy-action,
+  .livv-app-shell .you-link,
+  .livv-app-shell .field-card-link {
+    transition: color 220ms var(--livv-ease-out), border-color 220ms var(--livv-ease-out), background-color 220ms var(--livv-ease-out), transform 220ms var(--livv-ease-out);
+  }
+}
+@media (min-width: 760px) {
+  .livv-app-shell .ho-system-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
