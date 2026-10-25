@@ -96,3 +96,104 @@ button:active, [role="button"]:active { transform: scale(.985); }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
 }
+
+
+/* Screen-level craft pass — shared visual grammar across core routes. */
+.livv-app-shell .dy-inner,
+.livv-app-shell .rec-inner,
+.livv-app-shell .you-inner,
+.livv-app-shell .tr-inner,
+.livv-app-shell .field-inner {
+  padding-top: clamp(1.1rem, 4vw, 1.75rem);
+}
+.livv-app-shell .dy-question,
+.livv-app-shell .tr-title,
+.livv-app-shell .you-name,
+.livv-app-shell .rec-evo-name,
+.livv-app-shell .field-hero h1 {
+  font-family: var(--font-display), var(--font-body), -apple-system, BlinkMacSystemFont, sans-serif;
+  font-weight: 600;
+  letter-spacing: -.055em;
+  text-wrap: balance;
+}
+.livv-app-shell .dy-question { line-height: 1.01; }
+.livv-app-shell .dy-action {
+  border-radius: 10px;
+  background: transparent;
+  border-color: color-mix(in srgb, var(--livv-border) 82%, transparent);
+  padding: 1rem;
+  transition: border-color 180ms var(--livv-ease-out), background-color 180ms var(--livv-ease-out), transform 180ms var(--livv-ease-out);
+}
+.livv-app-shell .dy-action:hover { border-color: color-mix(in srgb, var(--livv-accent) 48%, var(--livv-border)); }
+.livv-app-shell .dy-action.is-done { opacity: .72; }
+.livv-app-shell .dy-mark { border-radius: 8px; }
+.livv-app-shell .dy-question-answer,
+.livv-app-shell .dy-callback {
+  border-radius: 12px;
+  box-shadow: none;
+}
+.livv-app-shell .dy-question-answer {
+  border-color: color-mix(in srgb, var(--livv-border) 90%, transparent);
+  background: color-mix(in srgb, var(--livv-ink) 2%, transparent);
+  padding: 1.1rem;
+}
+.livv-app-shell .dy-btn { border-radius: 9px; min-height: 2.65rem; }
+.livv-app-shell .rec-void { background: none; }
+.livv-app-shell .rec-ring-fill { filter: none; }
+.livv-app-shell .rec-metric,
+.livv-app-shell .rec-week-bars,
+.livv-app-shell .rec-pillar,
+.livv-app-shell .rec-evidence-card {
+  border-radius: 10px;
+  box-shadow: none;
+  background: transparent;
+}
+.livv-app-shell .rec-metric { border-color: color-mix(in srgb, var(--livv-border) 82%, transparent); }
+.livv-app-shell .rec-week-bars { border-color: color-mix(in srgb, var(--livv-border) 82%, transparent); }
+.livv-app-shell .rec-pillar { padding-inline: 0; border: 0; border-radius: 0; border-bottom: 1px solid color-mix(in srgb, var(--livv-border) 72%, transparent); }
+.livv-app-shell .rec-pillar-list { gap: 0; }
+.livv-app-shell .rec-pillar-track { height: 3px; }
+.livv-app-shell .rec-level { border-radius: 7px; }
+.livv-app-shell .you-inner { max-width: 31rem; }
+.livv-app-shell .you-photo-wrap { border-radius: 14px; border-color: color-mix(in srgb, var(--livv-border) 85%, transparent); }
+.livv-app-shell .you-edit { border-radius: 9px; min-height: 2.65rem; }
+.livv-app-shell .you-account-grid { gap: 8px; }
+.livv-app-shell .you-account-grid .you-link {
+  border-radius: 10px;
+  background: transparent;
+  border-color: color-mix(in srgb, var(--livv-border) 82%, transparent);
+}
+.livv-app-shell .you-social-mark { border-radius: 8px; }
+.livv-app-shell .tr-chip,
+.livv-app-shell .tr-day-row,
+.livv-app-shell .tr-secondary,
+.livv-app-shell .tr-custom-editor {
+  border-radius: 9px;
+  box-shadow: none;
+}
+.livv-app-shell .tr-chip.on,
+.livv-app-shell .tr-day-row.on {
+  border-color: rgb(var(--livv-accent));
+  background: color-mix(in srgb, var(--livv-accent) 7%, transparent);
+}
+.livv-app-shell .tr-primary { border-radius: 9px; min-height: 3.35rem; }
+.livv-app-shell .field-orbit a { border-radius: 9px; background: transparent; }
+.livv-app-shell .field-hero { padding-top: 2.5rem; }
+.livv-app-shell .field-hero h1 { line-height: .98; }
+.livv-app-shell .field-card,
+.livv-app-shell .field-next { border-color: color-mix(in srgb, var(--livv-border) 82%, transparent); }
+.livv-app-shell :is(.dy-action, .ho-system, .tr-chip, .tr-day-row, .field-orbit a, .field-card-link, .you-link, .you-social) {
+  -webkit-tap-highlight-color: transparent;
+}
+@media (min-width: 760px) {
+  .livv-app-shell .dy-inner,
+  .livv-app-shell .rec-inner,
+  .livv-app-shell .you-inner,
+  .livv-app-shell .tr-inner,
+  .livv-app-shell .field-inner { max-width: 58rem; }
+  .livv-app-shell .dy-inner,
+  .livv-app-shell .rec-inner,
+  .livv-app-shell .you-inner,
+  .livv-app-shell .tr-inner,
+  .livv-app-shell .field-inner { padding-inline: clamp(2rem, 5vw, 4rem); }
+}
