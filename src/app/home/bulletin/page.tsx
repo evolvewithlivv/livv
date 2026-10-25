@@ -319,7 +319,7 @@ export default function BulletinPage() {
             {quote ? (
               <Note tone="cream" rotate={-2.5} className="min-h-[6.25rem]">
                 <p className="text-[16px] font-semibold leading-snug">“{clip(quote.text, 90)}”</p>
-                <p className="mt-2 text-[12px] opacity-60">— {quote.author}</p>
+                <p className="mt-2 text-[12px] opacity-60">{quote.author}</p>
               </Note>
             ) : null}
 
