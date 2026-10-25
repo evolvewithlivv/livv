@@ -51,7 +51,7 @@ export default function EmbersPage() {
             <div className="em-fill livv-bar" style={barStyle(progress)} />
           </div>
           <p className="em-progress-note">
-            {MIN_REDEEM_EMBERS.toLocaleString()} Embers unlocks credit in the Shop
+            Redeem credit in the Shop at {MIN_REDEEM_EMBERS.toLocaleString()} Embers
           </p>
         </section>
 

@@ -67,7 +67,7 @@ html[data-theme="dark"]{
 }
 
 *{box-sizing:border-box}
-html,body{max-width:100%;overflow-x:hidden}
+html,body{max-width:100%;overflow-x:hidden;overflow-x:clip}
 body{background:var(--livv-bg);color:rgb(var(--livv-ink))}
 html[data-theme="light"] .livv-page .text-white{color:rgb(var(--livv-ink)) !important}
 html[data-theme="light"] .livv-page .bg-white{background:rgb(var(--livv-ink)) !important;color:var(--livv-bg) !important}
