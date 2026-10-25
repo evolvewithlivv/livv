@@ -197,3 +197,114 @@ button:active, [role="button"]:active { transform: scale(.985); }
   .livv-app-shell .tr-inner,
   .livv-app-shell .field-inner { padding-inline: clamp(2rem, 5vw, 4rem); }
 }
+
+
+/* Flow pass: remove the repeated-card rhythm. Let typography, whitespace and live data lead. */
+.livv-app-shell .dy-action {
+  border: 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--livv-border) 62%, transparent);
+  border-radius: 0;
+  padding: 1.05rem .1rem;
+}
+.livv-app-shell .dy-action:first-child { border-top: 1px solid color-mix(in srgb, var(--livv-border) 62%, transparent); }
+.livv-app-shell .dy-action:hover {
+  background: color-mix(in srgb, var(--livv-accent) 3%, transparent);
+  border-color: color-mix(in srgb, var(--livv-accent) 35%, var(--livv-border));
+}
+.livv-app-shell .dy-question-answer {
+  border: 0;
+  border-left: 2px solid rgb(var(--livv-accent));
+  border-radius: 0;
+  background: color-mix(in srgb, var(--livv-ink) 2%, transparent);
+}
+.livv-app-shell .rec-metric,
+.livv-app-shell .rec-week-bars,
+.livv-app-shell .rec-evidence-card {
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+}
+.livv-app-shell .rec-metric {
+  padding: .6rem 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--livv-border) 55%, transparent);
+}
+.livv-app-shell .rec-metric :is(strong, b, .rec-metric-value) {
+  letter-spacing: -.065em;
+  font-variant-numeric: tabular-nums;
+}
+.livv-app-shell .rec-week-bars { padding-inline: 0; }
+.livv-app-shell .you-account-grid { display: flex; flex-direction: column; gap: 0; }
+.livv-app-shell .you-account-grid .you-link {
+  border: 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--livv-border) 62%, transparent);
+  border-radius: 0;
+  padding-inline: .1rem;
+}
+.livv-app-shell .you-account-grid .you-link:first-child {
+  border-top: 1px solid color-mix(in srgb, var(--livv-border) 62%, transparent);
+}
+.livv-app-shell .field-card,
+.livv-app-shell .field-next {
+  border-radius: 0;
+  border-width: 0 0 1px;
+  background: transparent;
+  box-shadow: none;
+}
+.livv-app-shell .field-hero { padding-top: clamp(3rem, 12vw, 6rem); padding-bottom: 2rem; }
+.livv-app-shell .field-hero h1 { max-width: 12ch; }
+.livv-app-shell .tr-custom-editor {
+  border-radius: 0;
+  border-width: 1px 0 0;
+  background: transparent;
+}
+.livv-app-shell .tr-day-row {
+  border-width: 0 0 1px;
+  border-radius: 0;
+  background: transparent;
+}
+.livv-app-shell .tr-chip { border-radius: 999px; }
+.livv-app-shell .tr-primary { border-radius: 999px; }
+.livv-app-shell .dy-btn, .livv-app-shell .you-edit { border-radius: 999px; }
+.livv-app-shell .ho-top { border-bottom: 0; }
+.livv-app-shell .ho-row {
+  border: 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--line) 42%, transparent);
+  padding: 1rem 0;
+}
+.livv-app-shell .ho-row:first-child { border-top: 1px solid color-mix(in srgb, var(--line) 42%, transparent); }
+.livv-app-shell .ho-systems { border-top: 0; padding-top: .5rem; }
+.livv-app-shell .ho-system-grid { gap: 0 1.2rem; }
+.livv-app-shell .ho-system {
+  min-height: 112px;
+  padding: 1rem .1rem;
+  border: 0;
+  border-bottom: 1px solid color-mix(in srgb, var(--line) 48%, transparent);
+  border-radius: 0;
+  background: transparent;
+}
+.livv-app-shell .ho-system>span {
+  width: auto;
+  height: auto;
+  place-items: start;
+  background: transparent;
+  color: rgb(var(--livv-accent));
+}
+.livv-app-shell .ho-system:hover {
+  background: transparent;
+  border-color: rgb(var(--livv-accent));
+}
+.livv-app-shell .ho-system strong { margin-top: 1.1rem; }
+.livv-app-shell .ho-system>svg { opacity: .5; }
+.livv-app-shell .ho-signal,
+.livv-app-shell .ho-quote { border-top: 0; }
+@media (prefers-reduced-motion: no-preference) {
+  .livv-app-shell .ho-system,
+  .livv-app-shell .dy-action,
+  .livv-app-shell .you-link,
+  .livv-app-shell .field-card-link {
+    transition: color 220ms var(--livv-ease-out), border-color 220ms var(--livv-ease-out), background-color 220ms var(--livv-ease-out), transform 220ms var(--livv-ease-out);
+  }
+}
+@media (min-width: 760px) {
+  .livv-app-shell .ho-system-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+}
