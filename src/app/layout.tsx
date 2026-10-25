@@ -11,6 +11,7 @@ import "./livv-tier-unlock.css";
 import "./livv-motion.css";
 import "./livv-craft.css";
 import "./livv-desktop.css";
+import "./livv-design-system.css";
 import { ThemeShell } from "@/components/layout/theme-shell";
 import { RouteMotion } from "@/components/layout/page-motion";
 import { FunnelProvider } from "@/components/funnel/funnel-provider";
