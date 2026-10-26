@@ -23,7 +23,7 @@ export default function DmcaPage() {
           <h2>5. Repeat infringement</h2>
           <p>LIVV may restrict or terminate accounts that repeatedly submit infringing material or otherwise abuse the service.</p>
           <h2>6. Designated agent</h2>
-          <p>Evolve With LIVV will maintain a designated copyright contact and, where applicable, register the designated agent with the U.S. Copyright Office. The public contact for copyright notices is evolvewithlivv@gmail.com.</p>
+          <p>Evolve With LIVV will maintain a designated copyright contact and, where applicable, register the designated agent with the U.S. Copyright Office. Use the official X account linked above to initiate contact about copyright notices.</p>
           <p className="text-xs text-livv-muted">This page describes LIVV's operational policy. It is not legal advice. A formal safe-harbor designation requires a current registration and accurate agent information with the U.S. Copyright Office.</p>
         </article>
       </div>
