@@ -33,7 +33,7 @@ export default function TermsPage() {
           <h2>10. Disclaimers and limits</h2>
           <p>LIVV is provided on an as-available basis. To the extent permitted by law, warranties not expressly stated here are disclaimed. Nothing in these terms limits rights or remedies that cannot legally be limited.</p>
           <h2>11. Contact</h2>
-          <p>Questions about these terms, your account, or a privacy request: <a href="mailto:privacy@evolvewithlivv.com">privacy@evolvewithlivv.com</a>. Copyright notices use the contact on the DMCA page.</p>
+          <p>Questions about these terms, your account, or a privacy request: <a href="https://x.com/EWL_Official" target="_blank" rel="noopener noreferrer">our official X account</a>. Copyright notices use the contact on the DMCA page.</p>
         </article>
       </div>
     </main>
