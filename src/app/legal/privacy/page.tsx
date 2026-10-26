@@ -32,7 +32,7 @@ export default function PrivacyPage() {
           <h2>6. Sharing</h2>
           <p>We may disclose information to service providers, when required by law, to protect LIVV or its users, or in connection with a merger, acquisition, financing, or sale of assets. We do not sell your personal information.</p>
           <h2>7. Your choices</h2>
-          <p>You control the optional information you add to your profile and journal. You may stop using LIVV at any time. Settings can export or clear a subset of progress stored on this device. That file is not a full copy of your account, and clearing it does not delete your account or the records stored with Supabase. To access, correct, or delete account information, email <a href="mailto:privacy@evolvewithlivv.com">privacy@evolvewithlivv.com</a>. This version has no in-app account deletion control.</p>
+          <p>You control the optional information you add to your profile and journal. You may stop using LIVV at any time. Settings can export or clear a subset of progress stored on this device. That file is not a full copy of your account, and clearing it does not delete your account or the records stored with Supabase. To access, correct, or delete account information, contact LIVV through <a href="https://x.com/EWL_Official" target="_blank" rel="noopener noreferrer">our official X account</a>. This version has no in-app account deletion control.</p>
           <h2>8. Security and retention</h2>
           <p>We use reasonable technical and organizational safeguards intended to protect information. No internet service can guarantee absolute security. We retain information for as long as reasonably necessary to operate LIVV, meet legal obligations, resolve disputes, prevent abuse, and enforce agreements.</p>
           <h2>9. Children</h2>
@@ -42,7 +42,7 @@ export default function PrivacyPage() {
           <h2>11. Changes</h2>
           <p>We may update this policy as LIVV changes. The effective date at the top identifies the current version.</p>
           <h2>12. Copyright</h2><p>Copyright complaints are handled under the <a href="/legal/dmca" className="underline">DMCA &amp; Copyright Policy</a>.</p><h2>13. Contact</h2>
-          <p>For privacy questions or requests, email <a href="mailto:privacy@evolvewithlivv.com">privacy@evolvewithlivv.com</a>.</p>
+          <p>For privacy questions or requests, contact LIVV through <a href="https://x.com/EWL_Official" target="_blank" rel="noopener noreferrer">our official X account</a>.</p>
         </article>
       </div>
     </main>
