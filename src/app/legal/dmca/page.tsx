@@ -17,7 +17,7 @@ export default function DmcaPage() {
           <h2>2. Copyright complaints</h2>
           <p>A copyright notice should identify the copyrighted work, identify the material you believe is infringing, provide enough information for us to locate it, include your contact information, include a good-faith statement that the use is not authorized, include a statement under penalty of perjury that the information is accurate and that you are authorized to act, and include your physical or electronic signature.</p>
           <h2>3. Where to send a notice</h2>
-          <p>Email copyright notices to <a href="mailto:evolvewithlivv@gmail.com">evolvewithlivv@gmail.com</a> with the subject line <strong>DMCA NOTICE</strong>. We may request additional information before taking action.</p>
+          <p>Contact LIVV through <a href="https://x.com/EWL_Official" target="_blank" rel="noopener noreferrer">our official X account</a> and include <strong>DMCA NOTICE</strong> in your message. We may request additional information before taking action.</p>
           <h2>4. Counter-notices</h2>
           <p>If material was removed because of a copyright complaint and you believe the removal was mistaken, you may send a counter-notice containing the information required by applicable law. We may restore material when legally permitted.</p>
           <h2>5. Repeat infringement</h2>
